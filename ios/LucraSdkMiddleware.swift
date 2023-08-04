@@ -1,73 +1,78 @@
 import Foundation
 import LucraSDK
 
-@objc(LucraSdkMiddleware)
-class LucraSdkMiddleware: NSObject {
-    let lucraClient = LucraClient(config: .init(environment: .init(authenticationClientID: "VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3",
-                                                                   environment: .develop,
-                                                                   urlScheme: "TODO:"),
-                                                appearance: AlternateAppearance()))
-    
-    @objc func `helloWorld`() -> Void {
-        DispatchQueue.main.async {
-                   // Access and enumerate UIWindowScene windows here
-                   UIViewController.topViewController?.present(lucraFlow: .profile, client: self.lucraClient, animated: true)
-               }
-        return
-    }
+@objc enum LucraEnvironment: Int {
+    case develop
+    case staging
+    case production
 }
 
-import UIKit
+@objc enum LucraFlow: Int {
+    case profile
+}
 
-extension UIViewController {
-
-    static var topViewController: UIViewController? {
-        getTopViewController()
-    }
-
-    func showSimpleAlert(title: String?, message: String?) {
-        let alertController = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
-
-        let action = UIAlertAction(title: "Ok", style: .default)
-
-        alertController.addAction(action)
-        present(alertController, animated: true)
-    }
-
-    private static func getTopViewController(
-        base: UIViewController? = UIApplication.shared.windows.first { $0.isKeyWindow }?.rootViewController) -> UIViewController? {
-            if let nav = base as? UINavigationController {
-                return getTopViewController(base: nav.visibleViewController)
-
-            } else if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
-                return getTopViewController(base: selected)
-
-            } else if let presented = base?.presentedViewController {
-                return getTopViewController(base: presented)
+@objc(LucraClient)
+class LucraClient: NSObject {
+    @objc static func requiresMainQueueSetup() -> Bool { return true }
+    
+    private var nativeClient: LucraSDK.LucraClient!
+    
+    func config(authenticationClientID: String, environment: String, urlScheme: String) {
+        
+        let nativeEnvironment: LucraSDK.LucraEnvironment = {
+            switch environment {
+            case "develop":
+                return .develop
+            case "staging":
+                return .staging
+            case "production":
+                return .production
+            default:
+                return .unknown
             }
-            return base
-        }
-}
-private struct AlternateAppearance: UIKitAppearance {
-    func color(_ font: LucraColor) -> UIColor? {
-        switch font {
-        case .lucraOrange:
-            return .blue
-        default:
-            return nil
-        }
+        }()
+        
+        self.nativeClient = LucraSDK.LucraClient(
+            config: .init(environment: .init(authenticationClientID: authenticationClientID,
+                                             environment: nativeEnvironment,
+                                             urlScheme: urlScheme)))
     }
     
-    func font(_ font: LucraFont) -> UIFont? {
-        switch font {
-        case .h1:
-            return UIFont.systemFont(ofSize: 5)
-        default:
-            return nil
+    
+    private static var currentInstance: LucraClient?
+    
+    @objc func getInstance() -> LucraClient {
+        LucraClient.currentInstance!
+    }
+    
+    @objc func createInstance(_ authenticationClientID: String, environment: String, urlScheme: String) -> LucraClient {
+        // If already initialized just return last
+        if let currentInstance = LucraClient.currentInstance {
+            return currentInstance
         }
+
+        config(authenticationClientID: authenticationClientID,
+                      environment: environment,
+                      urlScheme: urlScheme)
+        LucraClient.currentInstance = self
+        return self
+    }
+    
+    @objc func present(_ lucraFlow: String) -> Void {
+        DispatchQueue.main.async {
+            let nativeFlow: LucraSDK.LucraFlow = {
+                switch lucraFlow {
+                case "profile":
+                    return .profile
+                case "addFunds":
+                    return .addFunds
+                default:
+                    return .profile
+                }
+            }()
+
+            UIViewController.topViewController?.present(lucraFlow: nativeFlow, client: self.nativeClient, animated: true)
+        }
+        return
     }
 }

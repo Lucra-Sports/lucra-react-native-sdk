@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 
-const { LucraSdkMiddleware } = NativeModules;
+const { LucraClient } = NativeModules;
 
 const LINKING_ERROR =
   `The package 'react-native-lucrasdk' doesn't seem to be linked. Make sure: \n\n` +
@@ -29,4 +29,7 @@ export const LucrasdkView =
         throw new Error(LINKING_ERROR);
       };
 
-export const helloWorld = LucraSdkMiddleware.helloWorld
+export const getInstance = LucraClient.getInstance
+export const createInstance = LucraClient.createInstance
+
+export const present = LucraClient.present

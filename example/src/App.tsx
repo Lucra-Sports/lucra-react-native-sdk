@@ -1,24 +1,26 @@
 import { useEffect, useState} from 'react';
 
 import {Button, StyleSheet, View} from 'react-native';
-import { LucrasdkView, helloWorld } from 'react-native-lucrasdk';
+import { createInstance, present } from 'react-native-lucrasdk';
+
+const client = createInstance("VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3", "develop", "TODO");
 
 export default function App() {
-  const [color, setColor] = useState("#32a852")
-  useEffect(() => {
-    setTimeout(() => {
-      if(color != "#000") {
-        setColor('#000')
-      } else {
-        setColor("#32a852")
-      }
-    }, 2500)
-  }, [color])
+  // const [color, setColor] = useState("#32a852")
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if(color != "#000") {
+  //       setColor('#000')
+  //     } else {
+  //       setColor("#32a852")
+  //     }
+  //   }, 2500)
+  // }, [color])
 
   return (
     <View style={styles.container}>
-      <LucrasdkView color={color} style={styles.box} />
-      <Button title="Click Me" onPress={() => helloWorld()} />
+      <Button title="Profile" onPress={() => present("profile")} />
+      <Button title="Add Funds" onPress={() => present("addFunds")} />
     </View>
   );
 }
