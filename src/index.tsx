@@ -6,8 +6,12 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-const Lucrasdk = NativeModules.Lucrasdk
-  ? NativeModules.Lucrasdk
+/**
+ * NativeModules.[module name]
+ * The [module name] must match exactly to android/src/main/java/com/lucrasdk/LucrasdkModule#getName
+ */
+const LucraAndroidSdk = NativeModules.LucraAndroidSdk
+  ? NativeModules.LucraAndroidSdk
   : new Proxy(
       {},
       {
@@ -17,6 +21,12 @@ const Lucrasdk = NativeModules.Lucrasdk
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return Lucrasdk.multiply(a, b);
+export function showFullAppFlow() {
+  if (Platform.OS === 'android') {
+    LucraAndroidSdk.launchFullAppFlow();
+  } else if (Platform.OS === 'ios') {
+    /**
+     * Have iOS equivalent invocation here
+     */
+  }
 }
