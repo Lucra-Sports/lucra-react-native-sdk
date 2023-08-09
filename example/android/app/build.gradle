@@ -103,6 +103,10 @@ android {
     }
 }
 
+repositories {
+  mavenLocal() //TODO: Only needed to reference local maven repo for the Lucra SDKs. Once we have them published to remote, we can remove it.
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
