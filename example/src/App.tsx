@@ -1,26 +1,18 @@
-import { useEffect, useState} from 'react';
+import * as React from 'react';
 
-import {Button, StyleSheet, View} from 'react-native';
-import { createInstance, present } from 'react-native-lucrasdk';
-
-const client = createInstance("VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3", "develop", "TODO");
+import { StyleSheet, View, Text } from 'react-native';
+import { multiply } from 'react-native-lucrasdk';
 
 export default function App() {
-  // const [color, setColor] = useState("#32a852")
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if(color != "#000") {
-  //       setColor('#000')
-  //     } else {
-  //       setColor("#32a852")
-  //     }
-  //   }, 2500)
-  // }, [color])
+  const [result, setResult] = React.useState<number | undefined>();
+
+  React.useEffect(() => {
+    multiply(3, 7).then(setResult);
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Button title="Profile" onPress={() => present("profile")} />
-      <Button title="Add Funds" onPress={() => present("addFunds")} />
+      <Text>Result: {result}</Text>
     </View>
   );
 }

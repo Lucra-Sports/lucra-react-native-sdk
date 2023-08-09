@@ -6,13 +6,11 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "pods": "pod-install --quiet",
-    "postinstall": "rm -rf node_modules/lucrasdk/node_modules/react && rm -rf node_modules/lucrasdk/node_modules/react-native && rm -rf node_modules/lucrasdk/example"
+    "pods": "pod-install --quiet"
   },
   "dependencies": {
     "react": "18.2.0",
-    "react-native": "0.72.3",
-    "lucrasdk" : "../"
+    "react-native": "0.72.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

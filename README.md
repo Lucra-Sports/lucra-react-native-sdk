@@ -1,20 +1,31 @@
-# lucrasdk
+# react-native-lucrasdk
 
 example sdk for native bridging
 
 ## Installation
 
 ```sh
-nvm use 16
+npm install react-native-lucrasdk
 ```
 
-```sh
-yarn
+## Usage
+
+```js
+import { multiply } from 'react-native-lucrasdk';
+
+// ...
+
+const result = await multiply(3, 7);
 ```
 
-```sh
-cd example
-yarn run ios
-```
+## Contributing
+
+See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+
+## License
+
+MIT
+
+---
 
 Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)

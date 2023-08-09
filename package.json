@@ -43,19 +43,18 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/alazarevski/react-native-lucrasdk",
-  "author": "alex <alex@tarmac.io> (https://github.com/alazarevski)",
+  "repository": "https://github.com/yaxarat/react-native-lucrasdk",
+  "author": "Lucra <ya.atajan@gmail.com> (https://github.com/yaxarat)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alazarevski/react-native-lucrasdk/issues"
+    "url": "https://github.com/yaxarat/react-native-lucrasdk/issues"
   },
-  "homepage": "https://github.com/alazarevski/react-native-lucrasdk#readme",
+  "homepage": "https://github.com/yaxarat/react-native-lucrasdk#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
-    "@evilmartians/lefthook": "^1.2.2",
     "@react-native-community/eslint-config": "^3.0.2",
     "@release-it/conventional-changelog": "^5.0.0",
     "@types/jest": "^28.1.2",
@@ -71,7 +70,7 @@
     "prettier": "^2.0.5",
     "react": "18.2.0",
     "react-native": "0.72.3",
-    "react-native-builder-bob": "^0.20.0",
+    "react-native-builder-bob": "^0.21.3",
     "release-it": "^15.0.0",
     "turbo": "^1.10.7",
     "typescript": "^5.0.2"

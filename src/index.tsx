@@ -1,13 +1,4 @@
-import {
-  requireNativeComponent,
-  UIManager,
-  Platform,
-  type ViewStyle,
-  NativeModules,
-} from 'react-native';
-
-
-const { LucraClient } = NativeModules;
+import { NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
   `The package 'react-native-lucrasdk' doesn't seem to be linked. Make sure: \n\n` +
@@ -15,21 +6,17 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-type LucrasdkProps = {
-  color: string;
-  style: ViewStyle;
-};
+const Lucrasdk = NativeModules.Lucrasdk
+  ? NativeModules.Lucrasdk
+  : new Proxy(
+      {},
+      {
+        get() {
+          throw new Error(LINKING_ERROR);
+        },
+      }
+    );
 
-const ComponentName = 'LucrasdkView';
-
-export const LucrasdkView =
-  UIManager.getViewManagerConfig(ComponentName) != null
-    ? requireNativeComponent<LucrasdkProps>(ComponentName)
-    : () => {
-        throw new Error(LINKING_ERROR);
-      };
-
-export const getInstance = LucraClient.getInstance
-export const createInstance = LucraClient.createInstance
-
-export const present = LucraClient.present
+export function multiply(a: number, b: number): Promise<number> {
+  return Lucrasdk.multiply(a, b);
+}
