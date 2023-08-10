@@ -7,64 +7,61 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// export const getInstance = LucraClient.getInstance
-// export const createInstance = LucraClient.createInstance
-// export const present = LucraClient.present
-
-const LucraContext = createContext(undefined);
-
-// A "provider" is used to encapsulate only the
-// components that needs the state in this context
-function UserProvider({ children }) {
-  const [userDetails, setUserDetails] = useState({
-    username: "John Doe"
-  });
-
-  return (
-    <LucraContext.Provider value={userDetails}>
-        {children}
-    </LucraContext.Provider>
-  );
-}
-
-export { UserProvider };
-
-
-/**
- * NativeModules.[module name]
- * The [module name] must match exactly to android/src/main/java/com/lucrasdk/LucrasdkModule#getName
- */
 const LucraAndroidSdk = NativeModules.LucraAndroidSdk
   ? NativeModules.LucraAndroidSdk
   : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
+    {},
+    {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    }
+  );
+
+export enum LucraFlow {
+  Profile,
+  AddFunds
+}
+
+export const LucraClientContext = React.createContext({
+  present: (flow: LucraFlow) => { }
+});
+
+export class LucraClient extends React.Component {
+
+  constructor(props) {
+    super(props);
+    if (Platform.OS === 'android') {
+      // TODO:
+    } else if (Platform.OS === 'ios') {
+      NativeModules.LucraClient.createInstance(props.authenticationClientID, props.environment, props.urlScheme);
+    }
+  }
+
+  present = (flow: LucraFlow) => {
+    if (Platform.OS === 'android') {
+      LucraAndroidSdk.launchFullAppFlow();
+    } else if (Platform.OS === 'ios') {
+      switch (flow) {
+        case LucraFlow.Profile:
+          NativeModules.LucraClient.present("profile")
+          break
+        case LucraFlow.AddFunds:
+          NativeModules.LucraClient.present("addFunds")
+          break
       }
+    }
+  };
+
+  render() {
+    return (
+      <LucraClientContext.Provider
+        value={{
+          present: this.present
+        }}
+      >
+        {this.props.children}
+      </LucraClientContext.Provider>
     );
-
-export function initializeClient() {
-  if (Platform.OS === 'android') {
-    // TODO:
-  } else if (Platform.OS === 'ios') {
-     NativeModules.LucraClient.createInstance("VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3", "develop", "TODO"); //TODO: pass these in as params
-  }
-}
-
-export function showProfile() {
-  if (Platform.OS === 'android') {
-    LucraAndroidSdk.launchFullAppFlow();
-  } else if (Platform.OS === 'ios') {
-    NativeModules.LucraClient.present("profile")
-  }
-}
-
-export function showAddFunds() {
-  if (Platform.OS === 'android') {
-    // TODO: 
-  } else if (Platform.OS === 'ios') {
-    NativeModules.LucraClient.present("addFunds")
   }
 }
