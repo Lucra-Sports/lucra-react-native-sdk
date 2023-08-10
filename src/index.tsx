@@ -1,13 +1,4 @@
-import {
-  requireNativeComponent,
-  UIManager,
-  Platform,
-  type ViewStyle,
-  NativeModules,
-} from 'react-native';
-
-
-const { LucraClient } = NativeModules;
+import { NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
   `The package 'react-native-lucrasdk' doesn't seem to be linked. Make sure: \n\n` +
@@ -15,21 +6,45 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-type LucrasdkProps = {
-  color: string;
-  style: ViewStyle;
-};
+// export const getInstance = LucraClient.getInstance
+// export const createInstance = LucraClient.createInstance
+// export const present = LucraClient.present
 
-const ComponentName = 'LucrasdkView';
+/**
+ * NativeModules.[module name]
+ * The [module name] must match exactly to android/src/main/java/com/lucrasdk/LucrasdkModule#getName
+ */
+const LucraAndroidSdk = NativeModules.LucraAndroidSdk
+  ? NativeModules.LucraAndroidSdk
+  : new Proxy(
+      {},
+      {
+        get() {
+          throw new Error(LINKING_ERROR);
+        },
+      }
+    );
 
-export const LucrasdkView =
-  UIManager.getViewManagerConfig(ComponentName) != null
-    ? requireNativeComponent<LucrasdkProps>(ComponentName)
-    : () => {
-        throw new Error(LINKING_ERROR);
-      };
+export function initializeClient() {
+  if (Platform.OS === 'android') {
+    // TODO:
+  } else if (Platform.OS === 'ios') {
+     NativeModules.LucraClient.createInstance("VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3", "develop", "TODO"); //TODO: pass these in as params
+  }
+}
 
-export const getInstance = LucraClient.getInstance
-export const createInstance = LucraClient.createInstance
+export function showProfile() {
+  if (Platform.OS === 'android') {
+    LucraAndroidSdk.launchFullAppFlow();
+  } else if (Platform.OS === 'ios') {
+    NativeModules.LucraClient.present("profile")
+  }
+}
 
-export const present = LucraClient.present
+export function showAddFunds() {
+  if (Platform.OS === 'android') {
+    // TODO: 
+  } else if (Platform.OS === 'ios') {
+    NativeModules.LucraClient.present("addFunds")
+  }
+}

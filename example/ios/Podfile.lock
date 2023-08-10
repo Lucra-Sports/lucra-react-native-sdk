@@ -19,7 +19,7 @@ PODS:
   - hermes-engine (0.72.3):
     - hermes-engine/Pre-built (= 0.72.3)
   - hermes-engine/Pre-built (0.72.3)
-  - Iterable-iOS-SDK (6.4.14)
+  - Iterable-iOS-SDK (6.4.15)
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
   - LucraSDK (0.0.1):
@@ -35,9 +35,9 @@ PODS:
   - NukeUI (0.8.0):
     - Gifu (~> 3.0)
     - Nuke (~> 10.5)
-  - PulseCore (3.7.3)
-  - PulseUI (3.7.3):
-    - PulseCore (~> 3.0)
+  - PulseCore (4.0.1)
+  - PulseUI (4.0.1):
+    - PulseCore (~> 4.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -635,14 +635,14 @@ SPEC CHECKSUMS:
   Gifu: 416d4e38c4c2fed012f019e0a1d3ffcb58e5b842
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: 10fbd3f62405c41ea07e71973ea61e1878d07322
-  Iterable-iOS-SDK: e9ccde07851de4882aa0ee7e48b37e202835a09b
+  Iterable-iOS-SDK: 8d871b81d5a696b5a3a5173d72d08a96fc5ea98d
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   LucraSDK: 059960eb93aeb9c545f943d25e2ac0235f91ecdf
   Nuke: 279f17a599fd1c83cf51de5e0e1f2db143a287b0
   NukeUI: 6e99837a8d066c93baa4262692d9ea9ffbc863ba
-  PulseCore: 5272742b4b51593f062e20ffe7a1ce0ad0174287
-  PulseUI: 473e9a83363b3dab9e3d3bebb7e6252418f28191
+  PulseCore: 8dff6cd6355250c02581520dfd7cae5dd9c3dd14
+  PulseUI: f3ffa0c1c89ab03a214d5decc23026cd6858e883
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: a2faf4bad4e438ca37b2040cb8f7799baa065c18
   RCTTypeSafety: cb09f3e4747b6d18331a15eb05271de7441ca0b3
@@ -658,7 +658,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
-  react-native-lucrasdk: 2d166b8202983f68484b481d09024629b6677702
+  react-native-lucrasdk: 6b6f5db0ae690cfcb714eae8972ac6d6a6dcbf96
   React-NativeModulesApple: cba444f99cced0f48d97a3288fe54dfb80114038
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
@@ -688,6 +688,6 @@ SPEC CHECKSUMS:
   ZendeskSupportProvidersSDK: 44f6639b5845815d4111b97ff00218f122ef9e33
   ZendeskSupportSDK: cae2bd10740bed62d8f89b78e6eea42713cd1e3c
 
-PODFILE CHECKSUM: c2d93c6a53409668a4c45b719ffd0a43ac3656b4
+PODFILE CHECKSUM: 78addcccedeacef5185c7ece0f1e1e5bd49acbd4
 
 COCOAPODS: 1.12.1

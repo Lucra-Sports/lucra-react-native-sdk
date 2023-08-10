@@ -1387,11 +1387,6 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.44.0.tgz#961a5903c74139390478bdc808bcde3fc45ab7af"
   integrity sha512-Ag+9YM4ocKQx9AarydN0KY2j0ErMHNIocPDrVo8zAE44xLTjEtz81OdR68/cydGtk6m6jDb5Za3r2useMzYmSw==
 
-"@evilmartians/lefthook@^1.2.2":
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/@evilmartians/lefthook/-/lefthook-1.4.7.tgz#079fdf1ade0b0fb93f2239dae33f66a43b7a5472"
-  integrity sha512-tEYMcE4ei0e3thWVX1Jo9RC4nlR8g8OXxpLKL2grUbA5m5Ch8PWj1aP5lLPOmWUomwR0Gkbf4lDCPNdraU+qzg==
-
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-9.3.0.tgz#8368869dcb735be2e7f5cb7647de78e167a251fb"
@@ -7787,10 +7782,10 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-native-builder-bob@^0.20.0:
-  version "0.20.4"
-  resolved "https://registry.yarnpkg.com/react-native-builder-bob/-/react-native-builder-bob-0.20.4.tgz#02df01b8dc02f1bb2d566f820e33c5d42bfb9c99"
-  integrity sha512-3ZmYP8H7Fg2D8/JAPvxT78I4VWzf5DNMUf69cxWPw7Pukt+hHp1PSQ303af63uv1QXxWMJtrQ11+nuUfVqQf0Q==
+react-native-builder-bob@^0.21.3:
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/react-native-builder-bob/-/react-native-builder-bob-0.21.3.tgz#6cdef5a020bae60286e72c6941df9a2d410e3f19"
+  integrity sha512-ZlEXWzgIRfRvQEDEYnoTeJ2og5zDbORB0BMGzpE34TxO22+DZeXH4yFYUtZLrUxvUi5WVo/1V2sVjjnUNZL85Q==
   dependencies:
     "@babel/core" "^7.18.5"
     "@babel/plugin-proposal-class-properties" "^7.17.12"

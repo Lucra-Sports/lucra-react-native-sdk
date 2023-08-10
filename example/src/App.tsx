@@ -1,30 +1,17 @@
-import { useEffect, useState} from 'react';
+import * as React from 'react';
+import { StyleSheet, View, Button } from 'react-native';
+import { initializeClient, showProfile, showAddFunds } from 'react-native-lucrasdk';
 
-import {Button, StyleSheet, View} from 'react-native';
-import { createInstance, present } from 'react-native-lucrasdk';
-
-const client = createInstance("VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3", "develop", "TODO");
+initializeClient()
 
 export default function App() {
-  // const [color, setColor] = useState("#32a852")
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if(color != "#000") {
-  //       setColor('#000')
-  //     } else {
-  //       setColor("#32a852")
-  //     }
-  //   }, 2500)
-  // }, [color])
-
   return (
     <View style={styles.container}>
-      <Button title="Profile" onPress={() => present("profile")} />
-      <Button title="Add Funds" onPress={() => present("addFunds")} />
+        <Button title="Show Profile" onPress={() => showProfile()} />
+        <Button title="Show Add Funds" onPress={() => showAddFunds()} />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
