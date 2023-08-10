@@ -1,1 +1,1 @@
-export {LucraClient, LucraFlow, LucraClientContext } from './LucraClient';
+export {LucraClient, LucraEnvironment, LucraFlow, LucraClientContext } from './LucraClient';

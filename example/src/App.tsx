@@ -1,10 +1,10 @@
 import React, { createContext, useState } from "react";
 import { StyleSheet, View, Button } from 'react-native';
-import { LucraClient, LucraFlow, LucraClientContext } from 'react-native-lucrasdk';
+import { LucraClient, LucraEnvironment, LucraFlow, LucraClientContext } from 'react-native-lucrasdk';
 
 export default function App() {
   return (
-    <LucraClient authenticationClientID='VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3' environment='develop' urlScheme=''>
+    <LucraClient authenticationClientID='VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3' environment={LucraEnvironment.Staging}>
       <View style={styles.container}>
         <LucraClientContext.Consumer>
           {context => (
