@@ -1,5 +1,5 @@
 {
-  "name": "react-native-lucrasdk",
+  "name": "lucra-react-native-sdk",
   "version": "0.1.0",
   "description": "example sdk for native bridging",
   "main": "lib/commonjs/index",
