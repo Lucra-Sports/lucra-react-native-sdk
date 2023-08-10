@@ -4,7 +4,7 @@ import { LucraClient, LucraEnvironment, LucraFlow, LucraClientContext } from 're
 
 export default function App() {
   return (
-    <LucraClient authenticationClientID='VTa8LJTUUKjcaNFem7UBA98b6GVNO5X3' environment={LucraEnvironment.Staging}>
+    <LucraClient authenticationClientID='BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T' environment={LucraEnvironment.Staging}>
       <View style={styles.container}>
         <LucraClientContext.Consumer>
           {context => (

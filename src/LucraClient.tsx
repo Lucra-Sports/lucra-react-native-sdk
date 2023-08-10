@@ -25,7 +25,7 @@ export enum LucraEnvironment {
 
 export enum LucraFlow {
   Profile = "profile",
-  AddFunds = "addFunds"
+  AddFunds = "addFundxs"
 }
 
 export const LucraClientContext = React.createContext({
