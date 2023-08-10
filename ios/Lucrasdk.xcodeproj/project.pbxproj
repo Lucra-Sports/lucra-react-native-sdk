@@ -6,11 +6,6 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		5E555C0D2413F4C50049A1A2 /* Lucrasdk.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* Lucrasdk.mm */; };
-		F4FF95D7245B92E800C19C63 /*  Lucrasdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /*  Lucrasdk.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -25,9 +20,11 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libLucrasdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLucrasdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B3E7B5891CC2AC0600A0062D /* Lucrasdk.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Lucrasdk.mm; sourceTree = "<group>"; };
-		F4FF95D5245B92E700C19C63 /* Lucrasdk-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Lucrasdk-Bridging-Header.h"; sourceTree = "<group>"; };
-		F4FF95D6245B92E800C19C63 /* Lucrasdk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lucrasdk.swift; sourceTree = "<group>"; };
+		FA9DC32A2A728DA700631ABD /* LucraSdkMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucraSdkMiddleware.swift; sourceTree = "<group>"; };
+		FA9DC32B2A728DA700631ABD /* Lucrasdk-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Lucrasdk-Bridging-Header.h"; sourceTree = "<group>"; };
+		FA9DC32F2A728DA700631ABD /* LucrasdkViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucrasdkViewManager.swift; sourceTree = "<group>"; };
+		FA9DC3302A728DA700631ABD /* LucrasdkViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LucrasdkViewManager.m; sourceTree = "<group>"; };
+		FA9DC3312A728DA700631ABD /* LucraSdkMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LucraSdkMiddleware.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,9 +49,11 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				F4FF95D6245B92E800C19C63 /* Lucrasdk.swift */,
-				B3E7B5891CC2AC0600A0062D /* Lucrasdk.mm */,
-				F4FF95D5245B92E700C19C63 /* Lucrasdk-Bridging-Header.h */,
+				FA9DC32B2A728DA700631ABD /* Lucrasdk-Bridging-Header.h */,
+				FA9DC3312A728DA700631ABD /* LucraSdkMiddleware.m */,
+				FA9DC32A2A728DA700631ABD /* LucraSdkMiddleware.swift */,
+				FA9DC3302A728DA700631ABD /* LucrasdkViewManager.m */,
+				FA9DC32F2A728DA700631ABD /* LucrasdkViewManager.swift */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -116,8 +115,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4FF95D7245B92E800C19C63 /* Lucrasdk.swift in Sources */,
-				B3E7B58A1CC2AC0600A0062D /* Lucrasdk.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,6 +219,7 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"EXCLUDED_ARCHS[sdk=*]" = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -241,6 +239,7 @@
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"EXCLUDED_ARCHS[sdk=*]" = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

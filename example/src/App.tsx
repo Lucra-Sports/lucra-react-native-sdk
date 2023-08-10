@@ -1,16 +1,17 @@
 import * as React from 'react';
-
 import { StyleSheet, View, Button } from 'react-native';
-import { showFullAppFlow } from 'react-native-lucrasdk';
+import { initializeClient, showProfile, showAddFunds } from 'react-native-lucrasdk';
+
+initializeClient()
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Button title="Launch Full App Flow" onPress={() => showFullAppFlow()} />
+        <Button title="Show Profile" onPress={() => showProfile()} />
+        <Button title="Show Add Funds" onPress={() => showAddFunds()} />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
