@@ -22,7 +22,7 @@ PODS:
   - Iterable-iOS-SDK (6.4.15)
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
-  - LucraSDK (0.0.1):
+  - LucraSDK (0.0.2):
     - Alamofire
     - Auth0
     - Iterable-iOS-SDK
@@ -339,7 +339,7 @@ PODS:
   - React-logger (0.72.3):
     - glog
   - react-native-lucrasdk (0.1.0):
-    - LucraSDK
+    - LucraSDK (~> 0.0.2)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - React-NativeModulesApple (0.72.3):
@@ -520,9 +520,11 @@ SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - Alamofire
     - Auth0
+    - fmt
     - Gifu
     - Iterable-iOS-SDK
     - JWTDecode
+    - libevent
     - Nuke
     - NukeUI
     - PulseCore
@@ -537,9 +539,6 @@ SPEC REPOS:
     - ZendeskSDKConfigurationsSDK
     - ZendeskSupportProvidersSDK
     - ZendeskSupportSDK
-  trunk:
-    - fmt
-    - libevent
 
 EXTERNAL SOURCES:
   boost:
@@ -638,7 +637,7 @@ SPEC CHECKSUMS:
   Iterable-iOS-SDK: 8d871b81d5a696b5a3a5173d72d08a96fc5ea98d
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  LucraSDK: 059960eb93aeb9c545f943d25e2ac0235f91ecdf
+  LucraSDK: 19e26553c9c045eee852ddaad8d2886f22e4dc8c
   Nuke: 279f17a599fd1c83cf51de5e0e1f2db143a287b0
   NukeUI: 6e99837a8d066c93baa4262692d9ea9ffbc863ba
   PulseCore: 8dff6cd6355250c02581520dfd7cae5dd9c3dd14
@@ -658,7 +657,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
-  react-native-lucrasdk: 6b6f5db0ae690cfcb714eae8972ac6d6a6dcbf96
+  react-native-lucrasdk: 4f32b186f1a920072da1c1670538c5c56d88f449
   React-NativeModulesApple: cba444f99cced0f48d97a3288fe54dfb80114038
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17

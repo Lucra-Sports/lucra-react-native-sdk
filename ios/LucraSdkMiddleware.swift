@@ -1,16 +1,6 @@
 import Foundation
 import LucraSDK
 
-@objc enum LucraEnvironment: Int {
-    case develop
-    case staging
-    case production
-}
-
-@objc enum LucraFlow: Int {
-    case profile
-}
-
 @objc(LucraClient)
 class LucraClient: NSObject {
     @objc static func requiresMainQueueSetup() -> Bool { return true }

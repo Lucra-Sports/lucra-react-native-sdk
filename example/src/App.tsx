@@ -1,19 +1,35 @@
-import * as React from 'react';
+import React from 'react';
 import { StyleSheet, View, Button } from 'react-native';
 import {
-  initializeClient,
-  showProfile,
-  showAddFunds,
+  LucraClient,
+  LucraEnvironment,
+  LucraFlow,
+  LucraClientContext,
 } from 'react-native-lucrasdk';
-
-initializeClient();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Button title="Show Profile" onPress={() => showProfile()} />
-      <Button title="Show Add Funds" onPress={() => showAddFunds()} />
-    </View>
+    <LucraClient
+      authenticationClientID="BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T"
+      environment={LucraEnvironment.Staging}
+    >
+      <View style={styles.container}>
+        <LucraClientContext.Consumer>
+          {(context) => (
+            <View>
+              <Button
+                title="Show Profile"
+                onPress={() => context.present(LucraFlow.Profile)}
+              />
+              <Button
+                title="Show Add Funds"
+                onPress={() => context.present(LucraFlow.AddFunds)}
+              />
+            </View>
+          )}
+        </LucraClientContext.Consumer>
+      </View>
+    </LucraClient>
   );
 }
 const styles = StyleSheet.create({
