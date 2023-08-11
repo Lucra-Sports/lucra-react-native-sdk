@@ -10,41 +10,44 @@ const LINKING_ERROR =
 const LucraAndroidSdk = NativeModules.LucraAndroidSdk
   ? NativeModules.LucraAndroidSdk
   : new Proxy(
-    {},
-    {
-      get() {
-        throw new Error(LINKING_ERROR);
-      },
-    }
-  );
+      {},
+      {
+        get() {
+          throw new Error(LINKING_ERROR);
+        },
+      }
+    );
 
 export enum LucraEnvironment {
-  Production = "production",
-  Staging = "staging"
+  Production = 'production',
+  Staging = 'staging',
 }
 
 export enum LucraFlow {
-  Profile = "profile",
-  AddFunds = "addFundxs"
+  Profile = 'profile',
+  AddFunds = 'addFunds',
 }
 
 export const LucraClientContext = React.createContext({
-  present: (flow: LucraFlow) => { }
+  present: (flow: LucraFlow) => {},
 });
 
 interface Props {
-  authenticationClientID: string,
-  environment: string
+  authenticationClientID: string;
+  environment: string;
 }
 
 export class LucraClient extends React.Component<Props> {
-
   constructor(props: Props) {
     super(props);
     if (Platform.OS === 'android') {
       // TODO:
     } else if (Platform.OS === 'ios') {
-      NativeModules.LucraClient.createInstance(props.authenticationClientID, props.environment, '');
+      NativeModules.LucraClient.createInstance(
+        props.authenticationClientID,
+        props.environment,
+        ''
+      );
     }
   }
 
@@ -52,7 +55,7 @@ export class LucraClient extends React.Component<Props> {
     if (Platform.OS === 'android') {
       LucraAndroidSdk.launchFullAppFlow();
     } else if (Platform.OS === 'ios') {
-      NativeModules.LucraClient.present(flow)
+      NativeModules.LucraClient.present(flow);
     }
   };
 
@@ -60,7 +63,7 @@ export class LucraClient extends React.Component<Props> {
     return (
       <LucraClientContext.Provider
         value={{
-          present: this.present
+          present: this.present,
         }}
       >
         {this.props.children}

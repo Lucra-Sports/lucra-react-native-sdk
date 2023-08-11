@@ -1,16 +1,30 @@
-import React, { createContext, useState } from "react";
+import React from 'react';
 import { StyleSheet, View, Button } from 'react-native';
-import { LucraClient, LucraEnvironment, LucraFlow, LucraClientContext } from 'react-native-lucrasdk';
+import {
+  LucraClient,
+  LucraEnvironment,
+  LucraFlow,
+  LucraClientContext,
+} from 'react-native-lucrasdk';
 
 export default function App() {
   return (
-    <LucraClient authenticationClientID='BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T' environment={LucraEnvironment.Staging}>
+    <LucraClient
+      authenticationClientID="BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T"
+      environment={LucraEnvironment.Staging}
+    >
       <View style={styles.container}>
         <LucraClientContext.Consumer>
-          {context => (
+          {(context) => (
             <View>
-              <Button title="Show Profile" onPress={() => context.present(LucraFlow.Profile)} />
-              <Button title="Show Add Funds" onPress={() => context.present(LucraFlow.AddFunds)} />
+              <Button
+                title="Show Profile"
+                onPress={() => context.present(LucraFlow.Profile)}
+              />
+              <Button
+                title="Show Add Funds"
+                onPress={() => context.present(LucraFlow.AddFunds)}
+              />
             </View>
           )}
         </LucraClientContext.Consumer>
