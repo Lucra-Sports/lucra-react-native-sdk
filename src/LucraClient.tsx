@@ -34,7 +34,7 @@ export const LucraClientContext = React.createContext({
 
 interface Props {
   authenticationClientID: string;
-  environment: string;
+  environment: LucraEnvironment;
 }
 
 export class LucraClient extends React.Component<Props> {
