@@ -1,5 +1,5 @@
+import React from 'react';
 import { NativeModules, Platform } from 'react-native';
-import React, { createContext, useState } from "react";
 
 const LINKING_ERROR =
   `The package 'react-native-lucrasdk' doesn't seem to be linked. Make sure: \n\n` +
@@ -32,9 +32,14 @@ export const LucraClientContext = React.createContext({
   present: (flow: LucraFlow) => { }
 });
 
-export class LucraClient extends React.Component {
+interface Props {
+  authenticationClientID: string,
+  environment: string
+}
 
-  constructor(props) {
+export class LucraClient extends React.Component<Props> {
+
+  constructor(props: Props) {
     super(props);
     if (Platform.OS === 'android') {
       // TODO:
