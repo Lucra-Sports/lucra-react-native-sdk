@@ -1,14 +1,18 @@
 import * as React from 'react';
 import { StyleSheet, View, Button } from 'react-native';
-import { initializeClient, showProfile, showAddFunds } from 'react-native-lucrasdk';
+import {
+  initializeClient,
+  showProfile,
+  showAddFunds,
+} from 'react-native-lucrasdk';
 
-initializeClient()
+initializeClient();
 
 export default function App() {
   return (
     <View style={styles.container}>
-        <Button title="Show Profile" onPress={() => showProfile()} />
-        <Button title="Show Add Funds" onPress={() => showAddFunds()} />
+      <Button title="Show Profile" onPress={() => showProfile()} />
+      <Button title="Show Add Funds" onPress={() => showAddFunds()} />
     </View>
   );
 }
