@@ -19,4 +19,13 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
     }
+  allprojects {
+
+    repositories {
+      maven {
+
+        url "https://zendesk.jfrog.io/zendesk/repo"
+      }
+    }
+  }
 }

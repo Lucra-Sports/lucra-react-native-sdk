@@ -85,9 +85,10 @@ android {
 }
 
 repositories {
-  mavenLocal() //TODO: Only needed to reference local maven repo for the Lucra SDKs. Once we have them published to remote, we can remove it.
+  maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
   mavenCentral()
   google()
+  mavenLocal() //TODO: Only needed to reference local maven repo for the Lucra SDKs. Once we have them published to remote, we can remove it.
 }
 
 def kotlin_version = getExtOrDefault("kotlinVersion")
