@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
@@ -29,7 +29,7 @@ export enum LucraFlow {
 }
 
 export const LucraClientContext = React.createContext({
-  present: (flow: LucraFlow) => {},
+  present: (_flow: LucraFlow) => {},
 });
 
 interface Props {
@@ -37,8 +37,8 @@ interface Props {
   environment: LucraEnvironment;
 }
 
-export class LucraClient extends React.Component<Props> {
-  constructor(props: Props) {
+export class LucraClient extends React.Component<PropsWithChildren<Props>, any> {
+  constructor(props: PropsWithChildren<Props>) {
     super(props);
     if (Platform.OS === 'android') {
       // TODO:
