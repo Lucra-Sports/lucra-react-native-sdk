@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* LucrasdkExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* LucrasdkExampleTests.m */; };
-		0594F965F20CFD9F5D24096C /* Pods_LucrasdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E754865190065671C8BE5ED9 /* Pods_LucrasdkExample.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		6007F438B36B908F3EF13C09 /* Pods_LucrasdkExample_LucrasdkExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8330639DAD1826EA1E37862 /* Pods_LucrasdkExample_LucrasdkExampleTests.framework */; };
+		1D30E3E9047D004B395293D6 /* Pods_LucrasdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F12E6D596CCDE5AE1224B048 /* Pods_LucrasdkExample.framework */; };
+		42BEF7D05BEDDB30F5C42DAA /* Pods_LucrasdkExample_LucrasdkExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53DAE4469BAF57E44FF42F0C /* Pods_LucrasdkExample_LucrasdkExampleTests.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -36,14 +36,14 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = LucrasdkExample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = LucrasdkExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = LucrasdkExample/main.m; sourceTree = "<group>"; };
-		30131694875FCE01A20A49EE /* Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig"; sourceTree = "<group>"; };
-		4B57672EA6953060789CC70F /* Pods-LucrasdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.debug.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.debug.xcconfig"; sourceTree = "<group>"; };
-		556BBBB32555E7405B351188 /* Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
+		53DAE4469BAF57E44FF42F0C /* Pods_LucrasdkExample_LucrasdkExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LucrasdkExample_LucrasdkExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7062EADC38AC2120D5A18762 /* Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = LucrasdkExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		C8330639DAD1826EA1E37862 /* Pods_LucrasdkExample_LucrasdkExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LucrasdkExample_LucrasdkExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D26C9150305805904EC17A83 /* Pods-LucrasdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.release.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.release.xcconfig"; sourceTree = "<group>"; };
-		E754865190065671C8BE5ED9 /* Pods_LucrasdkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LucrasdkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9DF4E12ABD18F5493672780C /* Pods-LucrasdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.debug.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.debug.xcconfig"; sourceTree = "<group>"; };
+		E2408528F76F25B8E0B5555B /* Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F12E6D596CCDE5AE1224B048 /* Pods_LucrasdkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LucrasdkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7AFC15E8A802B5BDD7661E3 /* Pods-LucrasdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.release.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6007F438B36B908F3EF13C09 /* Pods_LucrasdkExample_LucrasdkExampleTests.framework in Frameworks */,
+				42BEF7D05BEDDB30F5C42DAA /* Pods_LucrasdkExample_LucrasdkExampleTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0594F965F20CFD9F5D24096C /* Pods_LucrasdkExample.framework in Frameworks */,
+				1D30E3E9047D004B395293D6 /* Pods_LucrasdkExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,8 +100,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				E754865190065671C8BE5ED9 /* Pods_LucrasdkExample.framework */,
-				C8330639DAD1826EA1E37862 /* Pods_LucrasdkExample_LucrasdkExampleTests.framework */,
+				F12E6D596CCDE5AE1224B048 /* Pods_LucrasdkExample.framework */,
+				53DAE4469BAF57E44FF42F0C /* Pods_LucrasdkExample_LucrasdkExampleTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -140,10 +140,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4B57672EA6953060789CC70F /* Pods-LucrasdkExample.debug.xcconfig */,
-				D26C9150305805904EC17A83 /* Pods-LucrasdkExample.release.xcconfig */,
-				556BBBB32555E7405B351188 /* Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig */,
-				30131694875FCE01A20A49EE /* Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig */,
+				9DF4E12ABD18F5493672780C /* Pods-LucrasdkExample.debug.xcconfig */,
+				F7AFC15E8A802B5BDD7661E3 /* Pods-LucrasdkExample.release.xcconfig */,
+				E2408528F76F25B8E0B5555B /* Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig */,
+				7062EADC38AC2120D5A18762 /* Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -155,11 +155,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "LucrasdkExampleTests" */;
 			buildPhases = (
-				A631A9CD369C46F6AD921F19 /* [CP] Check Pods Manifest.lock */,
+				93D06AA324743D81D3CC5D88 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				BB5AEC9337989ACD8E1E1ECF /* [CP] Embed Pods Frameworks */,
+				BB901238E128758941DC5F84 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -175,13 +175,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "LucrasdkExample" */;
 			buildPhases = (
-				A9C986DDF1D77F348DC80CC1 /* [CP] Check Pods Manifest.lock */,
+				EB8EAB962817469595EDB3F0 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				64C2C2732B7AE949DF66EA7F /* [CP] Embed Pods Frameworks */,
+				0D10ED53255591D392A1F0FA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -209,7 +209,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "LucrasdkExample" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "LucraSDKExample" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -264,7 +264,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		64C2C2732B7AE949DF66EA7F /* [CP] Embed Pods Frameworks */ = {
+		0D10ED53255591D392A1F0FA /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -281,7 +281,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A631A9CD369C46F6AD921F19 /* [CP] Check Pods Manifest.lock */ = {
+		93D06AA324743D81D3CC5D88 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -303,7 +303,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A9C986DDF1D77F348DC80CC1 /* [CP] Check Pods Manifest.lock */ = {
+		BB901238E128758941DC5F84 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EB8EAB962817469595EDB3F0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -323,23 +340,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BB5AEC9337989ACD8E1E1ECF /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample-LucrasdkExampleTests/Pods-LucrasdkExample-LucrasdkExampleTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -394,7 +394,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 556BBBB32555E7405B351188 /* Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig */;
+			baseConfigurationReference = E2408528F76F25B8E0B5555B /* Pods-LucrasdkExample-LucrasdkExampleTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -421,7 +421,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 30131694875FCE01A20A49EE /* Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig */;
+			baseConfigurationReference = 7062EADC38AC2120D5A18762 /* Pods-LucrasdkExample-LucrasdkExampleTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -445,7 +445,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B57672EA6953060789CC70F /* Pods-LucrasdkExample.debug.xcconfig */;
+			baseConfigurationReference = 9DF4E12ABD18F5493672780C /* Pods-LucrasdkExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -473,7 +473,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D26C9150305805904EC17A83 /* Pods-LucrasdkExample.release.xcconfig */;
+			baseConfigurationReference = F7AFC15E8A802B5BDD7661E3 /* Pods-LucrasdkExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -673,7 +673,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "LucrasdkExample" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "LucraSDKExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

@@ -22,6 +22,10 @@ PODS:
   - Iterable-iOS-SDK (6.4.15)
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
+  - lucra-react-native-sdk (0.1.4):
+    - LucraSDK (~> 0.0.2)
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
   - LucraSDK (0.0.2):
     - Alamofire
     - Auth0
@@ -338,10 +342,6 @@ PODS:
   - React-jsinspector (0.72.3)
   - React-logger (0.72.3):
     - glog
-  - react-native-lucrasdk (0.1.0):
-    - LucraSDK (~> 0.0.2)
-    - RCT-Folly (= 2021.07.22.00)
-    - React-Core
   - React-NativeModulesApple (0.72.3):
     - hermes-engine
     - React-callinvoker
@@ -478,6 +478,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
+  - lucra-react-native-sdk (from `../..`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -494,7 +495,6 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-lucrasdk (from `../..`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -554,6 +554,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2023-03-20-RNv0.72.0-49794cfc7c81fb8f69fd60c3bbf85a7480cc5a77
+  lucra-react-native-sdk:
+    :path: "../.."
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -584,8 +586,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
-  react-native-lucrasdk:
-    :path: "../.."
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -637,6 +637,7 @@ SPEC CHECKSUMS:
   Iterable-iOS-SDK: 8d871b81d5a696b5a3a5173d72d08a96fc5ea98d
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  lucra-react-native-sdk: 38c7251512d1c6debf4b6ba4ddb4dfbbb33bc47f
   LucraSDK: 19e26553c9c045eee852ddaad8d2886f22e4dc8c
   Nuke: 279f17a599fd1c83cf51de5e0e1f2db143a287b0
   NukeUI: 6e99837a8d066c93baa4262692d9ea9ffbc863ba
@@ -657,7 +658,6 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
-  react-native-lucrasdk: 4f32b186f1a920072da1c1670538c5c56d88f449
   React-NativeModulesApple: cba444f99cced0f48d97a3288fe54dfb80114038
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
@@ -687,6 +687,6 @@ SPEC CHECKSUMS:
   ZendeskSupportProvidersSDK: 44f6639b5845815d4111b97ff00218f122ef9e33
   ZendeskSupportSDK: cae2bd10740bed62d8f89b78e6eea42713cd1e3c
 
-PODFILE CHECKSUM: 78addcccedeacef5185c7ece0f1e1e5bd49acbd4
+PODFILE CHECKSUM: 669be6125b299d7f7b7add3ae7a0304028303e08
 
 COCOAPODS: 1.12.1
