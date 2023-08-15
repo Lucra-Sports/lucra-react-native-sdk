@@ -43,8 +43,7 @@ export class LucraClient extends React.Component<PropsWithChildren<Props>, any> 
     if (Platform.OS === 'android') {
       LucraAndroidSdk.createInstance(
         props.authenticationClientID,
-        props.environment,
-        ''
+        props.environment
       );
     } else if (Platform.OS === 'ios') {
       NativeModules.LucraClient.createInstance(
