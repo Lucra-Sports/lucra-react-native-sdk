@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
-  `The package 'react-native-lucrasdk' doesn't seem to be linked. Make sure: \n\n` +
+  `The package 'lucra-react-native-sdk' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
@@ -29,7 +29,7 @@ export enum LucraFlow {
 }
 
 export const LucraClientContext = React.createContext({
-  present: (flow: LucraFlow) => {},
+  present: (_flow: LucraFlow) => {},
 });
 
 interface Props {
@@ -37,8 +37,8 @@ interface Props {
   environment: LucraEnvironment;
 }
 
-export class LucraClient extends React.Component<Props> {
-  constructor(props: Props) {
+export class LucraClient extends React.Component<PropsWithChildren<Props>, any> {
+  constructor(props: PropsWithChildren<Props>) {
     super(props);
     if (Platform.OS === 'android') {
       LucraAndroidSdk.createInstance(

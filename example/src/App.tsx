@@ -5,7 +5,7 @@ import {
   LucraEnvironment,
   LucraFlow,
   LucraClientContext,
-} from 'react-native-lucrasdk';
+} from 'lucra-react-native-sdk';
 
 export default function App() {
   return (

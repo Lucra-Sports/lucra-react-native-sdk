@@ -1,6 +1,6 @@
 //
 //  UIViewController+Utilities.swift
-//  react-native-lucrasdk
+//  lucra-react-native-sdk
 //
 //  Created by Michael Schmidt on 8/4/23.
 //

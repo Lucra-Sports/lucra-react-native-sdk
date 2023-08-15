@@ -1,31 +1,77 @@
-# react-native-lucrasdk
+# lucra-react-native-sdk
 
-example sdk for native bridging
+## Pre-Installation
+
+Setup GitHub Personal Access token
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens 
+Select "Classic" with the packages:read permissions and name it "Lucra Token"
 
 ## Installation
 
+### NPM
+
+Install the package to your React Native Repo by running:
 ```sh
-npm install react-native-lucrasdk
+npm install lucra-react-native-sdk
 ```
 
-## Usage
+### iOS
+
+In your `ios` folder Podfile:
+
+Add the following lines to the top of your Podfile to allow Cocoa Pods to find our native sdk dependency
+```sh
+source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
+source 'https://github.com/CocoaPods/Specs.git'
+
+use_frameworks!
+```
+
+Comment out the use of Flipper as it fails to link when using use_frameworks!:
+```sh
+# :flipper_configuration => flipper_config,
+```
+
+Run the following command to add the native sdk dependency locally that you added previously as a source in the Podfile
+```sh
+pod repo add LucraSDK https://github.com/Lucra-Sports/lucra-ios-sdk
+```
+
+### Android
+// TODO:
+
+## React Native Usage
+
+Import the required items from `lucra-react-native-sdk`. 
+Initialize LucraClient with your provided key and set the appropriate environment.
+LucraClient uses ReactNative Context so you can present a flow from the context anywhere in your hierarchy. 
 
 ```js
-import { multiply } from 'react-native-lucrasdk';
+import {
+  LucraClient,
+  LucraEnvironment,
+  LucraFlow,
+  LucraClientContext,
+} from 'lucra-react-native-sdk';
 
 // ...
 
-const result = await multiply(3, 7);
+<LucraClient
+      authenticationClientID="<YOUR KEY HERE>"
+      environment={LucraEnvironment.Staging}
+    >
+      <View style={styles.container}>
+        <LucraClientContext.Consumer>
+          {(context) => (
+            <View>
+              <Button
+                title="Show Profile"
+                onPress={() => context.present(LucraFlow.Profile)}
+              />
+            </View>
+          )}
+        </LucraClientContext.Consumer>
+      </View>
+    </LucraClient>
+
 ```
-
-## Contributing
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
-
-## License
-
-MIT
-
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
