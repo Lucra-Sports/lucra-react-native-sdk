@@ -40,12 +40,6 @@ class LucrasdkModule(
     return NAME
   }
 
-  /**
-   * This is just a method that does not accept any parameter right now.
-   * This is because we have only single point of entry that takes no argument to Android SDK.
-   * Once we expand entry point to multiple points, we can either start accepting parameters,
-   * or have discrete functions for each.
-   */
   @ReactMethod
   fun present(flow: String) {
     val lucraFlow = when (flow) {
