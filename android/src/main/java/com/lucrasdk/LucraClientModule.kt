@@ -10,7 +10,7 @@ import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.ui.LucraUi
 
-class LucrasdkModule(
+class LucraClientModule(
   private val reactContext: ReactApplicationContext
 ) : ReactContextBaseJavaModule(reactContext) {
 
@@ -56,6 +56,6 @@ class LucrasdkModule(
   }
 
   companion object {
-    const val NAME = "LucraAndroidSdk"
+    const val NAME = "LucraClient"
   }
 }
