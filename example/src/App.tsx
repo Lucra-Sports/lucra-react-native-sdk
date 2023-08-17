@@ -5,7 +5,7 @@ import {
   LucraEnvironment,
   LucraFlow,
   LucraClientContext,
-} from '@lucra-sports/lucra-react-native-sdk';
+} from 'lucra-react-native-sdk';
 
 export default function App() {
   return (

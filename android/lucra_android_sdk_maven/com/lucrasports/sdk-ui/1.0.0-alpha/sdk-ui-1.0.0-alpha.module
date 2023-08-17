@@ -1,0 +1,474 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.lucrasports",
+    "module": "sdk-ui",
+    "version": "1.0.0-alpha",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "debugVariantDebugApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.lucrasports",
+          "module": "sdk-core",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-apphost",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil-svg",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sdk-ui-1.0.0-alpha.aar",
+          "url": "sdk-ui-1.0.0-alpha.aar",
+          "size": 195777,
+          "sha512": "13ab26fb5fa2c8efc551a6e25076e23c54a4ec1d118922c9f5f1806e6cdf731dfae75946cb533b70b26f0bbb1df6ef24e7560be700cc031d1bc4b7bbe4181d35",
+          "sha256": "58745b4f2c99769053cef8a081a002a912845e3ff2a8c7d007fee0aa06436aea",
+          "sha1": "240b7cc45fcc8bad53b150d157327962f3127114",
+          "md5": "14daa5126ae3307473c83cd27f7b1a71"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.jakewharton.timber",
+          "module": "timber",
+          "version": {
+            "requires": "5.0.1"
+          }
+        },
+        {
+          "group": "com.google.dagger",
+          "module": "hilt-android",
+          "version": {
+            "requires": "2.44.2"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-designsystem",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-data",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-datastore",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-common",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-navigation",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-apollo",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-auth",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-logger",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-model",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "androidx.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "androidx.constraintlayout",
+          "module": "constraintlayout-compose",
+          "version": {
+            "requires": "1.0.1"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil-compose",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "androidx.hilt",
+          "module": "hilt-navigation-compose",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.6.0-alpha01"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.6.0-alpha01"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.6.4"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-account-detail",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-add-funds-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-withdraw-funds-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-home-landing",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-login-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-create-sports-contest-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-create-games-contest-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-profile",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-promo",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-my-contests",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-contest-details",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-irl-contest-details",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-notification",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-social",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-ssn-form",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-base-contest-list-components",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "androidx.constraintlayout",
+          "module": "constraintlayout",
+          "version": {
+            "requires": "2.1.4"
+          }
+        },
+        {
+          "group": "androidx.core",
+          "module": "core-ktx",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.5.1"
+          }
+        },
+        {
+          "group": "androidx.core",
+          "module": "core-splashscreen",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-runtime-ktx",
+          "version": {
+            "requires": "2.5.1"
+          }
+        },
+        {
+          "group": "androidx.activity",
+          "module": "activity-compose",
+          "version": {
+            "requires": "1.7.0"
+          }
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-tooling",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "androidx.compose.runtime",
+          "module": "runtime-tracing",
+          "version": {
+            "requires": "1.0.0-alpha01"
+          }
+        },
+        {
+          "group": "androidx.compose.material3",
+          "module": "material3",
+          "version": {
+            "requires": "1.1.1"
+          }
+        },
+        {
+          "group": "androidx.compose.material3",
+          "module": "material3-window-size-class",
+          "version": {
+            "requires": "1.1.1"
+          }
+        },
+        {
+          "group": "com.android.installreferrer",
+          "module": "installreferrer",
+          "version": {
+            "requires": "2.2"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil-svg",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "sdk-core",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-apphost",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sdk-ui-1.0.0-alpha.aar",
+          "url": "sdk-ui-1.0.0-alpha.aar",
+          "size": 195777,
+          "sha512": "13ab26fb5fa2c8efc551a6e25076e23c54a4ec1d118922c9f5f1806e6cdf731dfae75946cb533b70b26f0bbb1df6ef24e7560be700cc031d1bc4b7bbe4181d35",
+          "sha256": "58745b4f2c99769053cef8a081a002a912845e3ff2a8c7d007fee0aa06436aea",
+          "sha1": "240b7cc45fcc8bad53b150d157327962f3127114",
+          "md5": "14daa5126ae3307473c83cd27f7b1a71"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "sdk-ui-1.0.0-alpha-sources.jar",
+          "url": "sdk-ui-1.0.0-alpha-sources.jar",
+          "size": 16625,
+          "sha512": "ae14ede7fdbee37648a855608c16e33319fa9788b7ac6604e4b8bc6d6767a7b26ad286a9656ab3dc46b7305f7c5b35a27f324ac199c75eef92b2c0f98129b2ba",
+          "sha256": "c2b7de553106f54137975f6502b18aac1f83e0af181667d426c9842041e68b72",
+          "sha1": "7330091bdd6960678813908b3d26c3ac1f6fb047",
+          "md5": "66f7b4aec64e80bf84a212af1996d2c6"
+        }
+      ]
+    }
+  ]
+}

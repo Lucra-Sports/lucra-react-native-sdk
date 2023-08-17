@@ -1,4 +1,5 @@
-source 'git@github.com:Lucra-Sports/lucra-react-native-sdk.git'
+source 'git@github.com:Lucra-Sports/lucra-ios-sdk.git'
+source 'https://cdn.cocoapods.org/'
 
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
@@ -21,7 +22,7 @@ use_frameworks!
 #   dependencies: {
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+flipper_config = FlipperConfiguration.disabled
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -44,7 +45,7 @@ target 'LucrasdkExample' do
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    # :flipper_configuration => flipper_config,
+    :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

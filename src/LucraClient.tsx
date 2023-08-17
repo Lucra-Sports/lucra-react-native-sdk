@@ -41,7 +41,10 @@ export class LucraClient extends React.Component<PropsWithChildren<Props>, any> 
   constructor(props: PropsWithChildren<Props>) {
     super(props);
     if (Platform.OS === 'android') {
-      // TODO:
+      LucraAndroidSdk.createInstance(
+        props.authenticationClientID,
+        props.environment
+      );
     } else if (Platform.OS === 'ios') {
       NativeModules.LucraClient.createInstance(
         props.authenticationClientID,
@@ -53,7 +56,7 @@ export class LucraClient extends React.Component<PropsWithChildren<Props>, any> 
 
   present = (flow: LucraFlow) => {
     if (Platform.OS === 'android') {
-      LucraAndroidSdk.launchFullAppFlow();
+      LucraAndroidSdk.present(flow);
     } else if (Platform.OS === 'ios') {
       NativeModules.LucraClient.present(flow);
     }

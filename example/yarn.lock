@@ -3540,6 +3540,9 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+"lucra-react-native-sdk@file:..":
+  version "0.1.6"
+
 make-dir@^2.0.0, make-dir@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-2.1.0.tgz#5f0310e18b8be898cc07009295a30ae41e91e6f5"

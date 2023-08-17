@@ -1,0 +1,257 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.lucrasports",
+    "module": "core-data",
+    "version": "1.0.0-alpha",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "debugVariantDebugApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-data-1.0.0-alpha.aar",
+          "url": "core-data-1.0.0-alpha.aar",
+          "size": 584511,
+          "sha512": "8d7a7c3ec2ab981aa25e61ab6ab38823a6812694eb7f3261368b674416da7b388d605032a689d23d017ce0605fe8b7b0c410f5a5813376281066fe50a3c1aa5e",
+          "sha256": "c1f7c95a0082afea952aada8010e74947b14b4eca6976b97f59e007b9ef85fc4",
+          "sha1": "26e2833d3c95e8f1af20e5ac11864555bb126829",
+          "md5": "ef26ad849bbb2e6972d13c9ef4029ed6"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.jakewharton.timber",
+          "module": "timber",
+          "version": {
+            "requires": "5.0.1"
+          }
+        },
+        {
+          "group": "com.google.dagger",
+          "module": "hilt-android",
+          "version": {
+            "requires": "2.44.2"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-common",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-model",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-datastore",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-apollo",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-auth",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-logger",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-credit-card-encryption",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.apollographql.apollo3",
+          "module": "apollo-runtime",
+          "version": {
+            "requires": "3.6.2"
+          }
+        },
+        {
+          "group": "androidx.core",
+          "module": "core-ktx",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.6.4"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-play-services",
+          "version": {
+            "requires": "1.6.4"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.4.0"
+          }
+        },
+        {
+          "group": "com.google.android.gms",
+          "module": "play-services-location",
+          "version": {
+            "requires": "21.0.1"
+          }
+        },
+        {
+          "group": "com.appsflyer",
+          "module": "af-android-sdk",
+          "version": {
+            "requires": "6.9.0"
+          }
+        },
+        {
+          "group": "com.android.installreferrer",
+          "module": "installreferrer",
+          "version": {
+            "requires": "2.2"
+          }
+        },
+        {
+          "group": "androidx.ads",
+          "module": "ads-identifier",
+          "version": {
+            "requires": "1.0.0-alpha01"
+          }
+        },
+        {
+          "group": "com.google.android.gms",
+          "module": "play-services-appset",
+          "version": {
+            "requires": "16.0.2"
+          }
+        },
+        {
+          "group": "com.google.firebase",
+          "module": "firebase-bom",
+          "version": {
+            "requires": "31.1.1"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          }
+        },
+        {
+          "group": "com.google.firebase",
+          "module": "firebase-dynamic-links-ktx"
+        },
+        {
+          "group": "io.github.g00fy2",
+          "module": "versioncompare",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "com.zendesk",
+          "module": "support-providers",
+          "version": {
+            "requires": "5.1.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-data-1.0.0-alpha.aar",
+          "url": "core-data-1.0.0-alpha.aar",
+          "size": 584511,
+          "sha512": "8d7a7c3ec2ab981aa25e61ab6ab38823a6812694eb7f3261368b674416da7b388d605032a689d23d017ce0605fe8b7b0c410f5a5813376281066fe50a3c1aa5e",
+          "sha256": "c1f7c95a0082afea952aada8010e74947b14b4eca6976b97f59e007b9ef85fc4",
+          "sha1": "26e2833d3c95e8f1af20e5ac11864555bb126829",
+          "md5": "ef26ad849bbb2e6972d13c9ef4029ed6"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "core-data-1.0.0-alpha-sources.jar",
+          "url": "core-data-1.0.0-alpha-sources.jar",
+          "size": 57902,
+          "sha512": "f29ccec701c1dd43442f30d9c64ebc190ad0a6b091b309793296d918038c4e2b6f1c5aa63d4555bda17619895411780f6ce26afe002020c8fafc34bfdd490f6b",
+          "sha256": "45225d0f3ad4698ed7dffa14aeeea3ba6592028e900e83d42a83672758fc0686",
+          "sha1": "9157a809e3902b40d94619674ba7a880918bfcc9",
+          "md5": "811696977f43d5bef7e74f5d9a348de4"
+        }
+      ]
+    }
+  ]
+}

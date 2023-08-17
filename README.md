@@ -24,6 +24,7 @@ Add the following lines to the top of your Podfile to allow Cocoa Pods to find o
 
 ```sh
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
+source 'https://cdn.cocoapods.org/'
 
 use_frameworks!
 ```
