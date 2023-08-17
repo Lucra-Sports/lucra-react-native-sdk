@@ -1,0 +1,229 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.lucrasports",
+    "module": "feature-base-contest-list-components",
+    "version": "1.0.0-alpha",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "debugVariantDebugApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "feature-base-contest-list-components-1.0.0-alpha.aar",
+          "url": "feature-base-contest-list-components-1.0.0-alpha.aar",
+          "size": 167731,
+          "sha512": "2b28bfc069c6f295a93911ca10f678d1000ac57f56d5659eb2f2fcefcb622c0edc77244d50d9be8b2721f9e46471a8414ae5bbcbb8e1089e8f7fd13f6c9438c3",
+          "sha256": "68e173f8148a073ba52b5142647612e9e2971b0a2c837158090c51877909acb8",
+          "sha1": "9bbcce0e64263db599ce295f61c8936a7e970e32",
+          "md5": "c9867291ccc24da1613873ad225532ea"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.jakewharton.timber",
+          "module": "timber",
+          "version": {
+            "requires": "5.0.1"
+          }
+        },
+        {
+          "group": "com.google.dagger",
+          "module": "hilt-android",
+          "version": {
+            "requires": "2.44.2"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-designsystem",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-data",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-datastore",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-common",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-navigation",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-apollo",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-auth",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-logger",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-model",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "androidx.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "androidx.constraintlayout",
+          "module": "constraintlayout-compose",
+          "version": {
+            "requires": "1.0.1"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil-compose",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "androidx.hilt",
+          "module": "hilt-navigation-compose",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.6.0-alpha01"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.6.0-alpha01"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.6.4"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "feature-base-contest-list-components-1.0.0-alpha.aar",
+          "url": "feature-base-contest-list-components-1.0.0-alpha.aar",
+          "size": 167731,
+          "sha512": "2b28bfc069c6f295a93911ca10f678d1000ac57f56d5659eb2f2fcefcb622c0edc77244d50d9be8b2721f9e46471a8414ae5bbcbb8e1089e8f7fd13f6c9438c3",
+          "sha256": "68e173f8148a073ba52b5142647612e9e2971b0a2c837158090c51877909acb8",
+          "sha1": "9bbcce0e64263db599ce295f61c8936a7e970e32",
+          "md5": "c9867291ccc24da1613873ad225532ea"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "feature-base-contest-list-components-1.0.0-alpha-sources.jar",
+          "url": "feature-base-contest-list-components-1.0.0-alpha-sources.jar",
+          "size": 23619,
+          "sha512": "dc6ec782bbd81c6fd67496d79d202ab0b3cf694bf3fd774fd28a9d58f613f40ab6c7137adc0aa65c27e305897fd6a3d29a31b0b0205b370d22113206b2e21fba",
+          "sha256": "8526194cce364b7b5faffe1b64809a6a741dd39a2d96c2a2787e2ed5fbb7d933",
+          "sha1": "210b7c4aeed3773b23125d891853e19214c2ecab",
+          "md5": "99c6c30c41a7b91b80b6e95834819b20"
+        }
+      ]
+    }
+  ]
+}

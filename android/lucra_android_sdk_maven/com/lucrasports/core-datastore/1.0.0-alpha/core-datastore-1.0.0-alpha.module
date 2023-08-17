@@ -1,0 +1,131 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.lucrasports",
+    "module": "core-datastore",
+    "version": "1.0.0-alpha",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "debugVariantDebugApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-datastore-1.0.0-alpha.aar",
+          "url": "core-datastore-1.0.0-alpha.aar",
+          "size": 26449,
+          "sha512": "8bc25b67674e4149846273a21bbb9d0dc7d936d14b75ae10e61270b93c2ce55d9a04b832ed5d97b812c82cad106b93c6f5c4a2d96078f83bd081367d78f1ed83",
+          "sha256": "e1d58e29a78e0163f482627587c8250d8cb96d0ff3953e10f2a21d8397c58a0b",
+          "sha1": "5c6838de55f3b0bfc50b3b513bdcb1fbdb306dc3",
+          "md5": "9a62153e1f5ea6d3bfcee8473e6cb23d"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.jakewharton.timber",
+          "module": "timber",
+          "version": {
+            "requires": "5.0.1"
+          }
+        },
+        {
+          "group": "com.google.dagger",
+          "module": "hilt-android",
+          "version": {
+            "requires": "2.44.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.6.4"
+          }
+        },
+        {
+          "group": "androidx.datastore",
+          "module": "datastore",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "androidx.datastore",
+          "module": "datastore-preferences",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-datastore-1.0.0-alpha.aar",
+          "url": "core-datastore-1.0.0-alpha.aar",
+          "size": 26449,
+          "sha512": "8bc25b67674e4149846273a21bbb9d0dc7d936d14b75ae10e61270b93c2ce55d9a04b832ed5d97b812c82cad106b93c6f5c4a2d96078f83bd081367d78f1ed83",
+          "sha256": "e1d58e29a78e0163f482627587c8250d8cb96d0ff3953e10f2a21d8397c58a0b",
+          "sha1": "5c6838de55f3b0bfc50b3b513bdcb1fbdb306dc3",
+          "md5": "9a62153e1f5ea6d3bfcee8473e6cb23d"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "core-datastore-1.0.0-alpha-sources.jar",
+          "url": "core-datastore-1.0.0-alpha-sources.jar",
+          "size": 4269,
+          "sha512": "d1a867feea4d4701fa7184fc2425793047107d492cd58b7c79b68c0db3aaf77623c35c7d4e15afad00cea8e6197ade0888f0ea775864fc99a100fdebc4248861",
+          "sha256": "eb3cb09904fdcbc59668674cf61553aa915cd1323daa912d498aa9e1e261660d",
+          "sha1": "523b76a550ce9cbfcbdf90e6fe7239d0610af6a5",
+          "md5": "aece91dc7f910d731917a6a2b4963275"
+        }
+      ]
+    }
+  ]
+}

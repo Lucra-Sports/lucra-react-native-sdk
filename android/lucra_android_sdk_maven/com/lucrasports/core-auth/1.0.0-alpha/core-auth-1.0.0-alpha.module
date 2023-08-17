@@ -1,0 +1,180 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.lucrasports",
+    "module": "core-auth",
+    "version": "1.0.0-alpha",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "debugVariantDebugApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-auth-1.0.0-alpha.aar",
+          "url": "core-auth-1.0.0-alpha.aar",
+          "size": 64460,
+          "sha512": "f09aaf63d99fed3d611c65ef5011da2e0725090221d829fc1b4f97ebf67bbb4f9aeff486babf93e964d9728a4634d7f2677bb601ca1f9cc63a05ec2905ee51cd",
+          "sha256": "60d0a98db37fb04eab1674a838725d86c3432dba80c3c5116d111c1ec30f28c0",
+          "sha1": "22dc3858aaf1e2e0a379f49b18364d7d784d8e74",
+          "md5": "93c950a68806ad5782161cdbda79ac0e"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.jakewharton.timber",
+          "module": "timber",
+          "version": {
+            "requires": "5.0.1"
+          }
+        },
+        {
+          "group": "com.google.dagger",
+          "module": "hilt-android",
+          "version": {
+            "requires": "2.44.2"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-common",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-logger",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-datastore",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "androidx.biometric",
+          "module": "biometric",
+          "version": {
+            "requires": "1.2.0-alpha04"
+          }
+        },
+        {
+          "group": "com.auth0.android",
+          "module": "auth0",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "com.auth0.android",
+          "module": "jwtdecode",
+          "version": {
+            "requires": "2.0.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.6.4"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.4.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-datetime",
+          "version": {
+            "requires": "0.4.0"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-sardine-sdk",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-auth-1.0.0-alpha.aar",
+          "url": "core-auth-1.0.0-alpha.aar",
+          "size": 64460,
+          "sha512": "f09aaf63d99fed3d611c65ef5011da2e0725090221d829fc1b4f97ebf67bbb4f9aeff486babf93e964d9728a4634d7f2677bb601ca1f9cc63a05ec2905ee51cd",
+          "sha256": "60d0a98db37fb04eab1674a838725d86c3432dba80c3c5116d111c1ec30f28c0",
+          "sha1": "22dc3858aaf1e2e0a379f49b18364d7d784d8e74",
+          "md5": "93c950a68806ad5782161cdbda79ac0e"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "core-auth-1.0.0-alpha-sources.jar",
+          "url": "core-auth-1.0.0-alpha-sources.jar",
+          "size": 11409,
+          "sha512": "219592476d4bada5bc7e26d39f7cedab9fa78719138e526c3a6cf0a509f4138d2b1561d338483bbbed93f4ebbcea347dcae504172ed6c99b6f11859e757357c9",
+          "sha256": "18eba13130bf0c30ff668b7f996e3e84d9eb1029862c2e08300d423eded043a7",
+          "sha1": "26eca38799253bf2ae986b95e1b637ef1cda9cfe",
+          "md5": "47d7c7e56659ea9fbb5026a2a5835253"
+        }
+      ]
+    }
+  ]
+}
