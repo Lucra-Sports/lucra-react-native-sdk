@@ -13,7 +13,7 @@ Select "Classic" with the `packages:read` permissions and name it "Lucra Token".
 Install the package to your React Native Repo by running:
 
 ```sh
-npm install @lucra-sports/lucra-react-native-sdk
+yarn add lucra-react-native-sdk
 ```
 
 ### iOS
