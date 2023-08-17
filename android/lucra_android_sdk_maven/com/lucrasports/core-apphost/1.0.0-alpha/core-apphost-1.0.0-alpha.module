@@ -1,0 +1,411 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.lucrasports",
+    "module": "core-apphost",
+    "version": "1.0.0-alpha",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "debugVariantDebugApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-apphost-1.0.0-alpha.aar",
+          "url": "core-apphost-1.0.0-alpha.aar",
+          "size": 218686,
+          "sha512": "7b6219dedd67df7930ba2e15e72b9e7b1597e07f507441a40fcc5cb7ce3dce9af7ff962b5ac99b1b341855b26753e61f389dfa14e83546edadc3d7800431f0a7",
+          "sha256": "95670d0f6744a806b34a3aaef9a29b7a9f83e4b2ddd6713729d52f31dc8c8912",
+          "sha1": "89a90375188fb4d79021ad77243d62c3d0126158",
+          "md5": "011e7cf2855a8d2b1e44cf58ad9b8dab"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.jakewharton.timber",
+          "module": "timber",
+          "version": {
+            "requires": "5.0.1"
+          }
+        },
+        {
+          "group": "com.google.dagger",
+          "module": "hilt-android",
+          "version": {
+            "requires": "2.44.2"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-auth",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-common",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-data",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-datastore",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-designsystem",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-logger",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-model",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-navigation",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-add-funds-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-account-detail",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-base-contest-list-components",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-contest-details",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-create-games-contest-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-create-sports-contest-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-home-landing",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-irl-contest-details",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-login-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-my-contests",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-notification",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-profile",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-promo",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-social",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-ssn-form",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "feature-withdraw-funds-flow",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.google.firebase",
+          "module": "firebase-bom",
+          "version": {
+            "requires": "31.1.1"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          }
+        },
+        {
+          "group": "com.google.firebase",
+          "module": "firebase-crashlytics-ktx"
+        },
+        {
+          "group": "com.google.firebase",
+          "module": "firebase-messaging",
+          "version": {
+            "requires": "23.1.1"
+          }
+        },
+        {
+          "group": "com.iterable",
+          "module": "iterableapi",
+          "version": {
+            "requires": "3.4.14"
+          }
+        },
+        {
+          "group": "com.android.installreferrer",
+          "module": "installreferrer",
+          "version": {
+            "requires": "2.2"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil-svg",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "androidx.core",
+          "module": "core-ktx",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.5.1"
+          }
+        },
+        {
+          "group": "androidx.core",
+          "module": "core-splashscreen",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-runtime-ktx",
+          "version": {
+            "requires": "2.5.1"
+          }
+        },
+        {
+          "group": "androidx.activity",
+          "module": "activity-compose",
+          "version": {
+            "requires": "1.7.0"
+          }
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-tooling",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "androidx.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "androidx.compose.runtime",
+          "module": "runtime-tracing",
+          "version": {
+            "requires": "1.0.0-alpha01"
+          }
+        },
+        {
+          "group": "androidx.compose.material3",
+          "module": "material3",
+          "version": {
+            "requires": "1.1.1"
+          }
+        },
+        {
+          "group": "androidx.compose.material3",
+          "module": "material3-window-size-class",
+          "version": {
+            "requires": "1.1.1"
+          }
+        },
+        {
+          "group": "androidx.window",
+          "module": "window",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-apphost-1.0.0-alpha.aar",
+          "url": "core-apphost-1.0.0-alpha.aar",
+          "size": 218686,
+          "sha512": "7b6219dedd67df7930ba2e15e72b9e7b1597e07f507441a40fcc5cb7ce3dce9af7ff962b5ac99b1b341855b26753e61f389dfa14e83546edadc3d7800431f0a7",
+          "sha256": "95670d0f6744a806b34a3aaef9a29b7a9f83e4b2ddd6713729d52f31dc8c8912",
+          "sha1": "89a90375188fb4d79021ad77243d62c3d0126158",
+          "md5": "011e7cf2855a8d2b1e44cf58ad9b8dab"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "core-apphost-1.0.0-alpha-sources.jar",
+          "url": "core-apphost-1.0.0-alpha-sources.jar",
+          "size": 16069,
+          "sha512": "71004ec178d11ba20c9a473201a8d639d90db38d7897fb93fd1d60e5b118b66bd74548855c242e750f6ea8292b055babe2e89f2db1e3702fa6579ab328534f4f",
+          "sha256": "d71b0b3a931d69194d2ff95067ea83f9f82b2e1eb242fb9fbbb98778e52dfc17",
+          "sha1": "f8283c8235a8b7256c4f29fcfe3645fc700b3e27",
+          "md5": "7fce8c0d62f59e14c335fa7326b86342"
+        }
+      ]
+    }
+  ]
+}

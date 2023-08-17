@@ -1,0 +1,236 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.lucrasports",
+    "module": "feature-withdraw-funds-flow",
+    "version": "1.0.0-alpha",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "debugVariantDebugApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "feature-withdraw-funds-flow-1.0.0-alpha.aar",
+          "url": "feature-withdraw-funds-flow-1.0.0-alpha.aar",
+          "size": 197175,
+          "sha512": "5c7d094f13987a7c5cec8809196a23f138d8a02ab770fd8abdaea95c22993c37a6178f52ae0a7b4a38ae20e559a48e43907bee691ef86c5bfaee0124dd59cc97",
+          "sha256": "0d31c52f1d2426d987edda7ae64faac2fb37a05a0212015bd35f3241aaa0acff",
+          "sha1": "2ccaddee869033c45e36f99303ac8eb228f473ac",
+          "md5": "8108e877443f2024031ae35397941bb0"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.jakewharton.timber",
+          "module": "timber",
+          "version": {
+            "requires": "5.0.1"
+          }
+        },
+        {
+          "group": "com.google.dagger",
+          "module": "hilt-android",
+          "version": {
+            "requires": "2.44.2"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-designsystem",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-data",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-datastore",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-common",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-navigation",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-apollo",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-auth",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-logger",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-model",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "androidx.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "androidx.constraintlayout",
+          "module": "constraintlayout-compose",
+          "version": {
+            "requires": "1.0.1"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "io.coil-kt",
+          "module": "coil-compose",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "androidx.hilt",
+          "module": "hilt-navigation-compose",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.6.0-alpha01"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.6.0-alpha01"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.6.4"
+          }
+        },
+        {
+          "group": "com.lucrasports",
+          "module": "core-sardine-sdk",
+          "version": {
+            "requires": "1.0.0-alpha"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "feature-withdraw-funds-flow-1.0.0-alpha.aar",
+          "url": "feature-withdraw-funds-flow-1.0.0-alpha.aar",
+          "size": 197175,
+          "sha512": "5c7d094f13987a7c5cec8809196a23f138d8a02ab770fd8abdaea95c22993c37a6178f52ae0a7b4a38ae20e559a48e43907bee691ef86c5bfaee0124dd59cc97",
+          "sha256": "0d31c52f1d2426d987edda7ae64faac2fb37a05a0212015bd35f3241aaa0acff",
+          "sha1": "2ccaddee869033c45e36f99303ac8eb228f473ac",
+          "md5": "8108e877443f2024031ae35397941bb0"
+        }
+      ]
+    },
+    {
+      "name": "debugVariantDebugSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "feature-withdraw-funds-flow-1.0.0-alpha-sources.jar",
+          "url": "feature-withdraw-funds-flow-1.0.0-alpha-sources.jar",
+          "size": 17799,
+          "sha512": "8456407d915e7756e820d85c04e42c60159879db3bd3c7941ddc31d8f370056e31eff42c93191dc39a62dcbf252b499394cbf7e28909825fcbac9d51834b716e",
+          "sha256": "fd835f6dcd728bd82a904981df1b2b60145756ffbba035db5de30d34ccf2b50c",
+          "sha1": "46377229b51685ffd2354b36d47380c86d52fcea",
+          "md5": "4d82fd9d757b664e3c0b169d6ac33e2d"
+        }
+      ]
+    }
+  ]
+}
