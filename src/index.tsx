@@ -1,6 +1,4 @@
-// export {LucraClient, LucraEnvironment, LucraFlow, LucraClientContext } from './LucraClient';
-
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 const LucraClient = NativeModules.LucraClient;
 
@@ -20,7 +18,11 @@ export const LucraSDK = {
     ADD_FUNDS: 'addFunds',
   },
   init: (authenticationClientID: string, environment: string) => {
-    LucraClient.createInstance(authenticationClientID, environment);
+    if (Platform.OS === 'ios') {
+      LucraClient.createInstance(authenticationClientID, environment, '');
+    } else {
+      LucraClient.createInstance(authenticationClientID, environment);
+    }
   },
   present: (flow: string) => {
     LucraClient.present(flow);
