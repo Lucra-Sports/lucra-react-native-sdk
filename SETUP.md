@@ -15,7 +15,7 @@ yarn 1.22.19
 java zulu-11.56.19
 ```
 
-You can then navigate to the root of this projects and do:
+With ASDF installed on your machine, you can then navigate to the root of this project and do:
 
 ```sh
 asdf install
@@ -31,9 +31,9 @@ If ASDF is not your cup of tea, you will be forced to install the dependencies i
 
 With ruby you can install `rubyenv` which the the `nvm` equivalent for the Ruby programming language.
 
-You will need to install both and install the versions required by this project to get them running. Once node is installed you should install yarn as well. The recommended way is via script, but I do `npm install -g yarn` and it works just fine.\
+You will need to install both and install the versions required by this project to get them running. Once node is installed you should install `yarn` as well. The recommended way is via script, but I do `npm install -g yarn` and it works just fine.
 
-You can also ignore all of this and do a single global installation of Node (via the script on their website) and ruby (via homebrew), but you will have a lot of pain when switching projects or updating them.
+You can also ignore all of this and do a single global installation of Node (via the script on their website) and ruby (via homebrew), yarn (via w/e you want), but you will have a lot of pain when switching projects or updating them.
 
 ## Things you need to manually install
 
