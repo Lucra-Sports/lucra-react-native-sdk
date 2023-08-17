@@ -1,16 +1,10 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, Button } from 'react-native';
 import { LucraSDK } from 'lucra-react-native-sdk';
+import React from 'react';
+import { Button, StyleSheet, View } from 'react-native';
+
+LucraSDK.init('BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T', LucraSDK.ENVIRONMENT.STAGING);
 
 export default function App() {
-  useEffect(() => {
-    // Initialize the SDK on app start
-    LucraSDK.init(
-      'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
-      LucraSDK.ENVIRONMENT.STAGING
-    );
-  }, []);
-
   return (
     <View style={styles.container}>
       <Button

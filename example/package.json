@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "pods": "pod-install --quiet",
-    "android:logcat": "adb logcat"
+    "android:logcat": "adb logcat",
+    "nuke": "rm -rf $TMPDIR/react-* && watchman watch-del-all && rm -rf ios/build && rm -rf node_modules/ && rm -rf ./ios/Pods && yarn && npx pod-install"
   },
   "dependencies": {
     "react": "18.2.0",
