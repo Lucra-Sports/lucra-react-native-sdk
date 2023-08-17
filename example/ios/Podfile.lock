@@ -517,7 +517,7 @@ DEPENDENCIES:
 SPEC REPOS:
   "git@github.com:Lucra-Sports/lucra-ios-sdk.git":
     - LucraSDK
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - Alamofire
     - Auth0
     - fmt
@@ -652,13 +652,13 @@ SPEC CHECKSUMS:
   React-Core: aaacca67f9ca54f142827e67f44bfbd815875eb6
   React-CoreModules: 32fab1d62416849a3b6dac6feff9d54e5ddc2d1e
   React-cxxreact: 37765b4975541105b2a3322a4b473417c158c869
-  React-debug: 6d962e3104ee011102165c7d447947c693f416e8
+  React-debug: 31c1b3429e399b8175889c26737b2edafb04cbbd
   React-hermes: 935ae71fb3d7654e947beba8498835cd5e479707
   React-jsi: ec628dc7a15ffea969f237b0ea6d2fde212b19dd
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
-  React-NativeModulesApple: fc9596be6a46141340f500f2d1bdc02c1686ab88
+  React-NativeModulesApple: fd78ac6315bb648f1e296e4a0adde907ea77011d
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
   React-RCTAnimation: fe7005136b58f58871cab2f70732343b6e330d30
@@ -672,9 +672,9 @@ SPEC CHECKSUMS:
   React-RCTVibration: ea3a68a49873a54ced927c90923fc6932baf344a
   React-rncore: 9672a017af4a7da7495d911f0b690cbcae9dd18d
   React-runtimeexecutor: 369ae9bb3f83b65201c0c8f7d50b72280b5a1dbc
-  React-runtimescheduler: 07857c07e0310e60fae7b53a87f63a67100aa1f1
-  React-utils: 546484e21e039bcdf440fdb79b2e7ff45d1d0e71
-  ReactCommon: 218c70f32a3f35644c917e3d10904c6295dd948f
+  React-runtimescheduler: 4089217871b3b4b720bda9d8b87652706d4cff27
+  React-utils: 717ff5dcb3369b417ac542aee2c19011adeff1e7
+  ReactCommon: b2be75a1b39b2282adcb43c344b67015113b87c1
   Resolver: 68984624572763018fd8ec7b8e3e8df0e3b6bba5
   SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
@@ -687,6 +687,6 @@ SPEC CHECKSUMS:
   ZendeskSupportProvidersSDK: 44f6639b5845815d4111b97ff00218f122ef9e33
   ZendeskSupportSDK: cae2bd10740bed62d8f89b78e6eea42713cd1e3c
 
-PODFILE CHECKSUM: 669be6125b299d7f7b7add3ae7a0304028303e08
+PODFILE CHECKSUM: d1d0f5dcec523c472b3fc28b78d5377ffca27e66
 
 COCOAPODS: 1.12.1

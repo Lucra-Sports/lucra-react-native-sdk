@@ -1,5 +1,4 @@
-source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
-source 'https://github.com/CocoaPods/Specs.git'
+source 'git@github.com:Lucra-Sports/lucra-react-native-sdk.git'
 
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
