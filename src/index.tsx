@@ -1,1 +1,28 @@
-export {LucraClient, LucraEnvironment, LucraFlow, LucraClientContext } from './LucraClient';
+// export {LucraClient, LucraEnvironment, LucraFlow, LucraClientContext } from './LucraClient';
+
+import { NativeModules } from 'react-native';
+
+const LucraClient = NativeModules.LucraClient;
+
+if (LucraClient == null) {
+  throw new Error(
+    'LucraClient is not found. You can try clearing your build cache and try again.'
+  );
+}
+
+export const LucraSDK = {
+  ENVIRONMENT: {
+    PRODUCTION: 'production',
+    STAGING: 'staging',
+  },
+  FLOW: {
+    PROFILE: 'profile',
+    ADD_FUNDS: 'addFunds',
+  },
+  init: (authenticationClientID: string, environment: string) => {
+    LucraClient.createInstance(authenticationClientID, environment);
+  },
+  present: (flow: string) => {
+    LucraClient.present(flow);
+  },
+};

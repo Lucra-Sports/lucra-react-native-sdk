@@ -1,35 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Button } from 'react-native';
-import {
-  LucraClient,
-  LucraEnvironment,
-  LucraFlow,
-  LucraClientContext,
-} from 'lucra-react-native-sdk';
+import { LucraSDK } from 'lucra-react-native-sdk';
 
 export default function App() {
+  useEffect(() => {
+    // Initialize the SDK on app start
+    LucraSDK.init(
+      'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
+      LucraSDK.ENVIRONMENT.STAGING
+    );
+  }, []);
+
   return (
-    <LucraClient
-      authenticationClientID="BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T"
-      environment={LucraEnvironment.Staging}
-    >
-      <View style={styles.container}>
-        <LucraClientContext.Consumer>
-          {(context) => (
-            <View>
-              <Button
-                title="Show Profile"
-                onPress={() => context.present(LucraFlow.Profile)}
-              />
-              <Button
-                title="Show Add Funds"
-                onPress={() => context.present(LucraFlow.AddFunds)}
-              />
-            </View>
-          )}
-        </LucraClientContext.Consumer>
-      </View>
-    </LucraClient>
+    <View style={styles.container}>
+      <Button
+        title="Show Profile"
+        onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
+      />
+      <Button
+        title="Show Add Funds"
+        onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
+      />
+    </View>
   );
 }
 const styles = StyleSheet.create({
