@@ -4,7 +4,7 @@
 
 Setup GitHub Personal Access token
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens 
-Select "Classic" with the packages:read permissions and name it "Lucra Token"
+Select "Classic" with the packages:read permissions and name it "Lucra Token".
 
 ## Installation
 
@@ -19,7 +19,7 @@ npm install lucra-react-native-sdk
 
 In your `ios` folder Podfile:
 
-Add the following lines to the top of your Podfile to allow Cocoa Pods to find our native sdk dependency
+Add the following lines to the top of your Podfile to allow Cocoa Pods to find our native SDK dependency
 ```sh
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
 source 'https://github.com/CocoaPods/Specs.git'
@@ -32,7 +32,7 @@ Comment out the use of Flipper as it fails to link when using use_frameworks!:
 # :flipper_configuration => flipper_config,
 ```
 
-Run the following command to add the native sdk dependency locally that you added previously as a source in the Podfile
+Run the following command to add the native SDK dependency locally that you added previously as a source in the Podfile
 ```sh
 pod repo add LucraSDK https://github.com/Lucra-Sports/lucra-ios-sdk
 ```
