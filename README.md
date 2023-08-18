@@ -30,7 +30,7 @@ In your `ios` folder Podfile:
 
 Add the following lines to the top of your Podfile to allow Cocoa Pods to find our native SDK dependency, check out the [example Podfile](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/example/ios/Podfile) for a reference:
 
-```sh
+```ruby
 # Pick one of the following two
 # Use https if you are using a GitHub token method
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
@@ -44,9 +44,9 @@ source 'https://cdn.cocoapods.org/'
 use_frameworks!
 ```
 
-You will need to disable as well Flipper as it fails to link when using use_frameworks!:
+You will need to disable Flipper as it fails to link when using `use_frameworks!``:
 
-```sh
+```ruby
 # You can either comment out this line
 # :flipper_configuration => flipper_config,
 
