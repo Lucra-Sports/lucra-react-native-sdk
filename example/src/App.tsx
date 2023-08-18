@@ -1,4 +1,4 @@
-import { LucraSDK } from 'lucra-react-native-sdk';
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
@@ -18,6 +18,7 @@ export default function App() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

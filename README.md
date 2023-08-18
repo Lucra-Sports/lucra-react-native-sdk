@@ -21,7 +21,7 @@ You can skip this step if you have set up SSH for your GitHub account. In the ne
 Install the package to your React Native Repo by running:
 
 ```sh
-yarn add lucra-react-native-sdk
+yarn add @lucra-sports/lucra-react-native-sdk
 ```
 
 ### iOS
