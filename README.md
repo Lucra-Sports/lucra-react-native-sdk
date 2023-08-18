@@ -64,37 +64,29 @@ pod repo add LucraSDK https://github.com/Lucra-Sports/lucra-ios-sdk
 
 // TODO:
 
-## React Native Usage
+## Usage
 
-Import the required items from `lucra-react-native-sdk`.
-Initialize LucraClient with your provided key and set the appropriate environment.
-LucraClient uses ReactNative Context so you can present a flow from the context anywhere in your hierarchy.
+Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else.
 
-```js
-import {
-  LucraClient,
-  LucraEnvironment,
-  LucraFlow,
-  LucraClientContext,
-} from 'lucra-react-native-sdk';
+```ts
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import React from 'react';
+import { Button, StyleSheet, View } from 'react-native';
 
-// ...
+LucraSDK.init('BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T', LucraSDK.ENVIRONMENT.STAGING);
 
-<LucraClient
-  authenticationClientID="<YOUR KEY HERE>"
-  environment={LucraEnvironment.Staging}
->
-  <View style={styles.container}>
-    <LucraClientContext.Consumer>
-      {(context) => (
-        <View>
-          <Button
-            title="Show Profile"
-            onPress={() => context.present(LucraFlow.Profile)}
-          />
-        </View>
-      )}
-    </LucraClientContext.Consumer>
-  </View>
-</LucraClient>;
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Button
+        title="Show Profile"
+        onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
+      />
+      <Button
+        title="Show Add Funds"
+        onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
+      />
+    </View>
+  );
+}
 ```
