@@ -12,46 +12,62 @@ import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UIFlow'>;
 
 export const UIFlowContainer: FC<Props> = ({ navigation }) => {
   return (
-    <SafeAreaView style={Styles.container}>
-      <View style={Styles.innerContainer}>
-        <View style={Styles.header}>
+    <SafeAreaView className="flex-1">
+      <LinearGradient
+        colors={['#6360EB', '#001448']}
+        className="pt-4 px-4 flex-1 g-2"
+      >
+        <View className="flex-row items-center g-2">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
             }}
             style={Styles.backButton}
           >
-            <Image source={Assets.ChevronLeft} style={Styles.chevron} />
-            <Text style={Styles.text}>RN SDK Example</Text>
+            <Image
+              source={Assets.ChevronLeft}
+              style={Styles.chevron}
+              className="h-8 w-8"
+            />
           </TouchableOpacity>
           <View style={Styles.spacer} />
           <TouchableOpacity
-            style={Styles.fundsPill}
+            className="rounded-full bg-darkPurple px-4 h-8 flex-row items-center justify-center"
             onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
           >
             <Text>⚡</Text>
-            <Text style={Styles.fundText}>0,00</Text>
+            <Text style={Styles.fundText}>0,00$</Text>
           </TouchableOpacity>
+          <View style={Styles.spacer} />
+          <Image source={Assets.Bell} style={Styles.chevron} />
+          <Image source={Assets.Burger} style={Styles.chevron} />
         </View>
-        <View style={Styles.mainSection}>
+        <TouchableOpacity className="flex-1">
           <Image
-            source={Assets.LucraLogo}
-            style={Styles.logo}
+            source={Assets.FeatureGraphic}
+            className="w-full flex-1"
             resizeMode="contain"
           />
-        </View>
-        <TouchableOpacity style={Styles.button}>
-          <Text style={Styles.fundText}>Add Funds</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={Styles.button}>
+
+        <TouchableOpacity className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg">
+          <Text className="font-bold text-white">Add Funds</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg">
           <Text style={Styles.fundText}>Create Games Matchup</Text>
         </TouchableOpacity>
-      </View>
+        <Image
+          source={Assets.BottomNav}
+          className="w-full h-24"
+          resizeMode="contain"
+        />
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -72,9 +88,7 @@ const Styles = StyleSheet.create({
     gap: 8,
   },
   chevron: {
-    tintColor: 'blue',
-    height: 32,
-    width: 32,
+    tintColor: 'white',
   },
   header: {
     flexDirection: 'row',

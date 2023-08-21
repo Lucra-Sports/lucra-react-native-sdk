@@ -13,5 +13,6 @@ module.exports = {
         },
       },
     ],
+    'nativewind/babel',
   ],
 };
