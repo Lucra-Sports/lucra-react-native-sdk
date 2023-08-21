@@ -13,7 +13,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const Routes: FC = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        contentStyle: {
+          backgroundColor: 'transparent',
+        },
+      }}
+    >
       <Stack.Screen
         name="Main"
         component={MainContainer}
