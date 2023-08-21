@@ -1,37 +1,24 @@
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import React from 'react';
-import { StyleSheet, View, Button } from 'react-native';
-import {
-  LucraClient,
-  LucraEnvironment,
-  LucraFlow,
-  LucraClientContext,
-} from '@lucra-sports/lucra-react-native-sdk';
+import { Button, StyleSheet, View } from 'react-native';
+
+LucraSDK.init('BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T', LucraSDK.ENVIRONMENT.STAGING);
 
 export default function App() {
   return (
-    <LucraClient
-      authenticationClientID="BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T"
-      environment={LucraEnvironment.Staging}
-    >
-      <View style={styles.container}>
-        <LucraClientContext.Consumer>
-          {(context) => (
-            <View>
-              <Button
-                title="Show Profile"
-                onPress={() => context.present(LucraFlow.Profile)}
-              />
-              <Button
-                title="Show Add Funds"
-                onPress={() => context.present(LucraFlow.AddFunds)}
-              />
-            </View>
-          )}
-        </LucraClientContext.Consumer>
-      </View>
-    </LucraClient>
+    <View style={styles.container}>
+      <Button
+        title="Show Profile"
+        onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
+      />
+      <Button
+        title="Show Add Funds"
+        onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
+      />
+    </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
