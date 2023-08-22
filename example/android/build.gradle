@@ -26,8 +26,18 @@ buildscript {
         name = "LucraGithubPackages"
         url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android")
         credentials {
-          username = project.property('gpr.user')
-          password = project.property('gpr.key')
+          String gprUser = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
+          String gprKey = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
+
+          if (!gprUser) {
+            throw new GradleException("GPR_USER not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+          }
+          if (!gprKey) {
+            throw new GradleException("GPR_KEY not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+          }
+
+          username = gprUser
+          password = gprKey
         }
       }
       maven {
