@@ -88,17 +88,21 @@ repositories {
   maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
   mavenCentral()
   google()
-  //TODO: Only needed to reference local maven repo for the Lucra SDKs. Once we have them published to remote, we can remove it.
   maven {
-    url uri('lucra_android_sdk_maven')
+    name = "LucraGithubPackages"
+    url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android")
+    credentials {
+      username = project.property('gpr.user')
+      password = project.property('gpr.key')
+    }
   }
 }
 
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation("com.lucrasports:sdk-core:1.0.0-alpha")
-  implementation("com.lucrasports:sdk-ui:1.0.0-alpha")
+  implementation("com.lucrasports:sdk-core:$lucraAndroidSdkVersion")
+  implementation("com.lucrasports:sdk-ui:$lucraAndroidSdkVersion")
 
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
