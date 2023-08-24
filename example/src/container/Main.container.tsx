@@ -34,7 +34,9 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           className="bg-darkPurple p-4 rounded-b-xl border-t border-lightPurple"
-          disabled
+          onPress={() => {
+            navigation.navigate('APIFlow');
+          }}
         >
           <Text className="text-white">API Calls Example</Text>
         </TouchableOpacity>

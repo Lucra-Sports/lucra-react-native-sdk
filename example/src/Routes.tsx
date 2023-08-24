@@ -3,10 +3,12 @@ import type { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MainContainer } from './container/Main.container';
 import { UIFlowContainer } from './container/UIFlow.container';
+import { ApiContainer } from './container/Api.container';
 
 export type RootStackParamList = {
   Main: undefined;
   UIFlow: undefined;
+  APIFlow: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -30,6 +32,13 @@ export const Routes: FC = () => {
       <Stack.Screen
         name="UIFlow"
         component={UIFlowContainer}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="APIFlow"
+        component={ApiContainer}
         options={{
           headerShown: false,
         }}

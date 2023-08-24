@@ -17,7 +17,7 @@ class LucraClientModule(
   private var fullAppFlowDialogFragment: DialogFragment? = null
 
   @ReactMethod
-  fun createInstance(authenticationClientId: String, environment: String) {
+  fun initialize(authenticationClientId: String, environment: String) {
     LucraClient.initialize(
       application = reactContext.applicationContext as Application,
       lucraUiProvider = LucraUi(),
