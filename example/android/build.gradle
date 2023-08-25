@@ -23,8 +23,22 @@ buildscript {
   allprojects {
     repositories {
       maven {
-        // TODO this should point to the local maven repo of the sdk, or copy over the files to the local project
-        url uri('../../../android/lucra_android_sdk_maven')
+        name = "LucraGithubPackages"
+        url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android")
+        credentials {
+          String gprUser = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
+          String gprKey = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
+
+          if (!gprUser) {
+            throw new GradleException("GPR_USER not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+          }
+          if (!gprKey) {
+            throw new GradleException("GPR_KEY not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+          }
+
+          username = gprUser
+          password = gprKey
+        }
       }
       maven {
         url "https://zendesk.jfrog.io/zendesk/repo"
