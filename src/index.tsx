@@ -21,6 +21,7 @@ export const LucraSDK = {
     if (Platform.OS === 'ios') {
       // TODO: third param 'urlScheme' might be eventually retired from the iOS SDK
       LucraClient.initialize(authenticationClientID, environment, '');
+      console.warn('LucraSDK initialized');
     } else {
       LucraClient.initialize(authenticationClientID, environment);
     }
@@ -29,10 +30,29 @@ export const LucraSDK = {
     LucraClient.present(flow);
   },
   // API calls
-  createGamesMatchup: (gameId: string, wagerAmount: number): Promise<null> => {
+  createGamesMatchup: (
+    gameTypeId: string,
+    wagerAmount: number
+  ): Promise<null> => {
     if (Platform.OS === 'ios') {
       console.warn('trying to create games matchup', LucraClient);
-      return LucraClient.createGamesMatchup(gameId, wagerAmount);
+      return LucraClient.createGamesMatchup(gameTypeId, wagerAmount);
+    } else {
+      // TODO
+      throw new Error('Not implemented on Android');
+    }
+  },
+  acceptGamesMatchup: (
+    matchupId: string,
+    teamId: string
+  ): Promise<{
+    matchupId: string;
+    ownerTeamId: string;
+    opponentTeamId: string;
+  }> => {
+    if (Platform.OS === 'ios') {
+      console.warn('trying to create games matchup', LucraClient);
+      return LucraClient.acceptGamesMatchup(matchupId, teamId);
     } else {
       // TODO
       throw new Error('Not implemented on Android');

@@ -36,9 +36,13 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
           onPress={() => {
-            LucraSDK.createGamesMatchup('DARTS', 0.5).catch((e) => {
-              console.warn('Could not create game match up', e);
-            });
+            LucraSDK.createGamesMatchup('DARTS', 0.5)
+              .then((res) => {
+                console.warn('Created game match up', res);
+              })
+              .catch((e) => {
+                console.warn('Could not create game match up', e);
+              });
           }}
         >
           <Text className="font-bold text-white">Start Matchup</Text>
@@ -54,7 +58,7 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
             );
           }}
         >
-          <Text className="font-bold text-white">Start Matchup</Text>
+          <Text className="font-bold text-white">Accept match up</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

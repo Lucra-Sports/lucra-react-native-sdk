@@ -59,8 +59,8 @@ class LucraClient: NSObject {
                                   rejecter: @escaping RCTPromiseRejectBlock) {
         Task { @MainActor in
             do {
-                try await self.nativeClient.api.createGamesMatchup(gameId: gameId, atStake: wagerAmount.decimalValue)
-                resolver(nil)
+                let result = try await self.nativeClient.api.createGamesMatchup(gameTypeId: gameId, atStake: wagerAmount.decimalValue)
+                resolver(result)
             } catch {
                 rejecter("Lucra SDK Error - createGamesMatchupError", "\(error)", nil)
             }
@@ -68,12 +68,26 @@ class LucraClient: NSObject {
         
     }
     
+    @objc func acceptGamesMatchup(_ matchupId: String,
+                                  teamId: String,
+                                  resolver: @escaping RCTPromiseResolveBlock,
+                                  rejecter: @escaping RCTPromiseRejectBlock) {
+        Task { @MainActor in
+            do {
+                try await self.nativeClient.api.acceptGamesMatchup(matchupId: matchupId, teamId: teamId)
+                resolver(nil)
+            } catch {
+                rejecter("Lucra SDK Error - acceptMatchupError", "\(error)", nil)
+            }
+        }
+    }
+    
     @objc func cancelGamesMatchup(_ gameId: String,
                                   resolver: @escaping RCTPromiseResolveBlock,
                                   rejecter: @escaping RCTPromiseRejectBlock) {
         Task { @MainActor in
             do {
-                try await self.nativeClient.api.cancelGamesMatchup(id: gameId as String)
+                try await self.nativeClient.api.cancelGamesMatchup(matchupId: gameId as String)
                 resolver(nil)
             } catch {
                 rejecter("Lucra SDK Error - cancelGamesMatchupError", "\(error)", nil)
