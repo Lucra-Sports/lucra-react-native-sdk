@@ -25,10 +25,10 @@ PODS:
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
   - lucra-react-native-sdk (0.1.8):
-    - LucraSDK (~> 0.0.2)
+    - LucraSDK (~> 0.2.1)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - LucraSDK (0.0.2):
+  - LucraSDK (0.2.1):
     - Alamofire
     - Auth0
     - Iterable-iOS-SDK
@@ -41,8 +41,8 @@ PODS:
   - NukeUI (0.8.0):
     - Gifu (~> 3.0)
     - Nuke (~> 10.5)
-  - PulseCore (4.0.1)
-  - PulseUI (4.0.1):
+  - PulseCore (4.0.3)
+  - PulseUI (4.0.3):
     - PulseCore (~> 4.0)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -659,12 +659,12 @@ SPEC CHECKSUMS:
   Iterable-iOS-SDK: 8d871b81d5a696b5a3a5173d72d08a96fc5ea98d
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: 552d83f158176401772f0e93a4ede7dc9bd87def
-  LucraSDK: 19e26553c9c045eee852ddaad8d2886f22e4dc8c
+  lucra-react-native-sdk: b2ddec159cccceb4619e927d58a77c5e82944ca1
+  LucraSDK: 7dd6dcc5e09997909e29e54693d2315e2fd30b78
   Nuke: 279f17a599fd1c83cf51de5e0e1f2db143a287b0
   NukeUI: 6e99837a8d066c93baa4262692d9ea9ffbc863ba
-  PulseCore: 8dff6cd6355250c02581520dfd7cae5dd9c3dd14
-  PulseUI: f3ffa0c1c89ab03a214d5decc23026cd6858e883
+  PulseCore: fe047fb6d905591771cf43406f7afae6941e5c42
+  PulseUI: 99cc702dd94cddb2af8e0cfbcc1dec1012fda984
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: a2faf4bad4e438ca37b2040cb8f7799baa065c18
   RCTTypeSafety: cb09f3e4747b6d18331a15eb05271de7441ca0b3

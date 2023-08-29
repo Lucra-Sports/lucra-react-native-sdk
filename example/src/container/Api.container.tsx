@@ -37,7 +37,7 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
           onPress={() => {
             LucraSDK.createGamesMatchup('DARTS', 0.5).catch((e) => {
-              console.warn('Could not create game match up', e)
+              console.warn('Could not create game match up', e);
             });
           }}
         >
@@ -47,14 +47,26 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
           onPress={() => {
-            LucraSDK.cancelGamesMatchup('DARTS').catch((e) => {
-              console.warn('Could not cancel game match up', e)
+            LucraSDK.acceptGamesMatchup('INSERT_ID_HERE', 'TEAM_ID').catch(
+              (e) => {
+                console.warn('Could not accept game match up', e);
+              }
+            );
+          }}
+        >
+          <Text className="font-bold text-white">Start Matchup</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          onPress={() => {
+            LucraSDK.cancelGamesMatchup('INSERT_ID_HERE').catch((e) => {
+              console.warn('Could not cancel game match up', e);
             });
           }}
         >
           <Text className="font-bold text-white">Cancel Matchup</Text>
         </TouchableOpacity>
-
       </View>
     </SafeAreaView>
   );
