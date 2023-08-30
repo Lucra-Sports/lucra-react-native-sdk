@@ -33,13 +33,7 @@ export const LucraSDK = {
     gameTypeId: string,
     wagerAmount: number
   ): Promise<null> => {
-    if (Platform.OS === 'ios') {
-      console.warn('trying to create games matchup', LucraClient);
-      return LucraClient.createGamesMatchup(gameTypeId, wagerAmount);
-    } else {
-      // TODO
-      throw new Error('Not implemented on Android');
-    }
+    return LucraClient.createGamesMatchup(gameTypeId, wagerAmount);
   },
   acceptGamesMatchup: (
     matchupId: string,
@@ -49,20 +43,9 @@ export const LucraSDK = {
     ownerTeamId: string;
     opponentTeamId: string;
   }> => {
-    if (Platform.OS === 'ios') {
-      console.warn('trying to create games matchup', LucraClient);
-      return LucraClient.acceptGamesMatchup(matchupId, teamId);
-    } else {
-      // TODO
-      throw new Error('Not implemented on Android');
-    }
+    return LucraClient.acceptGamesMatchup(matchupId, teamId);
   },
   cancelGamesMatchup: (gameId: string): Promise<null> => {
-    if (Platform.OS === 'ios') {
-      return LucraClient.cancelGamesMatchup(gameId);
-    } else {
-      // TODO
-      throw new Error('Not implemented on Android');
-    }
+    return LucraClient.cancelGamesMatchup(gameId);
   },
 };

@@ -80,6 +80,11 @@ android {
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
     versionName "1.0"
+
+    manifestPlaceholders = [
+        'auth0Domain': 'LUCRA_SDK',
+        'auth0Scheme': 'LUCRA_SDK'
+    ]
   }
   signingConfigs {
     debug {
