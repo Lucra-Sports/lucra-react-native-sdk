@@ -62,7 +62,68 @@ pod repo add LucraSDK https://github.com/Lucra-Sports/lucra-ios-sdk
 
 ### Android
 
-// TODO:
+Lucra Android Native SDK artifacts are privately hosted on https://github.com/Lucra-Sports/lucra-android.
+
+You will need a private access token (PAT) to pull these packages at build time.
+
+### With GitHub Personal Access token (skip this if you've already created one for iOS above)
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+
+Select "Classic" with the `packages:read` permissions and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token
+
+### Place credentials on local machine and build server
+
+Once a PAT is obtained, you will need to store them on your machine for building locally and in your system environment for build pipelines. The SDK will look for the `gradle.properties` first then fallback on the `System.env` property. 
+
+### Set PAT for local Android development
+
+Place the following lines either on your machine's (Linux/Mac) `~ .gradle/gradle.properties` file (create one if it doesn't exist), or in your Android project's `gradle.properties` file. If you use your Android project's `gradle.properties` file, be sure to not check this into your repo.
+
+```gradle
+GPR_USER=YOUR_USERNAME
+GPR_KEY=YOUR_PAT
+```
+
+### Set PAT for Android CI/CD pipelines
+
+In order to build the project on your pipelines, the system env variables should be set.
+
+```yml
+  build-android:
+    runs-on: ubuntu-latest
+    env:
+      #fetch from GitHub secrets or similar, don't check PATs into the build code
+      GPR_USER: YOUR_USERNAME 
+      GPR_KEY: YOUR_PAT
+      # ...
+```
+
+Both approaches work for local and build servers, but `~ .gradle/gradle.properties` for local development and `env:` for build pipelines are the best ways to keep your PATs safe. 
+
+### Provide GPR Access with GPR credentials
+
+After GPR_USER and GPR_KEY are correctly fetched at build time, you'll then need to provide repository access for gradle to resolve the private artifacts at build time.
+
+In your root Android project's `build.gradle`
+
+```gradle
+
+  allprojects {
+    repositories {
+      maven {
+        name = "LucraGithubPackages"
+        url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android")
+        credentials {
+          username = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
+          password = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
+        }
+      }
+      maven {
+        url "https://zendesk.jfrog.io/zendesk/repo"
+      }
+    }
+  }
+```
 
 ## Usage
 
