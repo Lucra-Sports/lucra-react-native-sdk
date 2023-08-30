@@ -23,8 +23,12 @@ buildscript {
   allprojects {
     repositories {
       maven {
-        // TODO this should point to the local maven repo of the sdk, or copy over the files to the local project
-        url uri('../../../android/lucra_android_sdk_maven')
+        name = "LucraGithubPackages"
+        url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android")
+        credentials {
+          username = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
+          password = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
+        }
       }
       maven {
         url "https://zendesk.jfrog.io/zendesk/repo"
