@@ -20,12 +20,32 @@ export const LucraSDK = {
   init: (authenticationClientID: string, environment: string) => {
     if (Platform.OS === 'ios') {
       // TODO: third param 'urlScheme' might be eventually retired from the iOS SDK
-      LucraClient.createInstance(authenticationClientID, environment, '');
+      LucraClient.initialize(authenticationClientID, environment, '');
     } else {
-      LucraClient.createInstance(authenticationClientID, environment);
+      LucraClient.initialize(authenticationClientID, environment);
     }
   },
   present: (flow: string) => {
     LucraClient.present(flow);
+  },
+  // API calls
+  createGamesMatchup: (
+    gameTypeId: string,
+    wagerAmount: number
+  ): Promise<null> => {
+    return LucraClient.createGamesMatchup(gameTypeId, wagerAmount);
+  },
+  acceptGamesMatchup: (
+    matchupId: string,
+    teamId: string
+  ): Promise<{
+    matchupId: string;
+    ownerTeamId: string;
+    opponentTeamId: string;
+  }> => {
+    return LucraClient.acceptGamesMatchup(matchupId, teamId);
+  },
+  cancelGamesMatchup: (gameId: string): Promise<null> => {
+    return LucraClient.cancelGamesMatchup(gameId);
   },
 };

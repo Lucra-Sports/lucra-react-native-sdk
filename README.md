@@ -67,13 +67,14 @@ Lucra Android Native SDK artifacts are privately hosted on https://github.com/Lu
 You will need a private access token (PAT) to pull these packages at build time.
 
 ### With GitHub Personal Access token (skip this if you've already created one for iOS above)
+
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
 Select "Classic" with the `packages:read` permissions and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token
 
 ### Place credentials on local machine and build server
 
-Once a PAT is obtained, you will need to store them on your machine for building locally and in your system environment for build pipelines. The SDK will look for the `gradle.properties` first then fallback on the `System.env` property. 
+Once a PAT is obtained, you will need to store them on your machine for building locally and in your system environment for build pipelines. The SDK will look for the `gradle.properties` first then fallback on the `System.env` property.
 
 ### Set PAT for local Android development
 
@@ -84,21 +85,48 @@ GPR_USER=YOUR_USERNAME
 GPR_KEY=YOUR_PAT
 ```
 
+# Auth0 compliance (if not already using Auth0)
+
+We use Auth0 for auth, if your app doesn't use it already, add the following to your app's default config.
+
+Gradle.kts
+
+```
+android{
+    defaultConfig {
+        addManifestPlaceholders(mapOf("auth0Domain" to "LUCRA_SDK", "auth0Scheme" to "LUCRA_SDK"))
+    }
+}
+```
+
+Groovy
+
+```
+android {
+  defaultConfig {
+    manifestPlaceholders = [
+      'auth0Domain': 'LUCRA_SDK',
+      'auth0Scheme': 'LUCRA_SDK'
+    ]
+  }
+}
+```
+
 ### Set PAT for Android CI/CD pipelines
 
 In order to build the project on your pipelines, the system env variables should be set.
 
 ```yml
-  build-android:
-    runs-on: ubuntu-latest
-    env:
-      #fetch from GitHub secrets or similar, don't check PATs into the build code
-      GPR_USER: YOUR_USERNAME 
-      GPR_KEY: YOUR_PAT
-      # ...
+build-android:
+  runs-on: ubuntu-latest
+  env:
+    #fetch from GitHub secrets or similar, don't check PATs into the build code
+    GPR_USER: YOUR_USERNAME
+    GPR_KEY: YOUR_PAT
+    # ...
 ```
 
-Both approaches work for local and build servers, but `~ .gradle/gradle.properties` for local development and `env:` for build pipelines are the best ways to keep your PATs safe. 
+Both approaches work for local and build servers, but `~ .gradle/gradle.properties` for local development and `env:` for build pipelines are the best ways to keep your PATs safe.
 
 ### Provide GPR Access with GPR credentials
 
