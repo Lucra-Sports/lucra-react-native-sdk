@@ -21,7 +21,6 @@ export const LucraSDK = {
     if (Platform.OS === 'ios') {
       // TODO: third param 'urlScheme' might be eventually retired from the iOS SDK
       LucraClient.initialize(authenticationClientID, environment, '');
-      console.warn('LucraSDK initialized');
     } else {
       LucraClient.initialize(authenticationClientID, environment);
     }
