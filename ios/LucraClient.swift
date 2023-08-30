@@ -60,7 +60,12 @@ class LucraClient: NSObject {
         Task { @MainActor in
             do {
                 let result = try await self.nativeClient.api.createGamesMatchup(gameTypeId: gameId, atStake: wagerAmount.decimalValue)
-                resolver(result)
+                
+                resolver([
+                    "matchupId": result.matchupId,
+                    "ownerTeamId": result.ownerTeamId,
+                    "oponnentTeamId": result.opponentTeamId
+                ])
             } catch {
                 rejecter("Lucra SDK Error - createGamesMatchupError", "\(error)", nil)
             }
