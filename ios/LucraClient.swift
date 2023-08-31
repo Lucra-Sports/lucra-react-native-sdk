@@ -8,7 +8,8 @@ class LucraClient: NSObject {
     private var nativeClient: LucraSDK.LucraClient!
 
     func config(authenticationClientID: String, environment: String, urlScheme: String) {
-
+        guard nativeClient == nil else { return }
+        
         let nativeEnvironment: LucraSDK.LucraEnvironment = {
             switch environment {
             case "develop":

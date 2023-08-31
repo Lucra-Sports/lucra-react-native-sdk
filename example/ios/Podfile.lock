@@ -28,7 +28,7 @@ PODS:
     - LucraSDK (~> 0.2.1)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - LucraSDK (0.2.1):
+  - LucraSDK (0.2.2):
     - Alamofire
     - Auth0
     - Iterable-iOS-SDK
@@ -660,7 +660,7 @@ SPEC CHECKSUMS:
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   lucra-react-native-sdk: b2ddec159cccceb4619e927d58a77c5e82944ca1
-  LucraSDK: 7dd6dcc5e09997909e29e54693d2315e2fd30b78
+  LucraSDK: 5966f229aa90486a141ee499eebf8b766411c5a5
   Nuke: 279f17a599fd1c83cf51de5e0e1f2db143a287b0
   NukeUI: 6e99837a8d066c93baa4262692d9ea9ffbc863ba
   PulseCore: fe047fb6d905591771cf43406f7afae6941e5c42
@@ -674,14 +674,14 @@ SPEC CHECKSUMS:
   React-Core: aaacca67f9ca54f142827e67f44bfbd815875eb6
   React-CoreModules: 32fab1d62416849a3b6dac6feff9d54e5ddc2d1e
   React-cxxreact: 37765b4975541105b2a3322a4b473417c158c869
-  React-debug: 31c1b3429e399b8175889c26737b2edafb04cbbd
+  React-debug: 2f5c6afc5bb571ff98f9a7f232b39ce8f8f6c11a
   React-hermes: 935ae71fb3d7654e947beba8498835cd5e479707
   React-jsi: ec628dc7a15ffea969f237b0ea6d2fde212b19dd
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
   react-native-safe-area-context: 9697629f7b2cda43cf52169bb7e0767d330648c2
-  React-NativeModulesApple: fd78ac6315bb648f1e296e4a0adde907ea77011d
+  React-NativeModulesApple: cba444f99cced0f48d97a3288fe54dfb80114038
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
   React-RCTAnimation: fe7005136b58f58871cab2f70732343b6e330d30
@@ -695,9 +695,9 @@ SPEC CHECKSUMS:
   React-RCTVibration: ea3a68a49873a54ced927c90923fc6932baf344a
   React-rncore: 9672a017af4a7da7495d911f0b690cbcae9dd18d
   React-runtimeexecutor: 369ae9bb3f83b65201c0c8f7d50b72280b5a1dbc
-  React-runtimescheduler: 4089217871b3b4b720bda9d8b87652706d4cff27
-  React-utils: 717ff5dcb3369b417ac542aee2c19011adeff1e7
-  ReactCommon: b2be75a1b39b2282adcb43c344b67015113b87c1
+  React-runtimescheduler: 44a0ef2e76b7ce155088644786af4ba7945b264b
+  React-utils: d709c5088cf82f93d9cad92dfdeefac3af2feca1
+  ReactCommon: cf0103f91bdc31483ce5e7310af542fe282258a2
   Resolver: 68984624572763018fd8ec7b8e3e8df0e3b6bba5
   RNScreens: b21dc57dfa2b710c30ec600786a3fc223b1b92e7
   RNVectorIcons: 8b5bb0fa61d54cd2020af4f24a51841ce365c7e9
