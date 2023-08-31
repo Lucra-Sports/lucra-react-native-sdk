@@ -35,7 +35,7 @@ export const UIFlowContainer: FC<Props> = ({ navigation }) => {
           <View style={Styles.spacer} />
           <TouchableOpacity
             className="rounded-full bg-darkPurple px-4 h-8 flex-row items-center justify-center g-2"
-            onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
+            onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
           >
             <Image source={Assets.BoltIcon} className="h-4 w-4" />
             <Text style={Styles.fundText}>0,00$</Text>
@@ -52,7 +52,10 @@ export const UIFlowContainer: FC<Props> = ({ navigation }) => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg">
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
+        >
           <Text className="font-bold text-white">Add Funds</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg">
