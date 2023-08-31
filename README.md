@@ -60,6 +60,19 @@ Run the following command to add the native SDK dependency locally that you adde
 pod repo add LucraSDK https://github.com/Lucra-Sports/lucra-ios-sdk
 ```
 
+The following keys will need to be set in Info.plist or the binary may be rejected and the app may crash:
+
+NSBluetoothAlwaysUsageDescription
+NSBluetoothPeripheralUsageDescription
+NSFaceIDUsageDescription
+NSLocalNetworkUsageDescription
+NSLocationAlwaysAndWhenInUseUsageDescription
+NSLocationAlwaysUsageDescription
+NSLocationWhenInUseUsageDescription
+NSMotionUsageDescription
+NSCameraUsageDescription
+NSPhotoLibraryUsageDescription
+
 ### Android
 
 Lucra Android Native SDK artifacts are privately hosted on https://github.com/Lucra-Sports/lucra-android.
@@ -163,7 +176,11 @@ import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
 LucraSDK.init('BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T', LucraSDK.ENVIRONMENT.STAGING);
+```
 
+To utilize the UI layer use the `.present` function and pass in the flow you want to show:
+
+```ts
 export default function App() {
   return (
     <View style={styles.container}>
@@ -174,6 +191,29 @@ export default function App() {
       <Button
         title="Show Add Funds"
         onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
+      />
+    </View>
+  );
+}
+```
+
+To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the APIIntegration.pdf document in this repo for more information:
+
+```ts
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Button
+        title="Create Matchup"
+        onPress={() => {
+            LucraSDK.createGamesMatchup('DARTS', 1.0)
+              .then((res) => {
+                // Store matchup info to use in later api calls
+              })
+              .catch((e) => {
+                // Handle error and present appropriate Lucra flow if needed
+              });
+          }}
       />
     </View>
   );
