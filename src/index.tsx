@@ -39,10 +39,7 @@ export const LucraSDK = {
   }> => {
     return LucraClient.createGamesMatchup(gameTypeId, wagerAmount);
   },
-  acceptGamesMatchup: (
-    matchupId: string,
-    teamId: string
-  ): Promise<null> => {
+  acceptGamesMatchup: (matchupId: string, teamId: string): Promise<null> => {
     return LucraClient.acceptGamesMatchup(matchupId, teamId);
   },
   cancelGamesMatchup: (gameId: string): Promise<null> => {

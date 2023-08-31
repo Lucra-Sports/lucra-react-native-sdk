@@ -15,7 +15,7 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'APIFlow'>;
 
-let currentMatchupId: string
+let currentMatchupId: string;
 
 export const ApiContainer: FC<Props> = ({ navigation }) => {
   return (
@@ -40,7 +40,7 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
           onPress={() => {
             LucraSDK.createGamesMatchup('DARTS', 1.0)
               .then((res) => {
-                currentMatchupId = res.matchupId
+                currentMatchupId = res.matchupId;
                 console.warn('Created game match up', res);
               })
               .catch((e) => {
@@ -73,7 +73,7 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
               })
               .catch((e) => {
                 console.warn('Could not cancel game match up', e);
-             });
+              });
           }}
         >
           <Text className="font-bold text-white">Cancel Matchup</Text>
