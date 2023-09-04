@@ -1,6 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <uses-permission android:name="android.webkit.PermissionRequest" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
       android:name=".MainApplication"
@@ -21,5 +35,20 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+      <!--    Geocomply requirements-->
+      <receiver android:name="com.geocomply.client.GeoComplyClientBootBroadcastReceiver"
+          android:enabled="true" android:exported="true">
+          <intent-filter>
+              <action android:name="android.intent.action.BOOT_COMPLETED" />
+              <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+          </intent-filter>
+      </receiver>
+
+      <service android:name="com.geocomply.location.WarmingUpLocationProvidersService"
+          android:exported="false" />
+      <service android:name="com.geocomply.security.GCIsolatedSecurityService"
+          android:exported="false" android:isolatedProcess="true" tools:targetApi="q" />
+
+      <receiver android:name="com.geocomply.client.GeoComplyClientBroadcastReceiver" />
     </application>
 </manifest>
