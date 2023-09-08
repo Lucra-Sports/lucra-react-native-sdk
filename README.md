@@ -98,33 +98,6 @@ GPR_USER=YOUR_USERNAME
 GPR_KEY=YOUR_PAT
 ```
 
-# Auth0 compliance (if not already using Auth0)
-
-We use Auth0 for auth, if your app doesn't use it already, add the following to your app's default config.
-
-Gradle.kts
-
-```
-android{
-    defaultConfig {
-        addManifestPlaceholders(mapOf("auth0Domain" to "LUCRA_SDK", "auth0Scheme" to "LUCRA_SDK"))
-    }
-}
-```
-
-Groovy
-
-```
-android {
-  defaultConfig {
-    manifestPlaceholders = [
-      'auth0Domain': 'LUCRA_SDK',
-      'auth0Scheme': 'LUCRA_SDK'
-    ]
-  }
-}
-```
-
 ### Set PAT for Android CI/CD pipelines
 
 In order to build the project on your pipelines, the system env variables should be set.
@@ -164,6 +137,33 @@ In your root Android project's `build.gradle`
       }
     }
   }
+```
+
+# Android Auth0 compliance (if not already using Auth0)
+
+We use Auth0 for auth, if your app doesn't use it already, add the following to your app's default config.
+
+Gradle.kts
+
+```
+android{
+    defaultConfig {
+        addManifestPlaceholders(mapOf("auth0Domain" to "LUCRA_SDK", "auth0Scheme" to "LUCRA_SDK"))
+    }
+}
+```
+
+Groovy
+
+```
+android {
+  defaultConfig {
+    manifestPlaceholders = [
+      'auth0Domain': 'LUCRA_SDK',
+      'auth0Scheme': 'LUCRA_SDK'
+    ]
+  }
+}
 ```
 
 ## Usage
