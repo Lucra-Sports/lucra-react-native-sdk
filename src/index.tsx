@@ -8,6 +8,24 @@ if (LucraClient == null) {
   );
 }
 
+type LucraSDKParams = {
+  authenticationClientID: string;
+  environment: string;
+  theme?: {
+    background?: string;
+    surface?: string;
+    primary?: string;
+    secondary?: string;
+    tertiary?: string;
+    onBackground?: string;
+    onSurface?: string;
+    onPrimary?: string;
+    onSecondary?: string;
+    onTertiary?: string;
+    fontFamilyName?: string;
+  };
+};
+
 export const LucraSDK = {
   ENVIRONMENT: {
     PRODUCTION: 'production',
@@ -17,12 +35,12 @@ export const LucraSDK = {
     PROFILE: 'profile',
     ADD_FUNDS: 'addFunds',
   },
-  init: (authenticationClientID: string, environment: string) => {
+  init: (options: LucraSDKParams) => {
     if (Platform.OS === 'ios') {
       // TODO: third param 'urlScheme' might be eventually retired from the iOS SDK
-      LucraClient.initialize(authenticationClientID, environment, '');
+      LucraClient.initialize(options);
     } else {
-      LucraClient.initialize(authenticationClientID, environment);
+      LucraClient.initialize(options);
     }
   },
   present: (flow: string) => {

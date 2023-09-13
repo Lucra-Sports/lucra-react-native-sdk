@@ -8,10 +8,12 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.ui.LucraUi
+import java.lang.Exception
 
 
 class LucraClientModule(
@@ -21,7 +23,14 @@ class LucraClientModule(
   private var fullAppFlowDialogFragment: DialogFragment? = null
 
   @ReactMethod
-  fun initialize(authenticationClientId: String, environment: String) {
+  fun initialize(options: ReadableMap) {
+    var authenticationClientId = options.getString("authenticationClientId")
+      ?: throw Exception("LucraSDK no authentication ID passed to constructor")
+
+    var environment = options.getString("environment")
+
+    var theme = options.getMap("theme")
+
     LucraClient.initialize(
       application = reactContext.applicationContext as Application,
       lucraUiProvider = LucraUi(),
@@ -62,8 +71,12 @@ class LucraClientModule(
   @ReactMethod
   fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
     LucraClient().createContest(gameTypeId, atStake) {
-      when(it) {
-        is GamesMatchup.CreateGamesMatchupResult.Failure -> promise.reject("Lucra SDK Error - createGamesMatchup Error", it.failure.toString())
+      when (it) {
+        is GamesMatchup.CreateGamesMatchupResult.Failure -> promise.reject(
+          "Lucra SDK Error - createGamesMatchup Error",
+          it.failure.toString()
+        )
+
         is GamesMatchup.CreateGamesMatchupResult.GYPCreatedMatchupOutput -> {
           val map = Arguments.createMap()
 
@@ -80,8 +93,12 @@ class LucraClientModule(
   @ReactMethod
   fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
     LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
-      when(it) {
-        is GamesMatchup.MatchupActionResult.Failure -> promise.reject("Lucra SDK Error - acceptGamesMatchup Error", it.failure.toString())
+      when (it) {
+        is GamesMatchup.MatchupActionResult.Failure -> promise.reject(
+          "Lucra SDK Error - acceptGamesMatchup Error",
+          it.failure.toString()
+        )
+
         GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
       }
     }
@@ -90,8 +107,12 @@ class LucraClientModule(
   @ReactMethod
   fun cancelGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().cancelGamesYouPlayContest(matchupId) {
-      when(it) {
-        is GamesMatchup.MatchupActionResult.Failure -> promise.reject("Lucra SDK Error - cancelGamesMatchup Error", it.failure.toString())
+      when (it) {
+        is GamesMatchup.MatchupActionResult.Failure -> promise.reject(
+          "Lucra SDK Error - cancelGamesMatchup Error",
+          it.failure.toString()
+        )
+
         GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
       }
     }
