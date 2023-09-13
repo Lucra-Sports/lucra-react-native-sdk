@@ -6,8 +6,26 @@ import { StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 LucraSDK.init({
-  authenticationClientID: 'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
+  authenticationClientId: 'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
   environment: LucraSDK.ENVIRONMENT.STAGING,
+  theme: {
+    background: '#6360EB',
+    surface: '#001448',
+    primary: '#FFFFFF',
+    secondary: '#FFFFFF',
+    tertiary: '#FFFFFF',
+    onBackground: '#FFFFFF',
+    onSurface: '#FFFFFF',
+    onPrimary: '#FFFFFF',
+    onSecondary: '#FFFFFF',
+    onTertiary: '#FFFFFF',
+    fontFamily: {
+      normal: 'Inter-Regular',
+      bold: 'Inter-Bold',
+      semibold: 'Inter-SemiBold',
+      medium: 'Inter-Medium',
+    },
+  },
 });
 
 export default function App() {
