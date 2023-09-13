@@ -175,7 +175,7 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
-let options = {
+let lucraSDKOptions = {
   authenticationClientID: 'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
   environment: LucraSDK.ENVIRONMENT.STAGING,
   // You can also pass a theme to customize the Lucra UI
@@ -194,7 +194,7 @@ let options = {
   // }
 };
 
-LucraSDK.init(options);
+LucraSDK.init(lucraSDKOptions);
 ```
 
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
