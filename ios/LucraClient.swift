@@ -7,8 +7,17 @@ class LucraClient: NSObject {
 
     private var nativeClient: LucraSDK.LucraClient!
 
-    func config(authenticationClientID: String, environment: String, urlScheme: String) {
+    @objc func initialize(_ options: Dictionary<String, Any>,
+                          resolver: @escaping RCTPromiseResolveBlock,
+                          rejecter: @escaping RCTPromiseRejectBlock) {
         guard nativeClient == nil else { return }
+        
+        guard let authenticationClientID = options["authenticationClientId"] as? String else {
+            rejecter("Lucra SDK Error", "no clientAuthenticationId passed to LucraSDK constructor", nil)
+            return
+        }
+        
+        let environment = options["environment"] as? String ?? "develop"
         
         let nativeEnvironment: LucraSDK.LucraEnvironment = {
             switch environment {
@@ -26,13 +35,7 @@ class LucraClient: NSObject {
         self.nativeClient = LucraSDK.LucraClient(
             config: .init(environment: .init(authenticationClientID: authenticationClientID,
                                              environment: nativeEnvironment,
-                                             urlScheme: urlScheme)))
-    }
-
-    @objc func initialize(_ authenticationClientID: String, environment: String, urlScheme: String) {
-        config(authenticationClientID: authenticationClientID,
-                      environment: environment,
-                      urlScheme: urlScheme)
+                                             urlScheme: "")))
     }
 
     @objc func present(_ lucraFlow: String) -> Void {
