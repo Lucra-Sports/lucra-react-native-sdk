@@ -283,17 +283,13 @@ Your can customize your Lucra implementation with your own color scheme and font
 
 The `ClientTheme` class has two nested classes, `ColorStyle` and `FontFamily`.
 
-`ColorStyle`
 
-Represents the 10 different colors your can provide to the SDK. Each field in this class is an hexadecimal string value.
+`ColorStyle` represents the 10 different colors your can provide to the SDK. Each field in this class is an hexadecimal string value.
 
 The colors used are `Primary`, `Secondary`, `Tertiary`, `Surface`, `Background`, `OnPrimary`, `OnSecondary`, `OnTertiary`, `OnSurface`, `OnBackground`
 
-`FontFamily`
 
-Represents a list of custom text styles you can apply to the SDK. Each text style is represented by a `Font` object.
-
-`Font`
+`FontFamily` represents a list of custom text styles you can apply to the SDK. Each text style is represented by a `Font` object.
 
 Each `Font` object requires you to specify the `fontName` and `weight`. 
 
