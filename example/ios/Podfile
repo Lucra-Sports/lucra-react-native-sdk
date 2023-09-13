@@ -1,6 +1,8 @@
 source 'git@github.com:Lucra-Sports/lucra-ios-sdk.git'
 source 'https://cdn.cocoapods.org/'
 
+dynamic_frameworks = ['LucraSDK']
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -53,6 +55,21 @@ target 'LucrasdkExample' do
   target 'LucrasdkExampleTests' do
     inherit! :complete
     # Pods for testing
+  end
+
+  # Make all the other frameworks into static frameworks by overriding the static_framework? function to return true
+  pre_install do |installer|
+    installer.pod_targets.each do |pod|
+      if !dynamic_frameworks.include?(pod.name)
+        puts "Overriding the static_framework? method for #{pod.name}"
+        def pod.static_framework?;
+          true
+        end
+        def pod.build_type;
+          Pod::BuildType.static_library
+        end
+      end
+    end
   end
 
   post_install do |installer|
