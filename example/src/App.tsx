@@ -5,7 +5,10 @@ import { Routes } from './Routes';
 import { StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-LucraSDK.init('BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T', LucraSDK.ENVIRONMENT.STAGING);
+LucraSDK.init({
+  authenticationClientID: 'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
+  environment: LucraSDK.ENVIRONMENT.STAGING,
+});
 
 export default function App() {
   return (
