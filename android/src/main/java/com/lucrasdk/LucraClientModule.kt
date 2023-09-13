@@ -13,6 +13,11 @@ import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.ui.LucraUi
+import com.lucrasports.sdk.core.style_guide.ClientTheme
+import com.lucrasports.sdk.core.style_guide.ColorStyle
+import com.lucrasports.sdk.core.style_guide.Font
+import com.lucrasports.sdk.core.style_guide.FontFamily
+import com.lucrasports.sdk.core.style_guide.FontWeight
 import java.lang.Exception
 
 
@@ -30,6 +35,51 @@ class LucraClientModule(
     var environment = options.getString("environment")
 
     var theme = options.getMap("theme")
+    var clientTheme = ClientTheme()
+    var fontFamily = FontFamily(emptyList())
+    if(theme != null) {
+      var colorStyle = ColorStyle(
+        theme.getString("background"),
+        theme.getString("surface"),
+        theme.getString("primary"),
+        theme.getString("secondary"),
+        theme.getString("tertiary"),
+        theme.getString("onBackground"),
+        theme.getString("onSurface"),
+        theme.getString("onPrimary"),
+        theme.getString("onSecondary"),
+        theme.getString("onTertiary"),
+      )
+
+      var fontFamilyObj = theme.getMap("fontFamily")
+      if(fontFamilyObj != null) {
+        val fontList = mutableListOf<Font>()
+
+        val boldFamily = fontFamilyObj.getString("bold")
+        if(boldFamily != null) {
+          fontList.add(Font(fontName = boldFamily, weight = FontWeight.Bold))
+        }
+
+        val semiboldFamily = fontFamilyObj.getString("semibold")
+        if(semiboldFamily != null) {
+          fontList.add(Font(fontName = semiboldFamily, weight = FontWeight.SemiBold))
+        }
+
+        val normalFamily = fontFamilyObj.getString("normal")
+        if(normalFamily != null) {
+          fontList.add(Font(fontName = normalFamily, weight = FontWeight.Normal))
+        }
+
+        val mediumFamily = fontFamilyObj.getString("medium")
+        if(mediumFamily != null) {
+          fontList.add(Font(fontName = mediumFamily, weight = FontWeight.Normal))
+        }
+
+        fontFamily = FontFamily(fontList)
+      }
+
+      clientTheme = ClientTheme(colorStyle, fontFamily)
+    }
 
     LucraClient.initialize(
       application = reactContext.applicationContext as Application,
@@ -40,6 +90,7 @@ class LucraClientModule(
         "staging" -> LucraClient.Companion.Environment.STAGING
         else -> LucraClient.Companion.Environment.PRODUCTION
       },
+      clientTheme = clientTheme,
       lucraClientListener = object : LucraClient.LucraClientListener {
         override fun onLucraExit() {
           fullAppFlowDialogFragment?.dismiss()

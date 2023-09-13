@@ -9,7 +9,7 @@ if (LucraClient == null) {
 }
 
 type LucraSDKParams = {
-  authenticationClientID: string;
+  authenticationClientId: string;
   environment: string;
   theme?: {
     background?: string;
@@ -22,7 +22,12 @@ type LucraSDKParams = {
     onPrimary?: string;
     onSecondary?: string;
     onTertiary?: string;
-    fontFamilyName?: string;
+    fontFamily?: {
+      bold?: string;
+      semibold?: string;
+      normal?: string;
+      medium?: string;
+    };
   };
 };
 
