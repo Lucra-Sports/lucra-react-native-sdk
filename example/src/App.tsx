@@ -2,7 +2,7 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { Routes } from './Routes';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 LucraSDK.init({
@@ -19,12 +19,15 @@ LucraSDK.init({
     onPrimary: '#FFFFFF',
     onSecondary: '#FFFFFF',
     onTertiary: '#FFFFFF',
-    fontFamily: {
-      normal: 'Inter-Regular',
-      bold: 'Inter-Bold',
-      semibold: 'Inter-SemiBold',
-      medium: 'Inter-Medium',
-    },
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Inter'
+        : {
+            normal: 'Inter-Regular',
+            bold: 'Inter-Bold',
+            semibold: 'Inter-SemiBold',
+            medium: 'Inter-Medium',
+          },
   },
 });
 

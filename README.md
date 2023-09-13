@@ -254,7 +254,13 @@ let lucraSDKOptions = {
   //   onPrimary?: string;
   //   onSecondary?: string;
   //   onTertiary?: string;
-  //   fontFamilyName?: string;
+  //   fontFamilyName?: | {
+  //     bold?: string;
+  //     semibold?: string;
+  //     normal?: string;
+  //     medium?: string;
+  //   } on Android you need to pass the font file name
+  // | string; on iOS fonts are referenced by canonical name only
   // }
 };
 

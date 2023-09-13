@@ -22,12 +22,14 @@ type LucraSDKParams = {
     onPrimary?: string;
     onSecondary?: string;
     onTertiary?: string;
-    fontFamily?: {
-      bold?: string;
-      semibold?: string;
-      normal?: string;
-      medium?: string;
-    };
+    fontFamily?:
+      | {
+          bold?: string;
+          semibold?: string;
+          normal?: string;
+          medium?: string;
+        }
+      | string;
   };
 };
 
