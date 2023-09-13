@@ -111,8 +111,8 @@ repositories {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation("com.lucrasports:sdk-core:1.0.1-alpha-SNAPSHOT-2023-08-29-1693314273")
-  implementation("com.lucrasports:sdk-ui:1.0.1-alpha-SNAPSHOT-2023-08-29-1693314273")
+  implementation("com.lucrasports:sdk-core:1.0.1-alpha-SNAPSHOT-2023-09-12-1694546724")
+  implementation("com.lucrasports:sdk-ui:1.0.1-alpha-SNAPSHOT-2023-09-12-1694546724")
 
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
