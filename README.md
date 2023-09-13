@@ -1,22 +1,22 @@
 # lucra-react-native-sdk
 
-## Pre-Installation
+# Pre-Installation
 
 You will need to specify our **private** native iOS dependency, hosted in GitHub packages, in your Podfile. There are two ways to install a private dependency:
 
-### With GitHub Personal Access token
+## With GitHub Personal Access token
 
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
 Select "Classic" with the `packages:read` permissions and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token
 
-### With SSH
+## With SSH
 
 You can skip this step if you have set up SSH for your GitHub account. In the next steps, you will see how to declare the dependency both ways.
 
-## Installation
+# Installation
 
-### NPM
+## NPM
 
 Install the package to your React Native Repo by running:
 
@@ -24,7 +24,7 @@ Install the package to your React Native Repo by running:
 yarn add @lucra-sports/lucra-react-native-sdk
 ```
 
-### iOS
+## iOS
 
 In your `ios` folder Podfile:
 
@@ -73,7 +73,7 @@ NSMotionUsageDescription
 NSCameraUsageDescription
 NSPhotoLibraryUsageDescription
 
-### Android
+## Android
 
 Lucra Android Native SDK artifacts are privately hosted on https://github.com/Lucra-Sports/lucra-android.
 
@@ -139,7 +139,7 @@ In your root Android project's `build.gradle`
   }
 ```
 
-# Android Auth0 compliance (if not already using Auth0)
+### Android Auth0 compliance (if not already using Auth0)
 
 We use Auth0 for auth, if your app doesn't use it already, add the following to your app's default config.
 
@@ -166,7 +166,71 @@ android {
 }
 ```
 
-## Usage
+### Manifest Requirements
+
+The following manifest permissions, features, receivers and services are required to use Lucra
+
+```xml
+
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" <!-- DO NOT SKIP! -->
+>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <uses-permission android:name="android.webkit.PermissionRequest" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera" />
+
+    <application
+    ...
+    >
+
+    <!--    Geocomply requirements-->
+    <receiver android:name="com.geocomply.client.GeoComplyClientBootBroadcastReceiver"
+        android:enabled="true" android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+            <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+        </intent-filter>
+    </receiver>
+
+    <service android:name="com.geocomply.location.WarmingUpLocationProvidersService"
+        android:exported="false" />
+    <service android:name="com.geocomply.security.GCIsolatedSecurityService"
+        android:exported="false" android:isolatedProcess="true" tools:targetApi="q" />
+
+    <receiver android:name="com.geocomply.client.GeoComplyClientBroadcastReceiver" />
+</application>
+</manifest>
+```
+
+### Application Requirements
+
+Lucra leverages [Coil](https://coil-kt.github.io/coil/) to render images and SVGs. In your
+application class, provider the LucraCoilImageLoader
+
+```kotlin
+// Don't forget to set the app manifest to use this Application
+class MyApplication : Application(), ImageLoaderFactory {
+    // Use Lucra's ImageLoader to decode SVGs as needed
+    override fun newImageLoader() = LucraCoilImageLoader.get(this)
+}
+
+```
+
+# Usage
 
 Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else.
 
