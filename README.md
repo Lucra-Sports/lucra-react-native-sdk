@@ -175,7 +175,26 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
-LucraSDK.init('BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T', LucraSDK.ENVIRONMENT.STAGING);
+let options = {
+  authenticationClientID: 'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
+  environment: LucraSDK.ENVIRONMENT.STAGING,
+  // You can also pass a theme to customize the Lucra UI
+  // theme?: {
+  //   background?: string;
+  //   surface?: string;
+  //   primary?: string;
+  //   secondary?: string;
+  //   tertiary?: string;
+  //   onBackground?: string;
+  //   onSurface?: string;
+  //   onPrimary?: string;
+  //   onSecondary?: string;
+  //   onTertiary?: string;
+  //   fontFamilyName?: string;
+  // }
+};
+
+LucraSDK.init(options);
 ```
 
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
@@ -206,14 +225,14 @@ export default function App() {
       <Button
         title="Create Matchup"
         onPress={() => {
-            LucraSDK.createGamesMatchup('DARTS', 1.0)
-              .then((res) => {
-                // Store matchup info to use in later api calls
-              })
-              .catch((e) => {
-                // Handle error and present appropriate Lucra flow if needed
-              });
-          }}
+          LucraSDK.createGamesMatchup('DARTS', 1.0)
+            .then((res) => {
+              // Store matchup info to use in later api calls
+            })
+            .catch((e) => {
+              // Handle error and present appropriate Lucra flow if needed
+            });
+        }}
       />
     </View>
   );
