@@ -8,10 +8,17 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.ui.LucraUi
+import com.lucrasports.sdk.core.style_guide.ClientTheme
+import com.lucrasports.sdk.core.style_guide.ColorStyle
+import com.lucrasports.sdk.core.style_guide.Font
+import com.lucrasports.sdk.core.style_guide.FontFamily
+import com.lucrasports.sdk.core.style_guide.FontWeight
+import java.lang.Exception
 
 
 class LucraClientModule(
@@ -21,7 +28,59 @@ class LucraClientModule(
   private var fullAppFlowDialogFragment: DialogFragment? = null
 
   @ReactMethod
-  fun initialize(authenticationClientId: String, environment: String) {
+  fun initialize(options: ReadableMap) {
+    var authenticationClientId = options.getString("authenticationClientId")
+      ?: throw Exception("LucraSDK no authentication ID passed to constructor")
+
+    var environment = options.getString("environment")
+
+    var theme = options.getMap("theme")
+    var clientTheme = ClientTheme()
+    var fontFamily = FontFamily(emptyList())
+    if(theme != null) {
+      var colorStyle = ColorStyle(
+        theme.getString("background"),
+        theme.getString("surface"),
+        theme.getString("primary"),
+        theme.getString("secondary"),
+        theme.getString("tertiary"),
+        theme.getString("onBackground"),
+        theme.getString("onSurface"),
+        theme.getString("onPrimary"),
+        theme.getString("onSecondary"),
+        theme.getString("onTertiary"),
+      )
+
+      var fontFamilyObj = theme.getMap("fontFamily")
+      if(fontFamilyObj != null) {
+        val fontList = mutableListOf<Font>()
+
+        val boldFamily = fontFamilyObj.getString("bold")
+        if(boldFamily != null) {
+          fontList.add(Font(fontName = boldFamily, weight = FontWeight.Bold))
+        }
+
+        val semiboldFamily = fontFamilyObj.getString("semibold")
+        if(semiboldFamily != null) {
+          fontList.add(Font(fontName = semiboldFamily, weight = FontWeight.SemiBold))
+        }
+
+        val normalFamily = fontFamilyObj.getString("normal")
+        if(normalFamily != null) {
+          fontList.add(Font(fontName = normalFamily, weight = FontWeight.Normal))
+        }
+
+        val mediumFamily = fontFamilyObj.getString("medium")
+        if(mediumFamily != null) {
+          fontList.add(Font(fontName = mediumFamily, weight = FontWeight.Normal))
+        }
+
+        fontFamily = FontFamily(fontList)
+      }
+
+      clientTheme = ClientTheme(colorStyle, fontFamily)
+    }
+
     LucraClient.initialize(
       application = reactContext.applicationContext as Application,
       lucraUiProvider = LucraUi(),
@@ -31,6 +90,7 @@ class LucraClientModule(
         "staging" -> LucraClient.Companion.Environment.STAGING
         else -> LucraClient.Companion.Environment.PRODUCTION
       },
+      clientTheme = clientTheme,
       lucraClientListener = object : LucraClient.LucraClientListener {
         override fun onLucraExit() {
           fullAppFlowDialogFragment?.dismiss()
@@ -62,8 +122,12 @@ class LucraClientModule(
   @ReactMethod
   fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
     LucraClient().createContest(gameTypeId, atStake) {
-      when(it) {
-        is GamesMatchup.CreateGamesMatchupResult.Failure -> promise.reject("Lucra SDK Error - createGamesMatchup Error", it.failure.toString())
+      when (it) {
+        is GamesMatchup.CreateGamesMatchupResult.Failure -> promise.reject(
+          "Lucra SDK Error - createGamesMatchup Error",
+          it.failure.toString()
+        )
+
         is GamesMatchup.CreateGamesMatchupResult.GYPCreatedMatchupOutput -> {
           val map = Arguments.createMap()
 
@@ -80,8 +144,12 @@ class LucraClientModule(
   @ReactMethod
   fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
     LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
-      when(it) {
-        is GamesMatchup.MatchupActionResult.Failure -> promise.reject("Lucra SDK Error - acceptGamesMatchup Error", it.failure.toString())
+      when (it) {
+        is GamesMatchup.MatchupActionResult.Failure -> promise.reject(
+          "Lucra SDK Error - acceptGamesMatchup Error",
+          it.failure.toString()
+        )
+
         GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
       }
     }
@@ -90,8 +158,12 @@ class LucraClientModule(
   @ReactMethod
   fun cancelGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().cancelGamesYouPlayContest(matchupId) {
-      when(it) {
-        is GamesMatchup.MatchupActionResult.Failure -> promise.reject("Lucra SDK Error - cancelGamesMatchup Error", it.failure.toString())
+      when (it) {
+        is GamesMatchup.MatchupActionResult.Failure -> promise.reject(
+          "Lucra SDK Error - cancelGamesMatchup Error",
+          it.failure.toString()
+        )
+
         GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
       }
     }

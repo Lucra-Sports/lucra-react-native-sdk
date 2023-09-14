@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (5.7.1)
+  - Alamofire (5.8.0)
   - Auth0 (2.5.0):
     - JWTDecode (~> 3.1)
     - SimpleKeychain (~> 1.1)
@@ -24,11 +24,11 @@ PODS:
   - Iterable-iOS-SDK (6.4.15)
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
-  - lucra-react-native-sdk (0.1.8):
-    - LucraSDK (~> 0.2.1)
+  - lucra-react-native-sdk (0.2.0):
+    - LucraSDK (~> 0.3.1)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - LucraSDK (0.2.2):
+  - LucraSDK (0.3.1):
     - Alamofire
     - Auth0
     - Iterable-iOS-SDK
@@ -645,7 +645,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Alamofire: 0123a34370cb170936ae79a8df46cc62b2edeb88
+  Alamofire: 0e92e751b3e9e66d7982db43919d01f313b8eb91
   Auth0: 72f19ad566fdf57f07bf37f828afd0c1570769a5
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   BVLinearGradient: 916632041121a658c704df89d99f04acb038de0f
@@ -659,8 +659,8 @@ SPEC CHECKSUMS:
   Iterable-iOS-SDK: 8d871b81d5a696b5a3a5173d72d08a96fc5ea98d
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: b2ddec159cccceb4619e927d58a77c5e82944ca1
-  LucraSDK: 5966f229aa90486a141ee499eebf8b766411c5a5
+  lucra-react-native-sdk: 18910117e54db65c8262ffbcb7bd6c22bcae5a48
+  LucraSDK: 1673f20e4102c08e7878c39d029ea4843a30578b
   Nuke: 279f17a599fd1c83cf51de5e0e1f2db143a287b0
   NukeUI: 6e99837a8d066c93baa4262692d9ea9ffbc863ba
   PulseCore: fe047fb6d905591771cf43406f7afae6941e5c42
@@ -674,14 +674,14 @@ SPEC CHECKSUMS:
   React-Core: aaacca67f9ca54f142827e67f44bfbd815875eb6
   React-CoreModules: 32fab1d62416849a3b6dac6feff9d54e5ddc2d1e
   React-cxxreact: 37765b4975541105b2a3322a4b473417c158c869
-  React-debug: 2f5c6afc5bb571ff98f9a7f232b39ce8f8f6c11a
+  React-debug: 31c1b3429e399b8175889c26737b2edafb04cbbd
   React-hermes: 935ae71fb3d7654e947beba8498835cd5e479707
   React-jsi: ec628dc7a15ffea969f237b0ea6d2fde212b19dd
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
   react-native-safe-area-context: 9697629f7b2cda43cf52169bb7e0767d330648c2
-  React-NativeModulesApple: cba444f99cced0f48d97a3288fe54dfb80114038
+  React-NativeModulesApple: fd78ac6315bb648f1e296e4a0adde907ea77011d
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
   React-RCTAnimation: fe7005136b58f58871cab2f70732343b6e330d30
@@ -695,9 +695,9 @@ SPEC CHECKSUMS:
   React-RCTVibration: ea3a68a49873a54ced927c90923fc6932baf344a
   React-rncore: 9672a017af4a7da7495d911f0b690cbcae9dd18d
   React-runtimeexecutor: 369ae9bb3f83b65201c0c8f7d50b72280b5a1dbc
-  React-runtimescheduler: 44a0ef2e76b7ce155088644786af4ba7945b264b
-  React-utils: d709c5088cf82f93d9cad92dfdeefac3af2feca1
-  ReactCommon: cf0103f91bdc31483ce5e7310af542fe282258a2
+  React-runtimescheduler: 4089217871b3b4b720bda9d8b87652706d4cff27
+  React-utils: 717ff5dcb3369b417ac542aee2c19011adeff1e7
+  ReactCommon: b2be75a1b39b2282adcb43c344b67015113b87c1
   Resolver: 68984624572763018fd8ec7b8e3e8df0e3b6bba5
   RNScreens: b21dc57dfa2b710c30ec600786a3fc223b1b92e7
   RNVectorIcons: 8b5bb0fa61d54cd2020af4f24a51841ce365c7e9
@@ -712,6 +712,6 @@ SPEC CHECKSUMS:
   ZendeskSupportProvidersSDK: 44f6639b5845815d4111b97ff00218f122ef9e33
   ZendeskSupportSDK: cae2bd10740bed62d8f89b78e6eea42713cd1e3c
 
-PODFILE CHECKSUM: bdfd2a9924554b2c81fe1e4fd6d7376d6aa461fd
+PODFILE CHECKSUM: b59991fbdc15d4f94db20ff78e470b14b00464d8
 
 COCOAPODS: 1.12.1

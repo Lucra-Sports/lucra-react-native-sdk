@@ -1,6 +1,6 @@
 {
   "name": "@lucra-sports/lucra-react-native-sdk",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "Lucra React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
