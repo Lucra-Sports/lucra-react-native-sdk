@@ -41,7 +41,7 @@ source 'git@github.com:Lucra-Sports/lucra-ios-sdk.git'
 # Independent of which method you choose, always add these
 source 'https://cdn.cocoapods.org/'
 
-use_frameworks!
+use_frameworks! linkage: :static
 ```
 
 You will need to disable Flipper as it fails to link when using `use_frameworks!``:

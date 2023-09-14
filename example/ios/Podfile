@@ -1,7 +1,7 @@
 source 'git@github.com:Lucra-Sports/lucra-ios-sdk.git'
 source 'https://cdn.cocoapods.org/'
 
-# dynamic_frameworks = ['LucraSDK']
+use_frameworks! linkage: :static
 
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
@@ -13,24 +13,7 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, '15.0'
 prepare_react_native_project!
 
-use_frameworks!
-
-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
-# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
-#
-# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
-# ```js
-# module.exports = {
-#   dependencies: {
-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-# ```
 flipper_config = FlipperConfiguration.disabled
-
-linkage = ENV['USE_FRAMEWORKS']
-if linkage != nil
-  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
-end
 
 target 'LucrasdkExample' do
   config = use_native_modules!
@@ -56,21 +39,6 @@ target 'LucrasdkExample' do
     inherit! :complete
     # Pods for testing
   end
-
-  # Make all the other frameworks into static frameworks by overriding the static_framework? function to return true
-  # pre_install do |installer|
-  #   installer.pod_targets.each do |pod|
-  #     if !dynamic_frameworks.include?(pod.name)
-  #       puts "Overriding the static_framework? method for #{pod.name}"
-  #       def pod.static_framework?;
-  #         true
-  #       end
-  #       def pod.build_type;
-  #         Pod::BuildType.static_library
-  #       end
-  #     end
-  #   end
-  # end
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
