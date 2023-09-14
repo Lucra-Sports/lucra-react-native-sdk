@@ -22,7 +22,6 @@ class LucraClient: NSObject {
         var clientTheme = ClientTheme()
         
         if let theme = options["theme"] as? Dictionary<String, Any> {
-            print("ROPO theme found!")
             let background = theme["background"] as? String
             let surface = theme["surface"]  as? String
             let primary = theme["primary"]  as? String
