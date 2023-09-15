@@ -78,7 +78,12 @@ class LucraClient: NSObject {
                     return .profile
                 case "addFunds":
                     return .addFunds
+                case "onboarding":
+                    return .onboarding
+                case "verifyIdentity":
+                    return .verifyIdentity
                 default:
+                    assertionFailure("Unimplemented lucra flow \(lucraFlow)")
                     return .profile
                 }
             }()
@@ -103,7 +108,7 @@ class LucraClient: NSObject {
                     "oponnentTeamId": result.opponentTeamId
                 ])
             } catch {
-                rejecter("Lucra SDK Error - createGamesMatchupError", "\(error)", nil)
+                rejecter("\(error)", error.localizedDescription, nil)
             }
         }
         
@@ -118,7 +123,7 @@ class LucraClient: NSObject {
                 try await self.nativeClient.api.acceptGamesMatchup(matchupId: matchupId, teamId: teamId)
                 resolver(nil)
             } catch {
-                rejecter("Lucra SDK Error - acceptMatchupError", "\(error)", nil)
+                rejecter("\(error)", error.localizedDescription, nil)
             }
         }
     }
@@ -131,7 +136,7 @@ class LucraClient: NSObject {
                 try await self.nativeClient.api.cancelGamesMatchup(matchupId: gameId as String)
                 resolver(nil)
             } catch {
-                rejecter("Lucra SDK Error - cancelGamesMatchupError", "\(error)", nil)
+                rejecter("\(error)", error.localizedDescription, nil)
             }
         }
     }

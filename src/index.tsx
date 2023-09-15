@@ -39,8 +39,11 @@ export const LucraSDK = {
     STAGING: 'staging',
   },
   FLOW: {
+    ONBOARDING: 'onboarding',
+    VERIFY_IDENTITY: 'verifyIdentity',
     PROFILE: 'profile',
     ADD_FUNDS: 'addFunds',
+    // CREATE_GAMES_MATCHUP: 'createGamesMatchup',
   },
   init: (options: LucraSDKParams) => {
     if (Platform.OS === 'ios') {
@@ -71,3 +74,12 @@ export const LucraSDK = {
     return LucraClient.cancelGamesMatchup(gameId);
   },
 };
+
+export type LucraSDKError = {
+  code:
+    | 'notInitialized'
+    | 'unverified'
+    | 'notAllowed'
+    | 'insufficientFunds'
+    | 'unknown';
+} & Error;

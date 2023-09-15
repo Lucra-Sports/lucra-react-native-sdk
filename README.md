@@ -289,6 +289,41 @@ export default function App() {
 To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the APIIntegration.pdf document in this repo for more information:
 
 ```ts
+import {
+  LucraSDK,
+  type LucraSDKError,
+} from '@lucra-sports/lucra-react-native-sdk';
+
+function handleLucraSDKError(e: LucraSDKError) {
+  switch (e.code) {
+    case 'notInitialized':
+      console.warn('SDK not initialized', e);
+      LucraSDK.present(LucraSDK.FLOW.ONBOARDING);
+      break;
+
+    case 'unverified':
+      console.warn('User not verified', e);
+      LucraSDK.present(LucraSDK.FLOW.VERIFY_IDENTITY);
+      break;
+
+    case 'notAllowed':
+      console.warn('User not allowed', e);
+      break;
+
+    case 'insufficientFunds':
+      console.warn('Insufficient funds', e);
+      LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS);
+      break;
+
+    case 'unknown':
+      console.warn('Unknown error', e);
+      break;
+
+    default:
+      break;
+  }
+}
+
 export default function App() {
   return (
     <View style={styles.container}>
@@ -299,9 +334,7 @@ export default function App() {
             .then((res) => {
               // Store matchup info to use in later api calls
             })
-            .catch((e) => {
-              // Handle error and present appropriate Lucra flow if needed
-            });
+            .catch(handleLucraSDKError);
         }}
       />
     </View>
