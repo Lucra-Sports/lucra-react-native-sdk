@@ -119,14 +119,44 @@ class LucraClientModule(
     )
   }
 
+  fun throwLucraJSError(promise: Promise, failure: GamesMatchup.FailedCreateGamesMatchup) {
+    val errorCode = when(failure) {
+      is GamesMatchup.FailedCreateGamesMatchup.APIError ->
+        "apiError"
+
+      is GamesMatchup.FailedCreateGamesMatchup.LocationError ->
+        "locationError"
+
+      GamesMatchup.FailedCreateGamesMatchup.UserStateError.InsufficientFunds ->
+        "insufficientFunds"
+
+      GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotAllowed ->
+        "notAllowed"
+
+      GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotInitialized ->
+        "notInitialized"
+
+      GamesMatchup.FailedCreateGamesMatchup.UserStateError.Unverified ->
+        "unverified"
+
+      else -> {
+        "unknownError"
+      }
+    }
+
+    promise.reject(
+      errorCode,
+      failure.toString()
+    )
+  }
+
   @ReactMethod
   fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
     LucraClient().createContest(gameTypeId, atStake) {
       when (it) {
-        is GamesMatchup.CreateGamesMatchupResult.Failure -> promise.reject(
-          "Lucra SDK Error - createGamesMatchup Error",
-          it.failure.toString()
-        )
+        is GamesMatchup.CreateGamesMatchupResult.Failure -> {
+          throwLucraJSError(promise, it.failure)
+        }
 
         is GamesMatchup.CreateGamesMatchupResult.GYPCreatedMatchupOutput -> {
           val map = Arguments.createMap()
@@ -145,10 +175,8 @@ class LucraClientModule(
   fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
     LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
       when (it) {
-        is GamesMatchup.MatchupActionResult.Failure -> promise.reject(
-          "Lucra SDK Error - acceptGamesMatchup Error",
-          it.failure.toString()
-        )
+        is GamesMatchup.MatchupActionResult.Failure ->
+          throwLucraJSError(promise, it.failure)
 
         GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
       }
@@ -159,10 +187,8 @@ class LucraClientModule(
   fun cancelGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().cancelGamesYouPlayContest(matchupId) {
       when (it) {
-        is GamesMatchup.MatchupActionResult.Failure -> promise.reject(
-          "Lucra SDK Error - cancelGamesMatchup Error",
-          it.failure.toString()
-        )
+        is GamesMatchup.MatchupActionResult.Failure ->
+          throwLucraJSError(promise, it.failure)
 
         GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
       }

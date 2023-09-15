@@ -46,6 +46,7 @@ function handleLucraSDKError(e: LucraSDKError) {
       break;
 
     default:
+      console.warn('Unknown error', e);
       break;
   }
 }
