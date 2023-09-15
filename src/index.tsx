@@ -81,5 +81,7 @@ export type LucraSDKError = {
     | 'unverified'
     | 'notAllowed'
     | 'insufficientFunds'
+    | 'apiError'
+    | 'locationError'
     | 'unknown';
 } & Error;
