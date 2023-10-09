@@ -24,11 +24,11 @@ PODS:
   - Iterable-iOS-SDK (6.4.15)
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
-  - lucra-react-native-sdk (0.2.0):
-    - LucraSDK (~> 0.3.2)
+  - lucra-react-native-sdk (0.4.1):
+    - LucraSDK (~> 0.4.1)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - LucraSDK (0.3.2):
+  - LucraSDK (0.4.1):
     - Alamofire
     - Auth0
     - Iterable-iOS-SDK
@@ -670,8 +670,8 @@ SPEC CHECKSUMS:
   Iterable-iOS-SDK: 8d871b81d5a696b5a3a5173d72d08a96fc5ea98d
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: a6e1ed58a1a7d48e8a26b02acf4e6427fcbc594d
-  LucraSDK: 79b115f9a9876cf063ebdbbe5f4e67fc49da6383
+  lucra-react-native-sdk: 7c43a287507a92d8ff5d33ae672982b438ccff67
+  LucraSDK: efe1dac505d2cdffafc13614b04588896ae5a1d4
   MMKV: 5a07930c70c70b86cd87761a42c8f3836fb681d7
   MMKVCore: e50135dbd33235b6ab390635991bab437ab873c0
   Nuke: 279f17a599fd1c83cf51de5e0e1f2db143a287b0
