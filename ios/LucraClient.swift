@@ -56,6 +56,8 @@ class LucraClient: NSObject {
                 return .develop
             case "staging":
                 return .staging
+            case "sandbox":
+                return .sandbox
             case "production":
                 return .production
             default:

@@ -5,9 +5,10 @@ import { Routes } from './Routes';
 import { Platform, StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
+// TODO: REPLACE WITH YOUR KEY
 LucraSDK.init({
-  authenticationClientId: 'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
-  environment: LucraSDK.ENVIRONMENT.STAGING,
+  authenticationClientId: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
+  environment: LucraSDK.ENVIRONMENT.SANDBOX,
   theme: {
     background: '#001448',
     surface: '#1C2575',
