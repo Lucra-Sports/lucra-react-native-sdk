@@ -8,7 +8,7 @@ You will need to specify our **private** native iOS dependency, hosted in GitHub
 
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
-Select "Classic" with the `packages:read` permissions and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token
+Select "Classic" with the `packages:read` and `repo` permissions enabled and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token. In case you are setting up a CI system you will also have to use this token in a combination with a username.
 
 ## With SSH
 
@@ -57,7 +57,15 @@ flipper_config = FlipperConfiguration.disabled
 Run the following command to add the native SDK dependency locally that you added previously as a source in the Podfile
 
 ```sh
+# In a local machine you can add it directly
 pod repo add LucraSDK https://github.com/Lucra-Sports/lucra-ios-sdk
+# OR
+pod repo add LucraSDK git@github.com/Lucra-Sports/lucra-ios-sdk
+
+# If setting up in a CI you will need the Personal Access token you first created and a username
+# Here is an example for GitHub Actions
+pod repo add LucraSDK https://${{secrets.LUCRA_USERNAME}}:${{secrets.LUCRA_TOKEN}}@github.com/Lucra-Sports/lucra-ios-sdk.git
+
 ```
 
 The following keys will need to be set in Info.plist or the binary may be rejected and the app may crash:
