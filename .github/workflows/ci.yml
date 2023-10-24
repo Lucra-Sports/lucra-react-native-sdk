@@ -52,7 +52,7 @@ jobs:
     env:
       TURBO_CACHE_DIR: .turbo/android
       GPR_USER: LucraReactNativeCi
-      GPR_KEY: ${{ secrets.GITHUB_TOKEN }}
+      GPR_KEY: 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
 
     steps:
       - name: Checkout
@@ -108,6 +108,7 @@ jobs:
     runs-on: macos-latest
     env:
       TURBO_CACHE_DIR: .turbo/ios
+      GPR_USER: LucraReactNativeCi
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -116,7 +117,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Add private repo to cocoapods
-        run: pod repo add LucraSDK https://${{ env.GPR_USER }}:${{ env.GPR_KEY }}@github.com/Lucra-Sports/lucra-ios-sdk.git
+        run: pod repo add LucraSDK https://${{ env.GPR_USER }}:${{ secrets.GPR_KEY }}@github.com/Lucra-Sports/lucra-ios-sdk.git
 
       - name: Cache turborepo for iOS
         uses: actions/cache@v3
