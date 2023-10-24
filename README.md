@@ -14,7 +14,7 @@ Select "Classic" with the `packages:read` and `repo` permissions enabled and nam
 
 ## With SSH
 
-You can skip this step if you have set up SSH for your GitHub account. In the next steps, you will see how to declare the dependency both ways.
+You can skip creating a token if you have set up SSH for your GitHub account. In the next steps, you will see how to declare the dependency both ways. However, bear in mind if setting up in a CI you might need to create a token to correctly add the private repo to CocoaPods.
 
 # Installation
 
