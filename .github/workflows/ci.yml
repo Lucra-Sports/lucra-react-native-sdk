@@ -52,7 +52,7 @@ jobs:
     env:
       TURBO_CACHE_DIR: .turbo/android
       GPR_USER: LucraReactNativeCi
-      GPR_KEY: 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
+      GPR_KEY: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout
