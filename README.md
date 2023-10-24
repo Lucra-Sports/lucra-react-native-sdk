@@ -56,6 +56,8 @@ You will need to disable Flipper as it fails to link when using `use_frameworks!
 flipper_config = FlipperConfiguration.disabled
 ```
 
+### Add Lucra private pod repo
+
 Run the following command to add the native SDK dependency locally that you added previously as a source in the Podfile
 
 ```sh
@@ -65,12 +67,14 @@ pod repo add LucraSDK https://github.com/Lucra-Sports/lucra-ios-sdk
 pod repo add LucraSDK git@github.com/Lucra-Sports/lucra-ios-sdk
 
 # If setting up in a CI you will need the Personal Access token you first created and a username
-# Here is an example for GitHub Actions
-pod repo add LucraSDK https://${{secrets.LUCRA_USERNAME}}:${{secrets.LUCRA_TOKEN}}@github.com/Lucra-Sports/lucra-ios-sdk.git
-
+# Here is an example for GitHub Actions. Add LUCRA_USERNAME and LUCRA_TOKEN in the secrets section of the GitHub repository
+- name: Add private repo to cocoapods
+  run: pod repo add LucraSDK https://${{secrets.LUCRA_USERNAME}}:${{secrets.LUCRA_TOKEN}}@github.com/Lucra-Sports/lucra-ios-sdk.git
 ```
 
-The following keys will need to be set in Info.plist or the binary may be rejected and the app may crash:
+### Permissions
+
+The following keys will need to be set in `Info.plist` or the binary may be rejected and the app will crash.
 
 ```
 NSBluetoothAlwaysUsageDescription
