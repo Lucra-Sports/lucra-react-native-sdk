@@ -10,6 +10,8 @@ https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/m
 
 Select "Classic" with the `packages:read` and `repo` permissions enabled and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token. In case you are setting up a CI system you will also have to use this token in a combination with a username.
 
+<img src="https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/assets/token.png?raw=true" width="300"/>
+
 ## With SSH
 
 You can skip this step if you have set up SSH for your GitHub account. In the next steps, you will see how to declare the dependency both ways.
