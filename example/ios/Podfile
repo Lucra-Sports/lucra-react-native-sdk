@@ -1,4 +1,4 @@
-source 'git@github.com:Lucra-Sports/lucra-ios-sdk.git'
+source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
 source 'https://cdn.cocoapods.org/'
 
 use_frameworks! linkage: :static

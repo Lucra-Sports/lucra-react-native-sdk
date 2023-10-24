@@ -115,6 +115,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Add private repo to cocoapods
+        run: |
+          pod repo add LucraSDK https://github.com/Lucra-Sports/lucra-ios-sdk
+
       - name: Cache turborepo for iOS
         uses: actions/cache@v3
         with:
