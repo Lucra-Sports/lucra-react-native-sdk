@@ -4,6 +4,8 @@
 
 You will need to specify our **private** native iOS dependency, hosted in GitHub packages, in your Podfile. There are two ways to install a private dependency:
 
+<a name="personal_token_anchor"></a>
+
 ## With GitHub Personal Access token
 
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
@@ -95,11 +97,7 @@ Lucra Android Native SDK artifacts are privately hosted on https://github.com/Lu
 
 You will need a private access token (PAT) to pull these packages at build time.
 
-### With GitHub Personal Access token (skip this if you've already created one for iOS above)
-
-https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-
-Select "Classic" with the `packages:read` permissions and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token
+[See how to create personal access token](#personal_token_anchor)
 
 ### Place credentials on local machine and build server
 
