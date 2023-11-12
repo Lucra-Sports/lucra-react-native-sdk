@@ -14,7 +14,7 @@ In your project's `build.gradle` add the following and replace the credentials w
         maven(url = "https://zendesk.jfrog.io/zendesk/repo")
         maven {
             name = "LucraGithubPackages"
-            url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android")
+            url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android-sdk")
             credentials {
                 username = {YOUR_GITHUB_USERNAME}
                 password = {YOUR_GITHUB_LUCRA_PAT}
@@ -25,7 +25,7 @@ In your project's `build.gradle` add the following and replace the credentials w
 
 In `app/build.gradle`
 
-```gradle 
+```gradle
 // All surface level APIs to interact with Lucra
 implementation("com.lucrasports:sdk-core:1.0.1-alpha") //TODO reference latest github release #
 // Optional for UI functionality
@@ -143,7 +143,7 @@ LucraClient.initialize(
             // Handle Lucra attempt to exit flow
         }
     },
-    // Optionally provide LucraUiProvider implementation from "com.lucrasports:sdk-ui:*"
+    // Optionally provide LucraUiProvider implementation from "com.lucrasports.sdk:sdk-ui:*"
     lucraUiProvider = LucraUi(),
     // Optionally provide Lucra.Logger implementation to track events happening through the experience
     customLogger = null,

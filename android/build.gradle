@@ -90,7 +90,7 @@ repositories {
   google()
   maven {
     name = "LucraGithubPackages"
-    url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android")
+    url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android-sdk")
     credentials {
       String gprUser = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
       String gprKey = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
@@ -111,8 +111,8 @@ repositories {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation("com.lucrasports:sdk-core:1.1.1-beta-SNAPSHOT-2023-10-20-1697827690")
-  implementation("com.lucrasports:sdk-ui:1.1.1-beta-SNAPSHOT-2023-10-20-1697827690")
+  implementation("com.lucrasports.sdk:sdk-core:1.1.2-beta")
+  implementation("com.lucrasports.sdk:sdk-ui:1.1.2-beta")
 
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
