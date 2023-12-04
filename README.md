@@ -233,7 +233,7 @@ The following manifest permissions, features, receivers and services are require
 ### Application Requirements
 
 Lucra leverages [Coil](https://coil-kt.github.io/coil/) to render images and SVGs. In your
-application class, provider the LucraCoilImageLoader
+application class, provide the LucraCoilImageLoader
 
 ```kotlin
 // Don't forget to set the app manifest to use this Application
