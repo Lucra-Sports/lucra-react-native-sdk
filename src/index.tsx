@@ -47,6 +47,7 @@ export const LucraSDK = {
     CREATE_GAMES_MATCHUP: 'createGamesMatchup',
     WITHDRAW_FUNDS: 'withdrawFunds',
     PUBLIC_FEED: 'publicFeed',
+    MY_MATCHUP: 'myMatchup',
   },
   init: (options: LucraSDKParams) => {
     LucraClient.initialize(options);

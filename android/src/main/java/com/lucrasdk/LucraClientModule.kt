@@ -18,6 +18,7 @@ import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
 import com.lucrasports.sdk.core.style_guide.FontFamily
 import com.lucrasports.sdk.core.style_guide.FontWeight
+import com.lucrasports.sdk.core.ui.LucraFlowListener
 import java.lang.Exception
 
 
@@ -83,7 +84,27 @@ class LucraClientModule(
 
     LucraClient.initialize(
       application = reactContext.applicationContext as Application,
-      lucraUiProvider = LucraUi(),
+      lucraUiProvider = LucraUi(
+        lucraFlowListener = object : LucraFlowListener {
+          // Callback for entering Lucra permitted flow launch points.
+          override fun launchNewLucraFlowEntryPoint(entryLucraFlow: LucraUiProvider.LucraFlow): Boolean {
+            return true
+          }
+
+          //Callback for exiting all Lucra permitted flow launch points
+          override fun onFlowDismissRequested(entryLucraFlow: LucraUiProvider.LucraFlow) {
+            (reactContext.currentActivity as FragmentActivity).supportFragmentManager.findFragmentByTag(entryLucraFlow.toString())?.let {
+
+              if (it is DialogFragment)
+                it.dismiss()
+              else
+                (reactContext.currentActivity as FragmentActivity).supportFragmentManager.beginTransaction().remove(it).commit()
+            } ?: run {
+
+            }
+          }
+        }
+      ),
       authClientId = authenticationClientId,
       environment = when (environment) {
         "production" -> LucraClient.Companion.Environment.PRODUCTION
@@ -91,11 +112,6 @@ class LucraClientModule(
         else -> LucraClient.Companion.Environment.PRODUCTION
       },
       clientTheme = clientTheme,
-      lucraClientListener = object : LucraClient.LucraClientListener {
-        override fun onLucraExit() {
-          fullAppFlowDialogFragment?.dismiss()
-        }
-      },
       outputLogs = true,
     )
   }
@@ -109,8 +125,16 @@ class LucraClientModule(
     val lucraFlow = when (flow) {
       "profile" -> LucraUiProvider.LucraFlow.Profile
       "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
+      // TODO(osp) LucraFlow is missing MyMatchup on Android
+//      "onboarding" -> LucraUiProvider.LucraFlow.Onboarding
+      "verifyIdentity" -> LucraUiProvider.LucraFlow.VerifyIdentity
+      "createGamesMatchup" -> LucraUiProvider.LucraFlow.CreateGamesMatchup
+      "withdrawFunds" -> LucraUiProvider.LucraFlow.WithdrawFunds
+      "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
+      "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
       else -> LucraUiProvider.LucraFlow.Profile
     }
+
     fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
 
     fullAppFlowDialogFragment?.show(
