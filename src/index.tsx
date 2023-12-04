@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
 
 const LucraClient = NativeModules.LucraClient;
 
@@ -49,12 +49,7 @@ export const LucraSDK = {
     PUBLIC_FEED: 'publicFeed',
   },
   init: (options: LucraSDKParams) => {
-    if (Platform.OS === 'ios') {
-      // TODO: third param 'urlScheme' might be eventually retired from the iOS SDK
-      LucraClient.initialize(options);
-    } else {
-      LucraClient.initialize(options);
-    }
+    LucraClient.initialize(options);
   },
   present: (flow: string) => {
     LucraClient.present(flow);
