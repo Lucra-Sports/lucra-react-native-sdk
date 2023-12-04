@@ -256,6 +256,7 @@ import { Button, StyleSheet, View } from 'react-native';
 let lucraSDKOptions = {
   authenticationClientID: 'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
   environment: LucraSDK.ENVIRONMENT.STAGING,
+  merchantID: '123abc', // optional merchantID
   // You can also pass a theme to customize the Lucra UI
   // theme?: {
   //   background?: string;
@@ -284,6 +285,15 @@ LucraSDK.init(lucraSDKOptions);
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
 
 ```ts
+// Posible flows are
+// ONBOARDING
+// VERIFY_IDENTITY
+// PROFILE
+// ADD_FUNDS
+// CREATE_GAMES_MATCHUP
+// WITHDRAW_FUNDS
+// PUBLIC_FEED
+
 export default function App() {
   return (
     <View style={styles.container}>
@@ -300,7 +310,7 @@ export default function App() {
 }
 ```
 
-To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the APIIntegration.pdf document in this repo for more information:
+To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information:
 
 ```ts
 import {

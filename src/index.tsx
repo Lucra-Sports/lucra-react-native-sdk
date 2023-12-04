@@ -31,6 +31,7 @@ type LucraSDKParams = {
         }
       | string;
   };
+  merchantID?: string;
 };
 
 export const LucraSDK = {
@@ -43,7 +44,9 @@ export const LucraSDK = {
     VERIFY_IDENTITY: 'verifyIdentity',
     PROFILE: 'profile',
     ADD_FUNDS: 'addFunds',
-    // CREATE_GAMES_MATCHUP: 'createGamesMatchup',
+    CREATE_GAMES_MATCHUP: 'createGamesMatchup',
+    WITHDRAW_FUNDS: 'withdrawFunds',
+    PUBLIC_FEED: 'publicFeed',
   },
   init: (options: LucraSDKParams) => {
     if (Platform.OS === 'ios') {

@@ -4,36 +4,44 @@ import LucraSDK
 @objc(LucraClient)
 class LucraClient: NSObject {
     @objc static func requiresMainQueueSetup() -> Bool { return true }
-    
+
     private var nativeClient: LucraSDK.LucraClient!
-    
-    @objc func initialize(_ options: Dictionary<String, Any>,
-                          resolver: @escaping RCTPromiseResolveBlock,
-                          rejecter: @escaping RCTPromiseRejectBlock) {
+
+    @objc func initialize(_ options: [String: Any],
+                          resolver _: @escaping RCTPromiseResolveBlock,
+                          rejecter: @escaping RCTPromiseRejectBlock)
+    {
         guard nativeClient == nil else { return }
-        
-        guard let authenticationClientID = options["authenticationClientId"] as? String else {
-            rejecter("Lucra SDK Error", "no clientAuthenticationId passed to LucraSDK constructor", nil)
+
+        guard let authenticationClientID =
+            options["authenticationClientId"] as? String
+        else {
+            rejecter(
+                "Lucra SDK Error",
+                "no clientAuthenticationId passed to LucraSDK constructor",
+                nil
+            )
             return
         }
-        
+
         let environment = options["environment"] as? String ?? "develop"
-        
+        let merchantID = options["merchantID"] as? String
+
         var clientTheme = ClientTheme()
-        
-        if let theme = options["theme"] as? Dictionary<String, Any> {
+
+        if let theme = options["theme"] as? [String: Any] {
             let background = theme["background"] as? String
-            let surface = theme["surface"]  as? String
-            let primary = theme["primary"]  as? String
-            let secondary = theme["secondary"]  as? String
-            let tertiary = theme["tertiary"]  as? String
-            let onBackground = theme["onBackground"]  as? String
-            let onSurface = theme["onSurface"]  as? String
-            let onPrimary = theme["onPrimary"]  as? String
-            let onSecondary = theme["onSecondary"]  as? String
-            let onTertiary = theme["onTertiary"]  as? String
-            let fontFamilyName = theme["fontFamilyName"]  as? String
-            
+            let surface = theme["surface"] as? String
+            let primary = theme["primary"] as? String
+            let secondary = theme["secondary"] as? String
+            let tertiary = theme["tertiary"] as? String
+            let onBackground = theme["onBackground"] as? String
+            let onSurface = theme["onSurface"] as? String
+            let onPrimary = theme["onPrimary"] as? String
+            let onSecondary = theme["onSecondary"] as? String
+            let onTertiary = theme["onTertiary"] as? String
+            let fontFamilyName = theme["fontFamilyName"] as? String
+
             clientTheme = ClientTheme(background: background,
                                       surface: surface,
                                       primary: primary,
@@ -46,10 +54,7 @@ class LucraClient: NSObject {
                                       onTertiary: onTertiary,
                                       fontFamilyName: fontFamilyName)
         }
-        
-        
-        
-        
+
         let nativeEnvironment: LucraSDK.LucraEnvironment = {
             switch environment {
             case "develop":
@@ -64,15 +69,21 @@ class LucraClient: NSObject {
                 return .unknown
             }
         }()
-        
-        self.nativeClient = LucraSDK.LucraClient(
-            config: .init(environment: .init(authenticationClientID: authenticationClientID,
-                                             environment: nativeEnvironment,
-                                             urlScheme: ""),
-                          appearance: clientTheme))
+
+        nativeClient = LucraSDK.LucraClient(
+            config: .init(
+                environment: .init(
+                    authenticationClientID: authenticationClientID,
+                    environment: nativeEnvironment,
+                    urlScheme: "",
+                    merchantID: merchantID
+                ),
+                appearance: clientTheme
+            )
+        )
     }
-    
-    @objc func present(_ lucraFlow: String) -> Void {
+
+    @objc func present(_ lucraFlow: String) {
         DispatchQueue.main.async {
             let nativeFlow: LucraSDK.LucraFlow = {
                 switch lucraFlow {
@@ -84,58 +95,75 @@ class LucraClient: NSObject {
                     return .onboarding
                 case "verifyIdentity":
                     return .verifyIdentity
+                case "createGamesMatchup":
+                    return .createGamesMatchup
+                case "withdrawFunds":
+                    return .withdrawFunds
+                case "publicFeed":
+                    return .publicFeed
                 default:
                     assertionFailure("Unimplemented lucra flow \(lucraFlow)")
                     return .profile
                 }
             }()
-            
-            UIViewController.topViewController?.present(lucraFlow: nativeFlow, client: self.nativeClient, animated: true)
+
+            UIViewController.topViewController?.present(
+                lucraFlow: nativeFlow,
+                client: self.nativeClient,
+                animated: true
+            )
         }
-        return
     }
-    
-    
+
     @objc func createGamesMatchup(_ gameId: String,
                                   wagerAmount: NSNumber,
                                   resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock) {
+                                  rejecter: @escaping RCTPromiseRejectBlock)
+    {
         Task { @MainActor in
             do {
-                let result = try await self.nativeClient.api.createGamesMatchup(gameTypeId: gameId, atStake: wagerAmount.decimalValue)
-                
+                let result = try await self.nativeClient.api.createGamesMatchup(
+                    gameTypeId: gameId,
+                    atStake: wagerAmount.decimalValue
+                )
+
                 resolver([
                     "matchupId": result.matchupId,
                     "ownerTeamId": result.ownerTeamId,
-                    "oponnentTeamId": result.opponentTeamId
+                    "oponnentTeamId": result.opponentTeamId,
                 ])
             } catch {
                 rejecter("\(error)", error.localizedDescription, nil)
             }
         }
-        
     }
-    
+
     @objc func acceptGamesMatchup(_ matchupId: String,
                                   teamId: String,
                                   resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock) {
+                                  rejecter: @escaping RCTPromiseRejectBlock)
+    {
         Task { @MainActor in
             do {
-                try await self.nativeClient.api.acceptGamesMatchup(matchupId: matchupId, teamId: teamId)
+                try await self.nativeClient.api.acceptGamesMatchup(
+                    matchupId: matchupId,
+                    teamId: teamId
+                )
                 resolver(nil)
             } catch {
                 rejecter("\(error)", error.localizedDescription, nil)
             }
         }
     }
-    
+
     @objc func cancelGamesMatchup(_ gameId: String,
                                   resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock) {
+                                  rejecter: @escaping RCTPromiseRejectBlock)
+    {
         Task { @MainActor in
             do {
-                try await self.nativeClient.api.cancelGamesMatchup(matchupId: gameId as String)
+                try await self.nativeClient.api
+                    .cancelGamesMatchup(matchupId: gameId as String)
                 resolver(nil)
             } catch {
                 rejecter("\(error)", error.localizedDescription, nil)
