@@ -11,15 +11,14 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
-import com.lucrasports.sdk.core.ui.LucraUiProvider
-import com.lucrasports.sdk.ui.LucraUi
 import com.lucrasports.sdk.core.style_guide.ClientTheme
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
 import com.lucrasports.sdk.core.style_guide.FontFamily
 import com.lucrasports.sdk.core.style_guide.FontWeight
 import com.lucrasports.sdk.core.ui.LucraFlowListener
-import java.lang.Exception
+import com.lucrasports.sdk.core.ui.LucraUiProvider
+import com.lucrasports.sdk.ui.LucraUi
 
 
 class LucraClientModule(
@@ -38,7 +37,7 @@ class LucraClientModule(
     var theme = options.getMap("theme")
     var clientTheme = ClientTheme()
     var fontFamily = FontFamily(emptyList())
-    if(theme != null) {
+    if (theme != null) {
       var colorStyle = ColorStyle(
         theme.getString("background"),
         theme.getString("surface"),
@@ -53,26 +52,26 @@ class LucraClientModule(
       )
 
       var fontFamilyObj = theme.getMap("fontFamily")
-      if(fontFamilyObj != null) {
+      if (fontFamilyObj != null) {
         val fontList = mutableListOf<Font>()
 
         val boldFamily = fontFamilyObj.getString("bold")
-        if(boldFamily != null) {
+        if (boldFamily != null) {
           fontList.add(Font(fontName = boldFamily, weight = FontWeight.Bold))
         }
 
         val semiboldFamily = fontFamilyObj.getString("semibold")
-        if(semiboldFamily != null) {
+        if (semiboldFamily != null) {
           fontList.add(Font(fontName = semiboldFamily, weight = FontWeight.SemiBold))
         }
 
         val normalFamily = fontFamilyObj.getString("normal")
-        if(normalFamily != null) {
+        if (normalFamily != null) {
           fontList.add(Font(fontName = normalFamily, weight = FontWeight.Normal))
         }
 
         val mediumFamily = fontFamilyObj.getString("medium")
-        if(mediumFamily != null) {
+        if (mediumFamily != null) {
           fontList.add(Font(fontName = mediumFamily, weight = FontWeight.Normal))
         }
 
@@ -88,19 +87,17 @@ class LucraClientModule(
         lucraFlowListener = object : LucraFlowListener {
           // Callback for entering Lucra permitted flow launch points.
           override fun launchNewLucraFlowEntryPoint(entryLucraFlow: LucraUiProvider.LucraFlow): Boolean {
-            return true
+            // TODO if RN integrators want a full screen flow, we can expose a property to consume
+            //  these launch events as a new dialog fragment.
+            return false
           }
 
           //Callback for exiting all Lucra permitted flow launch points
           override fun onFlowDismissRequested(entryLucraFlow: LucraUiProvider.LucraFlow) {
-            (reactContext.currentActivity as FragmentActivity).supportFragmentManager.findFragmentByTag(entryLucraFlow.toString())?.let {
-
-              if (it is DialogFragment)
-                it.dismiss()
-              else
-                (reactContext.currentActivity as FragmentActivity).supportFragmentManager.beginTransaction().remove(it).commit()
-            } ?: run {
-
+            (reactContext.currentActivity as FragmentActivity).supportFragmentManager.findFragmentByTag(
+              entryLucraFlow.toString()
+            )?.let {
+              (it as DialogFragment).dismiss()
             }
           }
         }
@@ -139,12 +136,12 @@ class LucraClientModule(
 
     fullAppFlowDialogFragment?.show(
       (reactContext.currentActivity as FragmentActivity).supportFragmentManager,
-      "LUCRA_ANDROID_DIALOG_FRAGMENT"
+      lucraFlow.toString() // this tag will be used to dismiss in onFlowDismissRequested(flow)
     )
   }
 
   fun throwLucraJSError(promise: Promise, failure: GamesMatchup.FailedCreateGamesMatchup) {
-    val errorCode = when(failure) {
+    val errorCode = when (failure) {
       is GamesMatchup.FailedCreateGamesMatchup.APIError ->
         "apiError"
 
