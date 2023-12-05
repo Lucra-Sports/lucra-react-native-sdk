@@ -42,7 +42,10 @@
     "ios",
     "android"
   ],
-  "repository": "git://github.com/Lucra-Sports/lucra-react-native-sdk.git",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Lucra-Sports/lucra-react-native-sdk.git"
+  },
   "author": "Lucra <dev@lucrasports.com> (https://github.com/Lucra-Sports)",
   "license": "UNLICENSED",
   "homepage": "https://lucrasports.com/",
