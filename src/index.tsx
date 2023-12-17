@@ -1,60 +1,17 @@
-import { NativeModules } from 'react-native';
+import NativeLucraSDK, {
+  type LucraUser,
+  type LucraUserConfig,
+} from './NativeLucraSDK';
 
-const LucraClient = NativeModules.LucraClient;
+export * from './NativeLucraSDK';
+
+const LucraClient = NativeLucraSDK;
 
 if (LucraClient == null) {
   throw new Error(
     'LucraClient is not found. You can try clearing your build cache and try again.'
   );
 }
-
-enum VerificationStatus {
-  VERIFIED,
-  UNVERIFIED,
-  FAILED_VERIFICATION,
-  ERRORED_VERIFICATION,
-  PENDING_SCAN_VERIFICATION,
-  CLOSED,
-  CLOSED_PENDING,
-  BLOCKED,
-  SUSPENDED,
-  SHOULD_SCAN,
-}
-
-type LucraUser = {
-  id: string | null;
-  username: string | null;
-  avatarURL: string | null;
-  phoneNumber: string | null;
-  email: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  address: {
-    address: string | null;
-    addressCont: string | null;
-    city: string | null;
-    state: string | null;
-    zip: string | null;
-  } | null;
-  balance: number;
-  accountStatus: VerificationStatus;
-};
-
-type LucraUserConfig = {
-  username?: string;
-  avatarURL?: string;
-  phoneNumber?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  address?: {
-    address?: string;
-    adressCont?: string;
-    city?: string;
-    state?: string;
-    zip?: string;
-  };
-};
 
 type LucraSDKParams = {
   authenticationClientId: string;
@@ -120,10 +77,10 @@ export const LucraSDK = {
   }> => {
     return LucraClient.createGamesMatchup(gameTypeId, wagerAmount);
   },
-  acceptGamesMatchup: (matchupId: string, teamId: string): Promise<null> => {
+  acceptGamesMatchup: (matchupId: string, teamId: string): Promise<void> => {
     return LucraClient.acceptGamesMatchup(matchupId, teamId);
   },
-  cancelGamesMatchup: (gameId: string): Promise<null> => {
+  cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
   },
 };

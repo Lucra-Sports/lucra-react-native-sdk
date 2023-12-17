@@ -1387,7 +1387,7 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@lucra-sports/lucra-react-native-sdk@./..":
+"@lucra-sports/lucra-react-native-sdk@../.":
   version "0.4.4"
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":

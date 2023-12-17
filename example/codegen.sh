@@ -2,6 +2,10 @@
 
 set -ex
 
+# rm -rf node_modules/@lucra-sports
+# yarn add ../.
+rm -rf node_modules
+yarn
 mkdir -p ../android/src/paper/java/com/lucrasdk
 cd android
 ./gradlew generateCodegenArtifactsFromSchema

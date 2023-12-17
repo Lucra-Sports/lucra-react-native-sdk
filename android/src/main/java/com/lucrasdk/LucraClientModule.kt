@@ -7,7 +7,6 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.lucrasports.sdk.core.LucraClient
@@ -20,17 +19,19 @@ import com.lucrasports.sdk.core.style_guide.FontWeight
 import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.ui.LucraUi
+import com.facebook.react.module.annotations.ReactModule;
 
 
-class LucraClientModule(
-  private val reactContext: ReactApplicationContext
-) : ReactContextBaseJavaModule(reactContext) {
+@ReactModule(name = LucraClientModule.NAME)
+internal class LucraClientModule(
+  private val context: ReactApplicationContext
+) : NativeLucraSDKSpec(context) {
 
   private var fullAppFlowDialogFragment: DialogFragment? = null
   private var userCallback: Callback? = null
 
   @ReactMethod
-  fun initialize(options: ReadableMap) {
+  override fun initialize(options: ReadableMap, promise: Promise) {
     var authenticationClientId = options.getString("authenticationClientId")
       ?: throw Exception("LucraSDK no authentication ID passed to constructor")
 
@@ -84,7 +85,7 @@ class LucraClientModule(
     }
 
     LucraClient.initialize(
-      application = reactContext.applicationContext as Application,
+      application = context.applicationContext as Application,
       lucraUiProvider = LucraUi(
         lucraFlowListener = object : LucraFlowListener {
           // Callback for entering Lucra permitted flow launch points.
@@ -96,7 +97,7 @@ class LucraClientModule(
 
           //Callback for exiting all Lucra permitted flow launch points
           override fun onFlowDismissRequested(entryLucraFlow: LucraUiProvider.LucraFlow) {
-            (reactContext.currentActivity as FragmentActivity).supportFragmentManager.findFragmentByTag(
+            (context.currentActivity as FragmentActivity).supportFragmentManager.findFragmentByTag(
               entryLucraFlow.toString()
             )?.let {
               (it as DialogFragment).dismiss()
@@ -120,7 +121,7 @@ class LucraClientModule(
   }
 
   @ReactMethod
-  fun present(flow: String) {
+  override fun present(flow: String) {
     val lucraFlow = when (flow) {
       "profile" -> LucraUiProvider.LucraFlow.Profile
       "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
@@ -137,7 +138,7 @@ class LucraClientModule(
     fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
 
     fullAppFlowDialogFragment?.show(
-      (reactContext.currentActivity as FragmentActivity).supportFragmentManager,
+      (context.currentActivity as FragmentActivity).supportFragmentManager,
       lucraFlow.toString() // this tag will be used to dismiss in onFlowDismissRequested(flow)
     )
   }
@@ -174,7 +175,7 @@ class LucraClientModule(
   }
 
   @ReactMethod
-  fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
+  override fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
     LucraClient().createContest(gameTypeId, atStake) {
       when (it) {
         is GamesMatchup.CreateGamesMatchupResult.Failure -> {
@@ -195,7 +196,7 @@ class LucraClientModule(
   }
 
   @ReactMethod
-  fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
+  override fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
     LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
       when (it) {
         is GamesMatchup.MatchupActionResult.Failure ->
@@ -207,7 +208,7 @@ class LucraClientModule(
   }
 
   @ReactMethod
-  fun cancelGamesMatchup(matchupId: String, promise: Promise) {
+  override fun cancelGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().cancelGamesYouPlayContest(matchupId) {
       when (it) {
         is GamesMatchup.MatchupActionResult.Failure ->
@@ -219,13 +220,15 @@ class LucraClientModule(
   }
 
   @ReactMethod
-  fun registerUserCallback(callback: Callback) {
-    userCallback = callback
-    LucraClient().getSDKUser {  }
+  override fun configureUser(user: ReadableMap?) {
+    // TODO("Not yet implemented")
   }
-//
-//  @ReactMethod
-//  fun
+
+  @ReactMethod
+  override fun registerUserCallback(callback: Callback) {
+    userCallback = callback
+//    LucraClient().getSDKUser {  }
+  }
 
   companion object {
     const val NAME = "LucraClient"
