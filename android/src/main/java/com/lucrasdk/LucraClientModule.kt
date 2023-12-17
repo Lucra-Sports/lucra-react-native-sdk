@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -26,6 +27,7 @@ class LucraClientModule(
 ) : ReactContextBaseJavaModule(reactContext) {
 
   private var fullAppFlowDialogFragment: DialogFragment? = null
+  private var userCallback: Callback? = null
 
   @ReactMethod
   fun initialize(options: ReadableMap) {
@@ -215,6 +217,15 @@ class LucraClientModule(
       }
     }
   }
+
+  @ReactMethod
+  fun registerUserCallback(callback: Callback) {
+    userCallback = callback
+    LucraClient().getSDKUser {  }
+  }
+//
+//  @ReactMethod
+//  fun
 
   companion object {
     const val NAME = "LucraClient"

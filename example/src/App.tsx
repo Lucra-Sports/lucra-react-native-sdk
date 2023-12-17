@@ -32,20 +32,20 @@ LucraSDK.init({
   // },
 });
 
-LucraSDK.registerUserCallback((user) => {
-  // console.log(`User callback called ${JSON.stringify(user, null, 2)}`);
-  console.log(`✅ recevied user callback with id: ${user.id}`);
-});
+// LucraSDK.registerUserCallback((user) => {
+//   // console.log(`User callback called ${JSON.stringify(user, null, 2)}`);
+//   console.log(`✅ recevied user callback with id: ${user.id}`);
+// });
 
-setTimeout(() => {
-  console.log('configuring user');
-  LucraSDK.configurateUser({
-    firstName: 'blah',
-    address: {
-      address: 'quack',
-    },
-  });
-}, 400);
+// setTimeout(() => {
+//   console.log('configuring user');
+//   LucraSDK.configurateUser({
+//     firstName: 'blah',
+//     address: {
+//       address: 'quack',
+//     },
+//   });
+// }, 400);
 
 export default function App() {
   return (
