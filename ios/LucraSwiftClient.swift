@@ -2,17 +2,16 @@ import Combine
 import Foundation
 import LucraSDK
 
-@objc(LucraClient)
-class LucraClient: NSObject {
+@objc
+public class LucraSwiftClient: NSObject {
     private var nativeClient: LucraSDK.LucraClient!
     private var userCallback: RCTResponseSenderBlock?
     private var userSinkCancellable: AnyCancellable?
 
-    @objc static func requiresMainQueueSetup() -> Bool { return true }
-
-    @objc func initialize(_ options: [String: Any],
-                          resolver: @escaping RCTPromiseResolveBlock,
-                          rejecter: @escaping RCTPromiseRejectBlock)
+    @objc
+    public func initialize(_ options: [String: Any],
+                           resolver: @escaping RCTPromiseResolveBlock,
+                           rejecter: @escaping RCTPromiseRejectBlock)
     {
         guard nativeClient == nil else { return }
 
@@ -87,7 +86,8 @@ class LucraClient: NSObject {
         resolver(nil)
     }
 
-    @objc func registerUserCallback(_ cb: @escaping RCTResponseSenderBlock) {
+    @objc
+    public func registerUserCallback(_ cb: @escaping RCTResponseSenderBlock) {
         userCallback = cb
         userSinkCancellable = nativeClient.user.publisher.sink { user in
             var addressMap: [String: String?]? = nil
@@ -116,10 +116,8 @@ class LucraClient: NSObject {
         }
     }
 
-    @objc func configureUser(_ user: [String: Any],
-                             resolver _: @escaping RCTPromiseResolveBlock,
-                             rejecter _: @escaping RCTPromiseRejectBlock)
-    {
+    @objc
+    public func configureUser(_ user: [String: Any]) {
         var sdkAddress: LucraSDK.Address?
         if let address = user["address"] as? [String: Any] {
             sdkAddress = LucraSDK.Address(
@@ -142,7 +140,8 @@ class LucraClient: NSObject {
         nativeClient.configure(user: sdkUser)
     }
 
-    @objc func present(_ lucraFlow: String) {
+    @objc
+    public func present(_ lucraFlow: String) {
         DispatchQueue.main.async {
             // TODO(osp) LucraFlow is missing MyMatchup on iOS
             let nativeFlow: LucraSDK.LucraFlow = {
@@ -175,17 +174,19 @@ class LucraClient: NSObject {
         }
     }
 
-    @objc func createGamesMatchup(_ gameId: String,
-                                  wagerAmount: NSNumber,
-                                  resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock)
+    @objc
+    public func createGamesMatchup(_ gameId: String,
+                                   wagerAmount: Double,
+                                   resolver: @escaping RCTPromiseResolveBlock,
+                                   rejecter: @escaping RCTPromiseRejectBlock)
     {
         Task { @MainActor in
             do {
-                let result = try await self.nativeClient.api.createGamesMatchup(
-                    gameTypeId: gameId,
-                    atStake: wagerAmount.decimalValue
-                )
+                let result = try await
+                    self.nativeClient.api.createGamesMatchup(
+                        gameTypeId: gameId,
+                        atStake: Decimal(floatLiteral: wagerAmount)
+                    )
 
                 resolver([
                     "matchupId": result.matchupId,
@@ -198,10 +199,11 @@ class LucraClient: NSObject {
         }
     }
 
-    @objc func acceptGamesMatchup(_ matchupId: String,
-                                  teamId: String,
-                                  resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock)
+    @objc
+    public func acceptGamesMatchup(_ matchupId: String,
+                                   teamId: String,
+                                   resolver: @escaping RCTPromiseResolveBlock,
+                                   rejecter: @escaping RCTPromiseRejectBlock)
     {
         Task { @MainActor in
             do {
@@ -216,9 +218,10 @@ class LucraClient: NSObject {
         }
     }
 
-    @objc func cancelGamesMatchup(_ gameId: String,
-                                  resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock)
+    @objc
+    public func cancelGamesMatchup(_ gameId: String,
+                                   resolver: @escaping RCTPromiseResolveBlock,
+                                   rejecter: @escaping RCTPromiseRejectBlock)
     {
         Task { @MainActor in
             do {

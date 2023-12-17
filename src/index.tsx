@@ -1,9 +1,52 @@
-import NativeLucraSDK, {
-  type LucraUser,
-  type LucraUserConfig,
-} from './NativeLucraSDK';
+import NativeLucraSDK from './NativeLucraSDK';
 
-export * from './NativeLucraSDK';
+enum VerificationStatus {
+  VERIFIED,
+  UNVERIFIED,
+  FAILED_VERIFICATION,
+  ERRORED_VERIFICATION,
+  PENDING_SCAN_VERIFICATION,
+  CLOSED,
+  CLOSED_PENDING,
+  BLOCKED,
+  SUSPENDED,
+  SHOULD_SCAN,
+}
+
+export type LucraUserConfig = {
+  username?: string;
+  avatarURL?: string;
+  phoneNumber?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  address?: {
+    address?: string;
+    adressCont?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+  };
+};
+
+export type LucraUser = {
+  id: string | null;
+  username: string | null;
+  avatarURL: string | null;
+  phoneNumber: string | null;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  address: {
+    address: string | null;
+    addressCont: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+  } | null;
+  balance: number;
+  accountStatus: VerificationStatus;
+};
 
 const LucraClient = NativeLucraSDK;
 
@@ -58,7 +101,7 @@ export const LucraSDK = {
     await LucraClient.initialize(options);
   },
   registerUserCallback: (cb: (userData: LucraUser) => void) => {
-    LucraClient.registerUserCallback(cb);
+    LucraClient.registerUserCallback(cb as any);
   },
   configurateUser: async (user: LucraUserConfig): Promise<void> => {
     await LucraClient.configureUser(user);

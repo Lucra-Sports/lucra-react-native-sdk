@@ -1,24 +1,54 @@
 #import <React/RCTBridgeModule.h>
+#import "LucraClient.h"
+#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 
-@interface RCT_EXTERN_MODULE(LucraClient, NSObject)
+@implementation LucraClient
 
-RCT_EXTERN_METHOD(initialize: (nonnull NSDictionary)options
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(configureUser: (nonnull NSDictionary)userObj
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(registerUserCallback: (RCTResponseSenderBlock)callback)
-RCT_EXTERN_METHOD(present: (NSString)lucraFlow)
-RCT_EXTERN_METHOD(createGamesMatchup: (NSString)gameId
-                  wagerAmount: (nonnull NSNumber)wagerAmount
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(acceptGamesMatchup: (NSString)gameId
-                  teamId: (nonnull NSNumber)teamId
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(cancelGamesMatchup: (NSString)gameId
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject)
+@synthesize bridge=_bridge;
+
+LucraSwiftClient *client  = [[LucraSwiftClient alloc] init];
+
+RCT_EXPORT_MODULE()
+
+#if RCT_NEW_ARCH_ENABLED
+ - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+     (const facebook::react::ObjCTurboModule::InitParams &)params
+ {
+   return std::make_shared<facebook::react::NativeLucraSDKSpecJSI>(params);
+ }
+ #endif
+
+- (void)initialize:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    [client initialize:options resolver:resolve rejecter:reject];
+}
+
+- (void)acceptGamesMatchup:(NSString *)matchupId teamId:(NSString *)teamId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
+    [client acceptGamesMatchup:matchupId teamId:teamId resolver:resolve rejecter:reject];
+}
+
+
+- (void)cancelGamesMatchup:(NSString *)matchupId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
+    [client cancelGamesMatchup:matchupId resolver:resolve rejecter:reject];
+}
+
+
+- (void)configureUser:(NSDictionary *)user { 
+    [client configureUser:user];
+}
+
+
+- (void)createGamesMatchup:(NSString *)gameTypeId wagerAmount:(double)wagerAmount resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
+    [client createGamesMatchup:gameTypeId wagerAmount:wagerAmount resolver:resolve rejecter:reject];
+}
+
+
+- (void)present:(NSString *)flow { 
+    [client present:flow];
+}
+
+
+- (void)registerUserCallback:(RCTResponseSenderBlock)cb { 
+    [client registerUserCallback:cb];
+}
+
 @end

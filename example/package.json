@@ -6,7 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "pods": "pod-install --quiet",
+    "pods": "cd ios && rm -rf Pods && rm -f Podfile.lock && RCT_NEW_ARCH_ENABLED=1 USE_FRAMEWORKS=static bundle exec pod install",
     "android:logcat": "adb logcat",
     "nuke": "rm -rf $TMPDIR/react-* && watchman watch-del-all && rm -rf ios/build && rm -rf node_modules/ && rm -rf ./ios/Pods && yarn && npx pod-install",
     "postinstall": "patch-package",
@@ -24,7 +24,7 @@
     "react-native-linear-gradient": "^2.8.2",
     "react-native-safe-area-context": "^4.8.1",
     "react-native-screens": "^3.21.0",
-    "react-native-vector-icons": "^10.0.0"
+    "react-native-vector-icons": "^10.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
