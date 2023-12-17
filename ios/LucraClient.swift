@@ -1,14 +1,17 @@
+import Combine
 import Foundation
 import LucraSDK
 
 @objc(LucraClient)
 class LucraClient: NSObject {
+    private var nativeClient: LucraSDK.LucraClient!
+    private var userCallback: RCTResponseSenderBlock?
+    private var userSinkCancellable: AnyCancellable?
+
     @objc static func requiresMainQueueSetup() -> Bool { return true }
 
-    private var nativeClient: LucraSDK.LucraClient!
-
     @objc func initialize(_ options: [String: Any],
-                          resolver _: @escaping RCTPromiseResolveBlock,
+                          resolver: @escaping RCTPromiseResolveBlock,
                           rejecter: @escaping RCTPromiseRejectBlock)
     {
         guard nativeClient == nil else { return }
@@ -81,6 +84,62 @@ class LucraClient: NSObject {
                 appearance: clientTheme
             )
         )
+        resolver(nil)
+    }
+
+    @objc func registerUserCallback(_ cb: @escaping RCTResponseSenderBlock) {
+        userCallback = cb
+        userSinkCancellable = nativeClient.user.publisher.sink { user in
+            var addressMap: [String: String?]? = nil
+            if let address = user.address {
+                addressMap = [
+                    "address": address.address,
+                    "addressCont": address.addressCont,
+                    "city": address.city,
+                    "state": address.state,
+                    "zip": address.zip,
+                ]
+            }
+
+            cb([[
+                "id": user.id as Any,
+                "username": user.username as Any,
+                "avatarURL": user.avatarURL as Any,
+                "phoneNumber": user.phoneNumber as Any,
+                "email": user.email as Any,
+                "firstName": user.firstName as Any,
+                "lastName": user.lastName as Any,
+                "address": addressMap as Any,
+                "balance": user.balance,
+                "accountStatus": user.accountStatus.rawValue,
+            ]])
+        }
+    }
+
+    @objc func configureUser(_ user: [String: Any],
+                             resolver _: @escaping RCTPromiseResolveBlock,
+                             rejecter _: @escaping RCTPromiseRejectBlock)
+    {
+        var sdkAddress: LucraSDK.Address?
+        if let address = user["address"] as? [String: Any] {
+            sdkAddress = LucraSDK.Address(
+                address: address["address"] as? String,
+                addressCont: address["addressCont"] as? String,
+                city: address["city"] as? String,
+                state: address["state"] as? String,
+                zip: address["zip"] as? String
+            )
+        }
+        let sdkUser = SDKUser(
+            username: user["username"] as? String,
+            avatarURL: user["avatarURL"] as? String,
+            phoneNumber: user["phoneNumber"] as? String,
+            email: user["email"] as? String,
+            firstName: user["firstName"] as? String,
+            lastName: user["lastName"] as? String,
+            address: sdkAddress
+        )
+        nativeClient.configure(user: sdkUser)
     }
 
     @objc func present(_ lucraFlow: String) {

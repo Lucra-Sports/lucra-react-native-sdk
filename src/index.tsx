@@ -8,6 +8,54 @@ if (LucraClient == null) {
   );
 }
 
+enum VerificationStatus {
+  VERIFIED,
+  UNVERIFIED,
+  FAILED_VERIFICATION,
+  ERRORED_VERIFICATION,
+  PENDING_SCAN_VERIFICATION,
+  CLOSED,
+  CLOSED_PENDING,
+  BLOCKED,
+  SUSPENDED,
+  SHOULD_SCAN,
+}
+
+type LucraUser = {
+  id: string | null;
+  username: string | null;
+  avatarURL: string | null;
+  phoneNumber: string | null;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  address: {
+    address: string | null;
+    addressCont: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+  } | null;
+  balance: number;
+  accountStatus: VerificationStatus;
+};
+
+type LucraUserConfig = {
+  username?: string;
+  avatarURL?: string;
+  phoneNumber?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  address?: {
+    address?: string;
+    adressCont?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+  };
+};
+
 type LucraSDKParams = {
   authenticationClientId: string;
   environment: string;
@@ -49,8 +97,14 @@ export const LucraSDK = {
     PUBLIC_FEED: 'publicFeed',
     MY_MATCHUP: 'myMatchup',
   },
-  init: (options: LucraSDKParams) => {
-    LucraClient.initialize(options);
+  init: async (options: LucraSDKParams): Promise<void> => {
+    await LucraClient.initialize(options);
+  },
+  registerUserCallback: (cb: (userData: LucraUser) => void) => {
+    LucraClient.registerUserCallback(cb);
+  },
+  configurateUser: async (user: LucraUserConfig): Promise<void> => {
+    await LucraClient.configureUser(user);
   },
   present: (flow: string) => {
     LucraClient.present(flow);
