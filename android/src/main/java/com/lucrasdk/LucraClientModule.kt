@@ -25,7 +25,7 @@ import com.facebook.react.module.annotations.ReactModule;
 @ReactModule(name = LucraClientModule.NAME)
 internal class LucraClientModule(
   private val context: ReactApplicationContext
-) : NativeLucraSDKSpec(context) {
+) : NativeLucraClientSpec(context) {
 
   private var fullAppFlowDialogFragment: DialogFragment? = null
   private var userCallback: Callback? = null
