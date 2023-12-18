@@ -19,12 +19,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		134814201AA4EA6300B7C361 /* libLucrasdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLucrasdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA9DC32A2A728DA700631ABD /* LucraSdkMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucraSdkMiddleware.swift; sourceTree = "<group>"; };
-		FA9DC32B2A728DA700631ABD /* Lucrasdk-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Lucrasdk-Bridging-Header.h"; sourceTree = "<group>"; };
-		FA9DC32F2A728DA700631ABD /* LucrasdkViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucrasdkViewManager.swift; sourceTree = "<group>"; };
-		FA9DC3302A728DA700631ABD /* LucrasdkViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LucrasdkViewManager.m; sourceTree = "<group>"; };
-		FA9DC3312A728DA700631ABD /* LucraSdkMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LucraSdkMiddleware.m; sourceTree = "<group>"; };
+		134814201AA4EA6300B7C361 /* libLucraClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLucraClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA9DC32A2A728DA700631ABD /* LucraClientMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucraClientMiddleware.swift; sourceTree = "<group>"; };
+		FA9DC32B2A728DA700631ABD /* LucraClient-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LucraClient-Bridging-Header.h"; sourceTree = "<group>"; };
+		FA9DC32F2A728DA700631ABD /* LucraClientViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucraClientViewManager.swift; sourceTree = "<group>"; };
+		FA9DC3302A728DA700631ABD /* LucraClientViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LucraClientViewManager.m; sourceTree = "<group>"; };
+		FA9DC3312A728DA700631ABD /* LucraClientMiddleware.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LucraClientMiddleware.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +41,7 @@
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				134814201AA4EA6300B7C361 /* libLucrasdk.a */,
+				134814201AA4EA6300B7C361 /* libLucraClient.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -49,11 +49,11 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				FA9DC32B2A728DA700631ABD /* Lucrasdk-Bridging-Header.h */,
-				FA9DC3312A728DA700631ABD /* LucraSdkMiddleware.m */,
-				FA9DC32A2A728DA700631ABD /* LucraSdkMiddleware.swift */,
-				FA9DC3302A728DA700631ABD /* LucrasdkViewManager.m */,
-				FA9DC32F2A728DA700631ABD /* LucrasdkViewManager.swift */,
+				FA9DC32B2A728DA700631ABD /* LucraClient-Bridging-Header.h */,
+				FA9DC3312A728DA700631ABD /* LucraClientMiddleware.m */,
+				FA9DC32A2A728DA700631ABD /* LucraClientMiddleware.swift */,
+				FA9DC3302A728DA700631ABD /* LucraClientViewManager.m */,
+				FA9DC32F2A728DA700631ABD /* LucraClientViewManager.swift */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,9 +61,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58B511DA1A9E6C8500147676 /* Lucrasdk */ = {
+		58B511DA1A9E6C8500147676 /* LucraClient */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Lucrasdk" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "LucraClient" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
@@ -73,9 +73,9 @@
 			);
 			dependencies = (
 			);
-			name = Lucrasdk;
+			name = LucraClient;
 			productName = RCTDataManager;
-			productReference = 134814201AA4EA6300B7C361 /* libLucrasdk.a */;
+			productReference = 134814201AA4EA6300B7C361 /* libLucraClient.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -92,7 +92,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Lucrasdk" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "LucraClient" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -105,7 +105,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58B511DA1A9E6C8500147676 /* Lucrasdk */,
+				58B511DA1A9E6C8500147676 /* LucraClient */,
 			);
 		};
 /* End PBXProject section */
@@ -228,9 +228,9 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Lucrasdk;
+				PRODUCT_NAME = LucraClient;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Lucrasdk-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "LucraClient-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -248,9 +248,9 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Lucrasdk;
+				PRODUCT_NAME = LucraClient;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Lucrasdk-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "LucraClient-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -258,7 +258,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Lucrasdk" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "LucraClient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
@@ -267,7 +267,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Lucrasdk" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "LucraClient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,

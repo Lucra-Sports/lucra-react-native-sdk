@@ -1490,7 +1490,7 @@ SPEC CHECKSUMS:
   Iterable-iOS-SDK: e6ae8c2c1f4d61f702f7c424662abfa23a10d8c7
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: 550531ca5af60f3497838dda373b2547e197b00e
+  lucra-react-native-sdk: 06834a87ba7a6295f0da6b619b2ebf2eac8a5b22
   LucraSDK: 11a8732cce5a06bd975fe9fc8ef1b4b25729b970
   Nuke: 279f17a599fd1c83cf51de5e0e1f2db143a287b0
   NukeUI: 6e99837a8d066c93baa4262692d9ea9ffbc863ba
@@ -1556,6 +1556,6 @@ SPEC CHECKSUMS:
   ZendeskSupportProvidersSDK: 4aafe8114a9bba1a98dc03ca14d8fa6510cf4e70
   ZendeskSupportSDK: 8cf921c496269bb5f53aac9320f3d002a793991d
 
-PODFILE CHECKSUM: 3b8403fa2203c220c2992754130e3d6e7ae95fd2
+PODFILE CHECKSUM: 4cdefc82a1a7fb857fa7ddcafcd732a57368b705
 
 COCOAPODS: 1.14.3

@@ -1,4 +1,4 @@
-import NativeLucraSDK from './NativeLucraSDK';
+import LucraClient from './NativeLucraClient';
 
 enum VerificationStatus {
   VERIFIED,
@@ -48,11 +48,9 @@ export type LucraUser = {
   accountStatus: VerificationStatus;
 };
 
-const LucraClient = NativeLucraSDK;
-
 if (LucraClient == null) {
   throw new Error(
-    'LucraClient is not found. You can try clearing your build cache and try again.'
+    'Native LucraSDK is not found. You can try clearing your build cache and try again.'
   );
 }
 

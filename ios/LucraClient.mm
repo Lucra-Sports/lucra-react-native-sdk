@@ -6,49 +6,63 @@
 
 @synthesize bridge=_bridge;
 
-LucraSwiftClient *client  = [[LucraSwiftClient alloc] init];
-
 RCT_EXPORT_MODULE()
 
-#if RCT_NEW_ARCH_ENABLED
- - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-     (const facebook::react::ObjCTurboModule::InitParams &)params
- {
-   return std::make_shared<facebook::react::NativeLucraSDKSpecJSI>(params);
- }
- #endif
+LucraSwiftClient *client;
 
-- (void)initialize:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)setBridge:(RCTBridge *)bridge {
+  _bridge = bridge;
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
+RCT_EXPORT_METHOD(initialize: (NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    client = [[LucraSwiftClient alloc] init];
     [client initialize:options resolver:resolve rejecter:reject];
 }
 
-- (void)acceptGamesMatchup:(NSString *)matchupId teamId:(NSString *)teamId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
+RCT_EXPORT_METHOD(acceptGamesMatchup:(NSString *)matchupId teamId:(NSString *)teamId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [client acceptGamesMatchup:matchupId teamId:teamId resolver:resolve rejecter:reject];
 }
 
 
-- (void)cancelGamesMatchup:(NSString *)matchupId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
+RCT_EXPORT_METHOD(cancelGamesMatchup:(NSString *)matchupId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [client cancelGamesMatchup:matchupId resolver:resolve rejecter:reject];
 }
 
 
-- (void)configureUser:(NSDictionary *)user { 
+RCT_EXPORT_METHOD(configureUser:(NSDictionary *)user) {
     [client configureUser:user];
 }
 
 
-- (void)createGamesMatchup:(NSString *)gameTypeId wagerAmount:(double)wagerAmount resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
+RCT_EXPORT_METHOD(createGamesMatchup:(NSString *)gameTypeId wagerAmount:(double)wagerAmount resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [client createGamesMatchup:gameTypeId wagerAmount:wagerAmount resolver:resolve rejecter:reject];
 }
 
 
-- (void)present:(NSString *)flow { 
+RCT_EXPORT_METHOD(present:(NSString *)flow) {
     [client present:flow];
 }
 
 
-- (void)registerUserCallback:(RCTResponseSenderBlock)cb { 
+RCT_EXPORT_METHOD(registerUserCallback:(RCTResponseSenderBlock)cb) {
     [client registerUserCallback:cb];
+}
+
+#if RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+ (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+return std::make_shared<facebook::react::NativeLucraClientSpecJSI>(params);
+}
+#endif
+
+- (void)invalidate {
+//    intentionally left blank
 }
 
 @end

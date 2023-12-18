@@ -1,16 +1,16 @@
- #ifdef RCT_NEW_ARCH_ENABLED
- #import <LucraClientSpec/LucraClientSpec.h>
- #else
- #import <React/RCTBridge.h>
- #endif
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <LucraClientSpec/LucraClientSpec.h>
+#else
+#import <React/RCTBridge.h>
+#endif
 
- @interface LucraClient : NSObject
- #ifdef RCT_NEW_ARCH_ENABLED
-                                    <NativeLucraSDKSpec>
- #else
-                                    <RCTBridgeModule>
- #endif
+@interface LucraClient : NSObject
+#ifdef RCT_NEW_ARCH_ENABLED
+                                <NativeLucraClientSpec>
+#else
+                                <RCTBridgeModule>
+#endif
 
- @property(nonatomic, assign) BOOL setBridgeOnMainQueue;
+@property(nonatomic, assign) BOOL setBridgeOnMainQueue;
 
 @end
