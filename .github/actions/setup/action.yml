@@ -11,6 +11,7 @@ runs:
 
     - name: enable corepack
       run: corepack enable
+      shell: bash
 
     - name: Cache dependencies
       id: yarn-cache
