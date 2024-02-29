@@ -53,6 +53,10 @@ RCT_EXPORT_METHOD(registerUserCallback:(RCTResponseSenderBlock)cb) {
     [client registerUserCallback:cb];
 }
 
+RCT_EXPORT_METHOD(logout:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [client logoutWithResolve:resolve reject:reject];
+}
+
 #if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
  (const facebook::react::ObjCTurboModule::InitParams &)params

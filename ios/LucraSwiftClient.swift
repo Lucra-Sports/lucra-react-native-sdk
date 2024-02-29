@@ -252,4 +252,14 @@ public class LucraSwiftClient: NSObject {
             }
         }
     }
+    
+    @objc
+    public func logout(resolve: @escaping RCTPromiseResolveBlock,
+                       reject: @escaping RCTPromiseRejectBlock) {
+        Task {
+            await self.nativeClient.logout()
+            resolve(nil)
+        }
+        
+    }
 }

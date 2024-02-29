@@ -125,6 +125,9 @@ export const LucraSDK = {
   cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
   },
+  logout: (): Promise<void> => {
+    return LucraClient.logout();
+  },
 };
 
 export type LucraSDKError = {
