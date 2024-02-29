@@ -3,7 +3,7 @@
   "compilerOptions": {
     "skipLibCheck": true,
     "paths": {
-      "@lucra-sports/lucra-react-native-sdk": ["./src/index"]
+      "@lucra-sports/lucra-react-native-sdk": ["../src/index"]
     },
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,

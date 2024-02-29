@@ -14,7 +14,6 @@
     "codegen": "./codegen.sh"
   },
   "dependencies": {
-    "@lucra-sports/lucra-react-native-sdk": "../.",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.9.13",
     "nativewind": "^2.0.11",

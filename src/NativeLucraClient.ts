@@ -13,7 +13,7 @@ interface Spec extends TurboModule {
   }>;
   acceptGamesMatchup(matchupId: string, teamId: string): Promise<void>;
   cancelGamesMatchup(matchupId: string): Promise<void>;
-  configureUser(user: Object): void;
+  configureUser(user: Object): Promise<void>;
   registerUserCallback(cb: (userData: Object) => void): void;
 }
 

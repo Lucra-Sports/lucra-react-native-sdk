@@ -55,7 +55,8 @@ if (LucraClient == null) {
 }
 
 type LucraSDKParams = {
-  authenticationClientId: string;
+  apiURL: string;
+  apiKey: string;
   environment: string;
   theme?: {
     background?: string;
@@ -101,7 +102,7 @@ export const LucraSDK = {
   registerUserCallback: (cb: (userData: LucraUser) => void) => {
     LucraClient.registerUserCallback(cb as any);
   },
-  configurateUser: async (user: LucraUserConfig): Promise<void> => {
+  configureUser: async (user: LucraUserConfig): Promise<void> => {
     await LucraClient.configureUser(user);
   },
   present: (flow: string) => {

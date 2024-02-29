@@ -7,7 +7,9 @@ import { Platform, StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 LucraSDK.init({
-  authenticationClientId: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
+  // authenticationClientId: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
+  apiURL: 'https://api.sandbox.lucra.com',
+  apiKey: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
   environment: LucraSDK.ENVIRONMENT.SANDBOX,
   // theme: {
   //   background: '#001448',

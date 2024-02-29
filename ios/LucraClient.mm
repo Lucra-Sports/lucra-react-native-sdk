@@ -34,8 +34,8 @@ RCT_EXPORT_METHOD(cancelGamesMatchup:(NSString *)matchupId resolve:(RCTPromiseRe
 }
 
 
-RCT_EXPORT_METHOD(configureUser:(NSDictionary *)user) {
-    [client configureUser:user];
+RCT_EXPORT_METHOD(configureUser:(NSDictionary *)user resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [client configureUser:user resolver:resolve rejecter:reject];
 }
 
 

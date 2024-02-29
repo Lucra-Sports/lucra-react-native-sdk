@@ -15,12 +15,20 @@ public class LucraSwiftClient: NSObject {
     {
         guard nativeClient == nil else { return }
 
-        guard let authenticationClientID =
-            options["authenticationClientId"] as? String
+        guard let apiURL = options["apiURL"] as? String
         else {
             rejecter(
                 "Lucra SDK Error",
-                "no clientAuthenticationId passed to LucraSDK constructor",
+                "no apiURL passed to LucraSDK constructor",
+                nil
+            )
+            return
+        }
+        guard let apiKey = options["apiKey"] as? String
+        else {
+            rejecter(
+                "Lucra SDK Error",
+                "no apiKey passed to LucraSDK constructor",
                 nil
             )
             return
@@ -75,7 +83,8 @@ public class LucraSwiftClient: NSObject {
         nativeClient = LucraSDK.LucraClient(
             config: .init(
                 environment: .init(
-                    authenticationClientID: authenticationClientID,
+                    apiURL: apiURL,
+                    apiKey: apiKey,
                     environment: nativeEnvironment,
                     urlScheme: "",
                     merchantID: merchantID
@@ -117,7 +126,8 @@ public class LucraSwiftClient: NSObject {
     }
 
     @objc
-    public func configureUser(_ user: [String: Any]) {
+    public func configureUser(_ user: [String: Any], resolver: @escaping RCTPromiseResolveBlock,
+                              rejecter: @escaping RCTPromiseRejectBlock) {
         var sdkAddress: LucraSDK.Address?
         if let address = user["address"] as? [String: Any] {
             sdkAddress = LucraSDK.Address(
@@ -137,7 +147,16 @@ public class LucraSwiftClient: NSObject {
             lastName: user["lastName"] as? String,
             address: sdkAddress
         )
-        nativeClient.configure(user: sdkUser)
+        
+        Task {
+            do {
+                try await nativeClient.configure(user: sdkUser)
+                resolver(nil)
+            } catch {
+                rejecter("Lucra SDK Error", "\(error)", nil)
+            }
+        }
+        
     }
 
     @objc
