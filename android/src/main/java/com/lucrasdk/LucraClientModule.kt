@@ -32,8 +32,10 @@ internal class LucraClientModule(
 
   @ReactMethod
   override fun initialize(options: ReadableMap, promise: Promise) {
-    var authenticationClientId = options.getString("authenticationClientId")
-      ?: throw Exception("LucraSDK no authentication ID passed to constructor")
+//    var apiURL = options.getString("apiURL")
+//      ?: throw Exception("LucraSDK no api passed to constructor")
+    var apiKey = options.getString("apiKey")
+      ?: throw Exception("LucraSDK no apiKey passed to constructor")
 
     var environment = options.getString("environment")
 
@@ -105,7 +107,8 @@ internal class LucraClientModule(
           }
         }
       ),
-      authClientId = authenticationClientId,
+      // TODO replace with apiKey
+      authClientId = apiKey,
       environment = when (environment) {
         "production" -> LucraClient.Companion.Environment.PRODUCTION
         "staging" -> LucraClient.Companion.Environment.STAGING
@@ -220,8 +223,13 @@ internal class LucraClientModule(
   }
 
   @ReactMethod
-  override fun configureUser(user: ReadableMap?) {
+  override fun configureUser(user: ReadableMap?, promise: Promise) {
     // TODO("Not yet implemented")
+  }
+
+  @ReactMethod
+  override fun logout(promise: Promise?) {
+    LucraClient().logout(this.context)
   }
 
   @ReactMethod

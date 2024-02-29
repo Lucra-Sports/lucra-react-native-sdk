@@ -180,6 +180,23 @@ android {
 }
 ```
 
+### Min API version
+
+LucraSDK requires a minimum API version of 24, you will have to update your project to bump this:
+
+```
+// android/build.gradle
+buildscript {
+  ext {
+    buildToolsVersion = "34.0.0"
+    minSdkVersion = 24 // <-------- MAKE SURE THIS IS AT LEAST 24
+    compileSdkVersion = 34
+    ndkVersion = "25.1.8937393"
+    targetSdkVersion = 34
+    kotlinVersion = "1.8.0"
+  }
+```
+
 ### Manifest Requirements
 
 The following manifest permissions, features, receivers and services are required to use Lucra
