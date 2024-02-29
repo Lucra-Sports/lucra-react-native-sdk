@@ -1,24 +1,34 @@
+import Combine
 import Foundation
 import LucraSDK
 
-@objc(LucraClient)
-class LucraClient: NSObject {
-    @objc static func requiresMainQueueSetup() -> Bool { return true }
-
+@objc
+public class LucraSwiftClient: NSObject {
     private var nativeClient: LucraSDK.LucraClient!
+    private var userCallback: RCTResponseSenderBlock?
+    private var userSinkCancellable: AnyCancellable?
 
-    @objc func initialize(_ options: [String: Any],
-                          resolver _: @escaping RCTPromiseResolveBlock,
-                          rejecter: @escaping RCTPromiseRejectBlock)
+    @objc
+    public func initialize(_ options: [String: Any],
+                           resolver: @escaping RCTPromiseResolveBlock,
+                           rejecter: @escaping RCTPromiseRejectBlock)
     {
         guard nativeClient == nil else { return }
 
-        guard let authenticationClientID =
-            options["authenticationClientId"] as? String
+        guard let apiURL = options["apiURL"] as? String
         else {
             rejecter(
                 "Lucra SDK Error",
-                "no clientAuthenticationId passed to LucraSDK constructor",
+                "no apiURL passed to LucraSDK constructor",
+                nil
+            )
+            return
+        }
+        guard let apiKey = options["apiKey"] as? String
+        else {
+            rejecter(
+                "Lucra SDK Error",
+                "no apiKey passed to LucraSDK constructor",
                 nil
             )
             return
@@ -73,7 +83,8 @@ class LucraClient: NSObject {
         nativeClient = LucraSDK.LucraClient(
             config: .init(
                 environment: .init(
-                    authenticationClientID: authenticationClientID,
+                    apiURL: apiURL,
+                    apiKey: apiKey,
                     environment: nativeEnvironment,
                     urlScheme: "",
                     merchantID: merchantID
@@ -81,9 +92,75 @@ class LucraClient: NSObject {
                 appearance: clientTheme
             )
         )
+        resolver(nil)
     }
 
-    @objc func present(_ lucraFlow: String) {
+    @objc
+    public func registerUserCallback(_ cb: @escaping RCTResponseSenderBlock) {
+        userCallback = cb
+        userSinkCancellable = nativeClient.user.publisher.sink { user in
+            var addressMap: [String: String?]? = nil
+            if let address = user.address {
+                addressMap = [
+                    "address": address.address,
+                    "addressCont": address.addressCont,
+                    "city": address.city,
+                    "state": address.state,
+                    "zip": address.zip,
+                ]
+            }
+
+            cb([[
+                "id": user.id as Any,
+                "username": user.username as Any,
+                "avatarURL": user.avatarURL as Any,
+                "phoneNumber": user.phoneNumber as Any,
+                "email": user.email as Any,
+                "firstName": user.firstName as Any,
+                "lastName": user.lastName as Any,
+                "address": addressMap as Any,
+                "balance": user.balance,
+                "accountStatus": user.accountStatus.rawValue,
+            ]])
+        }
+    }
+
+    @objc
+    public func configureUser(_ user: [String: Any], resolver: @escaping RCTPromiseResolveBlock,
+                              rejecter: @escaping RCTPromiseRejectBlock) {
+        var sdkAddress: LucraSDK.Address?
+        if let address = user["address"] as? [String: Any] {
+            sdkAddress = LucraSDK.Address(
+                address: address["address"] as? String,
+                addressCont: address["addressCont"] as? String,
+                city: address["city"] as? String,
+                state: address["state"] as? String,
+                zip: address["zip"] as? String
+            )
+        }
+        let sdkUser = SDKUser(
+            username: user["username"] as? String,
+            avatarURL: user["avatarURL"] as? String,
+            phoneNumber: user["phoneNumber"] as? String,
+            email: user["email"] as? String,
+            firstName: user["firstName"] as? String,
+            lastName: user["lastName"] as? String,
+            address: sdkAddress
+        )
+        
+        Task {
+            do {
+                try await nativeClient.configure(user: sdkUser)
+                resolver(nil)
+            } catch {
+                rejecter("Lucra SDK Error", "\(error)", nil)
+            }
+        }
+        
+    }
+
+    @objc
+    public func present(_ lucraFlow: String) {
         DispatchQueue.main.async {
             // TODO(osp) LucraFlow is missing MyMatchup on iOS
             let nativeFlow: LucraSDK.LucraFlow = {
@@ -116,17 +193,19 @@ class LucraClient: NSObject {
         }
     }
 
-    @objc func createGamesMatchup(_ gameId: String,
-                                  wagerAmount: NSNumber,
-                                  resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock)
+    @objc
+    public func createGamesMatchup(_ gameId: String,
+                                   wagerAmount: Double,
+                                   resolver: @escaping RCTPromiseResolveBlock,
+                                   rejecter: @escaping RCTPromiseRejectBlock)
     {
         Task { @MainActor in
             do {
-                let result = try await self.nativeClient.api.createGamesMatchup(
-                    gameTypeId: gameId,
-                    atStake: wagerAmount.decimalValue
-                )
+                let result = try await
+                    self.nativeClient.api.createGamesMatchup(
+                        gameTypeId: gameId,
+                        atStake: Decimal(floatLiteral: wagerAmount)
+                    )
 
                 resolver([
                     "matchupId": result.matchupId,
@@ -139,10 +218,11 @@ class LucraClient: NSObject {
         }
     }
 
-    @objc func acceptGamesMatchup(_ matchupId: String,
-                                  teamId: String,
-                                  resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock)
+    @objc
+    public func acceptGamesMatchup(_ matchupId: String,
+                                   teamId: String,
+                                   resolver: @escaping RCTPromiseResolveBlock,
+                                   rejecter: @escaping RCTPromiseRejectBlock)
     {
         Task { @MainActor in
             do {
@@ -157,9 +237,10 @@ class LucraClient: NSObject {
         }
     }
 
-    @objc func cancelGamesMatchup(_ gameId: String,
-                                  resolver: @escaping RCTPromiseResolveBlock,
-                                  rejecter: @escaping RCTPromiseRejectBlock)
+    @objc
+    public func cancelGamesMatchup(_ gameId: String,
+                                   resolver: @escaping RCTPromiseResolveBlock,
+                                   rejecter: @escaping RCTPromiseRejectBlock)
     {
         Task { @MainActor in
             do {
@@ -170,5 +251,15 @@ class LucraClient: NSObject {
                 rejecter("\(error)", error.localizedDescription, nil)
             }
         }
+    }
+    
+    @objc
+    public func logout(resolve: @escaping RCTPromiseResolveBlock,
+                       reject: @escaping RCTPromiseRejectBlock) {
+        Task {
+            await self.nativeClient.logout()
+            resolve(nil)
+        }
+        
     }
 }
