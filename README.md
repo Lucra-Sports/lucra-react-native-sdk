@@ -65,6 +65,12 @@ You will need to disable Flipper as it fails to link when using `use_frameworks!
 flipper_config = FlipperConfiguration.disabled
 ```
 
+The minimum target version is iOS 15, so you will also have to update this on your project (You can do it in the XCode general tab) and on your podfile:
+
+```
+platform :ios, 15.0
+```
+
 ### Add Lucra private pod repo
 
 Run the following command to add the native SDK dependency locally that you added previously as a source in the Podfile
