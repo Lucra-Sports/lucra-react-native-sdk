@@ -22,10 +22,17 @@ You can skip creating a token if you have set up SSH for your GitHub account. In
 
 ## NPM
 
+After you have your token setup you need to create a `.npmrc` file and you need to tell the package needs to be fetched from the github registry:
+
+```
+//npm.pkg.github.com/:_authToken=GITHUB_PERSONAL_TOKEN
+@lucra-sports:registry=https://npm.pkg.github.com
+```
+
 Install the package to your React Native Repo by running:
 
 ```sh
-yarn add @lucra-sports/lucra-react-native-sdk
+npm i -s @lucra-sports/lucra-react-native-sdk
 ```
 
 ## iOS
