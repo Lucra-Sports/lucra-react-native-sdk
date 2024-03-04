@@ -20,6 +20,8 @@ import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.ui.LucraUi
 import com.facebook.react.module.annotations.ReactModule;
+import com.lucrasports.sdk.core.user.SDKUser
+import com.lucrasports.sdk.core.user.SDKUserResult
 
 
 @ReactModule(name = LucraClientModule.NAME)
@@ -32,18 +34,18 @@ internal class LucraClientModule(
 
   @ReactMethod
   override fun initialize(options: ReadableMap, promise: Promise) {
-//    var apiURL = options.getString("apiURL")
-//      ?: throw Exception("LucraSDK no api passed to constructor")
-    var apiKey = options.getString("apiKey")
+    val apiURL = options.getString("apiURL")
+      ?: throw Exception("LucraSDK no api passed to constructor")
+    val apiKey = options.getString("apiKey")
       ?: throw Exception("LucraSDK no apiKey passed to constructor")
 
-    var environment = options.getString("environment")
+    val environment = options.getString("environment")
 
-    var theme = options.getMap("theme")
+    val theme = options.getMap("theme")
     var clientTheme = ClientTheme()
     var fontFamily = FontFamily(emptyList())
     if (theme != null) {
-      var colorStyle = ColorStyle(
+      val colorStyle = ColorStyle(
         theme.getString("background"),
         theme.getString("surface"),
         theme.getString("primary"),
@@ -56,7 +58,7 @@ internal class LucraClientModule(
         theme.getString("onTertiary"),
       )
 
-      var fontFamilyObj = theme.getMap("fontFamily")
+      val fontFamilyObj = theme.getMap("fontFamily")
       if (fontFamilyObj != null) {
         val fontList = mutableListOf<Font>()
 
@@ -107,8 +109,8 @@ internal class LucraClientModule(
           }
         }
       ),
-      // TODO replace with apiKey
-      authClientId = apiKey,
+      apiUrl = apiURL,
+      apiKey = apiKey,
       environment = when (environment) {
         "production" -> LucraClient.Companion.Environment.PRODUCTION
         "staging" -> LucraClient.Companion.Environment.STAGING
@@ -223,8 +225,34 @@ internal class LucraClientModule(
   }
 
   @ReactMethod
-  override fun configureUser(user: ReadableMap?, promise: Promise) {
-    // TODO("Not yet implemented")
+  override fun configureUser(user: ReadableMap, promise: Promise) {
+    val newUser = SDKUser(
+      address = user.getString("address"),
+      addressCont = user.getString("addressCont"),
+      city = user.getString("city"),
+      email = user.getString("email"),
+      firstName = user.getString("firstName"),
+      lastName = user.getString("lastName"),
+      phoneNumber = user.getString("phoneNumber"),
+      state = user.getString("state"),
+      username = user.getString("username"),
+      zip = user.getString("zip")
+    )
+    LucraClient().configure(sdkUser = newUser ) {
+      when(it) {
+        is SDKUserResult.Success ->
+          promise.resolve(null)
+
+        is SDKUserResult.InvalidUsername ->
+          promise.reject("invalid_username", "username is not valid")
+
+        is SDKUserResult.NotLoggedIn ->
+          promise.reject("not_logged_in", "not logged in")
+
+        is SDKUserResult.Error ->
+          promise.reject("unknown_error", it.toString())
+      }
+    }
   }
 
   @ReactMethod
@@ -235,6 +263,7 @@ internal class LucraClientModule(
   @ReactMethod
   override fun registerUserCallback(callback: Callback) {
     userCallback = callback
+//    TODO android client does not support callbacks yet when user is updated
 //    LucraClient().getSDKUser {  }
   }
 
