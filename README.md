@@ -284,29 +284,30 @@ import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
 let lucraSDKOptions = {
-  authenticationClientID: 'BHGhy6w9eOPoU7z1UdHffuDNdlihYU6T',
-  environment: LucraSDK.ENVIRONMENT.STAGING,
-  merchantID: '123abc', // optional merchantID
-  // You can also pass a theme to customize the Lucra UI
-  // theme?: {
-  //   background?: string;
-  //   surface?: string;
-  //   primary?: string;
-  //   secondary?: string;
-  //   tertiary?: string;
-  //   onBackground?: string;
-  //   onSurface?: string;
-  //   onPrimary?: string;
-  //   onSecondary?: string;
-  //   onTertiary?: string;
-  //   fontFamilyName?: | {
-  //     bold?: string;
-  //     semibold?: string;
-  //     normal?: string;
-  //     medium?: string;
-  //   } on Android you need to pass the font file name
-  // | string; on iOS fonts are referenced by canonical name only
-  // }
+  apiURL: 'https://api.lucra.com',
+  apiKey: <insert your key here>,
+  environment: LucraSDK.ENVIRONMENT.SANDBOX,
+  theme: {
+    background: '#001448',
+    surface: '#1C2575',
+    primary: '#09E35F',
+    secondary: '#5E5BD0',
+    tertiary: '#9C99FC',
+    onBackground: '#FFFFFF',
+    onSurface: '#FFFFFF',
+    onPrimary: '#001448',
+    onSecondary: '#FFFFFF',
+    onTertiary: '#FFFFFF',
+    fontFamily:
+      Platform.OS === 'ios'
+        ? 'Inter'
+        : {
+            normal: 'Inter-Regular',
+            bold: 'Inter-Bold',
+            semibold: 'Inter-SemiBold',
+            medium: 'Inter-Medium',
+          },
+  },
 };
 
 LucraSDK.init(lucraSDKOptions);
@@ -393,5 +394,33 @@ export default function App() {
       />
     </View>
   );
+}
+```
+
+## User configuration
+
+You can configure and retrieve the lucra user via the following methods.
+
+```ts
+await LucraSDK.configureUser({
+  firstName: 'Mike',
+  address: {
+    address: 'New York',
+  },
+});
+
+let user = await LucraSDK.getUser();
+```
+
+## User callback
+
+You can subscribe to changes in the user object via callback (currently only supported in iOS)
+
+```ts
+if (Platform.OS === 'ios') {
+  // User callback is currently only supported on iOS
+  LucraSDK.registerUserCallback((user) => {
+    console.log(`✅ recevied user callback with id: ${user.id}`);
+  });
 }
 ```

@@ -35,7 +35,7 @@ RCT_EXPORT_METHOD(cancelGamesMatchup:(NSString *)matchupId resolve:(RCTPromiseRe
 
 
 RCT_EXPORT_METHOD(configureUser:(NSDictionary *)user resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-    [client configureUser:user resolver:resolve rejecter:reject];
+    [client configureUser:user resolve:resolve reject:reject];
 }
 
 
@@ -55,6 +55,10 @@ RCT_EXPORT_METHOD(registerUserCallback:(RCTResponseSenderBlock)cb) {
 
 RCT_EXPORT_METHOD(logout:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [client logoutWithResolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getUser:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [client getUserWithResolve:resolve reject:reject];
 }
 
 #if RCT_NEW_ARCH_ENABLED

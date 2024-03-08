@@ -226,17 +226,19 @@ internal class LucraClientModule(
 
   @ReactMethod
   override fun configureUser(user: ReadableMap, promise: Promise) {
+    // small trick to simplify code a bit
+    val addressJS = if (user.hasKey("address") ) user.getMap("address")!! else user
     val newUser = SDKUser(
-      address = user.getString("address"),
-      addressCont = user.getString("addressCont"),
-      city = user.getString("city"),
+      address = addressJS.getString("address"),
+      addressCont = addressJS.getString("addressCont"),
+      city = addressJS.getString("city"),
       email = user.getString("email"),
       firstName = user.getString("firstName"),
       lastName = user.getString("lastName"),
       phoneNumber = user.getString("phoneNumber"),
-      state = user.getString("state"),
+      state = addressJS.getString("state"),
       username = user.getString("username"),
-      zip = user.getString("zip")
+      zip = addressJS.getString("zip")
     )
     LucraClient().configure(sdkUser = newUser ) {
       when(it) {
@@ -252,6 +254,41 @@ internal class LucraClientModule(
         is SDKUserResult.Error ->
           promise.reject("unknown_error", it.toString())
       }
+    }
+  }
+
+  @ReactMethod()
+  override fun getUser(promise: Promise) {
+    LucraClient().getSDKUser {
+
+      when(it) {
+        is SDKUserResult.Error ->
+          promise.resolve(null)
+        SDKUserResult.InvalidUsername ->
+          promise.reject("invalid_username", "username is not valid")
+        SDKUserResult.NotLoggedIn ->
+          promise.reject("not_logged_in", "not logged in")
+        is SDKUserResult.Success -> {
+          val user = Arguments.createMap()
+          user.putString("username", it.sdkUser.username)
+          user.putString("email", it.sdkUser.email)
+          user.putString("firstName", it.sdkUser.firstName)
+          user.putString("lastName", it.sdkUser.lastName)
+          user.putString("phoneNumber", it.sdkUser.phoneNumber)
+          
+          val address = Arguments.createMap()
+          address.putString("address", it.sdkUser.address)
+          address.putString("addressCont", it.sdkUser.addressCont)
+          address.putString("city", it.sdkUser.city)
+          address.putString("state", it.sdkUser.state)
+          address.putString("zip", it.sdkUser.zip)
+          user.putMap("address", address)
+
+          promise.resolve(user)
+        }
+
+      }
+
     }
   }
 

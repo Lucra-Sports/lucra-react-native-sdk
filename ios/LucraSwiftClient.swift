@@ -126,8 +126,8 @@ public class LucraSwiftClient: NSObject {
     }
 
     @objc
-    public func configureUser(_ user: [String: Any], resolver: @escaping RCTPromiseResolveBlock,
-                              rejecter: @escaping RCTPromiseRejectBlock) {
+    public func configureUser(_ user: [String: Any], resolve: @escaping RCTPromiseResolveBlock,
+                              reject: @escaping RCTPromiseRejectBlock) {
         var sdkAddress: LucraSDK.Address?
         if let address = user["address"] as? [String: Any] {
             sdkAddress = LucraSDK.Address(
@@ -151,12 +151,44 @@ public class LucraSwiftClient: NSObject {
         Task {
             do {
                 try await nativeClient.configure(user: sdkUser)
-                resolver(nil)
+                resolve(nil)
             } catch {
-                rejecter("Lucra SDK Error", "\(error)", nil)
+                reject("Lucra SDK Error", "\(error)", nil)
             }
         }
+    }
+    
+    @objc
+    public func getUser(resolve: @escaping RCTPromiseResolveBlock,
+                        reject: @escaping RCTPromiseRejectBlock) {
         
+        switch nativeClient.user {
+        case .some(let user):
+            var userJS: [String: Any] = [
+                "username": user.username!,
+                "avatarURL": user.avatarURL!,
+                "phoneNumber": user.phoneNumber!,
+                "email": user.email!,
+                "firstName": user.firstName!,
+                "lastName": user.lastName!,
+            ];
+            
+            switch user.address {
+                case .some(let address):
+                userJS["address"] = [
+                    "address": address.address,
+                    "addressCont": address.addressCont,
+                    "city": address.city,
+                    "state": address.state,
+                    "zip": address.zip
+                ]
+                default: break
+            }
+            
+            resolve(userJS)
+        case .none:
+            resolve(nil)
+        }
     }
 
     @objc
