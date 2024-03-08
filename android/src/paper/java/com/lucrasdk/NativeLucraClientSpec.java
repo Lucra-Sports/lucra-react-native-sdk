@@ -65,4 +65,8 @@ public abstract class NativeLucraClientSpec extends ReactContextBaseJavaModule i
   @ReactMethod
   @DoNotStrip
   public abstract void logout(Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void getUser(Promise promise);
 }
