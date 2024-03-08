@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
@@ -33,12 +34,29 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white">UI Flow Example</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="bg-darkPurple p-4 rounded-b-xl border-t border-lightPurple"
+          className="bg-darkPurple p-4 border-t border-lightPurple"
           onPress={() => {
             navigation.navigate('APIFlow');
           }}
         >
           <Text className="text-white">API Calls Example</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="bg-darkPurple p-4 rounded-b-xl border-t border-lightPurple"
+          onPress={async () => {
+            await LucraSDK.configureUser({
+              firstName: 'blah',
+              address: {
+                address: 'quack',
+              },
+            });
+
+            let user = await LucraSDK.getUser();
+
+            console.warn(user);
+          }}
+        >
+          <Text className="text-white">Example call configure user</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

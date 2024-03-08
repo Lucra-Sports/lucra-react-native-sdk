@@ -105,6 +105,9 @@ export const LucraSDK = {
   configureUser: async (user: LucraUserConfig): Promise<void> => {
     await LucraClient.configureUser(user);
   },
+  getUser: async (): Promise<LucraUser> => {
+    return (await LucraClient.getUser()) as LucraUser;
+  },
   present: (flow: string) => {
     LucraClient.present(flow);
   },
