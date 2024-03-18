@@ -84,7 +84,9 @@ type LucraSDKParams = {
 export const LucraSDK = {
   ENVIRONMENT: {
     PRODUCTION: 'production',
+    STAGING: 'staging',
     SANDBOX: 'sandbox',
+    DEVELOP: 'develop',
   },
   FLOW: {
     ONBOARDING: 'onboarding',

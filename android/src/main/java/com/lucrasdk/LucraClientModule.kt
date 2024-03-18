@@ -114,7 +114,9 @@ internal class LucraClientModule(
       environment = when (environment) {
         "production" -> LucraClient.Companion.Environment.PRODUCTION
         "staging" -> LucraClient.Companion.Environment.STAGING
-        else -> LucraClient.Companion.Environment.PRODUCTION
+        "develop" -> LucraClient.Companion.Environment.DEVELOPMENT
+        "sandbox" -> LucraClient.Companion.Environment.SANDBOX
+        else -> LucraClient.Companion.Environment.SANDBOX
       },
       clientTheme = clientTheme,
       outputLogs = true,
