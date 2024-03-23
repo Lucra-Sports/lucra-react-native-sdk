@@ -240,7 +240,8 @@ internal class LucraClientModule(
       phoneNumber = user.getString("phoneNumber"),
       state = addressJS.getString("state"),
       username = user.getString("username"),
-      zip = addressJS.getString("zip")
+      zip = addressJS.getString("zip"),
+      avatarUrl = user.getString("avatarURL")
     )
     LucraClient().configure(sdkUser = newUser ) {
       when(it) {
@@ -255,6 +256,10 @@ internal class LucraClientModule(
 
         is SDKUserResult.Error ->
           promise.reject("unknown_error", it.toString())
+
+        SDKUserResult.Loading -> {
+          // Should not happen in this context
+        }
       }
     }
   }
@@ -277,7 +282,8 @@ internal class LucraClientModule(
           user.putString("firstName", it.sdkUser.firstName)
           user.putString("lastName", it.sdkUser.lastName)
           user.putString("phoneNumber", it.sdkUser.phoneNumber)
-          
+          user.putString("avatarURL", it.sdkUser.avatarUrl)
+
           val address = Arguments.createMap()
           address.putString("address", it.sdkUser.address)
           address.putString("addressCont", it.sdkUser.addressCont)
@@ -289,6 +295,7 @@ internal class LucraClientModule(
           promise.resolve(user)
         }
 
+        SDKUserResult.Loading -> promise.reject("loading", "User is still loading")
       }
 
     }
@@ -302,8 +309,49 @@ internal class LucraClientModule(
   @ReactMethod
   override fun registerUserCallback(callback: Callback) {
     userCallback = callback
-//    TODO android client does not support callbacks yet when user is updated
-//    LucraClient().getSDKUser {  }
+
+    LucraClient().observeSDKUser { user ->
+      when(user) {
+        is SDKUserResult.Error -> {
+          var res = Arguments.createMap()
+          res.putString("error", user.error.toString())
+          userCallback?.invoke(res)
+        }
+        SDKUserResult.InvalidUsername -> {
+          // intentionally left blank
+        }
+        SDKUserResult.Loading -> {
+          // intentionally left blank
+        }
+        SDKUserResult.NotLoggedIn -> {
+          var res = Arguments.createMap()
+          res.putNull("user")
+          userCallback?.invoke(res)
+        }
+        is SDKUserResult.Success -> {
+          val userMap = Arguments.createMap()
+          userMap.putString("username", user.sdkUser.username)
+          userMap.putString("email", user.sdkUser.email)
+          userMap.putString("firstName", user.sdkUser.firstName)
+          userMap.putString("lastName", user.sdkUser.lastName)
+          userMap.putString("phoneNumber", user.sdkUser.phoneNumber)
+
+          val address = Arguments.createMap()
+          address.putString("address", user.sdkUser.address)
+          address.putString("addressCont", user.sdkUser.addressCont)
+          address.putString("city", user.sdkUser.city)
+          address.putString("state", user.sdkUser.state)
+          address.putString("zip", user.sdkUser.zip)
+          userMap.putMap("address", address)
+
+          var res = Arguments.createMap()
+          res.putMap("user", userMap)
+
+          userCallback?.invoke(res)
+
+        }
+      }
+    }
   }
 
   companion object {
