@@ -81,6 +81,27 @@ type LucraSDKParams = {
   merchantID?: string;
 };
 
+type MatchupUserInfo = {
+  id: string;
+  username: string;
+};
+
+type MatchupTeamInfo = {
+  id: string;
+  outcome: string;
+  users: MatchupUserInfo[];
+};
+
+type MatchupInfo = {
+  gameType: string;
+  createdAt: string;
+  ownerId: string;
+  status: string;
+  updatedAt: string;
+  wagerAmount: number;
+  teams: MatchupTeamInfo[];
+};
+
 export const LucraSDK = {
   ENVIRONMENT: {
     PRODUCTION: 'production',
@@ -129,6 +150,9 @@ export const LucraSDK = {
   },
   cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
+  },
+  getGamesMatchup: async (gameId: string): Promise<MatchupInfo> => {
+    return (await LucraClient.getGamesMatchup(gameId)) as MatchupInfo;
   },
   logout: (): Promise<void> => {
     return LucraClient.logout();
