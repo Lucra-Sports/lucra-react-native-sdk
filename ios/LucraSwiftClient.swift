@@ -286,6 +286,46 @@ public class LucraSwiftClient: NSObject {
     }
     
     @objc
+    public func getGamesMatchup(_ gameId: String,
+                                resolve: @escaping RCTPromiseResolveBlock,
+                                reject: @escaping RCTPromiseRejectBlock)
+    {
+        Task {
+            do {
+                let match = try await self.nativeClient.api.gamesMatchup(for: gameId)
+                if let match {
+                    resolve([
+                        "id": match.id,
+                        "createdAt": match.createdAt.toString(),
+                        "updatedAt": match.updatedAt.toString(),
+                        "status": match.status.rawValue,
+                        "isArchive": match.isArchive,
+                        "teams": match.teams.map { team in
+                            return [
+                                "id": team.id,
+                                "outcome": team.outcome?.rawValue as Any,
+                                "wagetAmount": team.wagerAmount,
+                                "users": team.users.map { user in
+                                        return [
+                                            "id": user.id,
+                                            "username": user.user.username
+                                        ]
+                                }
+                            ]
+                        }
+                    ])
+                } else {
+                    resolve(nil)
+                }
+            } catch {
+                reject("\(error)", error.localizedDescription, nil)
+            }
+            
+        }
+        
+    }
+    
+    @objc
     public func logout(resolve: @escaping RCTPromiseResolveBlock,
                        reject: @escaping RCTPromiseRejectBlock) {
         Task {
