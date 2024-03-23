@@ -226,6 +226,44 @@ internal class LucraClientModule(
     }
   }
 
+  override fun getGamesMatchup(matchupId: String, promise: Promise) {
+    LucraClient().getGamesMatchup(matchupId) { result ->
+      when(result) {
+        is GamesMatchup.RetrieveGamesMatchupResult.Failure -> promise.reject(result.failure.toString(), result.failure.toString())
+        is GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput -> {
+          var res = Arguments.createMap()
+          res.putString("gameType", result.gameType)
+          res.putString("createdAt", result.createdAt)
+          res.putString("ownerId", result.ownerId)
+          res.putString("status", result.status)
+          res.putString("updatedAt", result.updatedAt)
+          res.putDouble("wagerAmount", result.wagerAmount)
+
+          var teamArray = Arguments.createArray()
+          result.teams.forEach { team ->
+            var teamRes = Arguments.createMap()
+            teamRes.putString("id", team.id)
+            teamRes.putString("outcome", team.outcome)
+
+            var userArr = Arguments.createArray()
+            team.users.forEach { user ->
+              var userRes = Arguments.createMap()
+              userRes.putString("id", user.id)
+              userRes.putString("username", user.username)
+
+              userArr.pushMap(userRes)
+            }
+            teamArray.pushMap(teamRes)
+          }
+
+          res.putArray("teams", teamArray)
+
+          promise.resolve(res)
+        }
+      }
+    }
+  }
+
   @ReactMethod
   override fun configureUser(user: ReadableMap, promise: Promise) {
     // small trick to simplify code a bit

@@ -56,6 +56,10 @@ public abstract class NativeLucraClientSpec extends ReactContextBaseJavaModule i
 
   @ReactMethod
   @DoNotStrip
+  public abstract void getGamesMatchup(String matchupId, Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
   public abstract void configureUser(ReadableMap user, Promise promise);
 
   @ReactMethod
