@@ -7,7 +7,6 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
