@@ -426,11 +426,22 @@ You can subscribe to changes in the user object via callback (currently only sup
 ```ts
 LucraSDK.registerUserCallback(({ user, error }) => {
   if (error) {
-    // error can be not logged in
+    // Android will return this error when the user is not logged in
     console.log('user callback error', error);
     return;
   }
-  // user can be null if log out or not logged in
-  console.log(`✅ recevied user callback: ${user}`);
+
+  if(user == null) {
+    // on iOS if the returned value is null (meaning the user has logged out) this callback has ended
+    // therefore if you still want to listen to events you will need to register on log-in again
+    // on Android you can keep the same callback
+    if(Platform.OS === 'ios') {
+      console.log("iOS user observer has completed! recreate on next log in)
+    }
+
+    console.log("User is null!)
+  } else {
+    console.log(`✅ recevied user callback: ${user}`);
+  }
 });
 ```
