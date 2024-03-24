@@ -445,3 +445,23 @@ LucraSDK.registerUserCallback(({ user, error }) => {
   }
 });
 ```
+
+## Embed flows in a view
+
+You can embed a flow inside a normal react native component:
+
+**Currently supported in iOS**
+
+```ts
+import { LucraFlow, LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+
+export const MainContainer: FC<Props> = ({ navigation }) => {
+  return (
+    <SafeAreaView className="flex-1">
+        <Text className="text-white my-2"> Example embedded view</Text>
+        <LucraFlow name={LucraSDK.FLOW.PROFILE} className="flex-1 bg-white" />
+      </View>
+    </SafeAreaView>
+  );
+};
+```

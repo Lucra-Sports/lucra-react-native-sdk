@@ -82,8 +82,12 @@ android {
 
   sourceSets.main {
     java {
-      if (!isNewArchitectureEnabled()) {
-        srcDirs += 'src/paper/java'
+      if(isNewArchitectureEnabled()) {
+        srcDirs += ['src/newarch',
+        // This is needed to build Kotlin project with NewArch enabled
+          "${project.buildDir}/generated/source/codegen/java"]
+      } else {
+        srcDirs += ["src/oldarch", "src/paper/java"]
       }
     }
   }
