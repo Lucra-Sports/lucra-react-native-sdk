@@ -19,7 +19,7 @@ RCT_EXPORT_MODULE(LucraFlow)
 RCT_CUSTOM_VIEW_PROPERTY(name, NSString, UIView)
 {
   LucraSwiftClient *client = [LucraSwiftClient getShared];
-  UIViewController *viewController = [client getFlowController];
+  UIViewController *viewController = [client getFlowController: json];
   [view addSubview:viewController.view];
 
   // Add constraints to the parent view

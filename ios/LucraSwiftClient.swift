@@ -111,10 +111,10 @@ public class LucraSwiftClient: NSObject {
         switch completion {
         // called when emitted value turns into nil, the sink is also cancelled
         case .finished:
-          cb([nil])
+          cb([["user": nil]])
           break
         case .failure(let error):
-          print("Error: \(error)")
+          cb([["error": error.localizedDescription]])
         }
       },
       receiveValue: { user in
@@ -219,32 +219,32 @@ public class LucraSwiftClient: NSObject {
     }
   }
 
+  private func getLucraFlow(_ lucraFlow: String) -> LucraSDK.LucraFlow {
+    switch lucraFlow {
+    case "profile":
+      return .profile
+    case "addFunds":
+      return .addFunds
+    case "onboarding":
+      return .onboarding
+    case "verifyIdentity":
+      return .verifyIdentity
+    case "createGamesMatchup":
+      return .createGamesMatchup
+    case "withdrawFunds":
+      return .withdrawFunds
+    case "publicFeed":
+      return .publicFeed
+    default:
+      assertionFailure("Unimplemented lucra flow \(lucraFlow)")
+      return .profile
+    }
+  }
+
   @objc
   public func present(_ lucraFlow: String) {
     DispatchQueue.main.async {
-      // TODO(osp) LucraFlow is missing MyMatchup on iOS
-      let nativeFlow: LucraSDK.LucraFlow = {
-        switch lucraFlow {
-        case "profile":
-          return .profile
-        case "addFunds":
-          return .addFunds
-        case "onboarding":
-          return .onboarding
-        case "verifyIdentity":
-          return .verifyIdentity
-        case "createGamesMatchup":
-          return .createGamesMatchup
-        case "withdrawFunds":
-          return .withdrawFunds
-        case "publicFeed":
-          return .publicFeed
-        default:
-          assertionFailure("Unimplemented lucra flow \(lucraFlow)")
-          return .profile
-        }
-      }()
-
+      let nativeFlow = self.getLucraFlow(lucraFlow)
       UIViewController.topViewController?.present(
         lucraFlow: nativeFlow,
         client: self.nativeClient,
@@ -369,7 +369,8 @@ public class LucraSwiftClient: NSObject {
   }
 
   @objc
-  public func getFlowController() -> UIViewController {
-    return self.nativeClient.ui.flow(.profile, hideCloseButton: true)
+  public func getFlowController(_ flow: String) -> UIViewController {
+    let nativeFlow = getLucraFlow(flow)
+    return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
   }
 }

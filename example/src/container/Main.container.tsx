@@ -59,7 +59,7 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white">Example call configure user</Text>
         </TouchableOpacity>
         <Text className="text-white my-2"> Example embedded view</Text>
-        <LucraFlow name="login" className="flex-1 bg-white" />
+        <LucraFlow name={LucraSDK.FLOW.PROFILE} className="flex-1 bg-white" />
       </View>
     </SafeAreaView>
   );
