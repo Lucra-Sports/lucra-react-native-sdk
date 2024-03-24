@@ -132,7 +132,6 @@ internal class LucraClientModule(
     val lucraFlow = when (flow) {
       "profile" -> LucraUiProvider.LucraFlow.Profile
       "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
-      // TODO(osp) LucraFlow is missing MyMatchup on Android
 //      "onboarding" -> LucraUiProvider.LucraFlow.Onboarding
       "verifyIdentity" -> LucraUiProvider.LucraFlow.VerifyIdentity
       "createGamesMatchup" -> LucraUiProvider.LucraFlow.CreateGamesMatchup
@@ -150,7 +149,7 @@ internal class LucraClientModule(
     )
   }
 
-  fun throwLucraJSError(promise: Promise, failure: GamesMatchup.FailedCreateGamesMatchup) {
+  private fun throwLucraJSError(promise: Promise, failure: GamesMatchup.FailedCreateGamesMatchup) {
     val errorCode = when (failure) {
       is GamesMatchup.FailedCreateGamesMatchup.APIError ->
         "apiError"
