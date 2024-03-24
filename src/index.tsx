@@ -1,7 +1,20 @@
+import React from 'react';
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlow } from './LucraFlowComponent';
-export { default as LucraProfilePill } from './LucraProfilePillComponent';
+import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
+import { StyleSheet } from 'react-native';
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
+
+export const LucraProfilePill: React.FC = () => {
+  return <LucraProfilePillNative style={defaultStyles.profilePill} />;
+};
+
+const defaultStyles = StyleSheet.create({
+  profilePill: {
+    width: 150,
+    height: 40,
+  },
+});
 
 enum VerificationStatus {
   VERIFIED,

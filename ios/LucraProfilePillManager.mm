@@ -13,23 +13,12 @@ RCT_EXPORT_MODULE(LucraProfilePill)
 
 - (UIView *)view
 {
-  return [[UIView alloc] init];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(name, NSString, UIView)
-{
-    LucraSwiftClient *client = [LucraSwiftClient getShared];
-    UIView *pillView = [client getProfilePill];
-    [view addSubview:pillView];
-    
-  // // Add constraints to the parent view
-   pillView.translatesAutoresizingMaskIntoConstraints = NO;
-   [NSLayoutConstraint activateConstraints:@[
-     [pillView.topAnchor constraintEqualToAnchor:view.topAnchor],
-     [pillView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-     [pillView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor],
-     [pillView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor]
-   ]];
+  LucraSwiftClient *client = [LucraSwiftClient getShared];
+  UIView *pillView = [client getProfilePill];
+  
+  return pillView;
 }
 
 @end
+
+

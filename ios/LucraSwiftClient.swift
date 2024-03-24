@@ -106,47 +106,40 @@ public class LucraSwiftClient: NSObject {
   @objc
   public func registerUserCallback(_ cb: @escaping RCTResponseSenderBlock) {
     userCallback = cb
-    userSinkCancellable = nativeClient.user.publisher.sink(
-      receiveCompletion: { completion in
-        switch completion {
-        // called when emitted value turns into nil, the sink is also cancelled
-        case .finished:
-          cb([["user": nil]])
-          break
-        case .failure(let error):
-          cb([["error": error.localizedDescription]])
-        }
-      },
-      receiveValue: { user in
-        var addressMap: [String: String?]? = nil
-        if let address = user.address {
-          addressMap = [
-            "address": address.address,
-            "addressCont": address.addressCont,
-            "city": address.city,
-            "state": address.state,
-            "zip": address.zip,
-          ]
-        }
+    userSinkCancellable = nativeClient.$user.sink { user in
 
-        let userMap = [
-          "user": [
-            "id": user.id as Any,
-            "username": user.username as Any,
-            "avatarURL": user.avatarURL as Any,
-            "phoneNumber": user.phoneNumber as Any,
-            "email": user.email as Any,
-            "firstName": user.firstName as Any,
-            "lastName": user.lastName as Any,
-            "address": addressMap as Any,
-            "balance": user.balance,
-            "accountStatus": user.accountStatus.rawValue,
-          ]
+      guard let user = user else {
+        return cb([["user": nil]])
+      }
+
+      var addressMap: [String: String?]? = nil
+      if let address = user.address {
+        addressMap = [
+          "address": address.address,
+          "addressCont": address.addressCont,
+          "city": address.city,
+          "state": address.state,
+          "zip": address.zip,
         ]
+      }
 
-        cb([userMap])
+      let userMap = [
+        "user": [
+          "id": user.id as Any,
+          "username": user.username as Any,
+          "avatarURL": user.avatarURL as Any,
+          "phoneNumber": user.phoneNumber as Any,
+          "email": user.email as Any,
+          "firstName": user.firstName as Any,
+          "lastName": user.lastName as Any,
+          "address": addressMap as Any,
+          "balance": user.balance,
+          "accountStatus": user.accountStatus.rawValue,
+        ]
+      ]
 
-      })
+      cb([userMap])
+    }
   }
 
   @objc
@@ -324,6 +317,9 @@ public class LucraSwiftClient: NSObject {
     Task {
       do {
         let match = try await self.nativeClient.api.gamesMatchup(for: gameId)
+        // All the values inside the teams will always be the same, so map to the first available value
+        let wagerAmount = match?.teams[0].wagerAmount ?? 0
+
         if let match {
           resolve([
             "id": match.id,
@@ -331,11 +327,11 @@ public class LucraSwiftClient: NSObject {
             "updatedAt": match.updatedAt.toString(),
             "status": match.status.rawValue,
             "isArchive": match.isArchive,
+            "wagetAmount": wagerAmount,
             "teams": match.teams.map { team in
               return [
                 "id": team.id,
                 "outcome": team.outcome?.rawValue as Any,
-                "wagetAmount": team.wagerAmount,
                 "users": team.users.map { user in
                   return [
                     "id": user.id,

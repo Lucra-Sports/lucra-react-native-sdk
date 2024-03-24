@@ -432,13 +432,7 @@ LucraSDK.registerUserCallback(({ user, error }) => {
   }
 
   if(user == null) {
-    // on iOS if the returned value is null (meaning the user has logged out) this callback has ended
-    // therefore if you still want to listen to events you will need to register on log-in again
-    // on Android you can keep the same callback
-    if(Platform.OS === 'ios') {
-      console.log("iOS user observer has completed! recreate on next log in)
-    }
-
+    // null value will be emitted on user logout
     console.log("User is null!)
   } else {
     console.log(`✅ recevied user callback: ${user}`);
