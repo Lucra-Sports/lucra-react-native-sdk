@@ -109,7 +109,7 @@
   },
   "codegenConfig": {
     "name": "LucraClientSpec",
-    "type": "modules",
+    "type": "all",
     "jsSrcsDir": "src",
     "android": {
       "javaPackageName": "com.lucrasdk"

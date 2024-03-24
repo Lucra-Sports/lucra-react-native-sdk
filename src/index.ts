@@ -1,4 +1,5 @@
 import LucraClient from './NativeLucraClient';
+export { default as LucraFlow } from './LucraFlowComponent';
 
 enum VerificationStatus {
   VERIFIED,

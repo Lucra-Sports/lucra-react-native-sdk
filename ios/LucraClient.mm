@@ -20,7 +20,7 @@ LucraSwiftClient *client;
 }
 
 RCT_EXPORT_METHOD(initialize: (NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-    client = [[LucraSwiftClient alloc] init];
+    client = [LucraSwiftClient getShared];
     [client initialize:options resolver:resolve rejecter:reject];
 }
 

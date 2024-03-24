@@ -35,7 +35,7 @@ LucraSDK.init({
 if (Platform.OS === 'ios') {
   // User callback is currently only supported on iOS
   LucraSDK.registerUserCallback((user) => {
-    console.log(`✅ recevied user callback with id: ${user.id}`);
+    console.log(`✅ recevied user callback with id: ${user}`);
   });
 }
 

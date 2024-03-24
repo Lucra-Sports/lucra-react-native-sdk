@@ -8,6 +8,12 @@ public class LucraSwiftClient: NSObject {
   private var userCallback: RCTResponseSenderBlock?
   private var userSinkCancellable: AnyCancellable?
 
+  static public var shared = LucraSwiftClient()
+
+  @objc static public func getShared() -> LucraSwiftClient {
+    return shared
+  }
+
   @objc
   public func initialize(
     _ options: [String: Any],
@@ -360,5 +366,10 @@ public class LucraSwiftClient: NSObject {
       resolve(nil)
     }
 
+  }
+
+  @objc
+  public func getFlowController() -> UIViewController {
+    return self.nativeClient.ui.flow(.profile, hideCloseButton: true)
   }
 }
