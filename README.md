@@ -380,14 +380,21 @@ function handleLucraSDKError(e: LucraSDKError) {
 }
 
 export default function App() {
+  let [id, setId] = useState()
   return (
     <View style={styles.container}>
+      <Button
+        title="Get matchup"
+        onPress={() => {
+          LucraSDK.getGamesMatchup(id).then(...)
+        }}
+      >
       <Button
         title="Create Matchup"
         onPress={() => {
           LucraSDK.createGamesMatchup('DARTS', 1.0)
             .then((res) => {
-              // Store matchup info to use in later api calls
+              setId(res.id)
             })
             .catch(handleLucraSDKError);
         }}
@@ -417,10 +424,13 @@ let user = await LucraSDK.getUser();
 You can subscribe to changes in the user object via callback (currently only supported in iOS)
 
 ```ts
-if (Platform.OS === 'ios') {
-  // User callback is currently only supported on iOS
-  LucraSDK.registerUserCallback((user) => {
-    console.log(`✅ recevied user callback with id: ${user.id}`);
-  });
-}
+LucraSDK.registerUserCallback(({ user, error }) => {
+  if (error) {
+    // error can be not logged in
+    console.log('user callback error', error);
+    return;
+  }
+  // user can be null if log out or not logged in
+  console.log(`✅ recevied user callback: ${user}`);
+});
 ```
