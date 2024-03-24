@@ -368,9 +368,16 @@ public class LucraSwiftClient: NSObject {
 
   }
 
-  @objc
-  public func getFlowController(_ flow: String) -> UIViewController {
+  @objc public func getFlowController(_ flow: String) -> UIViewController {
     let nativeFlow = getLucraFlow(flow)
     return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
+  }
+
+  @objc public func getProfilePill() -> UIView {
+    return self.nativeClient.ui.component(.userProfilePill)
+  }
+
+  @objc public func getMiniFeed(_ userIDs: [String]?) -> UIView {
+    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
   }
 }

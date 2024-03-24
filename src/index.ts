@@ -1,5 +1,7 @@
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlow } from './LucraFlowComponent';
+export { default as LucraProfilePill } from './LucraProfilePillComponent';
+export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
 
 enum VerificationStatus {
   VERIFIED,

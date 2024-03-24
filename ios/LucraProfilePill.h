@@ -1,5 +1,5 @@
 //
-//  LucraFlowView.h
+//  LucraProfilePillView.h
 //  Pods
 //
 //  Created by Oscar Franco on 24/3/24.
@@ -10,15 +10,15 @@
 #import <React/RCTViewComponentView.h>
 #import <UIKit/UIKit.h>
 
-#ifndef LucraFlowNativeComponent_h
-#define LucraFlowNativeComponent_h
+#ifndef LucraProfilePillNativeComponent_h
+#define LucraProfilePillNativeComponent_h
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface LucraFlowView : RCTViewComponentView
+@interface LucraProfilePillView : RCTViewComponentView
 @end
 
 NS_ASSUME_NONNULL_END
 
-#endif /* LucraFlowNativeComponent_h */
+#endif /* LucraProfilePillNativeComponent_h */
 #endif /* RCT_NEW_ARCH_ENABLED */

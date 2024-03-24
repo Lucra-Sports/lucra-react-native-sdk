@@ -4,20 +4,26 @@ import React from 'react';
 import {
   Image,
   SafeAreaView,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
-import { LucraFlow, LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import {
+  LucraFlow,
+  LucraMiniPublicFeed,
+  LucraProfilePill,
+  LucraSDK,
+} from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
 export const MainContainer: FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1">
-      <View className="flex-1 p-4">
+      <ScrollView className="flex-1 p-4">
         <Image
           source={Assets.LucraLogo}
           resizeMode="contain"
@@ -58,9 +64,13 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
         >
           <Text className="text-white">Example call configure user</Text>
         </TouchableOpacity>
+        <Text className="text-white my-2">Profile pill component</Text>
+        <LucraProfilePill className="h-20 w-16" />
+        <Text className="text-white my-2">Mini feed</Text>
+        <LucraMiniPublicFeed playerIds={[]} className="h-96" />
         <Text className="text-white my-2"> Example embedded view</Text>
-        <LucraFlow name={LucraSDK.FLOW.PROFILE} className="flex-1 bg-white" />
-      </View>
+        <LucraFlow name={LucraSDK.FLOW.PROFILE} className="h-96 bg-white" />
+      </ScrollView>
     </SafeAreaView>
   );
 };
