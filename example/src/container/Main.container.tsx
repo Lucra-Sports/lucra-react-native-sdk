@@ -64,7 +64,7 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white">Example call configure user</Text>
         </TouchableOpacity>
         <Text className="text-white my-2">Profile pill component</Text>
-        <LucraProfilePill className="bg-red-500" />
+        <LucraProfilePill />
         <Text className="text-white my-2">Mini feed</Text>
         <LucraMiniPublicFeed playerIds={[]} className="h-96" />
         <Text className="text-white my-2"> Example embedded view</Text>

@@ -2,11 +2,15 @@ import React from 'react';
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlow } from './LucraFlowComponent';
 import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewProps, View } from 'react-native';
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
 
-export const LucraProfilePill: React.FC = () => {
-  return <LucraProfilePillNative style={defaultStyles.profilePill} />;
+export const LucraProfilePill: React.FC<ViewProps> = (props) => {
+  return (
+    <View {...props}>
+      <LucraProfilePillNative style={defaultStyles.profilePill} />
+    </View>
+  );
 };
 
 const defaultStyles = StyleSheet.create({
