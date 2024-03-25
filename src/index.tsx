@@ -1,6 +1,6 @@
 import React from 'react';
 import LucraClient from './NativeLucraClient';
-export { default as LucraFlow } from './LucraFlowComponent';
+export { default as LucraFlowView } from './LucraFlowViewComponent';
 import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
 import { StyleSheet, ViewProps, View } from 'react-native';
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';

@@ -10,8 +10,8 @@
 #import <React/RCTViewComponentView.h>
 #import <UIKit/UIKit.h>
 
-#ifndef LucraFlowNativeComponent_h
-#define LucraFlowNativeComponent_h
+#ifndef LucraFlowViewNativeComponent_h
+#define LucraFlowViewNativeComponent_h
 
 NS_ASSUME_NONNULL_BEGIN
 

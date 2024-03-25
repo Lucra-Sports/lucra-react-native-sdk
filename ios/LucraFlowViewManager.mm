@@ -4,12 +4,12 @@
 #import <React/RCTLog.h>
 #import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 
-@interface LucraFlowManager : RCTViewManager
+@interface LucraFlowViewManager : RCTViewManager
 @end
 
-@implementation LucraFlowManager
+@implementation LucraFlowViewManager
 
-RCT_EXPORT_MODULE(LucraFlow)
+RCT_EXPORT_MODULE(LucraFlowView)
 
 - (UIView *)view
 {

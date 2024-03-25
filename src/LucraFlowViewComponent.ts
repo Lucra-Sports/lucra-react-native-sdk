@@ -5,4 +5,4 @@ interface NativeProps extends ViewProps {
   name: string;
 }
 
-export default codegenNativeComponent<NativeProps>('LucraFlow');
+export default codegenNativeComponent<NativeProps>('LucraFlowView');
