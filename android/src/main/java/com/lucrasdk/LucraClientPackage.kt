@@ -13,7 +13,7 @@ class LucraClientPackage : TurboReactPackage() {
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
     val viewManagers: MutableList<ViewManager<*, *>> = ArrayList()
-    viewManagers.add(LucraFlowManager())
+    viewManagers.add(LucraFlowViewManager())
     viewManagers.add(LucraProfilePillManager())
     viewManagers.add(LucraMiniPublicFeedManager())
     return viewManagers

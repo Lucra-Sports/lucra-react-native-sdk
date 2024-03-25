@@ -5,14 +5,14 @@ import android.view.View
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ViewManagerDelegate
-import com.facebook.react.viewmanagers.LucraFlowManagerDelegate
-import com.facebook.react.viewmanagers.LucraFlowManagerInterface
+import com.facebook.react.viewmanagers.LucraFlowViewManagerDelegate
+import com.facebook.react.viewmanagers.LucraFlowViewManagerInterface
 
-abstract class LucraFlowManagerSpec<T : View> : SimpleViewManager<T>(), LucraFlowManagerInterface<T> {
+abstract class LucraFlowViewManagerSpec<T : View> : SimpleViewManager<T>(), LucraFlowViewManagerInterface<T> {
   private val mDelegate: ViewManagerDelegate<T>
 
   init {
-    mDelegate = LucraFlowManagerDelegate(this)
+    mDelegate = LucraFlowViewManagerDelegate(this)
   }
 
   override fun getDelegate(): ViewManagerDelegate<T>? {
