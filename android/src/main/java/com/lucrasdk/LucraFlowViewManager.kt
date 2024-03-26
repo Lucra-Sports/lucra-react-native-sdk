@@ -52,10 +52,7 @@ class LucraFlowViewManager :
     if (index == 2) propFlex = value
   }
 
-  fun createFragment(root: FrameLayout, reactNativeViewId: Int, flowName: String) {
-    val parentView = root.findViewById<ViewGroup>(reactNativeViewId)
-    setupLayout(parentView)
-
+  private fun createFragment(root: FrameLayout, reactNativeViewId: Int, flowName: String) {
     val lucraFlow = when (name) {
       "profile" -> LucraUiProvider.LucraFlow.Profile
       "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
@@ -67,6 +64,9 @@ class LucraFlowViewManager :
       "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
       else -> LucraUiProvider.LucraFlow.Profile
     }
+
+    val parentView = root.findViewById<ViewGroup>(reactNativeViewId)
+    setupLayout(parentView)
 
     val myFragment = LucraClient().getLucraFragment(lucraFlow)
     val activity = context?.currentActivity as FragmentActivity
@@ -99,14 +99,16 @@ class LucraFlowViewManager :
 
       view.layout(0, 0, width, height)
     } else {
+      val l = view.left
+      val t = view.top
       val width = propWidth ?: view.width
       val height = requireNotNull(propHeight)
 
       view.measure(
-        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.AT_MOST),
+        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.AT_MOST))
 
-      view.layout(0, 0, width, height)
+      view.layout(0, view.top, width, height)
     }
 
   }

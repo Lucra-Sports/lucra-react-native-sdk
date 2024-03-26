@@ -68,7 +68,10 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
         <Text className="text-white my-2">Mini feed</Text>
         <LucraMiniPublicFeed playerIds={[]} className="h-96" />
         <Text className="text-white my-2"> Example embedded view</Text>
-        <LucraFlowView name={LucraSDK.FLOW.PROFILE} className="h-96 bg-white" />
+        <LucraFlowView
+          name={LucraSDK.FLOW.PROFILE}
+          className="h-96 bg-red-500"
+        />
       </ScrollView>
     </SafeAreaView>
   );
