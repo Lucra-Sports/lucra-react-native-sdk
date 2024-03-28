@@ -90,25 +90,7 @@ internal class LucraClientModule(
 
     LucraClient.initialize(
       application = context.applicationContext as Application,
-      lucraUiProvider = LucraUi(
-        lucraFlowListener = object : LucraFlowListener {
-          // Callback for entering Lucra permitted flow launch points.
-          override fun launchNewLucraFlowEntryPoint(entryLucraFlow: LucraUiProvider.LucraFlow): Boolean {
-            // TODO if RN integrators want a full screen flow, we can expose a property to consume
-            //  these launch events as a new dialog fragment.
-            return false
-          }
-
-          //Callback for exiting all Lucra permitted flow launch points
-          override fun onFlowDismissRequested(entryLucraFlow: LucraUiProvider.LucraFlow) {
-            (context.currentActivity as FragmentActivity).supportFragmentManager.findFragmentByTag(
-              entryLucraFlow.toString()
-            )?.let {
-              (it as DialogFragment).dismiss()
-            }
-          }
-        }
-      ),
+      lucraUiProvider = buildLucraUIInstance(),
       apiUrl = apiURL,
       apiKey = apiKey,
       environment = when (environment) {
@@ -122,6 +104,26 @@ internal class LucraClientModule(
       outputLogs = true,
     )
   }
+
+  private fun buildLucraUIInstance() = LucraUi(
+    lucraFlowListener = object : LucraFlowListener {
+      // Callback for entering Lucra permitted flow launch points.
+      override fun launchNewLucraFlowEntryPoint(entryLucraFlow: LucraUiProvider.LucraFlow): Boolean {
+        // TODO if RN integrators want a full screen flow, we can expose a property to consume
+        //  these launch events as a new dialog fragment.
+        return false
+      }
+
+      //Callback for exiting all Lucra permitted flow launch points
+      override fun onFlowDismissRequested(entryLucraFlow: LucraUiProvider.LucraFlow) {
+        (context.currentActivity as FragmentActivity).supportFragmentManager.findFragmentByTag(
+          entryLucraFlow.toString()
+        )?.let {
+          (it as DialogFragment).dismiss()
+        }
+      }
+    }
+  )
 
   override fun getName(): String {
     return NAME
