@@ -88,21 +88,27 @@ internal class LucraClientModule(
       clientTheme = ClientTheme(colorStyle, fontFamily)
     }
 
-    LucraClient.initialize(
-      application = context.applicationContext as Application,
-      lucraUiProvider = buildLucraUIInstance(),
-      apiUrl = apiURL,
-      apiKey = apiKey,
-      environment = when (environment) {
-        "production" -> LucraClient.Companion.Environment.PRODUCTION
-        "staging" -> LucraClient.Companion.Environment.STAGING
-        "develop" -> LucraClient.Companion.Environment.DEVELOPMENT
-        "sandbox" -> LucraClient.Companion.Environment.SANDBOX
-        else -> LucraClient.Companion.Environment.SANDBOX
-      },
-      clientTheme = clientTheme,
-      outputLogs = true,
-    )
+    try {
+      LucraClient.initialize(
+        application = context.applicationContext as Application,
+        lucraUiProvider = buildLucraUIInstance(),
+        apiUrl = apiURL,
+        apiKey = apiKey,
+        environment = when (environment) {
+          "production" -> LucraClient.Companion.Environment.PRODUCTION
+          "staging" -> LucraClient.Companion.Environment.STAGING
+          "develop" -> LucraClient.Companion.Environment.DEVELOPMENT
+          "sandbox" -> LucraClient.Companion.Environment.SANDBOX
+          else -> LucraClient.Companion.Environment.SANDBOX
+        },
+        clientTheme = clientTheme,
+        outputLogs = true,
+      )
+    } catch (e: java.lang.Exception) {
+      promise.reject(e.toString(), e.toString())
+    }
+
+    promise.resolve(null);
   }
 
   private fun buildLucraUIInstance() = LucraUi(

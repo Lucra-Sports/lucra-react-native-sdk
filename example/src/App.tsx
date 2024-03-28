@@ -2,7 +2,7 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { Routes } from './Routes';
-import { Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 if (Platform.OS === 'ios') {
@@ -40,13 +40,17 @@ export default function App() {
                 medium: 'Inter-Medium',
               },
       },
-    }).then(() => {
-      setIsReady(true);
-    });
+    })
+      .then(() => {
+        setIsReady(true);
+      })
+      .catch((error) => {
+        console.error('Error initializing LucraSDK', error);
+      });
   }, []);
 
   if (!isReady) {
-    return null;
+    return <Text>Loading...</Text>;
   }
 
   return (
