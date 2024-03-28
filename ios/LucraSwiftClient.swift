@@ -263,7 +263,7 @@ public class LucraSwiftClient: NSObject {
         resolver([
           "matchupId": result.matchupId,
           "ownerTeamId": result.ownerTeamId,
-          "oponnentTeamId": result.opponentTeamId,
+          "opponentTeamId": result.opponentTeamId,
         ])
       } catch {
         rejecter("\(error)", error.localizedDescription, nil)
@@ -327,7 +327,7 @@ public class LucraSwiftClient: NSObject {
             "updatedAt": match.updatedAt.toString(),
             "status": match.status.rawValue,
             "isArchive": match.isArchive,
-            "wagetAmount": wagerAmount,
+            "wagerOpponentTeamIdAmount": wagerAmount,
             "teams": match.teams.map { team in
               return [
                 "id": team.id,

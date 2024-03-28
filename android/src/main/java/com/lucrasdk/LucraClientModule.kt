@@ -201,7 +201,7 @@ internal class LucraClientModule(
 
           map.putString("matchupId", it.matchupId)
           map.putString("ownerTeamId", it.ownerTeamId)
-          map.putString("oponnentTeamId", it.opponentTeamId)
+          map.putString("opponentTeamId", it.opponentTeamId)
 
           promise.resolve(map)
         }
