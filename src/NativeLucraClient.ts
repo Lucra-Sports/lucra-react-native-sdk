@@ -18,6 +18,9 @@ interface Spec extends TurboModule {
   registerUserCallback(cb: (userData: Object) => void): void;
   logout: () => Promise<void>;
   getUser: () => Promise<Object>;
+  // event emitter
+  addListener: (eventType: string) => void;
+  removeListeners: (count: number) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');

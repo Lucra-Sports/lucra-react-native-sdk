@@ -2,8 +2,10 @@ import React from 'react';
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlowView } from './LucraFlowView';
 import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
-import { StyleSheet, ViewProps, View } from 'react-native';
+import { StyleSheet, ViewProps, View, NativeEventEmitter } from 'react-native';
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
+
+const eventEmitter = new NativeEventEmitter(LucraClient);
 
 export const LucraProfilePill: React.FC<ViewProps> = (props) => {
   return (
@@ -142,8 +144,8 @@ export const LucraSDK = {
   init: async (options: LucraSDKParams): Promise<void> => {
     await LucraClient.initialize(options);
   },
-  registerUserCallback: (cb: (userData: LucraUser) => void) => {
-    LucraClient.registerUserCallback(cb as any);
+  addListener: (type: 'user', cb: (data: any) => void) => {
+    return eventEmitter.addListener(type, cb);
   },
   configureUser: async (user: LucraUserConfig): Promise<void> => {
     await LucraClient.configureUser(user);

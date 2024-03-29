@@ -58,7 +58,7 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
 
             let user = await LucraSDK.getUser();
 
-            console.warn(user);
+            console.log('Updated user', user);
           }}
         >
           <Text className="text-white">Example call configure user</Text>

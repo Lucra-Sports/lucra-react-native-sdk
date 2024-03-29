@@ -1,9 +1,14 @@
 import Combine
-import Foundation
 import LucraSDK
+
+@objc public protocol LucraClientDelegate {
+  func sendEvent(name: String, result: [String: Any])
+}
 
 @objc
 public class LucraSwiftClient: NSObject {
+
+  @objc weak public var delegate: LucraClientDelegate? = nil
   private var nativeClient: LucraSDK.LucraClient!
   private var userCallback: RCTResponseSenderBlock?
   private var userSinkCancellable: AnyCancellable?
@@ -100,16 +105,12 @@ public class LucraSwiftClient: NSObject {
         appearance: clientTheme
       )
     )
-    resolver(nil)
-  }
 
-  @objc
-  public func registerUserCallback(_ cb: @escaping RCTResponseSenderBlock) {
-    userCallback = cb
+    // immediately create event emitter for user value
     userSinkCancellable = nativeClient.$user.sink { user in
-
       guard let user = user else {
-        return cb([["user": nil]])
+        self.delegate?.sendEvent(name: "user", result: ["user": nil])
+        return
       }
 
       var addressMap: [String: String?]? = nil
@@ -138,8 +139,10 @@ public class LucraSwiftClient: NSObject {
         ]
       ]
 
-      cb([userMap])
+      self.delegate?.sendEvent(name: "user", result: userMap)
     }
+
+    resolver(nil)
   }
 
   @objc

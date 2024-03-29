@@ -5,12 +5,9 @@ import { Routes } from './Routes';
 import { Platform, StatusBar, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-if (Platform.OS === 'ios') {
-  // User callback is currently only supported on iOS
-  LucraSDK.registerUserCallback((user) => {
-    console.log(`✅ recevied user callback with id: ${user}`);
-  });
-}
+LucraSDK.addListener('user', (user) => {
+  console.log(`✅ Received user callback: ${JSON.stringify(user)}`);
+});
 
 export default function App() {
   const [isReady, setIsReady] = React.useState(false);

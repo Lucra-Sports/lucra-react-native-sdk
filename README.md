@@ -424,7 +424,7 @@ let user = await LucraSDK.getUser();
 You can subscribe to changes in the user object via callback (currently only supported in iOS)
 
 ```ts
-LucraSDK.registerUserCallback(({ user, error }) => {
+LucraSDK.addListener("user", ({ user, error }) => {
   if (error) {
     // Android will return this error when the user is not logged in
     console.log('user callback error', error);
