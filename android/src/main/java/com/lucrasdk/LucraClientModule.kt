@@ -7,8 +7,10 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.style_guide.ClientTheme
@@ -20,6 +22,7 @@ import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.ui.LucraUi
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sdk.core.user.SDKUserResult
 
@@ -30,7 +33,12 @@ internal class LucraClientModule(
 ) : NativeLucraClientSpec(context) {
 
   private var fullAppFlowDialogFragment: DialogFragment? = null
-  private var userCallback: Callback? = null
+
+  private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
+    reactContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+      .emit(eventName, params)
+  }
 
   @ReactMethod
   override fun initialize(options: ReadableMap, promise: Promise) {
@@ -104,6 +112,52 @@ internal class LucraClientModule(
         clientTheme = clientTheme,
         outputLogs = true,
       )
+
+      LucraClient().observeSDKUser { user ->
+        when(user) {
+          is SDKUserResult.Error -> {
+            val res = Arguments.createMap()
+            res.putString("error", user.error.toString())
+            sendEvent(context, "user", res)
+          }
+
+          SDKUserResult.InvalidUsername -> {
+            // intentionally left blank
+          }
+
+          SDKUserResult.Loading -> {
+            // intentionally left blank
+          }
+
+          SDKUserResult.NotLoggedIn -> {
+            val res = Arguments.createMap()
+            res.putNull("user")
+            sendEvent(context, "user", res)
+          }
+
+          is SDKUserResult.Success -> {
+            val userMap = Arguments.createMap()
+            userMap.putString("username", user.sdkUser.username)
+            userMap.putString("email", user.sdkUser.email)
+            userMap.putString("firstName", user.sdkUser.firstName)
+            userMap.putString("lastName", user.sdkUser.lastName)
+            userMap.putString("phoneNumber", user.sdkUser.phoneNumber)
+
+            val address = Arguments.createMap()
+            address.putString("address", user.sdkUser.address)
+            address.putString("addressCont", user.sdkUser.addressCont)
+            address.putString("city", user.sdkUser.city)
+            address.putString("state", user.sdkUser.state)
+            address.putString("zip", user.sdkUser.zip)
+            userMap.putMap("address", address)
+
+            val res = Arguments.createMap()
+            res.putMap("user", userMap)
+
+            sendEvent(context, "user", res)
+          }
+        }
+      }
     } catch (e: java.lang.Exception) {
       promise.reject(e.toString(), e.toString())
     }
@@ -238,7 +292,7 @@ internal class LucraClientModule(
       when(result) {
         is GamesMatchup.RetrieveGamesMatchupResult.Failure -> promise.reject(result.failure.toString(), result.failure.toString())
         is GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput -> {
-          var res = Arguments.createMap()
+          val res = Arguments.createMap()
           res.putString("gameType", result.gameType)
           res.putString("createdAt", result.createdAt)
           res.putString("ownerId", result.ownerId)
@@ -246,15 +300,15 @@ internal class LucraClientModule(
           res.putString("updatedAt", result.updatedAt)
           res.putDouble("wagerAmount", result.wagerAmount)
 
-          var teamArray = Arguments.createArray()
+          val teamArray = Arguments.createArray()
           result.teams.forEach { team ->
-            var teamRes = Arguments.createMap()
+            val teamRes = Arguments.createMap()
             teamRes.putString("id", team.id)
             teamRes.putString("outcome", team.outcome)
 
-            var userArr = Arguments.createArray()
+            val userArr = Arguments.createArray()
             team.users.forEach { user ->
-              var userRes = Arguments.createMap()
+              val userRes = Arguments.createMap()
               userRes.putString("id", user.id)
               userRes.putString("username", user.username)
 
@@ -352,51 +406,13 @@ internal class LucraClientModule(
   }
 
   @ReactMethod
-  override fun registerUserCallback(callback: Callback) {
-    userCallback = callback
+  override fun addListener(eventName: String) {
+    // intentionally left blank
+  }
 
-    LucraClient().observeSDKUser { user ->
-      when(user) {
-        is SDKUserResult.Error -> {
-          var res = Arguments.createMap()
-          res.putString("error", user.error.toString())
-          userCallback?.invoke(res)
-        }
-        SDKUserResult.InvalidUsername -> {
-          // intentionally left blank
-        }
-        SDKUserResult.Loading -> {
-          // intentionally left blank
-        }
-        SDKUserResult.NotLoggedIn -> {
-          var res = Arguments.createMap()
-          res.putNull("user")
-          userCallback?.invoke(res)
-        }
-        is SDKUserResult.Success -> {
-          val userMap = Arguments.createMap()
-          userMap.putString("username", user.sdkUser.username)
-          userMap.putString("email", user.sdkUser.email)
-          userMap.putString("firstName", user.sdkUser.firstName)
-          userMap.putString("lastName", user.sdkUser.lastName)
-          userMap.putString("phoneNumber", user.sdkUser.phoneNumber)
-
-          val address = Arguments.createMap()
-          address.putString("address", user.sdkUser.address)
-          address.putString("addressCont", user.sdkUser.addressCont)
-          address.putString("city", user.sdkUser.city)
-          address.putString("state", user.sdkUser.state)
-          address.putString("zip", user.sdkUser.zip)
-          userMap.putMap("address", address)
-
-          var res = Arguments.createMap()
-          res.putMap("user", userMap)
-
-          userCallback?.invoke(res)
-
-        }
-      }
-    }
+  @ReactMethod
+  override fun removeListeners(count: Double) {
+    // intentionally left blank
   }
 
   companion object {
