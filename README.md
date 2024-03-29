@@ -276,7 +276,7 @@ class MyApplication : Application(), ImageLoaderFactory {
 
 # Usage
 
-Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else.
+Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else. The initialization is a promise since communication with the backend is necessary.
 
 ```ts
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
@@ -310,7 +310,20 @@ let lucraSDKOptions = {
   },
 };
 
-LucraSDK.init(lucraSDKOptions);
+export default function App() {
+  const [isReady, setIsReady] = useState(false)
+  useEffect(() => {
+    LucraSDK.init(lucraSDKOptions).then(() => {
+      setIsReady(true)
+    })
+  }, [])
+
+  if(!isReady){
+    return null
+  }
+
+  return (<>...</>);
+}
 ```
 
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
