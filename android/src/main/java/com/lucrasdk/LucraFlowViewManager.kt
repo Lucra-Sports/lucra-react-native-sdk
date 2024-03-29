@@ -9,6 +9,7 @@ import com.facebook.react.module.annotations.ReactModule
 import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.ui.LucraUiProvider
@@ -16,19 +17,36 @@ import com.lucrasports.sdk.core.ui.LucraUiProvider
 @ReactModule(name = LucraFlowViewManager.NAME)
 class LucraFlowViewManager :
   LucraFlowViewManagerSpec<LucraFlowView>() {
-  
-  private var fragment: DialogFragment? = null
+
+    private lateinit var context: ThemedReactContext;
 
   override fun getName(): String {
     return NAME
   }
 
   public override fun createViewInstance(context: ThemedReactContext): LucraFlowView {
-    var parent = LucraFlowView(context)
-    var component = LucraClient().getLucraFlowView(context, LucraUiProvider.LucraFlow.Profile)
-    parent.addView(component)
-    return parent
+    this.context = context
+    return LucraFlowView(context)
+  }
 
+  @ReactProp(name = "flow")
+  override fun setFlow(view: LucraFlowView?, flow: String?) {
+    val lucraFlow = when (flow) {
+      "profile" -> LucraUiProvider.LucraFlow.Profile
+      "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
+//      "onboarding" -> LucraUiProvider.LucraFlow.Onboarding
+      "verifyIdentity" -> LucraUiProvider.LucraFlow.VerifyIdentity
+      "createGamesMatchup" -> LucraUiProvider.LucraFlow.CreateGamesMatchup
+      "withdrawFunds" -> LucraUiProvider.LucraFlow.WithdrawFunds
+      "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
+      "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
+      else -> LucraUiProvider.LucraFlow.Profile
+    }
+
+    if(flow != null) {
+      val component = LucraClient().getLucraFlowView(context, lucraFlow)
+      view?.addView(component)
+    }
   }
 
   companion object {

@@ -16,7 +16,7 @@ RCT_EXPORT_MODULE(LucraFlowView)
   return [[UIView alloc] init];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(name, NSString, UIView)
+RCT_CUSTOM_VIEW_PROPERTY(flow, NSString, UIView)
 {
   LucraSwiftClient *client = [LucraSwiftClient getShared];
   UIViewController *viewController = [client getFlowController: json];
