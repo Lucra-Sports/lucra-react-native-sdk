@@ -1,5 +1,6 @@
 package com.lucrasdk
 
+import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.facebook.react.module.annotations.ReactModule
@@ -8,16 +9,15 @@ import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 
 @ReactModule(name = LucraProfilePillManager.NAME)
-class LucraProfilePillManager : LucraProfilePillManagerSpec<LucraProfilePill>() {
+class LucraProfilePillManager : LucraProfilePillManagerSpec<View>() {
   private var fragment: DialogFragment? = null
 
   override fun getName(): String {
     return NAME
   }
 
-  public override fun createViewInstance(context: ThemedReactContext): LucraProfilePill {
-    var parent = LucraProfilePill(context)
-    var profilePill =
+  public override fun createViewInstance(context: ThemedReactContext): View {
+    val profilePill =
         LucraClient()
             .getLucraComponent(
                 context,
@@ -30,8 +30,7 @@ class LucraProfilePillManager : LucraProfilePillManagerSpec<LucraProfilePill>() 
                 }
             )
 
-    parent.addView(profilePill)
-    return parent
+    return profilePill
   }
 
   companion object {
