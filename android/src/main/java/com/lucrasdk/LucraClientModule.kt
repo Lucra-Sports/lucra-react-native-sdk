@@ -4,13 +4,14 @@ import android.app.Application
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.style_guide.ClientTheme
@@ -20,51 +21,49 @@ import com.lucrasports.sdk.core.style_guide.FontFamily
 import com.lucrasports.sdk.core.style_guide.FontWeight
 import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
-import com.lucrasports.sdk.ui.LucraUi
-import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sdk.core.user.SDKUserResult
-
+import com.lucrasports.sdk.ui.LucraUi
 
 @ReactModule(name = LucraClientModule.NAME)
-internal class LucraClientModule(
-  private val context: ReactApplicationContext
-) : NativeLucraClientSpec(context) {
+internal class LucraClientModule(private val context: ReactApplicationContext) :
+    NativeLucraClientSpec(context) {
 
   private var fullAppFlowDialogFragment: DialogFragment? = null
 
   private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
     reactContext
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      .emit(eventName, params)
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+        .emit(eventName, params)
   }
 
   @ReactMethod
   override fun initialize(options: ReadableMap, promise: Promise) {
-    val apiURL = options.getString("apiURL")
-      ?: throw Exception("LucraSDK no api passed to constructor")
-    val apiKey = options.getString("apiKey")
-      ?: throw Exception("LucraSDK no apiKey passed to constructor")
-
-    val environment = options.getString("environment")
+    val apiURL =
+        options.getString("apiURL") ?: throw Exception("LucraSDK no api passed to constructor")
+    val apiKey =
+        options.getString("apiKey") ?: throw Exception("LucraSDK no apiKey passed to constructor")
+    val environment =
+        options.getString("environment")
+            ?: throw Exception("LucraSDK no environment passed to constructor")
 
     val theme = options.getMap("theme")
     var clientTheme = ClientTheme()
     var fontFamily = FontFamily(emptyList())
     if (theme != null) {
-      val colorStyle = ColorStyle(
-        theme.getString("background"),
-        theme.getString("surface"),
-        theme.getString("primary"),
-        theme.getString("secondary"),
-        theme.getString("tertiary"),
-        theme.getString("onBackground"),
-        theme.getString("onSurface"),
-        theme.getString("onPrimary"),
-        theme.getString("onSecondary"),
-        theme.getString("onTertiary"),
-      )
+      val colorStyle =
+          ColorStyle(
+              theme.getString("background"),
+              theme.getString("surface"),
+              theme.getString("primary"),
+              theme.getString("secondary"),
+              theme.getString("tertiary"),
+              theme.getString("onBackground"),
+              theme.getString("onSurface"),
+              theme.getString("onPrimary"),
+              theme.getString("onSecondary"),
+              theme.getString("onTertiary"),
+          )
 
       val fontFamilyObj = theme.getMap("fontFamily")
       if (fontFamilyObj != null) {
@@ -98,43 +97,33 @@ internal class LucraClientModule(
 
     try {
       LucraClient.initialize(
-        application = context.applicationContext as Application,
-        lucraUiProvider = buildLucraUIInstance(),
-        apiUrl = apiURL,
-        apiKey = apiKey,
-        environment = when (environment) {
-          "production" -> LucraClient.Companion.Environment.PRODUCTION
-          "staging" -> LucraClient.Companion.Environment.STAGING
-          "develop" -> LucraClient.Companion.Environment.DEVELOPMENT
-          "sandbox" -> LucraClient.Companion.Environment.SANDBOX
-          else -> LucraClient.Companion.Environment.SANDBOX
-        },
-        clientTheme = clientTheme,
-        outputLogs = true,
+          application = context.applicationContext as Application,
+          lucraUiProvider = buildLucraUIInstance(),
+          apiUrl = apiURL,
+          apiKey = apiKey,
+          environment = LucraUtils.getLucraEnvironment(environment),
+          clientTheme = clientTheme,
+          outputLogs = true,
       )
 
       LucraClient().observeSDKUser { user ->
-        when(user) {
+        when (user) {
           is SDKUserResult.Error -> {
             val res = Arguments.createMap()
             res.putString("error", user.error.toString())
             sendEvent(context, "user", res)
           }
-
           SDKUserResult.InvalidUsername -> {
             // intentionally left blank
           }
-
           SDKUserResult.Loading -> {
             // intentionally left blank
           }
-
           SDKUserResult.NotLoggedIn -> {
             val res = Arguments.createMap()
             res.putNull("user")
             sendEvent(context, "user", res)
           }
-
           is SDKUserResult.Success -> {
             val userMap = Arguments.createMap()
             userMap.putString("username", user.sdkUser.username)
@@ -162,28 +151,28 @@ internal class LucraClientModule(
       promise.reject(e.toString(), e.toString())
     }
 
-    promise.resolve(null);
+    promise.resolve(null)
   }
 
-  private fun buildLucraUIInstance() = LucraUi(
-    lucraFlowListener = object : LucraFlowListener {
-      // Callback for entering Lucra permitted flow launch points.
-      override fun launchNewLucraFlowEntryPoint(entryLucraFlow: LucraUiProvider.LucraFlow): Boolean {
-        // TODO if RN integrators want a full screen flow, we can expose a property to consume
-        //  these launch events as a new dialog fragment.
-        return false
-      }
+  private fun buildLucraUIInstance() =
+      LucraUi(
+          lucraFlowListener =
+              object : LucraFlowListener {
+                // Callback for entering Lucra permitted flow launch points.
+                override fun launchNewLucraFlowEntryPoint(
+                    entryLucraFlow: LucraUiProvider.LucraFlow
+                ): Boolean {
+                  return true
+                }
 
-      //Callback for exiting all Lucra permitted flow launch points
-      override fun onFlowDismissRequested(entryLucraFlow: LucraUiProvider.LucraFlow) {
-        (context.currentActivity as FragmentActivity).supportFragmentManager.findFragmentByTag(
-          entryLucraFlow.toString()
-        )?.let {
-          (it as DialogFragment).dismiss()
-        }
-      }
-    }
-  )
+                // Callback for exiting all Lucra permitted flow launch points
+                override fun onFlowDismissRequested(entryLucraFlow: LucraUiProvider.LucraFlow) {
+                  (context.currentActivity as FragmentActivity).supportFragmentManager
+                      .findFragmentByTag(entryLucraFlow.toString())
+                      ?.let { (it as DialogFragment).dismiss() }
+                }
+              }
+      )
 
   override fun getName(): String {
     return NAME
@@ -191,55 +180,32 @@ internal class LucraClientModule(
 
   @ReactMethod
   override fun present(flow: String) {
-    val lucraFlow = when (flow) {
-      "profile" -> LucraUiProvider.LucraFlow.Profile
-      "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
-//      "onboarding" -> LucraUiProvider.LucraFlow.Onboarding
-      "verifyIdentity" -> LucraUiProvider.LucraFlow.VerifyIdentity
-      "createGamesMatchup" -> LucraUiProvider.LucraFlow.CreateGamesMatchup
-      "withdrawFunds" -> LucraUiProvider.LucraFlow.WithdrawFunds
-      "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
-      "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
-      else -> LucraUiProvider.LucraFlow.Profile
-    }
+    val lucraFlow = LucraUtils.getLucraFlow(flow)
 
     fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
 
     fullAppFlowDialogFragment?.show(
-      (context.currentActivity as FragmentActivity).supportFragmentManager,
-      lucraFlow.toString() // this tag will be used to dismiss in onFlowDismissRequested(flow)
+        (context.currentActivity as FragmentActivity).supportFragmentManager,
+        lucraFlow.toString() // this tag will be used to dismiss in onFlowDismissRequested(flow)
     )
   }
 
   private fun throwLucraJSError(promise: Promise, failure: GamesMatchup.FailedCreateGamesMatchup) {
-    val errorCode = when (failure) {
-      is GamesMatchup.FailedCreateGamesMatchup.APIError ->
-        "apiError"
+    val errorCode =
+        when (failure) {
+          is GamesMatchup.FailedCreateGamesMatchup.APIError -> "apiError"
+          is GamesMatchup.FailedCreateGamesMatchup.LocationError -> "locationError"
+          GamesMatchup.FailedCreateGamesMatchup.UserStateError.InsufficientFunds ->
+              "insufficientFunds"
+          GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotAllowed -> "notAllowed"
+          GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotInitialized -> "notInitialized"
+          GamesMatchup.FailedCreateGamesMatchup.UserStateError.Unverified -> "unverified"
+          else -> {
+            "unknownError"
+          }
+        }
 
-      is GamesMatchup.FailedCreateGamesMatchup.LocationError ->
-        "locationError"
-
-      GamesMatchup.FailedCreateGamesMatchup.UserStateError.InsufficientFunds ->
-        "insufficientFunds"
-
-      GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotAllowed ->
-        "notAllowed"
-
-      GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotInitialized ->
-        "notInitialized"
-
-      GamesMatchup.FailedCreateGamesMatchup.UserStateError.Unverified ->
-        "unverified"
-
-      else -> {
-        "unknownError"
-      }
-    }
-
-    promise.reject(
-      errorCode,
-      failure.toString()
-    )
+    promise.reject(errorCode, failure.toString())
   }
 
   @ReactMethod
@@ -249,7 +215,6 @@ internal class LucraClientModule(
         is GamesMatchup.CreateGamesMatchupResult.Failure -> {
           throwLucraJSError(promise, it.failure)
         }
-
         is GamesMatchup.CreateGamesMatchupResult.GYPCreatedMatchupOutput -> {
           val map = Arguments.createMap()
 
@@ -267,9 +232,7 @@ internal class LucraClientModule(
   override fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
     LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
       when (it) {
-        is GamesMatchup.MatchupActionResult.Failure ->
-          throwLucraJSError(promise, it.failure)
-
+        is GamesMatchup.MatchupActionResult.Failure -> throwLucraJSError(promise, it.failure)
         GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
       }
     }
@@ -279,9 +242,7 @@ internal class LucraClientModule(
   override fun cancelGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().cancelGamesYouPlayContest(matchupId) {
       when (it) {
-        is GamesMatchup.MatchupActionResult.Failure ->
-          throwLucraJSError(promise, it.failure)
-
+        is GamesMatchup.MatchupActionResult.Failure -> throwLucraJSError(promise, it.failure)
         GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
       }
     }
@@ -289,8 +250,9 @@ internal class LucraClientModule(
 
   override fun getGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().getGamesMatchup(matchupId) { result ->
-      when(result) {
-        is GamesMatchup.RetrieveGamesMatchupResult.Failure -> promise.reject(result.failure.toString(), result.failure.toString())
+      when (result) {
+        is GamesMatchup.RetrieveGamesMatchupResult.Failure ->
+            promise.reject(result.failure.toString(), result.failure.toString())
         is GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput -> {
           val res = Arguments.createMap()
           res.putString("gameType", result.gameType)
@@ -328,34 +290,28 @@ internal class LucraClientModule(
   @ReactMethod
   override fun configureUser(user: ReadableMap, promise: Promise) {
     // small trick to simplify code a bit
-    val addressJS = if (user.hasKey("address") ) user.getMap("address")!! else user
-    val newUser = SDKUser(
-      address = addressJS.getString("address"),
-      addressCont = addressJS.getString("addressCont"),
-      city = addressJS.getString("city"),
-      email = user.getString("email"),
-      firstName = user.getString("firstName"),
-      lastName = user.getString("lastName"),
-      phoneNumber = user.getString("phoneNumber"),
-      state = addressJS.getString("state"),
-      username = user.getString("username"),
-      zip = addressJS.getString("zip"),
-      avatarUrl = user.getString("avatarURL")
-    )
-    LucraClient().configure(sdkUser = newUser ) {
-      when(it) {
-        is SDKUserResult.Success ->
-          promise.resolve(null)
-
+    val addressJS = if (user.hasKey("address")) user.getMap("address")!! else user
+    val newUser =
+        SDKUser(
+            address = addressJS.getString("address"),
+            addressCont = addressJS.getString("addressCont"),
+            city = addressJS.getString("city"),
+            email = user.getString("email"),
+            firstName = user.getString("firstName"),
+            lastName = user.getString("lastName"),
+            phoneNumber = user.getString("phoneNumber"),
+            state = addressJS.getString("state"),
+            username = user.getString("username"),
+            zip = addressJS.getString("zip"),
+            avatarUrl = user.getString("avatarURL")
+        )
+    LucraClient().configure(sdkUser = newUser) {
+      when (it) {
+        is SDKUserResult.Success -> promise.resolve(null)
         is SDKUserResult.InvalidUsername ->
-          promise.reject("invalid_username", "username is not valid")
-
-        is SDKUserResult.NotLoggedIn ->
-          promise.reject("not_logged_in", "not logged in")
-
-        is SDKUserResult.Error ->
-          promise.reject("unknown_error", it.toString())
-
+            promise.reject("invalid_username", "username is not valid")
+        is SDKUserResult.NotLoggedIn -> promise.reject("not_logged_in", "not logged in")
+        is SDKUserResult.Error -> promise.reject("unknown_error", it.toString())
         SDKUserResult.Loading -> {
           // Should not happen in this context
         }
@@ -366,14 +322,10 @@ internal class LucraClientModule(
   @ReactMethod()
   override fun getUser(promise: Promise) {
     LucraClient().getSDKUser {
-
-      when(it) {
-        is SDKUserResult.Error ->
-          promise.resolve(null)
-        SDKUserResult.InvalidUsername ->
-          promise.reject("invalid_username", "username is not valid")
-        SDKUserResult.NotLoggedIn ->
-          promise.reject("not_logged_in", "not logged in")
+      when (it) {
+        is SDKUserResult.Error -> promise.resolve(null)
+        SDKUserResult.InvalidUsername -> promise.reject("invalid_username", "username is not valid")
+        SDKUserResult.NotLoggedIn -> promise.reject("not_logged_in", "not logged in")
         is SDKUserResult.Success -> {
           val user = Arguments.createMap()
           user.putString("username", it.sdkUser.username)
@@ -393,10 +345,8 @@ internal class LucraClientModule(
 
           promise.resolve(user)
         }
-
         SDKUserResult.Loading -> promise.reject("loading", "User is still loading")
       }
-
     }
   }
 

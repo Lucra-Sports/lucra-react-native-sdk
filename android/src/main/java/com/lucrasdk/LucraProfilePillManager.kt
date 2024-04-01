@@ -8,8 +8,7 @@ import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 
 @ReactModule(name = LucraProfilePillManager.NAME)
-class LucraProfilePillManager :
-  LucraProfilePillManagerSpec<LucraProfilePill>() {
+class LucraProfilePillManager : LucraProfilePillManagerSpec<LucraProfilePill>() {
   private var fragment: DialogFragment? = null
 
   override fun getName(): String {
@@ -18,13 +17,18 @@ class LucraProfilePillManager :
 
   public override fun createViewInstance(context: ThemedReactContext): LucraProfilePill {
     var parent = LucraProfilePill(context)
-    var profilePill = LucraClient().getLucraComponent(context, LucraUiProvider.LucraComponent.ProfilePill {
-      fragment = LucraClient().getLucraDialogFragment(it)
-      fragment?.show(
-        (context.currentActivity as FragmentActivity).supportFragmentManager,
-        it.toString()
-      )
-    })
+    var profilePill =
+        LucraClient()
+            .getLucraComponent(
+                context,
+                LucraUiProvider.LucraComponent.ProfilePill {
+                  fragment = LucraClient().getLucraDialogFragment(it)
+                  fragment?.show(
+                      (context.currentActivity as FragmentActivity).supportFragmentManager,
+                      it.toString()
+                  )
+                }
+            )
 
     parent.addView(profilePill)
     return parent
