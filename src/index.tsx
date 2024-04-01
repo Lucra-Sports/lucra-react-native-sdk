@@ -17,8 +17,8 @@ export const LucraProfilePill: React.FC<ViewProps> = (props) => {
 
 const defaultStyles = StyleSheet.create({
   profilePill: {
-    width: 150,
-    height: 40,
+    width: 180,
+    height: 50,
   },
 });
 
