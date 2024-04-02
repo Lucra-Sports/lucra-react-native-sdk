@@ -162,6 +162,9 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
                 override fun launchNewLucraFlowEntryPoint(
                     entryLucraFlow: LucraUiProvider.LucraFlow
                 ): Boolean {
+                  LucraClient().getLucraDialogFragment(entryLucraFlow).also {
+                    it.show((context.currentActivity as FragmentActivity).supportFragmentManager, entryLucraFlow.toString())
+                  }
                   return true
                 }
 
@@ -321,7 +324,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
 
   @ReactMethod()
   override fun getUser(promise: Promise) {
-    LucraClient().getSDKUser {
+    LucraClient().observeSDKUser {
       when (it) {
         is SDKUserResult.Error -> promise.resolve(null)
         SDKUserResult.InvalidUsername -> promise.reject("invalid_username", "username is not valid")
