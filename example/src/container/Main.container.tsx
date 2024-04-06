@@ -64,11 +64,12 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white">Example call configure user</Text>
         </TouchableOpacity>
         <Text className="text-white my-2">Profile pill component</Text>
-        <LucraProfilePill />
+        <LucraProfilePill key={Math.floor(Math.random() * 1000000) + 1}/>
         <Text className="text-white my-2">Mini feed</Text>
-        <LucraMiniPublicFeed playerIds={[]} className="h-96" />
+        <LucraMiniPublicFeed key={Math.floor(Math.random() * 1000000) + 1} playerIds={[]} className="h-96" />
         <Text className="text-white my-2"> Example embedded view</Text>
         <LucraFlowView
+          key={Math.floor(Math.random() * 1000000) + 1}
           flow={LucraSDK.FLOW.PROFILE}
           className="h-96 bg-red-500"
         />
