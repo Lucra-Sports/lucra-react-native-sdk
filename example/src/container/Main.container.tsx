@@ -23,9 +23,13 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 export const MainContainer: FC<Props> = ({ navigation }) => {
   // Lucra components die when full screen flows are launched, react-native-screens is not compatible with jetpack-compose.
   // By generating a new key, we force the component to re-mount which fixes them for now
-  const [profilePillKey, setProfilePillKey] = useState(Date.now().toString());
-  const [miniFeedKey, setMiniFeedKey] = useState(Date.now().toString());
-  const [embeddedViewKey, setEmbeddedViewKey] = useState(Date.now().toString());
+  const [profilePillKey, setProfilePillKey] = useState(
+    Math.random().toString()
+  );
+  const [miniFeedKey, setMiniFeedKey] = useState(Math.random().toString());
+  const [embeddedViewKey, setEmbeddedViewKey] = useState(
+    Math.random().toString()
+  );
 
   useFocusEffect(
     useCallback(() => {
