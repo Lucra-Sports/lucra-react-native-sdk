@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { FC } from 'react';
-import React, { useState, useCallback } from 'react'; 
+import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   Image,
@@ -21,19 +21,17 @@ import {
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
 export const MainContainer: FC<Props> = ({ navigation }) => {
-  // We aren't using by setting a state, it recomposes the screen
-  // Recomposing allows the keys (for Lucra components/flows) to work as expected
-
+  // Lucra components die when full screen flows are launched.
+  // By generating a new key, we force the component to re-mount which fixes them for now
   const [profilePillKey, setProfilePillKey] = useState(Date.now().toString());
-  
+
   useFocusEffect(
     useCallback(() => {
-      setProfilePillKey(Date.now().toString());
-      return () => {
-        
-      };
+      const keyPill = Date.now().toString();
+      setProfilePillKey(keyPill);
     }, [])
   );
+
   return (
     <SafeAreaView className="flex-1">
       <ScrollView className="flex-1 p-4">
@@ -78,11 +76,13 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white">Example call configure user</Text>
         </TouchableOpacity>
         <Text className="text-white my-2">Profile pill component</Text>
-        <LucraProfilePill
-         key={Math.floor(Math.random() * 1000000) + 1}
-         />
+        <LucraProfilePill key={profilePillKey} />
         <Text className="text-white my-2">Mini feed</Text>
-        <LucraMiniPublicFeed key={Math.floor(Math.random() * 1000000) + 1} playerIds={[]} className="h-96" />
+        <LucraMiniPublicFeed
+          key={Math.floor(Math.random() * 1000000) + 1}
+          playerIds={[]}
+          className="h-96"
+        />
         <Text className="text-white my-2"> Example embedded view</Text>
         <LucraFlowView
           key={Math.floor(Math.random() * 1000000) + 1}
