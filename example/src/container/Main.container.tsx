@@ -21,14 +21,20 @@ import {
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
 export const MainContainer: FC<Props> = ({ navigation }) => {
-  // Lucra components die when full screen flows are launched.
+  // Lucra components die when full screen flows are launched, react-native-screens is not compatible with jetpack-compose.
   // By generating a new key, we force the component to re-mount which fixes them for now
   const [profilePillKey, setProfilePillKey] = useState(Date.now().toString());
+  const [miniFeedKey, setMiniFeedKey] = useState(Date.now().toString());
+  const [embeddedViewKey, setEmbeddedViewKey] = useState(Date.now().toString());
 
   useFocusEffect(
     useCallback(() => {
-      const keyPill = Date.now().toString();
+      const keyPill = Math.random().toString();
+      const keyFeed = Math.random().toString();
+      const embeddedKey = Math.random().toString();
       setProfilePillKey(keyPill);
+      setMiniFeedKey(keyFeed);
+      setEmbeddedViewKey(embeddedKey);
     }, [])
   );
 
@@ -79,13 +85,13 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
         <LucraProfilePill key={profilePillKey} />
         <Text className="text-white my-2">Mini feed</Text>
         <LucraMiniPublicFeed
-          key={Math.floor(Math.random() * 1000000) + 1}
+          key={miniFeedKey}
           playerIds={[]}
           className="h-96"
         />
         <Text className="text-white my-2"> Example embedded view</Text>
         <LucraFlowView
-          key={Math.floor(Math.random() * 1000000) + 1}
+          key={embeddedViewKey}
           flow={LucraSDK.FLOW.PROFILE}
           className="h-96 bg-red-500"
         />
