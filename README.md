@@ -455,19 +455,32 @@ LucraSDK.addListener("user", ({ user, error }) => {
 
 ## Embed flows in a view
 
-You can embed a flow inside a normal react native component:
+You can embed a flow inside a normal react native views. Unfortunately on Android if you are using react-native-screens you will face an issue where components might disappear. This is due to incompatibility between jetpack compose, which the SDK uses internally. In order to get around this you need to re-mount the components whenever the screen is focused.
 
-**Currently supported in iOS**
+Here is a snippet on how to achieve this:
 
-```ts
+```tsx
 import { LucraFlowView, LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const MainContainer: FC<Props> = ({ navigation }) => {
+  const [miniFeedKey, setMiniFeedKey] = useState(Math.random().toString());
+
+  // create a new key everytime this screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const keyFeed = Math.random().toString();
+      setMiniFeedKey(keyFeed);
+    }, [])
+  );
+
   return (
     <SafeAreaView className="flex-1">
-        <Text className="text-white my-2"> Example embedded view</Text>
-        <LucraFlowView flow={LucraSDK.FLOW.PROFILE} className="flex-1 bg-white" />
-      </View>
+      <LucraFlowView
+        flow={LucraSDK.FLOW.PROFILE}
+        className="flex-1"
+        key={miniFeedKey}
+      />
     </SafeAreaView>
   );
 };

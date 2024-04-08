@@ -11,7 +11,7 @@ You can follow the installation instructions on the website. This repo already c
 ```
 nodejs 18.15.0
 ruby 2.7.6
-yarn 1.22.19
+yarn 4.1.1
 java zulu-11.56.19
 ```
 
@@ -31,9 +31,13 @@ If ASDF is not your cup of tea, you will be forced to install the dependencies i
 
 With ruby you can install `rubyenv` which the the `nvm` equivalent for the Ruby programming language.
 
-You will need to install both and install the versions required by this project to get them running. Once node is installed you should install `yarn` as well. The recommended way is via script, but I do `npm install -g yarn` and it works just fine.
-
 You can also ignore all of this and do a single global installation of Node (via the script on their website) and ruby (via homebrew), yarn (via w/e you want), but you will have a lot of pain when switching projects or updating them.
+
+You will also need to enable `corepack` to use yarn 4.1.1 without a global installation:
+
+```sh
+corepack enable yarn
+```
 
 ## Things you need to manually install
 
@@ -69,3 +73,7 @@ In the root of this project you can do a simple `yarn`, it is set up in a way th
 For the Cocoapods dependencies, my recommended way is that you go into the `example` directory and run `npx pod-install`. Npx is the headless runner of npm, it allows you to run npm packages without having to install them first. The `pod-install` is a JS wrapper for CocoaPods created by the community that takes care of many pitfalls of directly using `CocoaPods` when one is not a ruby/iOS expert.
 
 Once everything is done and said, you can return to the root folder and run the app via `yarn build:ios` or `yarn build:android` or stay in the `example` folder and run the app like a normal RN app via `yarn ios` or `yarn android`.
+
+## Checks
+
+A bunch of automated checks will run, but you should install prettier on your environment so the ts source code is automatically linted for you.
