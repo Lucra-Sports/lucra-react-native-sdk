@@ -136,6 +136,7 @@ internal class LucraClientModule(
 //      "onboarding" -> LucraUiProvider.LucraFlow.Onboarding
       "verifyIdentity" -> LucraUiProvider.LucraFlow.VerifyIdentity
       "createGamesMatchup" -> LucraUiProvider.LucraFlow.CreateGamesMatchup
+      "createSportsMatchup" -> LucraUiProvider.LucraFlow.CreateSportsMatchup
       "withdrawFunds" -> LucraUiProvider.LucraFlow.WithdrawFunds
       "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
       "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
