@@ -207,6 +207,8 @@ public class LucraSwiftClient: NSObject {
                     return .verifyIdentity
                 case "createGamesMatchup":
                     return .createGamesMatchup
+                case "createSportsMatchup":
+                    return .createSportsMatchup
                 case "withdrawFunds":
                     return .withdrawFunds
                 case "publicFeed":

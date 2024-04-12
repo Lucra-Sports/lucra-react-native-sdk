@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,mm,swift}"
 
-  s.dependency 'LucraSDK', '1.0.2'
+  s.dependency 'LucraSDK', '1.3.4'
   
   if fabric_enabled
     install_modules_dependencies(s)

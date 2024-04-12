@@ -94,6 +94,7 @@ export const LucraSDK = {
     PROFILE: 'profile',
     ADD_FUNDS: 'addFunds',
     CREATE_GAMES_MATCHUP: 'createGamesMatchup',
+    CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
     WITHDRAW_FUNDS: 'withdrawFunds',
     PUBLIC_FEED: 'publicFeed',
     MY_MATCHUP: 'myMatchup',
