@@ -7,6 +7,8 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, '15.0'
 prepare_react_native_project!
 
+use_frameworks! :linkage => :static
+
 target 'LucrasdkExample' do
   config = use_native_modules!
 
