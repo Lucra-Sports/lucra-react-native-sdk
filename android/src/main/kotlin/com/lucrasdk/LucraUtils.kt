@@ -22,6 +22,7 @@ class LucraUtils {
         "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
         "verifyIdentity" -> LucraUiProvider.LucraFlow.VerifyIdentity
         "createGamesMatchup" -> LucraUiProvider.LucraFlow.CreateGamesMatchup
+        "createSportsMatchup" -> LucraUiProvider.LucraFlow.CreateSportsMatchup
         "withdrawFunds" -> LucraUiProvider.LucraFlow.WithdrawFunds
         "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
         "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
