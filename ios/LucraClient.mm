@@ -1,6 +1,8 @@
-#import <React/RCTBridgeModule.h>
 #import "LucraClient.h"
 #import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
+
+@interface LucraClient() <LucraClientDelegate>
+@end
 
 @implementation LucraClient
 
@@ -20,8 +22,13 @@ LucraSwiftClient *client;
 }
 
 RCT_EXPORT_METHOD(initialize: (NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-    client = [[LucraSwiftClient alloc] init];
+    client = [LucraSwiftClient getShared];
     [client initialize:options resolver:resolve rejecter:reject];
+    [client setDelegate:self];
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return [LucraSwiftClient supportedEvents];
 }
 
 RCT_EXPORT_METHOD(acceptGamesMatchup:(NSString *)matchupId teamId:(NSString *)teamId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
@@ -31,6 +38,10 @@ RCT_EXPORT_METHOD(acceptGamesMatchup:(NSString *)matchupId teamId:(NSString *)te
 
 RCT_EXPORT_METHOD(cancelGamesMatchup:(NSString *)matchupId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [client cancelGamesMatchup:matchupId resolver:resolve rejecter:reject];
+}
+
+RCT_EXPORT_METHOD(getGamesMatchup:(NSString *)matchupId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [client getGamesMatchup:matchupId resolve:resolve reject:reject];
 }
 
 
@@ -48,10 +59,10 @@ RCT_EXPORT_METHOD(present:(NSString *)flow) {
     [client present:flow];
 }
 
-
-RCT_EXPORT_METHOD(registerUserCallback:(RCTResponseSenderBlock)cb) {
-    [client registerUserCallback:cb];
-}
+//
+//RCT_EXPORT_METHOD(registerUserCallback:(RCTResponseSenderBlock)cb) {
+//    [client registerUserCallback:cb];
+//}
 
 RCT_EXPORT_METHOD(logout:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [client logoutWithResolve:resolve reject:reject];
@@ -70,7 +81,11 @@ return std::make_shared<facebook::react::NativeLucraClientSpecJSI>(params);
 #endif
 
 - (void)invalidate {
-//    intentionally left blank
+    [super invalidate];
+}
+
+- (void)sendEventWithName:(NSString * _Nonnull)name result:(NSDictionary<NSString *,id> * _Nonnull)result {
+    [self sendEventWithName:name body:result];
 }
 
 @end

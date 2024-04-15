@@ -56,11 +56,11 @@ public abstract class NativeLucraClientSpec extends ReactContextBaseJavaModule i
 
   @ReactMethod
   @DoNotStrip
-  public abstract void configureUser(ReadableMap user, Promise promise);
+  public abstract void getGamesMatchup(String matchupId, Promise promise);
 
   @ReactMethod
   @DoNotStrip
-  public abstract void registerUserCallback(Callback cb);
+  public abstract void configureUser(ReadableMap user, Promise promise);
 
   @ReactMethod
   @DoNotStrip
@@ -69,4 +69,12 @@ public abstract class NativeLucraClientSpec extends ReactContextBaseJavaModule i
   @ReactMethod
   @DoNotStrip
   public abstract void getUser(Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void addListener(String eventType);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void removeListeners(double count);
 }

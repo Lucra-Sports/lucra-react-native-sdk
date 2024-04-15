@@ -276,7 +276,7 @@ class MyApplication : Application(), ImageLoaderFactory {
 
 # Usage
 
-Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else.
+Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else. The initialization is a promise since communication with the backend is necessary.
 
 ```ts
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
@@ -310,7 +310,20 @@ let lucraSDKOptions = {
   },
 };
 
-LucraSDK.init(lucraSDKOptions);
+export default function App() {
+  const [isReady, setIsReady] = useState(false)
+  useEffect(() => {
+    LucraSDK.init(lucraSDKOptions).then(() => {
+      setIsReady(true)
+    })
+  }, [])
+
+  if(!isReady){
+    return null
+  }
+
+  return (<>...</>);
+}
 ```
 
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
@@ -380,14 +393,21 @@ function handleLucraSDKError(e: LucraSDKError) {
 }
 
 export default function App() {
+  let [id, setId] = useState()
   return (
     <View style={styles.container}>
+      <Button
+        title="Get matchup"
+        onPress={() => {
+          LucraSDK.getGamesMatchup(id).then(...)
+        }}
+      >
       <Button
         title="Create Matchup"
         onPress={() => {
           LucraSDK.createGamesMatchup('DARTS', 1.0)
             .then((res) => {
-              // Store matchup info to use in later api calls
+              setId(res.id)
             })
             .catch(handleLucraSDKError);
         }}
@@ -417,10 +437,51 @@ let user = await LucraSDK.getUser();
 You can subscribe to changes in the user object via callback (currently only supported in iOS)
 
 ```ts
-if (Platform.OS === 'ios') {
-  // User callback is currently only supported on iOS
-  LucraSDK.registerUserCallback((user) => {
-    console.log(`✅ recevied user callback with id: ${user.id}`);
-  });
-}
+LucraSDK.addListener("user", ({ user, error }) => {
+  if (error) {
+    // Android will return this error when the user is not logged in
+    console.log('user callback error', error);
+    return;
+  }
+
+  if(user == null) {
+    // null value will be emitted on user logout
+    console.log("User is null!)
+  } else {
+    console.log(`✅ recevied user callback: ${user}`);
+  }
+});
+```
+
+## Embed flows in a view
+
+You can embed a flow inside a normal react native views. Unfortunately on Android if you are using react-native-screens you will face an issue where components might disappear. This is due to incompatibility between jetpack compose, which the SDK uses internally. In order to get around this you need to re-mount the components whenever the screen is focused.
+
+Here is a snippet on how to achieve this:
+
+```tsx
+import { LucraFlowView, LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import { useFocusEffect } from '@react-navigation/native';
+
+export const MainContainer: FC<Props> = ({ navigation }) => {
+  const [miniFeedKey, setMiniFeedKey] = useState(Math.random().toString());
+
+  // create a new key everytime this screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const keyFeed = Math.random().toString();
+      setMiniFeedKey(keyFeed);
+    }, [])
+  );
+
+  return (
+    <SafeAreaView className="flex-1">
+      <LucraFlowView
+        flow={LucraSDK.FLOW.PROFILE}
+        className="flex-1"
+        key={miniFeedKey}
+      />
+    </SafeAreaView>
+  );
+};
 ```
