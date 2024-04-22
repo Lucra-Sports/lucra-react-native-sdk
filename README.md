@@ -486,7 +486,7 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
 };
 ```
 
-# Publishing package
+# Publishing the package
 
 Publishing the package can be automatically be done for you via GitHub action:
 
