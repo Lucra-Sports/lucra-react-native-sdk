@@ -485,3 +485,11 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
   );
 };
 ```
+
+# Publishing package
+
+Publishing the package can be automatically be done for you via GitHub action:
+
+- Modify the version on the root `package.json`
+- Go to the [Publish Workflow](https://github.com/Lucra-Sports/lucra-react-native-sdk/actions/workflows/publish.yml) and trigger a run via the `Run Workflow` button on the top right corner.
+- It will automagically transpile and publish a version to the GitHub package registry and then create a tag and commit it to the repo for you.
