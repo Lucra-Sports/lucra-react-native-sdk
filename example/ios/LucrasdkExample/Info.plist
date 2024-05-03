@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Allow Lucra to authenticate using FaceID</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -33,8 +31,6 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Black.ttf</string>
@@ -61,5 +57,23 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Our application needs Bluetooth access to determine whether you are in an eligible area to use this feature. Location checks are only performed when using this feature.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Our application needs Bluetooth access to determine whether you are in an eligible area to use this feature. Location checks are only performed when using this feature.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>We use FaceID to improve security</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to verify you are in a legal state to make deposits and create or accept contests</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to verify you are in a legal state to make deposits and create or accept contests</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to verify you are in a legal state to make deposits and create or accept contests</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Our application needs motion information to determine if you are eligible to use this feature. Motion information is only collected when using this feature.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Needed to add a profile avatar image</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Needed to add a profile avatar image</string>
 </dict>
 </plist>
