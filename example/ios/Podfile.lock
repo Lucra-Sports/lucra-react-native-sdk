@@ -21,7 +21,7 @@ PODS:
   - hermes-engine/Pre-built (0.73.5)
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
-  - lucra-react-native-sdk (1.1.3):
+  - lucra-react-native-sdk (1.1.4):
     - LucraSDK (= 1.3.9)
     - React-Core
   - LucraSDK (1.3.9):
@@ -1291,7 +1291,7 @@ SPEC CHECKSUMS:
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: 99cd369772047bf1b42adbc18cadb13e183f9e6e
+  lucra-react-native-sdk: 74356c03ced4107d2860d85baee4135b54605a68
   LucraSDK: 52bfaa2932ca266808cfe30c596bca0863496209
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 2544c0f1081a5fa12e108bb8cb40e5f4581ccd87
