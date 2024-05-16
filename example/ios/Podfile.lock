@@ -1,5 +1,5 @@
 PODS:
-  - Auth0 (2.7.0):
+  - Auth0 (2.7.2):
     - JWTDecode (~> 3.1)
     - SimpleKeychain (~> 1.1)
   - boost (1.83.0)
@@ -21,10 +21,10 @@ PODS:
   - hermes-engine/Pre-built (0.73.5)
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
-  - lucra-react-native-sdk (1.1.4):
-    - LucraSDK (= 1.3.9)
+  - lucra-react-native-sdk (1.3.0):
+    - LucraSDK (= 1.4.1)
     - React-Core
-  - LucraSDK (1.3.9):
+  - LucraSDK (1.4.1):
     - Auth0
     - Resolver
     - ZendeskSupportSDK
@@ -1280,7 +1280,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Auth0: 0f9856ed0b424c1e614e1520f708fc4800d390d5
+  Auth0: 28cb24cb19ebd51f0b07751f16d83b59f4019532
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   BVLinearGradient: 916632041121a658c704df89d99f04acb038de0f
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
@@ -1291,8 +1291,8 @@ SPEC CHECKSUMS:
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: 74356c03ced4107d2860d85baee4135b54605a68
-  LucraSDK: 52bfaa2932ca266808cfe30c596bca0863496209
+  lucra-react-native-sdk: 1b13000e26d4913a9499d97d0b0d3b6637b092cf
+  LucraSDK: 4630bb6ed1998308fc5ec59d0715eddaf8a2c06f
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 2544c0f1081a5fa12e108bb8cb40e5f4581ccd87
   RCTTypeSafety: 50efabe2b115c11ed03fbf3fd79e2f163ddb5d7c
