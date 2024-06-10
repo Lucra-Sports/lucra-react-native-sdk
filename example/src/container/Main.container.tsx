@@ -16,6 +16,7 @@ import {
   LucraMiniPublicFeed,
   LucraProfilePill,
   LucraSDK,
+  LucraCreateContestButton,
 } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
@@ -97,8 +98,9 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
         <LucraFlowView
           key={embeddedViewKey}
           flow={LucraSDK.FLOW.PROFILE}
-          className="h-96 bg-red-500"
+          className="h-96"
         />
+        <LucraCreateContestButton className="mt-4" />
       </ScrollView>
     </SafeAreaView>
   );

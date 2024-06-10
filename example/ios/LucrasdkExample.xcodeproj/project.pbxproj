@@ -346,7 +346,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 3856BYZ76H;
+				DEVELOPMENT_TEAM = 24CMR7378R;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"${PODS_ROOT}/Auth0\"",
@@ -398,7 +398,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 3856BYZ76H;
+				DEVELOPMENT_TEAM = 24CMR7378R;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"${PODS_ROOT}/Auth0\"",
 					"$(inherited)",
@@ -586,6 +586,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					" ",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
@@ -734,6 +735,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					" ",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";

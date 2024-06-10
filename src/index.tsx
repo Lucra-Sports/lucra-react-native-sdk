@@ -2,10 +2,21 @@ import React from 'react';
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlowView } from './LucraFlowView';
 import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
+import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonComponent';
 import { StyleSheet, ViewProps, View, NativeEventEmitter } from 'react-native';
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
+
+export const LucraCreateContestButton: React.FC<ViewProps> = (props) => {
+  return (
+    <View {...props}>
+      <LucraCreateContestButtonNative
+        style={defaultStyles.createContestButton}
+      />
+    </View>
+  );
+};
 
 export const LucraProfilePill: React.FC<ViewProps> = (props) => {
   return (
@@ -19,6 +30,10 @@ const defaultStyles = StyleSheet.create({
   profilePill: {
     width: 180,
     height: 50,
+  },
+  createContestButton: {
+    width: 100,
+    height: 100,
   },
 });
 

@@ -6,7 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios --simulator=\"iPhone 15\"",
     "start": "react-native start",
-    "pods:next": "cd ios && rm -rf Pods && rm -f Podfile.lock && RCT_NEW_ARCH_ENABLED=1 USE_FRAMEWORKS=static bundle exec pod install",
+    "pods:next": "cd ios && rm -rf Pods && rm -f Podfile.lock && RCT_NEW_ARCH_ENABLED=1 USE_FRAMEWORKS=static pod install",
     "pods": "cd ios && rm -rf Pods && rm -f Podfile.lock && USE_FRAMEWORKS=static pod install",
     "android:logcat": "adb logcat",
     "nuke": "rm -rf $TMPDIR/react-* && watchman watch-del-all && rm -rf ios/build && rm -rf node_modules/ && rm -rf ./ios/Pods && yarn",

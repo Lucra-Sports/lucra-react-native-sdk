@@ -215,7 +215,7 @@ public class LucraSwiftClient: NSObject {
     }
   }
 
-  private func getLucraFlow(_ lucraFlow: String) -> LucraSDK.LucraFlow {
+  private func getLucraFlow(_ lucraFlow: String, matchupId: String?, teamInviteId: String?) -> LucraSDK.LucraFlow {
     switch lucraFlow {
     case "profile":
       return .profile
@@ -233,6 +233,10 @@ public class LucraSwiftClient: NSObject {
       return .withdrawFunds
     case "publicFeed":
       return .publicFeed
+    case "gameContestDetails":
+        return .gamesContestDetails(matchupId: matchupId!, teamInviteId: teamInviteId!)
+    case "sportContestDetails":
+        return .sportsContestDetails(matchupId: matchupId!)
     default:
       assertionFailure("Unimplemented lucra flow \(lucraFlow)")
       return .profile
@@ -240,9 +244,9 @@ public class LucraSwiftClient: NSObject {
   }
 
   @objc
-  public func present(_ lucraFlow: String) {
+  public func present(_ lucraFlow: String, matchupId: String?, teamInviteId: String?) {
     DispatchQueue.main.async {
-      let nativeFlow = self.getLucraFlow(lucraFlow)
+      let nativeFlow = self.getLucraFlow(lucraFlow, matchupId: matchupId, teamInviteId: teamInviteId)
       UIViewController.topViewController?.present(
         lucraFlow: nativeFlow,
         client: self.nativeClient,
@@ -370,7 +374,7 @@ public class LucraSwiftClient: NSObject {
   }
 
   @objc public func getFlowController(_ flow: String) -> UIViewController {
-    let nativeFlow = getLucraFlow(flow)
+    let nativeFlow = getLucraFlow(flow, matchupId: nil, teamInviteId: nil)
     return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
   }
 
@@ -381,4 +385,16 @@ public class LucraSwiftClient: NSObject {
   @objc public func getMiniFeed(_ userIDs: [String]?) -> UIView {
     return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
   }
+    
+    @objc public func getCreateContestButton() -> UIView {
+        return self.nativeClient.ui.component(.createContestButton)
+    }
+    
+    @objc public func getRecommendedMatchup() -> UIView {
+        return self.nativeClient.ui.component(.recommendedMatchup)
+    }
+    
+    @objc public func getContestCard(_ contestId: String) -> UIView {
+        return self.nativeClient.ui.component(.contestCard(contestId: contestId))
+    }
 }

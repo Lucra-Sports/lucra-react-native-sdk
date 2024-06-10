@@ -56,7 +56,7 @@ RCT_EXPORT_METHOD(createGamesMatchup:(NSString *)gameTypeId wagerAmount:(double)
 
 
 RCT_EXPORT_METHOD(present:(NSString *)flow) {
-    [client present:flow];
+    [client present:flow matchupId:nil teamInviteId:nil];
 }
 
 //
