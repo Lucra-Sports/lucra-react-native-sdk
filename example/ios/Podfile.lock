@@ -1081,18 +1081,18 @@ PODS:
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
   - ZendeskCommonUISDK (9.0.1)
-  - ZendeskCoreSDK (5.0.2)
+  - ZendeskCoreSDK (5.0.3)
   - ZendeskMessagingAPISDK (6.0.0):
     - ZendeskSDKConfigurationsSDK (~> 4.0.0)
   - ZendeskMessagingSDK (6.0.1):
     - ZendeskCommonUISDK (~> 9.0.1)
     - ZendeskMessagingAPISDK (~> 6.0.0)
   - ZendeskSDKConfigurationsSDK (4.0.0)
-  - ZendeskSupportProvidersSDK (8.0.2):
-    - ZendeskCoreSDK (~> 5.0.2)
-  - ZendeskSupportSDK (8.0.2):
+  - ZendeskSupportProvidersSDK (8.0.3):
+    - ZendeskCoreSDK (~> 5.0.3)
+  - ZendeskSupportSDK (8.0.3):
     - ZendeskMessagingSDK (~> 6.0.1)
-    - ZendeskSupportProvidersSDK (~> 8.0.2)
+    - ZendeskSupportProvidersSDK (~> 8.0.3)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1342,12 +1342,12 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
   ZendeskCommonUISDK: 720e6e34eff34ddae5feb1935f788a0893eaf672
-  ZendeskCoreSDK: 43f20009b1d4e739219874e449be85e4fe7feb46
+  ZendeskCoreSDK: 04db322c3e087d21984ff80118a890305fab2533
   ZendeskMessagingAPISDK: 9ce539eebcaa014fe6acc44da31262a2c52891c1
   ZendeskMessagingSDK: d0f65229188cb4936a56be6707992a2511b5175b
   ZendeskSDKConfigurationsSDK: 79c444da987390456ec05657ffa2f5ca0eb54aef
-  ZendeskSupportProvidersSDK: e105e358a6bb7b1dc22d4b45415d54826c0d7529
-  ZendeskSupportSDK: d87fcb1cfae0ef45ede384c635cc207f18ae8431
+  ZendeskSupportProvidersSDK: 2fbd2a9597af5d69760088bfb5e0e595e942f218
+  ZendeskSupportSDK: 22156384d20d30b0aeb263c03f49bef44e1364b2
 
 PODFILE CHECKSUM: fe6a3680fd6413b213049c70cc33cc7a320bccee
 
