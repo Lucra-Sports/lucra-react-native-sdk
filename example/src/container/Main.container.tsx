@@ -17,6 +17,8 @@ import {
   LucraProfilePill,
   LucraSDK,
   LucraCreateContestButton,
+  LucraRecommendedMatchup,
+  LucraContestCard,
 } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
@@ -101,6 +103,8 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
           className="h-96"
         />
         <LucraCreateContestButton className="mt-4" />
+        <LucraRecommendedMatchup className="mt-4 h-96" />
+        <LucraContestCard contestId="123" className="mt-4 h-96" />
       </ScrollView>
     </SafeAreaView>
   );
