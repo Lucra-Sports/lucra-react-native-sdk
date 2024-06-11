@@ -1,4 +1,4 @@
-import { TurboModuleRegistry, TurboModule } from 'react-native';
+import { TurboModuleRegistry, type TurboModule } from 'react-native';
 
 interface Spec extends TurboModule {
   initialize(options: Object): Promise<void>;
@@ -20,6 +20,7 @@ interface Spec extends TurboModule {
   // event emitter
   addListener: (eventType: string) => void;
   removeListeners: (count: number) => void;
+  emitDeepLink: (deepLink: string) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');

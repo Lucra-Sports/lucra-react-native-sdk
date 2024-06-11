@@ -12,6 +12,15 @@ public class LucraSwiftClient: NSObject {
   private var nativeClient: LucraSDK.LucraClient!
   private var userCallback: RCTResponseSenderBlock?
   private var userSinkCancellable: AnyCancellable?
+  private let deepLinkEmitter = PassthroughSubject<String, Never>()
+    
+    func awaitDeepLinkEvent() async -> String {
+        return await withCheckedContinuation{ continuation in
+            let _ = deepLinkEmitter.sink { value in
+                continuation.resume(returning: value)
+            }
+        }
+    }
 
   static public var shared = LucraSwiftClient()
 
@@ -106,7 +115,7 @@ public class LucraSwiftClient: NSObject {
       )
     )
 
-    // immediately create event emitter for user value
+    
     userSinkCancellable = nativeClient.$user.sink { user in
       guard let user = user else {
         self.delegate?.sendEvent(name: "user", result: ["user": nil])
@@ -140,6 +149,12 @@ public class LucraSwiftClient: NSObject {
       ]
 
       self.delegate?.sendEvent(name: "user", result: userMap)
+    }
+
+    nativeClient.registerDeeplinkProvider { lucraDeepLink in
+      self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
+        let deeplink = await self.awaitDeepLinkEvent()
+        return deeplink
     }
 
     resolver(nil)
@@ -179,6 +194,10 @@ public class LucraSwiftClient: NSObject {
       }
     }
   }
+    
+    @objc public func emitDeepLink(_ deepLink: String) {
+        deepLinkEmitter.send(deepLink)
+    }
 
   @objc
   public func getUser(
@@ -215,7 +234,9 @@ public class LucraSwiftClient: NSObject {
     }
   }
 
-  private func getLucraFlow(_ lucraFlow: String, matchupId: String?, teamInviteId: String?) -> LucraSDK.LucraFlow {
+  private func getLucraFlow(_ lucraFlow: String, matchupId: String?, teamInviteId: String?)
+    -> LucraSDK.LucraFlow
+  {
     switch lucraFlow {
     case "profile":
       return .profile

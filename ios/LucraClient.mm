@@ -59,6 +59,10 @@ RCT_EXPORT_METHOD(present:(NSString *)flow) {
     [client present:flow matchupId:nil teamInviteId:nil];
 }
 
+RCT_EXPORT_METHOD(emitDeepLink:(NSString *)deepLink) {
+    [client emitDeepLink:deepLink];
+}
+
 //
 //RCT_EXPORT_METHOD(registerUserCallback:(RCTResponseSenderBlock)cb) {
 //    [client registerUserCallback:cb];

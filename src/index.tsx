@@ -146,6 +146,8 @@ type MatchupInfo = {
   teams: MatchupTeamInfo[];
 };
 
+let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
+
 export const LucraSDK = {
   ENVIRONMENT: {
     PRODUCTION: 'production',
@@ -166,6 +168,12 @@ export const LucraSDK = {
   },
   init: async (options: LucraSDKParams): Promise<void> => {
     await LucraClient.initialize(options);
+    eventEmitter.addListener('_deepLink', async (data) => {
+      if (deepLinkEmitter) {
+        let newDeepLink = await deepLinkEmitter(data.link);
+        LucraClient.emitDeepLink(newDeepLink);
+      }
+    });
   },
   addListener: (type: 'user', cb: (data: any) => void) => {
     return eventEmitter.addListener(type, cb);
@@ -201,6 +209,9 @@ export const LucraSDK = {
   },
   logout: (): Promise<void> => {
     return LucraClient.logout();
+  },
+  registerDeepLinkProvider: (provider: (url: string) => Promise<string>) => {
+    deepLinkEmitter = provider;
   },
 };
 
