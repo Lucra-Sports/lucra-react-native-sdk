@@ -3,8 +3,15 @@ import LucraClient from './NativeLucraClient';
 export { default as LucraFlowView } from './LucraFlowView';
 import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
 import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonComponent';
-import { StyleSheet, ViewProps, View, NativeEventEmitter } from 'react-native';
+import {
+  StyleSheet,
+  type ViewProps,
+  View,
+  NativeEventEmitter,
+} from 'react-native';
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
+export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupComponent';
+export { default as LucraContestCard } from './LucraContestCardComponent';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
 
