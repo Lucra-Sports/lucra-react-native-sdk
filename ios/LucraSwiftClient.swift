@@ -13,14 +13,14 @@ public class LucraSwiftClient: NSObject {
   private var userCallback: RCTResponseSenderBlock?
   private var userSinkCancellable: AnyCancellable?
   private let deepLinkEmitter = PassthroughSubject<String, Never>()
-    
-    func awaitDeepLinkEvent() async -> String {
-        return await withCheckedContinuation{ continuation in
-            let _ = deepLinkEmitter.sink { value in
-                continuation.resume(returning: value)
-            }
-        }
+
+  func awaitDeepLinkEvent() async -> String {
+    return await withCheckedContinuation { continuation in
+      let _ = deepLinkEmitter.sink { value in
+        continuation.resume(returning: value)
+      }
     }
+  }
 
   static public var shared = LucraSwiftClient()
 
@@ -115,7 +115,6 @@ public class LucraSwiftClient: NSObject {
       )
     )
 
-    
     userSinkCancellable = nativeClient.$user.sink { user in
       guard let user = user else {
         self.delegate?.sendEvent(name: "user", result: ["user": nil])
@@ -153,8 +152,8 @@ public class LucraSwiftClient: NSObject {
 
     nativeClient.registerDeeplinkProvider { lucraDeepLink in
       self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
-        let deeplink = await self.awaitDeepLinkEvent()
-        return deeplink
+      let deeplink = await self.awaitDeepLinkEvent()
+      return deeplink
     }
 
     resolver(nil)
@@ -194,10 +193,10 @@ public class LucraSwiftClient: NSObject {
       }
     }
   }
-    
-    @objc public func emitDeepLink(_ deepLink: String) {
-        deepLinkEmitter.send(deepLink)
-    }
+
+  @objc public func emitDeepLink(_ deepLink: String) {
+    deepLinkEmitter.send(deepLink)
+  }
 
   @objc
   public func getUser(
@@ -391,6 +390,28 @@ public class LucraSwiftClient: NSObject {
     Task {
       await self.nativeClient.logout()
       resolve(nil)
+    }
+  }
+
+  @MainActor @objc
+  public func handleLucraLink(
+    _ link: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    if let url = URL(string: link) {
+      if let flow = self.nativeClient.handleDeeplink(url: url) {
+        // Launch a full screen flow
+          UIViewController.topViewController?.present(
+            lucraFlow: flow,
+            client: self.nativeClient,
+            animated: true
+          )
+      } else {
+        resolve(false)
+      }
+    } else {
+      resolve(false)
     }
 
   }

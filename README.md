@@ -486,6 +486,51 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
 };
 ```
 
+## Deep link provider
+
+Read up on the [native deep link documentation](https://docs.lucrasports.com/lucra-sdk/jpYRPQyBRCy9WVvSjRgO/integration-documents/ios-sdk/module-integration/deep-links) first.
+
+Lucra can emit a request for you to "pack" an internal deep link into your deep link provider of choice. This is useful for example if you want to use a link shortener. You then return this deep link into Lucra so that it can be presented to the user:
+
+```ts
+import { registerDeepLinkProvider } from '@lucra-sports/lucra-react-native-sdk';
+import { linkShortener } from 'my-link-shortener';
+
+registerDeepLinkProvider(async (lucraDeepLink) => {
+  const shortenedDeepLink = await linkShortener(lucraDeepLink);
+  return shortenedDeepLink;
+});
+```
+
+## Handling deep links
+
+For handling deep links that contain lucra information, you need to unpack your deep link and then pass it to the Lucra client to detect if a flow is embedded.
+
+```ts
+import { handleLucraLink } from '@lucra-sports/lucra-react-native-sdk';
+import { Linking } from 'react-native';
+import { linkExpander } from 'my-link-shortener';
+
+// on app start
+const linkingSubscription = Linking.addEventListener('url', async ({ url }) => {
+  const deepLink = await linkExpander(url);
+  const handled = await handleLucraLink(deepLink);
+  if (handled) {
+    // Lucra has detected a link and will take over, displaying a full flow
+    return;
+  }
+});
+
+// You should follow the Deep linking guides for RN, on Android it is necessary to also call the getInitialURL
+// to handle deep links that were called while app was closed
+const initialLink = await Linking.getInitialURL();
+if (initialLink) {
+  // same as above
+}
+```
+
+## Handling incoming deeplinks
+
 # Publishing the package
 
 Publishing the package can be automatically be done for you via GitHub action:

@@ -21,6 +21,7 @@ interface Spec extends TurboModule {
   addListener: (eventType: string) => void;
   removeListeners: (count: number) => void;
   emitDeepLink: (deepLink: string) => void;
+  handleLucraLink: (link: string) => Promise<boolean>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');

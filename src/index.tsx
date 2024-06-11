@@ -213,6 +213,9 @@ export const LucraSDK = {
   registerDeepLinkProvider: (provider: (url: string) => Promise<string>) => {
     deepLinkEmitter = provider;
   },
+  handleLucraLink: async (link: string): Promise<boolean> => {
+    return LucraClient.handleLucraLink(link);
+  },
 };
 
 export type LucraSDKError = {
