@@ -22,6 +22,8 @@ interface Spec extends TurboModule {
   removeListeners: (count: number) => void;
   emitDeepLink: (deepLink: string) => void;
   handleLucraLink: (link: string) => Promise<boolean>;
+  registerDeviceTokenHex: (token: string) => Promise<void>;
+  registerDeviceTokenBase64: (token: string) => Promise<void>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');

@@ -402,11 +402,11 @@ public class LucraSwiftClient: NSObject {
     if let url = URL(string: link) {
       if let flow = self.nativeClient.handleDeeplink(url: url) {
         // Launch a full screen flow
-          UIViewController.topViewController?.present(
-            lucraFlow: flow,
-            client: self.nativeClient,
-            animated: true
-          )
+        UIViewController.topViewController?.present(
+          lucraFlow: flow,
+          client: self.nativeClient,
+          animated: true
+        )
       } else {
         resolve(false)
       }
@@ -414,6 +414,34 @@ public class LucraSwiftClient: NSObject {
       resolve(false)
     }
 
+  }
+
+  @objc
+  public func registerDeviceTokenHex(
+    _ token: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let data = token.hexadecimal else {
+      reject("Invalid Hex String", "The provided hex string is not valid", nil)
+      return
+    }
+    self.nativeClient.registerForPushNotifications(deviceToken: data)
+      resolve(nil)
+  }
+
+  @objc
+  public func registerDeviceTokenBase64(
+    _ token: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let data = Data(base64Encoded: token) else {
+      reject("Invalid Base64 String", "The provided base64 string is not valid", nil)
+      return
+    }
+    self.nativeClient.registerForPushNotifications(deviceToken: data)
+      resolve(nil)
   }
 
   @objc public func getFlowController(_ flow: String) -> UIViewController {

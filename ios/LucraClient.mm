@@ -103,6 +103,22 @@ RCT_EXPORT_METHOD(handleLucraLink
   [client handleLucraLink:link resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(registerDeviceTokenHex
+                  : (NSString *)deviceTokenHex resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject) {
+  [client registerDeviceTokenHex:deviceTokenHex resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(registerDeviceTokenBase64
+                  : (NSString *)deviceTokenBase64 resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject) {
+  [client registerDeviceTokenBase64:deviceTokenBase64
+                            resolve:resolve
+                             reject:reject];
+}
+
 #if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params {

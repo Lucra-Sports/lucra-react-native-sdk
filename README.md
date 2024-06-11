@@ -502,7 +502,7 @@ registerDeepLinkProvider(async (lucraDeepLink) => {
 });
 ```
 
-## Handling deep links
+## Incoming deep links
 
 For handling deep links that contain lucra information, you need to unpack your deep link and then pass it to the Lucra client to detect if a flow is embedded.
 
@@ -529,7 +529,58 @@ if (initialLink) {
 }
 ```
 
-## Handling incoming deeplinks
+## Push notifications
+
+### iOS
+
+Read the [native documentation on push notifications](https://docs.lucrasports.com/lucra-sdk/jpYRPQyBRCy9WVvSjRgO/integration-documents/ios-sdk/module-integration/push-notifications). First you need to register for remote push notifications, depending on which library you are using this process will change. You will then need to get the device token so it can be passed to the Lucra SDK. Here is one example using [react-native-push-notifications](https://github.com/react-native-push-notification/ios).
+
+1. Register the native module, [following the steps in the README](https://github.com/react-native-push-notification/ios#update-appdelegatem-or-appdelegatemm)
+2. You should be able to add a listener for the 'register' event which will emit the device token in hex string format
+
+```ts
+import { registerDeviceTokenHex } from '@lucra-sports/lucra-react-native-sdk';
+// There is also a base64 version
+// import { registerDeviceTokenBase64 } from '@lucra-sports/lucra-react-native-sdk';
+
+PushNotificationIOS.addEventListener('register', async (token) => {
+  await registerDeviceTokenHex(token);
+});
+
+PushNotificationIOS.requestPermissions();
+```
+
+Handling push notifications follows a similar logic to handling of deep links:
+
+```ts
+import { handleLucraNotification } from '@lucra-sports/lucra-react-native-sdk';
+
+export const App = () => {
+  const [permissions, setPermissions] = useState({});
+
+  useEffect(() => {
+    const type = 'notification';
+    PushNotificationIOS.addEventListener(type, onRemoteNotification);
+    return () => {
+      PushNotificationIOS.removeEventListener(type);
+    };
+  });
+
+  const onRemoteNotification = (notification) => {
+    const isClicked = notification.getData().userInteraction === 1;
+    if (isClicked) {
+      handleLucraNotification({
+        // TODO which fields need to be there?
+      });
+    } else {
+      // Do something else with push notification
+    }
+    // Use the appropriate result based on what you needed to do for this notification
+    const result = PushNotificationIOS.FetchResult.NoData;
+    notification.finish(result);
+  };
+};
+```
 
 # Publishing the package
 

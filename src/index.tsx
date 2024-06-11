@@ -216,6 +216,12 @@ export const LucraSDK = {
   handleLucraLink: async (link: string): Promise<boolean> => {
     return LucraClient.handleLucraLink(link);
   },
+  registerDeviceTokenHex: async (token: string): Promise<void> => {
+    return LucraClient.registerDeviceTokenHex(token);
+  },
+  registerDeviceTokenBase64: async (token: string): Promise<void> => {
+    return LucraClient.registerDeviceTokenBase64(token);
+  },
 };
 
 export type LucraSDKError = {
