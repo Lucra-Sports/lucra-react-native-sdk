@@ -31,10 +31,10 @@ export default function App() {
           Platform.OS === 'ios'
             ? 'Inter'
             : {
-                normal: 'Inter-Regular',
-                bold: 'Inter-Bold',
-                semibold: 'Inter-SemiBold',
-                medium: 'Inter-Medium',
+                normal: 'fonts/Inter-Regular.ttf',
+                bold: 'fonts/Inter-Bold.ttf',
+                semibold: 'fonts/Inter-SemiBold.ttf',
+                medium: 'fonts/Inter-Medium.ttf',
               },
       },
     })

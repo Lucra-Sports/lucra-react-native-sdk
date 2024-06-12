@@ -15,6 +15,9 @@ class LucraClientPackage : TurboReactPackage() {
     viewManagers.add(LucraFlowViewManager())
     viewManagers.add(LucraProfilePillManager())
     viewManagers.add(LucraMiniPublicFeedManager())
+    viewManagers.add(LucraRecommendedMatchupManager())
+      viewManagers.add(LucraCreateContestButtonManager())
+      viewManagers.add(LucraContestCardManager())
     return viewManagers
   }
 

@@ -18,18 +18,23 @@ import com.lucrasports.sdk.core.style_guide.ClientTheme
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
 import com.lucrasports.sdk.core.style_guide.FontFamily
-import com.lucrasports.sdk.core.style_guide.FontWeight
 import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sdk.core.user.SDKUserResult
 import com.lucrasports.sdk.ui.LucraUi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 
 @ReactModule(name = LucraClientModule.NAME)
 internal class LucraClientModule(private val context: ReactApplicationContext) :
     NativeLucraClientSpec(context) {
 
   private var fullAppFlowDialogFragment: DialogFragment? = null
+  private var _deepLinkEmitter = MutableStateFlow<String>("")
+  private var _deepLinkState: SharedFlow<String> = _deepLinkEmitter.asSharedFlow()
 
   private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
     reactContext
@@ -49,7 +54,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
 
     val theme = options.getMap("theme")
     var clientTheme = ClientTheme()
-    var fontFamily = FontFamily(emptyList())
+    var fontFamily: FontFamily? = null
     if (theme != null) {
       val colorStyle =
           ColorStyle(
@@ -67,29 +72,24 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
 
       val fontFamilyObj = theme.getMap("fontFamily")
       if (fontFamilyObj != null) {
-        val fontList = mutableListOf<Font>()
-
-        val boldFamily = fontFamilyObj.getString("bold")
-        if (boldFamily != null) {
-          fontList.add(Font(fontName = boldFamily, weight = FontWeight.Bold))
+        if (!fontFamilyObj.hasKey("medium") ||
+                !fontFamilyObj.hasKey("normal") ||
+                !fontFamilyObj.hasKey("semibold") ||
+                !fontFamilyObj.hasKey("bold")
+        ) {
+          throw Exception(
+              "LucraSDK all keys are required when setting a font: medium, normal, semibold and bold"
+          )
         }
 
-        val semiboldFamily = fontFamilyObj.getString("semibold")
-        if (semiboldFamily != null) {
-          fontList.add(Font(fontName = semiboldFamily, weight = FontWeight.SemiBold))
-        }
-
-        val normalFamily = fontFamilyObj.getString("normal")
-        if (normalFamily != null) {
-          fontList.add(Font(fontName = normalFamily, weight = FontWeight.Normal))
-        }
-
-        val mediumFamily = fontFamilyObj.getString("medium")
-        if (mediumFamily != null) {
-          fontList.add(Font(fontName = mediumFamily, weight = FontWeight.Normal))
-        }
-
-        fontFamily = FontFamily(fontList)
+        // Strings will be there because of previous check
+        fontFamily =
+            FontFamily(
+                Font(fontFamilyObj.getString("medium")!!),
+                Font(fontFamilyObj.getString("normal")!!),
+                Font(fontFamilyObj.getString("semibold")!!),
+                Font(fontFamilyObj.getString("bold")!!)
+            )
       }
 
       clientTheme = ClientTheme(colorStyle, fontFamily)
@@ -105,6 +105,14 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
           clientTheme = clientTheme,
           outputLogs = true,
       )
+
+      LucraClient().setDeeplinkTransformer { lucraLink ->
+        val linkMap = Arguments.createMap()
+        linkMap.putString("link", lucraLink)
+        sendEvent(context, "_deepLink", linkMap)
+        val transformedLink = _deepLinkState.first { it != "" }
+        transformedLink
+      }
 
       LucraClient().observeSDKUser { user ->
         when (user) {
@@ -144,6 +152,9 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
             res.putMap("user", userMap)
 
             sendEvent(context, "user", res)
+          }
+          SDKUserResult.WaitingForLogin -> {
+            // intentionally left blank
           }
         }
       }
@@ -294,6 +305,26 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
+  suspend fun emitDeepLink(link: String) {
+    _deepLinkEmitter.emit(link)
+  }
+
+  @ReactMethod
+  fun handleLucraLink(lucraLink: String, promise: Promise) {
+    val lucraFlow = LucraClient().getLucraFlowForDeeplinkUri(lucraLink)
+    if (lucraFlow != null) {
+      fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
+      fullAppFlowDialogFragment?.show(
+          (context.currentActivity as FragmentActivity).supportFragmentManager,
+          lucraFlow.toString() // this tag will be used to dismiss in onFlowDismissRequested(flow)
+      )
+      promise.resolve(true)
+    } else {
+      promise.resolve(false)
+    }
+  }
+
+  @ReactMethod
   override fun configureUser(user: ReadableMap, promise: Promise) {
     // small trick to simplify code a bit
     val addressJS = if (user.hasKey("address")) user.getMap("address")!! else user
@@ -320,6 +351,9 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
         is SDKUserResult.Error -> promise.reject("unknown_error", it.toString())
         SDKUserResult.Loading -> {
           // Should not happen in this context
+        }
+        SDKUserResult.WaitingForLogin -> {
+          // Intentionally left blank
         }
       }
     }
@@ -352,6 +386,9 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
           promise.resolve(user)
         }
         SDKUserResult.Loading -> promise.reject("loading", "User is still loading")
+        SDKUserResult.WaitingForLogin -> {
+          // intentionally blank
+        }
       }
     }
   }

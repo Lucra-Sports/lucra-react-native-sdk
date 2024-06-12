@@ -298,14 +298,18 @@ let lucraSDKOptions = {
     onPrimary: '#001448',
     onSecondary: '#FFFFFF',
     onTertiary: '#FFFFFF',
+    // For android you need to pass the path inside the Android assets folder
+    // If you have linked your assets using the default location /assets/fonts
+    // Then the android linked fonts should land in /android/app/src/main/assets/font
+    // and the configuration should match the one below. You must specify all four keys.
     fontFamily:
       Platform.OS === 'ios'
         ? 'Inter'
         : {
-            normal: 'Inter-Regular',
-            bold: 'Inter-Bold',
-            semibold: 'Inter-SemiBold',
-            medium: 'Inter-Medium',
+            normal: 'fonts/Inter-Regular.ttf',
+            bold: 'fonts/Inter-Bold.ttf',
+            semibold: 'fonts/Inter-SemiBold.ttf',
+            medium: 'fonts/Inter-Medium.ttf',
           },
   },
 };
@@ -581,6 +585,10 @@ export const App = () => {
   };
 };
 ```
+
+### Android
+
+For android you need to add the necessary [native code](https://github.com/Lucra-Sports/lucra-android-sdk?tab=readme-ov-file#setting-up-push-notifications) in order for you to get the device token and handle incoming push notifications.
 
 # Publishing the package
 
