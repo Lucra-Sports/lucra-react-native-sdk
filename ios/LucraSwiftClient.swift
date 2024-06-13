@@ -454,7 +454,7 @@ public class LucraSwiftClient: NSObject {
   }
 
   @objc public func getMiniFeed(_ userIDs: [String]?) -> UIView {
-    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
+      return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
   }
 
   @objc public func getCreateContestButton() -> UIView {

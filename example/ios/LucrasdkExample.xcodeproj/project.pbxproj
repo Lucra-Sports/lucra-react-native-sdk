@@ -14,18 +14,19 @@
 		3C5489FC14A14C08A6B3C77D /* Inter-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3556A6E84BC943C3ADF5B381 /* Inter-ExtraBold.ttf */; };
 		42BC6802EB4241F19F5440DB /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7F05699448C246C4AF3791E2 /* Inter-Thin.ttf */; };
 		557FDAA720C94ACD86F223EC /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3255C0686D4B42D38038C1BD /* Inter-Regular.ttf */; };
+		635132E029CDA9A04F9AFFD0 /* Pods_LucrasdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BED2CED08C5679C11135B6F /* Pods_LucrasdkExample.framework */; };
 		6F7A93C9A701477C8A7012AB /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 725DD2B3661B4C2F8D31BCEE /* Inter-SemiBold.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9120A6C71172472A8C1DEC17 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DFBB301667EA40C2A256D5C6 /* Inter-Medium.ttf */; };
 		94978B37DF9443B58DA51694 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C9C2A9B48B254D158DF5124D /* Inter-Bold.ttf */; };
 		A0D9D1E9C143405E8AEF3D64 /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BE684234CF3842F980AC2C5C /* Inter-Light.ttf */; };
 		B81773CBAB8F42D88C369E46 /* Inter-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1B102E40FDF4B7894CF5F5B /* Inter-Black.ttf */; };
-		E0C7C7AFFEF111C60414417E /* Pods_LucrasdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2E50A6C73E50FD2B55976B3 /* Pods_LucrasdkExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* LucrasdkExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LucrasdkExampleTests.m; sourceTree = "<group>"; };
+		0BED2CED08C5679C11135B6F /* Pods_LucrasdkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LucrasdkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* LucrasdkExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LucrasdkExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = LucrasdkExample/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = LucrasdkExample/AppDelegate.mm; sourceTree = "<group>"; };
@@ -38,14 +39,13 @@
 		725DD2B3661B4C2F8D31BCEE /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		7F05699448C246C4AF3791E2 /* Inter-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.ttf"; path = "../assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = LucrasdkExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9DB27DF6B54B5118DE8862EC /* Pods-LucrasdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.release.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.release.xcconfig"; sourceTree = "<group>"; };
-		AEAD3267E70E5771B99B8504 /* Pods-LucrasdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.debug.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		B1B102E40FDF4B7894CF5F5B /* Inter-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Black.ttf"; path = "../assets/fonts/Inter-Black.ttf"; sourceTree = "<group>"; };
 		BE684234CF3842F980AC2C5C /* Inter-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.ttf"; path = "../assets/fonts/Inter-Light.ttf"; sourceTree = "<group>"; };
 		C9C2A9B48B254D158DF5124D /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
+		D1CAE12AF4D4E6D04253036E /* Pods-LucrasdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.release.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		DFBB301667EA40C2A256D5C6 /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
+		E06EF28FEFC43052ECAE3119 /* Pods-LucrasdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.debug.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F2E50A6C73E50FD2B55976B3 /* Pods_LucrasdkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LucrasdkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E0C7C7AFFEF111C60414417E /* Pods_LucrasdkExample.framework in Frameworks */,
+				635132E029CDA9A04F9AFFD0 /* Pods_LucrasdkExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,7 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				F2E50A6C73E50FD2B55976B3 /* Pods_LucrasdkExample.framework */,
+				0BED2CED08C5679C11135B6F /* Pods_LucrasdkExample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -149,8 +149,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				AEAD3267E70E5771B99B8504 /* Pods-LucrasdkExample.debug.xcconfig */,
-				9DB27DF6B54B5118DE8862EC /* Pods-LucrasdkExample.release.xcconfig */,
+				E06EF28FEFC43052ECAE3119 /* Pods-LucrasdkExample.debug.xcconfig */,
+				D1CAE12AF4D4E6D04253036E /* Pods-LucrasdkExample.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -162,14 +162,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "LucrasdkExample" */;
 			buildPhases = (
-				7CC47712EA915A634D42A8CD /* [CP] Check Pods Manifest.lock */,
+				B69A959018854CE5A273888F /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				C3E7027C0A24D60BA7E84023 /* [CP] Embed Pods Frameworks */,
-				9ACC979149B238673A7A0F5C /* [CP] Copy Pods Resources */,
+				2FF3A8A150E322B8CFF65599 /* [CP] Embed Pods Frameworks */,
+				2D4DE29E6E35CC9252AFA3D0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -249,7 +249,41 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		7CC47712EA915A634D42A8CD /* [CP] Check Pods Manifest.lock */ = {
+		2D4DE29E6E35CC9252AFA3D0 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2FF3A8A150E322B8CFF65599 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B69A959018854CE5A273888F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -269,40 +303,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9ACC979149B238673A7A0F5C /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C3E7027C0A24D60BA7E84023 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -341,7 +341,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AEAD3267E70E5771B99B8504 /* Pods-LucrasdkExample.debug.xcconfig */;
+			baseConfigurationReference = E06EF28FEFC43052ECAE3119 /* Pods-LucrasdkExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -393,7 +393,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9DB27DF6B54B5118DE8862EC /* Pods-LucrasdkExample.release.xcconfig */;
+			baseConfigurationReference = D1CAE12AF4D4E6D04253036E /* Pods-LucrasdkExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
