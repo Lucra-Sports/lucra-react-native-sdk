@@ -14,6 +14,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
+import com.lucrasports.sdk.core.contest.SportsMatchup
 import com.lucrasports.sdk.core.style_guide.ClientTheme
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
@@ -392,6 +393,22 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
       }
     }
   }
+
+    @ReactMethod
+    fun getSportsMatchup(contestId: String, promise: Promise) {
+        LucraClient().getSportsMatchup(
+            matchupId = "matchupId",
+        ) { result ->
+            when (result) {
+                is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
+                    promise.reject("could_not_resolve_sports_matchup", result.toString())
+                }
+                is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
+                    
+                }
+            }
+        }
+    }
 
   @ReactMethod
   override fun logout(promise: Promise?) {
