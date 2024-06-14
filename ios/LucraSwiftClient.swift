@@ -202,19 +202,19 @@ public class LucraSwiftClient: NSObject {
     _ contestId: String, resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-      
-      Task { @MainActor in
-          do {
-              guard let match = try await self.nativeClient.api.sportsMatchup(for: contestId) else {
-                  resolve(nil)
-                  return
-              }
-              
-              resolve(sportMatchupToMap(match: match))
-          } catch {
-              reject("\(error)", error.localizedDescription, nil)
-          }
+
+    Task { @MainActor in
+      do {
+        guard let match = try await self.nativeClient.api.sportsMatchup(for: contestId) else {
+          resolve(nil)
+          return
+        }
+
+        resolve(sportMatchupToMap(match: match))
+      } catch {
+        reject("\(error)", error.localizedDescription, nil)
       }
+    }
 
   }
 
@@ -473,7 +473,7 @@ public class LucraSwiftClient: NSObject {
   }
 
   @objc public func getMiniFeed(_ userIDs: [String]?) -> UIView {
-      return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
+    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
   }
 
   @objc public func getCreateContestButton() -> UIView {
