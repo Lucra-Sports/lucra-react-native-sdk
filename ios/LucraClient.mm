@@ -119,6 +119,12 @@ RCT_EXPORT_METHOD(registerDeviceTokenBase64
                              reject:reject];
 }
 
+RCT_EXPORT_METHOD(getSportsMatchup: (NSString *)contestId resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject) {
+    [client getSportsMatchup:contestId resolve:resolve reject:reject];
+}
+
 #if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params {

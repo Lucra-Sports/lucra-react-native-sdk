@@ -198,12 +198,31 @@ public class LucraSwiftClient: NSObject {
     deepLinkEmitter.send(deepLink)
   }
 
+  @objc public func getSportsMatchup(
+    _ contestId: String, resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+      
+      Task { @MainActor in
+          do {
+              guard let match = try await self.nativeClient.api.sportsMatchup(for: contestId) else {
+                  resolve(nil)
+                  return
+              }
+              
+              resolve(sportMatchupToMap(match: match))
+          } catch {
+              reject("\(error)", error.localizedDescription, nil)
+          }
+      }
+
+  }
+
   @objc
   public func getUser(
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-
     switch nativeClient.user {
     case .some(let user):
       var userJS: [String: Any] = [
@@ -427,7 +446,7 @@ public class LucraSwiftClient: NSObject {
       return
     }
     self.nativeClient.registerForPushNotifications(deviceToken: data)
-      resolve(nil)
+    resolve(nil)
   }
 
   @objc
@@ -441,7 +460,7 @@ public class LucraSwiftClient: NSObject {
       return
     }
     self.nativeClient.registerForPushNotifications(deviceToken: data)
-      resolve(nil)
+    resolve(nil)
   }
 
   @objc public func getFlowController(_ flow: String) -> UIViewController {

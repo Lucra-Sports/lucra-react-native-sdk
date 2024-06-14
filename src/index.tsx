@@ -222,6 +222,9 @@ export const LucraSDK = {
   registerDeviceTokenBase64: async (token: string): Promise<void> => {
     return LucraClient.registerDeviceTokenBase64(token);
   },
+  getSportsMatchup: async (contestId: string): Promise<Object> => {
+    return await LucraClient.getSportsMatchup(contestId);
+  },
 };
 
 export type LucraSDKError = {

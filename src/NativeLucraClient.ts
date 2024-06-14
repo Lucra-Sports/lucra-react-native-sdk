@@ -24,6 +24,7 @@ interface Spec extends TurboModule {
   handleLucraLink: (link: string) => Promise<boolean>;
   registerDeviceTokenHex: (token: string) => Promise<void>;
   registerDeviceTokenBase64: (token: string) => Promise<void>;
+  getSportsMatchup(contestId: string): Promise<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');
