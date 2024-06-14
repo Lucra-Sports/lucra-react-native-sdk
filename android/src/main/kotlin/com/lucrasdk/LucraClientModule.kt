@@ -397,14 +397,14 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
     @ReactMethod
     fun getSportsMatchup(contestId: String, promise: Promise) {
         LucraClient().getSportsMatchup(
-            matchupId = "matchupId",
+            matchupId = contestId,
         ) { result ->
             when (result) {
                 is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
                     promise.reject("could_not_resolve_sports_matchup", result.toString())
                 }
                 is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
-                    
+                    LucraMapper.sportsMatchupToMap(result)
                 }
             }
         }
