@@ -91,6 +91,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
                         <View className="flex-row items-center g-2 pb-5">
                             <ScrollView className="flex-1 p-4">
                                 <LucraMiniPublicFeed
+                                    className="mt-4 h-96" // TODO h-96 is the only way to get it to show on android, it needs to wrap the entire surface
                                     key={miniFeedKey}
                                     playerIds={[]}
                                 />
