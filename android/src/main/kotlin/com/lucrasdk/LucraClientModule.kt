@@ -1,6 +1,8 @@
 package com.lucrasdk
 
 import android.app.Application
+import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.Arguments
@@ -15,6 +17,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.contest.SportsMatchup
+import com.lucrasports.sdk.core.events.LucraEvent
+import com.lucrasports.sdk.core.events.LucraEventListener
 import com.lucrasports.sdk.core.style_guide.ClientTheme
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
@@ -114,6 +118,25 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
         val transformedLink = _deepLinkState.first { it != "" }
         transformedLink
       }
+
+        LucraClient().setEventListener(object : LucraEventListener { override fun onEvent(event: LucraEvent) {
+            when (event) {
+                is LucraEvent.GamesContest.Created -> {
+                    Log.d("Sample", "Games contest created: ${event.contestId}")
+                }
+                is LucraEvent.SportsContest.Created -> {
+                    Log.d("Sample", "Sports contest created: ${event.contestId}")
+                }
+                else -> {
+                    Log.d("Sample", "Other Event: $event")
+                }
+            }
+            Toast.makeText(
+                context,
+                "Event has been triggered --> ${event}",
+                Toast.LENGTH_LONG
+            ).show()
+        } })
 
       LucraClient().observeSDKUser { user ->
         when (user) {
