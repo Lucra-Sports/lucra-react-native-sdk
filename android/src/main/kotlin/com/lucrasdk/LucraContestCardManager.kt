@@ -17,13 +17,14 @@ class LucraContestCardManager : LucraContestCardManagerSpec<View>() {
         return NAME
     }
 
-    // TODO there seems to be missing a CreateContestButton on the Android SDK
     public override fun createViewInstance(context: ThemedReactContext): View {
         val profilePill =
             LucraClient()
                 .getLucraComponent(
                     context,
-                    LucraUiProvider.LucraComponent.ProfilePill {
+                    LucraUiProvider.LucraComponent.ContestCard(
+                        contestId = "" // TODO needs to accept a contest id in params
+                    ) {
                         fragment = LucraClient().getLucraDialogFragment(it)
                         fragment?.show(
                             (context.currentActivity as FragmentActivity).supportFragmentManager,
