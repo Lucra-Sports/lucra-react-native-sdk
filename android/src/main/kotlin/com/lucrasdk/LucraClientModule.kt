@@ -427,7 +427,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
                     promise.reject("could_not_resolve_sports_matchup", result.toString())
                 }
                 is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
-                    LucraMapper.sportsMatchupToMap(result)
+                    LucraMapper.sportsMatchupToMap(result.sportsMatchup)
                 }
             }
         }

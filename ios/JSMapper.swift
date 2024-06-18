@@ -46,7 +46,6 @@ public func scheduleToMap(_ schedule: LucraSDK.Schedule?) -> [String: Any]? {
     "awayScore": schedule.awayScore as Any,
     "sport": sportToMap(schedule.sport),
     "projectionsPending": schedule.projectionsPending as Any,
-
   ]
 }
 
