@@ -1,7 +1,7 @@
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { FC } from 'react';
-import React, { useCallback, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import React from 'react';
 import {
   Image,
   SafeAreaView,
@@ -11,9 +11,6 @@ import {
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
-import {
-  LucraSDK,
-} from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 

@@ -72,6 +72,10 @@ public abstract class NativeLucraClientSpec extends ReactContextBaseJavaModule i
 
   @ReactMethod
   @DoNotStrip
+  public abstract void getSportsMatchup(String contestId, Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
   public abstract void addListener(String eventType);
 
   @ReactMethod

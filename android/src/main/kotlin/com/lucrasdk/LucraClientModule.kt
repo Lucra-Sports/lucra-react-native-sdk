@@ -418,7 +418,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
     @ReactMethod
-    fun getSportsMatchup(contestId: String, promise: Promise) {
+    override fun getSportsMatchup(contestId: String, promise: Promise) {
         LucraClient().getSportsMatchup(
             matchupId = contestId,
         ) { result ->

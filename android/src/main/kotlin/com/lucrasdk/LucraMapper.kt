@@ -64,7 +64,7 @@ object LucraMapper {
     map["id"] = player.id
     map["firstName"] = player.firstName
     map["lastName"] = player.lastName
-    map["headhostUrl"] = player.headshotUrl as Any
+    map["headshottUrl"] = player.headshotUrl as Any
     map["lucraPosition"] = player.lucraPosition
     map["position"] = player.position
     map["positionAbbreviation"] = player.positionAbbreviation

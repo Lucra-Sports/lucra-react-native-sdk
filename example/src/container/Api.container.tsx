@@ -42,11 +42,8 @@ function handleLucraSDKError(e: LucraSDKError) {
       break;
 
     case 'unknown':
-      console.warn('Unknown error', e);
-      break;
-
     default:
-      console.warn('Unknown error', e);
+      console.warn('Unknown SDK error', e);
       break;
   }
 }
@@ -77,7 +74,10 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
                 currentMatchupId = res.matchupId;
                 console.warn('Created game match up', res);
               })
-              .catch(handleLucraSDKError);
+              .catch((e) => {
+                console.error('Error when creating matchup');
+                handleLucraSDKError(e);
+              });
           }}
         >
           <Text className="font-bold text-white">Start Matchup</Text>
@@ -92,6 +92,25 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
           }}
         >
           <Text className="font-bold text-white">Accept match up</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            await LucraSDK.logout();
+          }}
+        >
+          <Text className="font-bold text-white">Log out</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            const info = await LucraSDK.getSportsMatchup(currentMatchupId);
+            console.warn(`getSportsMatchup Response: ${info}`);
+          }}
+        >
+          <Text className="font-bold text-white">Get Sports Matchup info</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
