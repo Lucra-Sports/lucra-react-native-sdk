@@ -80,7 +80,7 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
               });
           }}
         >
-          <Text className="font-bold text-white">Start Matchup</Text>
+          <Text className="font-bold text-white">Create Games Matchup</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -91,7 +91,7 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
             );
           }}
         >
-          <Text className="font-bold text-white">Accept match up</Text>
+          <Text className="font-bold text-white">Accept Games match up</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -106,8 +106,13 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
           onPress={async () => {
-            const info = await LucraSDK.getSportsMatchup(currentMatchupId);
-            console.warn(`getSportsMatchup Response: ${info}`);
+            try {
+              // TODO revert to use `currentMatchupId` instead of this hard coded id
+              const info = await LucraSDK.getSportsMatchup("dfa88d17-34b8-4137-bc0f-b62cc36eb806");
+              console.warn(`getSportsMatchup Response: ${info}`);
+            } catch (e) {
+              console.error(e)
+            }
           }}
         >
           <Text className="font-bold text-white">Get Sports Matchup info</Text>
