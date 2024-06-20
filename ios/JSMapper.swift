@@ -160,8 +160,8 @@ public func sportMatchupToMap(match: LucraSDK.SportsMatchup) -> [String: Any] {
     "id": match.id,
     "createdAt": match.createdAt,
     "updatedAt": match.updatedAt,
-    "status": match.status.rawValue,
     "isPublic": match.isPublic,
+    "status": match.status.rawValue,
     "teams": match.teams.map(sportMatchupTeamToMap),
   ]
   return res

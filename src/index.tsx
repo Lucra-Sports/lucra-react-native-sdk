@@ -12,6 +12,7 @@ import {
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
 export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupComponent';
 export { default as LucraContestCard } from './LucraContestCardComponent';
+import { type SportsMatchupType } from './types';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
 
@@ -222,8 +223,8 @@ export const LucraSDK = {
   registerDeviceTokenBase64: async (token: string): Promise<void> => {
     return LucraClient.registerDeviceTokenBase64(token);
   },
-  getSportsMatchup: async (contestId: string): Promise<Object> => {
-    return await LucraClient.getSportsMatchup(contestId);
+  getSportsMatchup: async (contestId: string): Promise<SportsMatchupType> => {
+    return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
   },
 };
 
