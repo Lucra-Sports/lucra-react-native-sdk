@@ -46,13 +46,15 @@ export default function App() {
         console.error('Error initializing LucraSDK', error);
       });
 
-    request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-      .then((result) => {
-        console.log('Permission result:', result);
-      })
-      .catch((error) => {
-        console.log('Permission error:', error);
-      });
+    if (Platform.OS === 'android') {
+      request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+        .then((result) => {
+          console.log('Permission result:', result);
+        })
+        .catch((error) => {
+          console.log('Permission error:', error);
+        });
+    }
   }, []);
 
   if (!isReady) {

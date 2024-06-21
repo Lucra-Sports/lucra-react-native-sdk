@@ -119,24 +119,30 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
         transformedLink
       }
 
-        LucraClient().setEventListener(object : LucraEventListener { override fun onEvent(event: LucraEvent) {
-            when (event) {
-                is LucraEvent.GamesContest.Created -> {
-                    Log.d("Sample", "Games contest created: ${event.contestId}")
+      LucraClient()
+          .setEventListener(
+              object : LucraEventListener {
+                override fun onEvent(event: LucraEvent) {
+                  when (event) {
+                    is LucraEvent.GamesContest.Created -> {
+                      Log.d("Sample", "Games contest created: ${event.contestId}")
+                    }
+                    is LucraEvent.SportsContest.Created -> {
+                      Log.d("Sample", "Sports contest created: ${event.contestId}")
+                    }
+                    else -> {
+                      Log.d("Sample", "Other Event: $event")
+                    }
+                  }
+                  Toast.makeText(
+                          context,
+                          "Event has been triggered --> ${event}",
+                          Toast.LENGTH_LONG
+                      )
+                      .show()
                 }
-                is LucraEvent.SportsContest.Created -> {
-                    Log.d("Sample", "Sports contest created: ${event.contestId}")
-                }
-                else -> {
-                    Log.d("Sample", "Other Event: $event")
-                }
-            }
-            Toast.makeText(
-                context,
-                "Event has been triggered --> ${event}",
-                Toast.LENGTH_LONG
-            ).show()
-        } })
+              }
+          )
 
       LucraClient().observeSDKUser { user ->
         when (user) {
@@ -417,21 +423,21 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
     }
   }
 
-    @ReactMethod
-    override fun getSportsMatchup(contestId: String, promise: Promise) {
-        LucraClient().getSportsMatchup(
+  @ReactMethod
+  override fun getSportsMatchup(contestId: String, promise: Promise) {
+    LucraClient().getSportsMatchup(
             matchupId = contestId,
         ) { result ->
-            when (result) {
-                is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
-                    promise.reject("could_not_resolve_sports_matchup", result.toString())
-                }
-                is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
-                    promise.resolve(LucraMapper.sportsMatchupToMap(result.sportsMatchup))
-                }
-            }
+      when (result) {
+        is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
+          promise.reject("could_not_resolve_sports_matchup", result.toString())
         }
+        is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
+          promise.resolve(LucraMapper.sportsMatchupToMap(result.sportsMatchup))
+        }
+      }
     }
+  }
 
   @ReactMethod
   override fun logout(promise: Promise?) {
