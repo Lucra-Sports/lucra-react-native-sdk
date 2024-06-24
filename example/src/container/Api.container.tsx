@@ -108,10 +108,14 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
           onPress={async () => {
             try {
               // TODO revert to use `currentMatchupId` instead of this hard coded id
-              const info = await LucraSDK.getSportsMatchup("dfa88d17-34b8-4137-bc0f-b62cc36eb806");
-              console.warn(`getSportsMatchup Response: ${info}`);
+              const info = await LucraSDK.getSportsMatchup(
+                'dfa88d17-34b8-4137-bc0f-b62cc36eb806'
+              );
+              console.warn(
+                `getSportsMatchup Response: ${JSON.stringify(info, null, 2)}`
+              );
             } catch (e) {
-              console.error(e)
+              console.error(e);
             }
           }}
         >
