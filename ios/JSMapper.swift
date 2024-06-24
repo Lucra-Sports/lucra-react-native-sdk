@@ -33,7 +33,7 @@ public func scheduleToMap(_ schedule: LucraSDK.Schedule?) -> [String: Any]? {
 
   return [
     "id": schedule.id,
-    "date": schedule.date,
+    "date": schedule.date.toString(),
     "channel": schedule.channel as Any,
     "status": schedule.status.rawValue,
     "homeTeam": teamToMap(schedule.homeTeam) as Any,
@@ -132,16 +132,15 @@ public func playerToMap(_ player: LucraSDK.Player) -> [String: Any] {
 }
 
 public func matchupTeamUserToMap(teamUser: LucraSDK.MatchupTeamUser) -> [String: Any] {
-  var res: [String: Any] = [
+  return [
     "id": teamUser.id,
     "user": userToMap(teamUser.user),
     "wagerPercentage": teamUser.wagerPercentage,
   ]
-  return res
 }
 
 public func sportMatchupTeamToMap(team: LucraSDK.SportsMatchupTeam) -> [String: Any] {
-  var res: [String: Any] = [
+  return [
     "id": team.id,
     "users": team.users.map(matchupTeamUserToMap),
     "outcome": team.outcome?.rawValue as Any,
@@ -152,17 +151,16 @@ public func sportMatchupTeamToMap(team: LucraSDK.SportsMatchupTeam) -> [String: 
     "spread": team.spread,
     "wagerAmount": team.wagerAmount,
   ]
-  return res
+  
 }
 
 public func sportMatchupToMap(match: LucraSDK.SportsMatchup) -> [String: Any] {
-  var res: [String: Any] = [
+  return [
     "id": match.id,
-    "createdAt": match.createdAt,
-    "updatedAt": match.updatedAt,
+    "createdAt": match.createdAt.toString(),
+    "updatedAt": match.updatedAt.toString(),
     "isPublic": match.isPublic,
     "status": match.status.rawValue,
     "teams": match.teams.map(sportMatchupTeamToMap),
   ]
-  return res
 }
