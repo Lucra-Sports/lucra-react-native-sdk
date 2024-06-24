@@ -33,7 +33,7 @@ public func scheduleToMap(_ schedule: LucraSDK.Schedule?) -> [String: Any]? {
 
   return [
     "id": schedule.id,
-    "date": schedule.date.toString(),
+    "date": schedule.date.ISO8601Format(),
     "channel": schedule.channel as Any,
     "status": schedule.status.rawValue,
     "homeTeam": teamToMap(schedule.homeTeam) as Any,
@@ -151,14 +151,14 @@ public func sportMatchupTeamToMap(team: LucraSDK.SportsMatchupTeam) -> [String: 
     "spread": team.spread,
     "wagerAmount": team.wagerAmount,
   ]
-  
+
 }
 
 public func sportMatchupToMap(match: LucraSDK.SportsMatchup) -> [String: Any] {
   return [
     "id": match.id,
-    "createdAt": match.createdAt.toString(),
-    "updatedAt": match.updatedAt.toString(),
+    "createdAt": match.createdAt.ISO8601Format(),
+    "updatedAt": match.updatedAt.ISO8601Format(),
     "isPublic": match.isPublic,
     "status": match.status.rawValue,
     "teams": match.teams.map(sportMatchupTeamToMap),
