@@ -1,5 +1,4 @@
 import React from 'react';
-import type { FC } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -15,7 +14,7 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UIFlow'>;
 
-export const UIFlowContainer: FC<Props> = ({ navigation }) => {
+export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1">
       <View className="pt-4 px-4 flex-1 g-2 bg-transparent">

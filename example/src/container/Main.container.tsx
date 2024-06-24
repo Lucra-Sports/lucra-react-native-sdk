@@ -1,7 +1,6 @@
+import React from 'react';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { FC } from 'react';
-import React from 'react';
 import {
   Image,
   SafeAreaView,
@@ -14,7 +13,7 @@ import type { RootStackParamList } from '../Routes';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
-export const MainContainer: FC<Props> = ({ navigation }) => {
+export const MainContainer: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1">
       <ScrollView className="flex-1 p-4">

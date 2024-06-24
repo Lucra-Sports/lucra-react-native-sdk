@@ -1,6 +1,5 @@
 import React from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { FC } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -48,7 +47,7 @@ function handleLucraSDKError(e: LucraSDKError) {
   }
 }
 
-export const ApiContainer: FC<Props> = ({ navigation }) => {
+export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1">
       <View className="pt-4 px-4 flex-1 g-2 bg-transparent">
