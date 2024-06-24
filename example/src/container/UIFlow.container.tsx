@@ -41,7 +41,7 @@ export const UIFlowContainer: FC<Props> = ({ navigation }) => {
             <Text style={Styles.fundText}>0,00$</Text>
           </TouchableOpacity>
         </View>
-       
+
         <TouchableOpacity
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
           onPress={() => LucraSDK.present(LucraSDK.FLOW.ONBOARDING)}
