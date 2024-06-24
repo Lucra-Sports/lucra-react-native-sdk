@@ -2582,6 +2582,7 @@ __metadata:
     react: "npm:18.2.0"
     react-native: "npm:^0.73.5"
     react-native-linear-gradient: "npm:^2.8.2"
+    react-native-permissions: "npm:^4.1.5"
     react-native-safe-area-context: "npm:^4.8.1"
     react-native-screens: "npm:^3.21.0"
     react-native-vector-icons: "npm:^10.0.3"
@@ -6126,6 +6127,20 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/b61f751bd33895450e879f08848c001521e2a87b4918f6d43d99840186016955138bdde06c69a87a43b2dbe5620542a02abafc97c391bd4fb2ea5d0df24a2036
+  languageName: node
+  linkType: hard
+
+"react-native-permissions@npm:^4.1.5":
+  version: 4.1.5
+  resolution: "react-native-permissions@npm:4.1.5"
+  peerDependencies:
+    react: ">=18.1.0"
+    react-native: ">=0.70.0"
+    react-native-windows: ">=0.70.0"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 10c0/93dd8ec9c4f5259b959fe0ec560c95c10518e893358b53acf9a380dca7d58e541274bf25cfe83e09c769b260fbce1361fa4497488b6bbcad499d8fb2cdefb5c0
   languageName: node
   linkType: hard
 

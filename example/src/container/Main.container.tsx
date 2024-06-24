@@ -1,7 +1,7 @@
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { FC } from 'react';
-import React, { useCallback, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import React from 'react';
 import {
   Image,
   SafeAreaView,
@@ -11,9 +11,6 @@ import {
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
-import {
-  LucraSDK,
-} from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
@@ -51,6 +48,16 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
           }}
         >
           <Text className="text-white">API Calls Example</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="bg-darkPurple p-4 border-t border-lightPurple"
+          onPress={() => {
+            LucraSDK.registerDeepLinkProvider(async () => {
+              return 'lucra://flow/profile';
+            });
+          }}
+        >
+          <Text className="text-white">Emit Deep Link</Text>
         </TouchableOpacity>
         <TouchableOpacity
           className="bg-darkPurple p-4 rounded-b-xl border-t border-lightPurple"

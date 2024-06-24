@@ -18,6 +18,9 @@ class LucraUtils {
 
     fun getLucraFlow(flow: String): LucraUiProvider.LucraFlow {
       return when (flow) {
+        // TODO ios uses onboarding, Android uses Login
+        "onboarding" -> LucraUiProvider.LucraFlow.Login
+        "login" -> LucraUiProvider.LucraFlow.Login
         "profile" -> LucraUiProvider.LucraFlow.Profile
         "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
         "verifyIdentity" -> LucraUiProvider.LucraFlow.VerifyIdentity

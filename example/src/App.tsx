@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { Routes } from './Routes';
 import { Platform, StatusBar, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { PERMISSIONS, request } from 'react-native-permissions';
 
 LucraSDK.addListener('user', (user) => {
   console.log(`✅ Received user callback: ${JSON.stringify(user)}`);
@@ -31,10 +32,10 @@ export default function App() {
           Platform.OS === 'ios'
             ? 'Inter'
             : {
-                normal: 'Inter-Regular',
-                bold: 'Inter-Bold',
-                semibold: 'Inter-SemiBold',
-                medium: 'Inter-Medium',
+                normal: 'fonts/Inter-Regular.ttf',
+                bold: 'fonts/Inter-Bold.ttf',
+                semibold: 'fonts/Inter-SemiBold.ttf',
+                medium: 'fonts/Inter-Medium.ttf',
               },
       },
     })
@@ -44,6 +45,16 @@ export default function App() {
       .catch((error) => {
         console.error('Error initializing LucraSDK', error);
       });
+
+    if (Platform.OS === 'android') {
+      request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+        .then((result) => {
+          console.log('Permission result:', result);
+        })
+        .catch((error) => {
+          console.log('Permission error:', error);
+        });
+    }
   }, []);
 
   if (!isReady) {

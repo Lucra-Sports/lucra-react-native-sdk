@@ -42,11 +42,8 @@ function handleLucraSDKError(e: LucraSDKError) {
       break;
 
     case 'unknown':
-      console.warn('Unknown error', e);
-      break;
-
     default:
-      console.warn('Unknown error', e);
+      console.warn('Unknown SDK error', e);
       break;
   }
 }
@@ -77,10 +74,13 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
                 currentMatchupId = res.matchupId;
                 console.warn('Created game match up', res);
               })
-              .catch(handleLucraSDKError);
+              .catch((e) => {
+                console.error('Error when creating matchup');
+                handleLucraSDKError(e);
+              });
           }}
         >
-          <Text className="font-bold text-white">Start Matchup</Text>
+          <Text className="font-bold text-white">Create Games Matchup</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -91,7 +91,35 @@ export const ApiContainer: FC<Props> = ({ navigation }) => {
             );
           }}
         >
-          <Text className="font-bold text-white">Accept match up</Text>
+          <Text className="font-bold text-white">Accept Games match up</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            await LucraSDK.logout();
+          }}
+        >
+          <Text className="font-bold text-white">Log out</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              // TODO revert to use `currentMatchupId` instead of this hard coded id
+              const info = await LucraSDK.getSportsMatchup(
+                'dfa88d17-34b8-4137-bc0f-b62cc36eb806'
+              );
+              console.warn(
+                `getSportsMatchup Response: ${JSON.stringify(info, null, 2)}`
+              );
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+        >
+          <Text className="font-bold text-white">Get Sports Matchup info</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
