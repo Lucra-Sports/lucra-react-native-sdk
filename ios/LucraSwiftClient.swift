@@ -14,14 +14,6 @@ public class LucraSwiftClient: NSObject {
   private var userSinkCancellable: AnyCancellable?
   private let deepLinkEmitter = PassthroughSubject<String, Never>()
 
-  func awaitDeepLinkEvent() async -> String {
-    return await withCheckedContinuation { continuation in
-      let _ = deepLinkEmitter.sink { value in
-        continuation.resume(returning: value)
-      }
-    }
-  }
-
   static public var shared = LucraSwiftClient()
 
   @objc static public func getShared() -> LucraSwiftClient {
@@ -151,8 +143,18 @@ public class LucraSwiftClient: NSObject {
     }
 
     nativeClient.registerDeeplinkProvider { lucraDeepLink in
-      self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
-      let deeplink = await self.awaitDeepLinkEvent()
+      var cancellable: AnyCancellable?
+      let deeplink = await withCheckedContinuation { [weak self] continuation in
+          guard let self else { return }
+          
+          cancellable = deepLinkEmitter.sink { value in
+            continuation.resume(returning: value)
+              cancellable?.cancel()
+              cancellable = nil
+          }
+          self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
+
+        }
       return deeplink
     }
 
@@ -472,8 +474,8 @@ public class LucraSwiftClient: NSObject {
     return self.nativeClient.ui.component(.userProfilePill)
   }
 
-  @objc public func getMiniFeed(_ userIDs: [String]?) -> UIView {
-    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
+  @objc public func getMiniFeed(_ userIDs: [String]?, onSizeChanged: @escaping (CGSize) -> Void) -> UIView {
+    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs), parentUIViewController: UIViewController(), onSizeChanged: onSizeChanged)
   }
 
   @objc public func getCreateContestButton() -> UIView {
@@ -484,7 +486,7 @@ public class LucraSwiftClient: NSObject {
     return self.nativeClient.ui.component(.recommendedMatchup)
   }
 
-  @objc public func getContestCard(_ contestId: String?) -> UIView {
-    return self.nativeClient.ui.component(.contestCard(contestId: contestId!))
+  @objc public func getContestCard(_ contestId: String?, onSizeChanged: @escaping (CGSize) -> Void) -> UIView {
+    return self.nativeClient.ui.component(.contestCard(contestId: contestId!), parentUIViewController: UIViewController(), onSizeChanged: onSizeChanged)
   }
 }
