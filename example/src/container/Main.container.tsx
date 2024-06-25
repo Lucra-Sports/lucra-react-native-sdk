@@ -49,16 +49,6 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           <Text className="text-white">API Calls Example</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="bg-darkPurple p-4 border-t border-lightPurple"
-          onPress={() => {
-            LucraSDK.registerDeepLinkProvider(async () => {
-              return 'lucra://flow/profile';
-            });
-          }}
-        >
-          <Text className="text-white">Emit Deep Link</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           className="bg-darkPurple p-4 rounded-b-xl border-t border-lightPurple"
           onPress={async () => {
             await LucraSDK.configureUser({

@@ -40,6 +40,10 @@ export default function App() {
       },
     })
       .then(() => {
+        LucraSDK.registerDeepLinkProvider(async () => {
+          return 'lucra://flow/profile';
+        });
+
         setIsReady(true);
       })
       .catch((error) => {
