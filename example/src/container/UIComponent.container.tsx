@@ -73,31 +73,29 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white mt-2">Create Contest Button</Text>
           <LucraCreateContestButton />
 
+          <Text className="text-white mt-2"> Contest Card</Text>
+          <LucraContestCard contestId="123" className="mt-4" />
+
+          <Text className="text-white mt-2"> Recommended Matchups</Text>
+          <LucraRecommendedMatchup className="mt-4" />
+
+          <Text className="text-white my-2">Mini feed</Text>
+            <View className="flex-row items-center g-2 pb-5">
+              <ScrollView className="flex-1 p-4">
+                <LucraMiniPublicFeed
+                  className="mt-4"
+                  key={miniFeedKey}
+                  playerIds={[]}
+                />
+              </ScrollView>
+          </View>
+
           <Text className="text-white mt-2"> Embedded Flow</Text>
           <LucraFlowView
             key={embeddedViewKey}
             flow={LucraSDK.FLOW.PROFILE}
             className="h-96"
           />
-
-          <Text className="text-white mt-2"> Contest Card</Text>
-          <LucraContestCard contestId="123" className="mt-4 h-96" />
-
-          <Text className="text-white mt-2"> Recommended Matchups</Text>
-          <LucraRecommendedMatchup className="mt-4 h-96" />
-
-          <Text className="text-white my-2">Mini feed</Text>
-          <View className="h-500">
-            <View className="flex-row items-center g-2 pb-5">
-              <ScrollView className="flex-1 p-4">
-                <LucraMiniPublicFeed
-                  className="mt-4 h-96" // TODO h-96 is the only way to get it to show on android, it needs to wrap the entire surface
-                  key={miniFeedKey}
-                  playerIds={[]}
-                />
-              </ScrollView>
-            </View>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

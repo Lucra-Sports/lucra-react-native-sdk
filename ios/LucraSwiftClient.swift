@@ -472,8 +472,8 @@ public class LucraSwiftClient: NSObject {
     return self.nativeClient.ui.component(.userProfilePill)
   }
 
-  @objc public func getMiniFeed(_ userIDs: [String]?) -> UIView {
-    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
+  @objc public func getMiniFeed(_ userIDs: [String]?, onSizeChanged: @escaping (CGSize) -> Void) -> UIView {
+    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs), parentUIViewController: UIViewController(), onSizeChanged: onSizeChanged)
   }
 
   @objc public func getCreateContestButton() -> UIView {
@@ -484,7 +484,7 @@ public class LucraSwiftClient: NSObject {
     return self.nativeClient.ui.component(.recommendedMatchup)
   }
 
-  @objc public func getContestCard(_ contestId: String?) -> UIView {
-    return self.nativeClient.ui.component(.contestCard(contestId: contestId!))
+  @objc public func getContestCard(_ contestId: String?, onSizeChanged: @escaping (CGSize) -> Void) -> UIView {
+    return self.nativeClient.ui.component(.contestCard(contestId: contestId!), parentUIViewController: UIViewController(), onSizeChanged: onSizeChanged)
   }
 }
