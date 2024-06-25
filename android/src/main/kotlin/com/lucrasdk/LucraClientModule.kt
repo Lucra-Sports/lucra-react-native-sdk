@@ -335,8 +335,8 @@ class LucraClientModule(private val context: ReactApplicationContext): ReactCont
   }
 
   @ReactMethod
-  suspend fun emitDeepLink(link: String) {
-    _deepLinkEmitter.emit(link)
+  fun emitDeepLink(link: String) {
+    _deepLinkEmitter.tryEmit(link)
   }
 
   @ReactMethod
