@@ -14,14 +14,6 @@ public class LucraSwiftClient: NSObject {
   private var userSinkCancellable: AnyCancellable?
   private let deepLinkEmitter = PassthroughSubject<String, Never>()
 
-  func awaitDeepLinkEvent() async -> String {
-    return await withCheckedContinuation { continuation in
-      let _ = deepLinkEmitter.sink { value in
-        continuation.resume(returning: value)
-      }
-    }
-  }
-
   static public var shared = LucraSwiftClient()
 
   @objc static public func getShared() -> LucraSwiftClient {
@@ -151,8 +143,18 @@ public class LucraSwiftClient: NSObject {
     }
 
     nativeClient.registerDeeplinkProvider { lucraDeepLink in
-      self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
-      let deeplink = await self.awaitDeepLinkEvent()
+      var cancellable: AnyCancellable?
+      let deeplink = await withCheckedContinuation { [weak self] continuation in
+          guard let self else { return }
+          
+          cancellable = deepLinkEmitter.sink { value in
+            continuation.resume(returning: value)
+              cancellable?.cancel()
+              cancellable = nil
+          }
+          self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
+
+        }
       return deeplink
     }
 
