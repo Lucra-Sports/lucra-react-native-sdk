@@ -298,14 +298,18 @@ let lucraSDKOptions = {
     onPrimary: '#001448',
     onSecondary: '#FFFFFF',
     onTertiary: '#FFFFFF',
+    // For android you need to pass the path inside the Android assets folder
+    // If you have linked your assets using the default location /assets/fonts
+    // Then the android linked fonts should land in /android/app/src/main/assets/font
+    // and the configuration should match the one below. You must specify all four keys.
     fontFamily:
       Platform.OS === 'ios'
         ? 'Inter'
         : {
-            normal: 'Inter-Regular',
-            bold: 'Inter-Bold',
-            semibold: 'Inter-SemiBold',
-            medium: 'Inter-Medium',
+            normal: 'fonts/Inter-Regular.ttf',
+            bold: 'fonts/Inter-Bold.ttf',
+            semibold: 'fonts/Inter-SemiBold.ttf',
+            medium: 'fonts/Inter-Medium.ttf',
           },
   },
 };
@@ -485,6 +489,106 @@ export const MainContainer: FC<Props> = ({ navigation }) => {
   );
 };
 ```
+
+## Deep link provider
+
+Read up on the [native deep link documentation](https://docs.lucrasports.com/lucra-sdk/jpYRPQyBRCy9WVvSjRgO/integration-documents/ios-sdk/module-integration/deep-links) first.
+
+Lucra can emit a request for you to "pack" an internal deep link into your deep link provider of choice. This is useful for example if you want to use a link shortener. You then return this deep link into Lucra so that it can be presented to the user:
+
+```ts
+import { registerDeepLinkProvider } from '@lucra-sports/lucra-react-native-sdk';
+import { linkShortener } from 'my-link-shortener';
+
+registerDeepLinkProvider(async (lucraDeepLink) => {
+  const shortenedDeepLink = await linkShortener(lucraDeepLink);
+  return shortenedDeepLink;
+});
+```
+
+## Incoming deep links
+
+For handling deep links that contain lucra information, you need to unpack your deep link and then pass it to the Lucra client to detect if a flow is embedded.
+
+```ts
+import { handleLucraLink } from '@lucra-sports/lucra-react-native-sdk';
+import { Linking } from 'react-native';
+import { linkExpander } from 'my-link-shortener';
+
+// on app start
+const linkingSubscription = Linking.addEventListener('url', async ({ url }) => {
+  const deepLink = await linkExpander(url);
+  const handled = await handleLucraLink(deepLink);
+  if (handled) {
+    // Lucra has detected a link and will take over, displaying a full flow
+    return;
+  }
+});
+
+// You should follow the Deep linking guides for RN, on Android it is necessary to also call the getInitialURL
+// to handle deep links that were called while app was closed
+const initialLink = await Linking.getInitialURL();
+if (initialLink) {
+  // same as above
+}
+```
+
+## Push notifications
+
+### iOS
+
+Read the [native documentation on push notifications](https://docs.lucrasports.com/lucra-sdk/jpYRPQyBRCy9WVvSjRgO/integration-documents/ios-sdk/module-integration/push-notifications). First you need to register for remote push notifications, depending on which library you are using this process will change. You will then need to get the device token so it can be passed to the Lucra SDK. Here is one example using [react-native-push-notifications](https://github.com/react-native-push-notification/ios).
+
+1. Register the native module, [following the steps in the README](https://github.com/react-native-push-notification/ios#update-appdelegatem-or-appdelegatemm)
+2. You should be able to add a listener for the 'register' event which will emit the device token in hex string format
+
+```ts
+import { registerDeviceTokenHex } from '@lucra-sports/lucra-react-native-sdk';
+// There is also a base64 version
+// import { registerDeviceTokenBase64 } from '@lucra-sports/lucra-react-native-sdk';
+
+PushNotificationIOS.addEventListener('register', async (token) => {
+  await registerDeviceTokenHex(token);
+});
+
+PushNotificationIOS.requestPermissions();
+```
+
+Handling push notifications follows a similar logic to handling of deep links:
+
+```ts
+import { handleLucraNotification } from '@lucra-sports/lucra-react-native-sdk';
+
+export const App = () => {
+  const [permissions, setPermissions] = useState({});
+
+  useEffect(() => {
+    const type = 'notification';
+    PushNotificationIOS.addEventListener(type, onRemoteNotification);
+    return () => {
+      PushNotificationIOS.removeEventListener(type);
+    };
+  });
+
+  const onRemoteNotification = (notification) => {
+    const isClicked = notification.getData().userInteraction === 1;
+    if (isClicked) {
+      handleLucraNotification({
+        // TODO which fields need to be there?
+      });
+    } else {
+      // Do something else with push notification
+    }
+    // Use the appropriate result based on what you needed to do for this notification
+    const result = PushNotificationIOS.FetchResult.NoData;
+    notification.finish(result);
+  };
+};
+```
+
+### Android
+
+For android you need to add the necessary [native code](https://github.com/Lucra-Sports/lucra-android-sdk?tab=readme-ov-file#setting-up-push-notifications) in order for you to get the device token and handle incoming push notifications.
 
 # Publishing the package
 

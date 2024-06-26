@@ -12,6 +12,7 @@ public class LucraSwiftClient: NSObject {
   private var nativeClient: LucraSDK.LucraClient!
   private var userCallback: RCTResponseSenderBlock?
   private var userSinkCancellable: AnyCancellable?
+  private let deepLinkEmitter = PassthroughSubject<String, Never>()
 
   static public var shared = LucraSwiftClient()
 
@@ -106,7 +107,6 @@ public class LucraSwiftClient: NSObject {
       )
     )
 
-    // immediately create event emitter for user value
     userSinkCancellable = nativeClient.$user.sink { user in
       guard let user = user else {
         self.delegate?.sendEvent(name: "user", result: ["user": nil])
@@ -140,6 +140,22 @@ public class LucraSwiftClient: NSObject {
       ]
 
       self.delegate?.sendEvent(name: "user", result: userMap)
+    }
+
+    nativeClient.registerDeeplinkProvider { lucraDeepLink in
+      var cancellable: AnyCancellable?
+      let deeplink = await withCheckedContinuation { [weak self] continuation in
+          guard let self else { return }
+          
+          cancellable = deepLinkEmitter.sink { value in
+            continuation.resume(returning: value)
+              cancellable?.cancel()
+              cancellable = nil
+          }
+          self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
+
+        }
+      return deeplink
     }
 
     resolver(nil)
@@ -180,12 +196,35 @@ public class LucraSwiftClient: NSObject {
     }
   }
 
+  @objc public func emitDeepLink(_ deepLink: String) {
+    deepLinkEmitter.send(deepLink)
+  }
+
+  @objc public func getSportsMatchup(
+    _ contestId: String, resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+
+    Task { @MainActor in
+      do {
+        guard let match = try await self.nativeClient.api.sportsMatchup(for: contestId) else {
+          resolve(nil)
+          return
+        }
+
+        resolve(sportMatchupToMap(match: match))
+      } catch {
+        reject("\(error)", error.localizedDescription, nil)
+      }
+    }
+
+  }
+
   @objc
   public func getUser(
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-
     switch nativeClient.user {
     case .some(let user):
       var userJS: [String: Any] = [
@@ -215,7 +254,9 @@ public class LucraSwiftClient: NSObject {
     }
   }
 
-  private func getLucraFlow(_ lucraFlow: String) -> LucraSDK.LucraFlow {
+  private func getLucraFlow(_ lucraFlow: String, matchupId: String?, teamInviteId: String?)
+    -> LucraSDK.LucraFlow
+  {
     switch lucraFlow {
     case "profile":
       return .profile
@@ -233,6 +274,10 @@ public class LucraSwiftClient: NSObject {
       return .withdrawFunds
     case "publicFeed":
       return .publicFeed
+    case "gameContestDetails":
+      return .gamesContestDetails(matchupId: matchupId!, teamInviteId: teamInviteId!)
+    case "sportContestDetails":
+      return .sportsContestDetails(matchupId: matchupId!)
     default:
       assertionFailure("Unimplemented lucra flow \(lucraFlow)")
       return .profile
@@ -240,9 +285,10 @@ public class LucraSwiftClient: NSObject {
   }
 
   @objc
-  public func present(_ lucraFlow: String) {
+  public func present(_ lucraFlow: String, matchupId: String?, teamInviteId: String?) {
     DispatchQueue.main.async {
-      let nativeFlow = self.getLucraFlow(lucraFlow)
+      let nativeFlow = self.getLucraFlow(
+        lucraFlow, matchupId: matchupId, teamInviteId: teamInviteId)
       UIViewController.topViewController?.present(
         lucraFlow: nativeFlow,
         client: self.nativeClient,
@@ -366,11 +412,61 @@ public class LucraSwiftClient: NSObject {
       await self.nativeClient.logout()
       resolve(nil)
     }
+  }
+
+  @MainActor @objc
+  public func handleLucraLink(
+    _ link: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    if let url = URL(string: link) {
+      if let flow = self.nativeClient.handleDeeplink(url: url) {
+        // Launch a full screen flow
+        UIViewController.topViewController?.present(
+          lucraFlow: flow,
+          client: self.nativeClient,
+          animated: true
+        )
+      } else {
+        resolve(false)
+      }
+    } else {
+      resolve(false)
+    }
 
   }
 
+  @objc
+  public func registerDeviceTokenHex(
+    _ token: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let data = token.hexadecimal else {
+      reject("Invalid Hex String", "The provided hex string is not valid", nil)
+      return
+    }
+    self.nativeClient.registerForPushNotifications(deviceToken: data)
+    resolve(nil)
+  }
+
+  @objc
+  public func registerDeviceTokenBase64(
+    _ token: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let data = Data(base64Encoded: token) else {
+      reject("Invalid Base64 String", "The provided base64 string is not valid", nil)
+      return
+    }
+    self.nativeClient.registerForPushNotifications(deviceToken: data)
+    resolve(nil)
+  }
+
   @objc public func getFlowController(_ flow: String) -> UIViewController {
-    let nativeFlow = getLucraFlow(flow)
+    let nativeFlow = getLucraFlow(flow, matchupId: nil, teamInviteId: nil)
     return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
   }
 
@@ -378,7 +474,19 @@ public class LucraSwiftClient: NSObject {
     return self.nativeClient.ui.component(.userProfilePill)
   }
 
-  @objc public func getMiniFeed(_ userIDs: [String]?) -> UIView {
-    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs))
+  @objc public func getMiniFeed(_ userIDs: [String]?, onSizeChanged: @escaping (CGSize) -> Void) -> UIView {
+    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs), parentUIViewController: UIViewController(), onSizeChanged: onSizeChanged)
+  }
+
+  @objc public func getCreateContestButton() -> UIView {
+    return self.nativeClient.ui.component(.createContestButton)
+  }
+
+  @objc public func getRecommendedMatchup() -> UIView {
+    return self.nativeClient.ui.component(.recommendedMatchup)
+  }
+
+  @objc public func getContestCard(_ contestId: String?, onSizeChanged: @escaping (CGSize) -> Void) -> UIView {
+    return self.nativeClient.ui.component(.contestCard(contestId: contestId!), parentUIViewController: UIViewController(), onSizeChanged: onSizeChanged)
   }
 }

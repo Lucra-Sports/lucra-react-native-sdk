@@ -1,4 +1,4 @@
-import { TurboModuleRegistry, TurboModule } from 'react-native';
+import { TurboModuleRegistry, type TurboModule } from 'react-native';
 
 interface Spec extends TurboModule {
   initialize(options: Object): Promise<void>;
@@ -20,6 +20,11 @@ interface Spec extends TurboModule {
   // event emitter
   addListener: (eventType: string) => void;
   removeListeners: (count: number) => void;
+  emitDeepLink: (deepLink: string) => void;
+  handleLucraLink: (link: string) => Promise<boolean>;
+  registerDeviceTokenHex: (token: string) => Promise<void>;
+  registerDeviceTokenBase64: (token: string) => Promise<void>;
+  getSportsMatchup(contestId: string): Promise<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');

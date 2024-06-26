@@ -1,5 +1,5 @@
 PODS:
-  - Auth0 (2.7.2):
+  - Auth0 (2.8.0):
     - JWTDecode (~> 3.1)
     - SimpleKeychain (~> 1.1)
   - boost (1.83.0)
@@ -22,9 +22,9 @@ PODS:
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
   - lucra-react-native-sdk (1.3.0):
-    - LucraSDK (= 1.4.1)
+    - LucraSDK (= 1.6.4)
     - React-Core
-  - LucraSDK (1.4.1):
+  - LucraSDK (1.6.4):
     - Auth0
     - Resolver
     - ZendeskSupportSDK
@@ -899,7 +899,7 @@ PODS:
   - React-Mapbuffer (0.73.5):
     - glog
     - React-debug
-  - react-native-safe-area-context (4.8.1):
+  - react-native-safe-area-context (4.10.5):
     - React-Core
   - React-nativeconfig (0.73.5)
   - React-NativeModulesApple (0.73.5):
@@ -1069,10 +1069,13 @@ PODS:
     - React-logger (= 0.73.5)
     - React-perflogger (= 0.73.5)
   - Resolver (1.5.1)
-  - RNScreens (3.29.0):
+  - RNPermissions (4.1.5):
+    - React-Core
+  - RNScreens (3.32.0):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
+    - React-RCTImage
   - RNVectorIcons (10.0.3):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1081,18 +1084,18 @@ PODS:
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
   - ZendeskCommonUISDK (9.0.1)
-  - ZendeskCoreSDK (5.0.2)
+  - ZendeskCoreSDK (5.0.3)
   - ZendeskMessagingAPISDK (6.0.0):
     - ZendeskSDKConfigurationsSDK (~> 4.0.0)
   - ZendeskMessagingSDK (6.0.1):
     - ZendeskCommonUISDK (~> 9.0.1)
     - ZendeskMessagingAPISDK (~> 6.0.0)
   - ZendeskSDKConfigurationsSDK (4.0.0)
-  - ZendeskSupportProvidersSDK (8.0.2):
-    - ZendeskCoreSDK (~> 5.0.2)
-  - ZendeskSupportSDK (8.0.2):
+  - ZendeskSupportProvidersSDK (8.0.3):
+    - ZendeskCoreSDK (~> 5.0.3)
+  - ZendeskSupportSDK (8.0.3):
     - ZendeskMessagingSDK (~> 6.0.1)
-    - ZendeskSupportProvidersSDK (~> 8.0.2)
+    - ZendeskSupportProvidersSDK (~> 8.0.3)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1148,6 +1151,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -1272,6 +1276,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNVectorIcons:
@@ -1280,7 +1286,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Auth0: 28cb24cb19ebd51f0b07751f16d83b59f4019532
+  Auth0: 7e37a200dfba2adbd7be5590c2653c7218d48169
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   BVLinearGradient: 916632041121a658c704df89d99f04acb038de0f
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
@@ -1291,8 +1297,8 @@ SPEC CHECKSUMS:
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: 1b13000e26d4913a9499d97d0b0d3b6637b092cf
-  LucraSDK: 4630bb6ed1998308fc5ec59d0715eddaf8a2c06f
+  lucra-react-native-sdk: 6e8e27cced0803eac2c357ad1dd934a08e969a44
+  LucraSDK: d623abcd9cbc361edf05ad79f40c3b99601ee352
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 2544c0f1081a5fa12e108bb8cb40e5f4581ccd87
   RCTTypeSafety: 50efabe2b115c11ed03fbf3fd79e2f163ddb5d7c
@@ -1314,7 +1320,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 32db5e364bcae8fca8cdf8891830636275add0c5
   React-logger: 0331362115f0f5b392bd7ed14636d1a3ea612479
   React-Mapbuffer: 30d796a057e4e077d44b4c2ba17869fb8c1064eb
-  react-native-safe-area-context: cd1169d797a2ef722a00bfc5af10748d5b6c94f9
+  react-native-safe-area-context: a240ad4b683349e48b1d51fed1611138d1bdad97
   React-nativeconfig: 78e2b14c0ee479449845b67bbe103343257cbcc0
   React-NativeModulesApple: 4fce13d416890352a7a9621427459fe738c4e79a
   React-perflogger: 0dd9f1725d55f8264b81efadd373fe1d9cca7dc2
@@ -1336,18 +1342,19 @@ SPEC CHECKSUMS:
   React-utils: 74fc896195fb41a1f7dcd5737d89be59c1fdccc4
   ReactCommon: ab6655d0224cf39c997ea634d257c609d345e23d
   Resolver: 0e2ce51257e9366c54afe1b9e9be25059e9b9300
-  RNScreens: a4d9ce8f68f833f4e42410140eafd88e38bba163
+  RNPermissions: 294531ede5a64d1528463e88fffef05675842042
+  RNScreens: 136d868cc4a78b41042a1a5f1cb42b99a47033f5
   RNVectorIcons: 81e919c3a9e56e4916f9e74cfe9cd2e489146f08
   SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
   ZendeskCommonUISDK: 720e6e34eff34ddae5feb1935f788a0893eaf672
-  ZendeskCoreSDK: 43f20009b1d4e739219874e449be85e4fe7feb46
+  ZendeskCoreSDK: 04db322c3e087d21984ff80118a890305fab2533
   ZendeskMessagingAPISDK: 9ce539eebcaa014fe6acc44da31262a2c52891c1
   ZendeskMessagingSDK: d0f65229188cb4936a56be6707992a2511b5175b
   ZendeskSDKConfigurationsSDK: 79c444da987390456ec05657ffa2f5ca0eb54aef
-  ZendeskSupportProvidersSDK: e105e358a6bb7b1dc22d4b45415d54826c0d7529
-  ZendeskSupportSDK: d87fcb1cfae0ef45ede384c635cc207f18ae8431
+  ZendeskSupportProvidersSDK: 2fbd2a9597af5d69760088bfb5e0e595e942f218
+  ZendeskSupportSDK: 22156384d20d30b0aeb263c03f49bef44e1364b2
 
 PODFILE CHECKSUM: fe6a3680fd6413b213049c70cc33cc7a320bccee
 

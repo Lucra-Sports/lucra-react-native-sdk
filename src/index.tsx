@@ -2,10 +2,29 @@ import React from 'react';
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlowView } from './LucraFlowView';
 import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
-import { StyleSheet, ViewProps, View, NativeEventEmitter } from 'react-native';
+import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonComponent';
+import {
+  StyleSheet,
+  type ViewProps,
+  View,
+  NativeEventEmitter,
+} from 'react-native';
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
+export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupComponent';
+export { default as LucraContestCard } from './LucraContestCardComponent';
+import { type SportsMatchupType } from './types';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
+
+export const LucraCreateContestButton: React.FC<ViewProps> = (props) => {
+  return (
+    <View {...props}>
+      <LucraCreateContestButtonNative
+        style={defaultStyles.createContestButton}
+      />
+    </View>
+  );
+};
 
 export const LucraProfilePill: React.FC<ViewProps> = (props) => {
   return (
@@ -19,6 +38,10 @@ const defaultStyles = StyleSheet.create({
   profilePill: {
     width: 180,
     height: 50,
+  },
+  createContestButton: {
+    width: 100,
+    height: 100,
   },
 });
 
@@ -124,6 +147,8 @@ type MatchupInfo = {
   teams: MatchupTeamInfo[];
 };
 
+let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
+
 export const LucraSDK = {
   ENVIRONMENT: {
     PRODUCTION: 'production',
@@ -144,6 +169,12 @@ export const LucraSDK = {
   },
   init: async (options: LucraSDKParams): Promise<void> => {
     await LucraClient.initialize(options);
+    eventEmitter.addListener('_deepLink', async (data) => {
+      if (deepLinkEmitter) {
+        let newDeepLink = await deepLinkEmitter(data.link);
+        LucraClient.emitDeepLink(newDeepLink);
+      }
+    });
   },
   addListener: (type: 'user', cb: (data: any) => void) => {
     return eventEmitter.addListener(type, cb);
@@ -179,6 +210,21 @@ export const LucraSDK = {
   },
   logout: (): Promise<void> => {
     return LucraClient.logout();
+  },
+  registerDeepLinkProvider: (provider: (url: string) => Promise<string>) => {
+    deepLinkEmitter = provider;
+  },
+  handleLucraLink: async (link: string): Promise<boolean> => {
+    return LucraClient.handleLucraLink(link);
+  },
+  registerDeviceTokenHex: async (token: string): Promise<void> => {
+    return LucraClient.registerDeviceTokenHex(token);
+  },
+  registerDeviceTokenBase64: async (token: string): Promise<void> => {
+    return LucraClient.registerDeviceTokenBase64(token);
+  },
+  getSportsMatchup: async (contestId: string): Promise<SportsMatchupType> => {
+    return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
   },
 };
 

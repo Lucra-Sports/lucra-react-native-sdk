@@ -3,20 +3,23 @@ package com.lucrasdk
 import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 
-@ReactModule(name = LucraProfilePillManager.NAME)
-class LucraProfilePillManager : LucraProfilePillManagerSpec<View>() {
+class LucraProfilePillManager(private val callerContext: ReactApplicationContext) :
+    SimpleViewManager<View>() {
+
   private var fragment: DialogFragment? = null
 
   override fun getName(): String {
-    return NAME
+    return REACT_CLASS
   }
 
-  public override fun createViewInstance(context: ThemedReactContext): View {
+  override fun createViewInstance(context: ThemedReactContext): View {
     val profilePill =
         LucraClient()
             .getLucraComponent(
@@ -34,6 +37,6 @@ class LucraProfilePillManager : LucraProfilePillManagerSpec<View>() {
   }
 
   companion object {
-    const val NAME = "LucraProfilePill"
+    const val REACT_CLASS = "LucraProfilePill"
   }
 }

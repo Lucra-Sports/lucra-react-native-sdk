@@ -1,12 +1,15 @@
 package com.lucrasdk
 
 import android.app.Application
+import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
@@ -14,22 +17,29 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
+import com.lucrasports.sdk.core.contest.SportsMatchup
+import com.lucrasports.sdk.core.events.LucraEvent
+import com.lucrasports.sdk.core.events.LucraEventListener
 import com.lucrasports.sdk.core.style_guide.ClientTheme
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
 import com.lucrasports.sdk.core.style_guide.FontFamily
-import com.lucrasports.sdk.core.style_guide.FontWeight
 import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sdk.core.user.SDKUserResult
 import com.lucrasports.sdk.ui.LucraUi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 
 @ReactModule(name = LucraClientModule.NAME)
-internal class LucraClientModule(private val context: ReactApplicationContext) :
-    NativeLucraClientSpec(context) {
+class LucraClientModule(private val context: ReactApplicationContext): ReactContextBaseJavaModule(context) {
 
   private var fullAppFlowDialogFragment: DialogFragment? = null
+  private var _deepLinkEmitter = MutableStateFlow<String>("")
+  private var _deepLinkState: SharedFlow<String> = _deepLinkEmitter.asSharedFlow()
 
   private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
     reactContext
@@ -38,7 +48,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun initialize(options: ReadableMap, promise: Promise) {
+  fun initialize(options: ReadableMap, promise: Promise) {
     val apiURL =
         options.getString("apiURL") ?: throw Exception("LucraSDK no api passed to constructor")
     val apiKey =
@@ -49,7 +59,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
 
     val theme = options.getMap("theme")
     var clientTheme = ClientTheme()
-    var fontFamily = FontFamily(emptyList())
+    var fontFamily: FontFamily? = null
     if (theme != null) {
       val colorStyle =
           ColorStyle(
@@ -67,29 +77,24 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
 
       val fontFamilyObj = theme.getMap("fontFamily")
       if (fontFamilyObj != null) {
-        val fontList = mutableListOf<Font>()
-
-        val boldFamily = fontFamilyObj.getString("bold")
-        if (boldFamily != null) {
-          fontList.add(Font(fontName = boldFamily, weight = FontWeight.Bold))
+        if (!fontFamilyObj.hasKey("medium") ||
+                !fontFamilyObj.hasKey("normal") ||
+                !fontFamilyObj.hasKey("semibold") ||
+                !fontFamilyObj.hasKey("bold")
+        ) {
+          throw Exception(
+              "LucraSDK all keys are required when setting a font: medium, normal, semibold and bold"
+          )
         }
 
-        val semiboldFamily = fontFamilyObj.getString("semibold")
-        if (semiboldFamily != null) {
-          fontList.add(Font(fontName = semiboldFamily, weight = FontWeight.SemiBold))
-        }
-
-        val normalFamily = fontFamilyObj.getString("normal")
-        if (normalFamily != null) {
-          fontList.add(Font(fontName = normalFamily, weight = FontWeight.Normal))
-        }
-
-        val mediumFamily = fontFamilyObj.getString("medium")
-        if (mediumFamily != null) {
-          fontList.add(Font(fontName = mediumFamily, weight = FontWeight.Normal))
-        }
-
-        fontFamily = FontFamily(fontList)
+        // Strings will be there because of previous check
+        fontFamily =
+            FontFamily(
+                Font(fontFamilyObj.getString("medium")!!),
+                Font(fontFamilyObj.getString("normal")!!),
+                Font(fontFamilyObj.getString("semibold")!!),
+                Font(fontFamilyObj.getString("bold")!!)
+            )
       }
 
       clientTheme = ClientTheme(colorStyle, fontFamily)
@@ -105,6 +110,39 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
           clientTheme = clientTheme,
           outputLogs = true,
       )
+
+      LucraClient().setDeeplinkTransformer { lucraLink ->
+        val linkMap = Arguments.createMap()
+        linkMap.putString("link", lucraLink)
+        sendEvent(context, "_deepLink", linkMap)
+        val transformedLink = _deepLinkState.first { it != "" }
+        transformedLink
+      }
+
+      LucraClient()
+          .setEventListener(
+              object : LucraEventListener {
+                override fun onEvent(event: LucraEvent) {
+                  when (event) {
+                    is LucraEvent.GamesContest.Created -> {
+                      Log.d("Sample", "Games contest created: ${event.contestId}")
+                    }
+                    is LucraEvent.SportsContest.Created -> {
+                      Log.d("Sample", "Sports contest created: ${event.contestId}")
+                    }
+                    else -> {
+                      Log.d("Sample", "Other Event: $event")
+                    }
+                  }
+                  Toast.makeText(
+                          context,
+                          "Event has been triggered --> ${event}",
+                          Toast.LENGTH_LONG
+                      )
+                      .show()
+                }
+              }
+          )
 
       LucraClient().observeSDKUser { user ->
         when (user) {
@@ -144,6 +182,9 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
             res.putMap("user", userMap)
 
             sendEvent(context, "user", res)
+          }
+          SDKUserResult.WaitingForLogin -> {
+            // intentionally left blank
           }
         }
       }
@@ -185,7 +226,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun present(flow: String) {
+  fun present(flow: String) {
     val lucraFlow = LucraUtils.getLucraFlow(flow)
 
     fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
@@ -215,7 +256,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
+  fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
     LucraClient().createContest(gameTypeId, atStake) {
       when (it) {
         is GamesMatchup.CreateGamesMatchupResult.Failure -> {
@@ -235,7 +276,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
+  fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
     LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
       when (it) {
         is GamesMatchup.MatchupActionResult.Failure -> throwLucraJSError(promise, it.failure)
@@ -245,7 +286,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun cancelGamesMatchup(matchupId: String, promise: Promise) {
+  fun cancelGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().cancelGamesYouPlayContest(matchupId) {
       when (it) {
         is GamesMatchup.MatchupActionResult.Failure -> throwLucraJSError(promise, it.failure)
@@ -254,7 +295,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
     }
   }
 
-  override fun getGamesMatchup(matchupId: String, promise: Promise) {
+  fun getGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().getGamesMatchup(matchupId) { result ->
       when (result) {
         is GamesMatchup.RetrieveGamesMatchupResult.Failure ->
@@ -294,7 +335,27 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun configureUser(user: ReadableMap, promise: Promise) {
+  fun emitDeepLink(link: String) {
+    _deepLinkEmitter.tryEmit(link)
+  }
+
+  @ReactMethod
+  fun handleLucraLink(lucraLink: String, promise: Promise) {
+    val lucraFlow = LucraClient().getLucraFlowForDeeplinkUri(lucraLink)
+    if (lucraFlow != null) {
+      fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
+      fullAppFlowDialogFragment?.show(
+          (context.currentActivity as FragmentActivity).supportFragmentManager,
+          lucraFlow.toString() // this tag will be used to dismiss in onFlowDismissRequested(flow)
+      )
+      promise.resolve(true)
+    } else {
+      promise.resolve(false)
+    }
+  }
+
+  @ReactMethod
+  fun configureUser(user: ReadableMap, promise: Promise) {
     // small trick to simplify code a bit
     val addressJS = if (user.hasKey("address")) user.getMap("address")!! else user
     val newUser =
@@ -321,12 +382,15 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
         SDKUserResult.Loading -> {
           // Should not happen in this context
         }
+        SDKUserResult.WaitingForLogin -> {
+          // Intentionally left blank
+        }
       }
     }
   }
 
   @ReactMethod()
-  override fun getUser(promise: Promise) {
+  fun getUser(promise: Promise) {
     LucraClient().getSDKUser {
       when (it) {
         is SDKUserResult.Error -> promise.resolve(null)
@@ -352,22 +416,41 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
           promise.resolve(user)
         }
         SDKUserResult.Loading -> promise.reject("loading", "User is still loading")
+        SDKUserResult.WaitingForLogin -> {
+          // intentionally blank
+        }
       }
     }
   }
 
   @ReactMethod
-  override fun logout(promise: Promise?) {
+  fun getSportsMatchup(contestId: String, promise: Promise) {
+    LucraClient().getSportsMatchup(
+            matchupId = contestId,
+        ) { result ->
+      when (result) {
+        is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
+          promise.reject("could_not_resolve_sports_matchup", result.toString())
+        }
+        is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
+          promise.resolve(LucraMapper.sportsMatchupToMap(result.sportsMatchup))
+        }
+      }
+    }
+  }
+
+  @ReactMethod
+  fun logout(promise: Promise?) {
     LucraClient().logout(this.context)
   }
 
   @ReactMethod
-  override fun addListener(eventName: String) {
+  fun addListener(eventName: String) {
     // intentionally left blank
   }
 
   @ReactMethod
-  override fun removeListeners(count: Double) {
+  fun removeListeners(count: Double) {
     // intentionally left blank
   }
 

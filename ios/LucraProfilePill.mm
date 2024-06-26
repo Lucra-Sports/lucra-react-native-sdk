@@ -1,12 +1,5 @@
-//
-//  LucraProfilePillView.m
-//  lucra-react-native-sdk
-//
-//  Created by Oscar Franco on 24/3/24.
-//
-
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "LucraProfilePillView.h"
+#import "LucraProfilePill.h"
 
 #import <react/renderer/components/RNLucraProfilePillSpec/ComponentDescriptors.h>
 #import <react/renderer/components/RNLucraProfilePillSpec/EventEmitters.h>

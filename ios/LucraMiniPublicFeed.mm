@@ -6,7 +6,7 @@
 //
 
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "LucraMiniPublicFeedView.h"
+#import "LucraMiniPublicFeed.h"
 
 #import <react/renderer/components/RNLucraMiniPublicFeedSpec/ComponentDescriptors.h>
 #import <react/renderer/components/RNLucraMiniPublicFeedSpec/EventEmitters.h>

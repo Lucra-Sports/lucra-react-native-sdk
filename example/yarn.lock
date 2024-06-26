@@ -2506,21 +2506,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.2.64":
-  version: 18.2.64
-  resolution: "@types/react@npm:18.2.64"
+"@types/react@npm:^18.3.3":
+  version: 18.3.3
+  resolution: "@types/react@npm:18.3.3"
   dependencies:
     "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/ab3ba9597990d08ffd419a5ad28fd22393c7a9a241ae455fb1d5d193d209471aa1909fa7ad016fd8d161eab6d0babba77b013b56a5170bedf78833085b9ee424
-  languageName: node
-  linkType: hard
-
-"@types/scheduler@npm:*":
-  version: 0.16.8
-  resolution: "@types/scheduler@npm:0.16.8"
-  checksum: 10c0/f86de504945b8fc41b1f391f847444d542e2e4067cf7e5d9bfeb5d2d2393d3203b1161bc0ef3b1e104d828dabfb60baf06e8d2c27e27ff7e8258e6e618d8c4ec
+  checksum: 10c0/fe455f805c5da13b89964c3d68060cebd43e73ec15001a68b34634604a78140e6fc202f3f61679b9d809dde6d7a7c2cb3ed51e0fd1462557911db09879b55114
   languageName: node
   linkType: hard
 
@@ -2575,13 +2567,15 @@ __metadata:
     "@react-native/typescript-config": "npm:0.73.1"
     "@react-navigation/native": "npm:^6.0.8"
     "@react-navigation/native-stack": "npm:^6.9.13"
-    "@types/react": "npm:^18.2.64"
+    "@types/react": "npm:^18.3.3"
     babel-plugin-module-resolver: "npm:^5.0.0"
+    babel-plugin-transform-typescript-metadata: "npm:^0.3.2"
     nativewind: "npm:^2.0.11"
     patch-package: "npm:^8.0.0"
     react: "npm:18.2.0"
     react-native: "npm:^0.73.5"
     react-native-linear-gradient: "npm:^2.8.2"
+    react-native-permissions: "npm:^4.1.5"
     react-native-safe-area-context: "npm:^4.8.1"
     react-native-screens: "npm:^3.21.0"
     react-native-vector-icons: "npm:^10.0.3"
@@ -2855,6 +2849,15 @@ __metadata:
   dependencies:
     "@babel/plugin-syntax-flow": "npm:^7.12.1"
   checksum: 10c0/aa9d022d8d4be0e7c4f1ff7e5308fe7e0ff4d6f9099449913e3a11c1e81916623a8f36432da180a9aa3f53ea534dca4401fe33d6528f043f40357cfa790ee778
+  languageName: node
+  linkType: hard
+
+"babel-plugin-transform-typescript-metadata@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "babel-plugin-transform-typescript-metadata@npm:0.3.2"
+  dependencies:
+    "@babel/helper-plugin-utils": "npm:^7.0.0"
+  checksum: 10c0/3a44874122e696416e4bc01a7973f38b07cf6bfd2e366026960a16f85d64ab41b735f408a045cbcfe651dadda52802c9fb992ee8229b1d7731fad56cc4346f57
   languageName: node
   linkType: hard
 
@@ -6126,6 +6129,20 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/b61f751bd33895450e879f08848c001521e2a87b4918f6d43d99840186016955138bdde06c69a87a43b2dbe5620542a02abafc97c391bd4fb2ea5d0df24a2036
+  languageName: node
+  linkType: hard
+
+"react-native-permissions@npm:^4.1.5":
+  version: 4.1.5
+  resolution: "react-native-permissions@npm:4.1.5"
+  peerDependencies:
+    react: ">=18.1.0"
+    react-native: ">=0.70.0"
+    react-native-windows: ">=0.70.0"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 10c0/93dd8ec9c4f5259b959fe0ec560c95c10518e893358b53acf9a380dca7d58e541274bf25cfe83e09c769b260fbce1361fa4497488b6bbcad499d8fb2cdefb5c0
   languageName: node
   linkType: hard
 
