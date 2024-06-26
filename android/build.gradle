@@ -86,8 +86,6 @@ android {
         srcDirs += ['src/newarch',
         // This is needed to build Kotlin project with NewArch enabled
           "${project.buildDir}/generated/source/codegen/java"]
-      } else {
-        srcDirs += ["src/oldarch", "src/paper/java"]
       }
     }
   }
@@ -121,8 +119,8 @@ repositories {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation("com.lucrasports.sdk:sdk-core:3.5.1-SNAPSHOT-2024-06-17-1718636797")
-  implementation("com.lucrasports.sdk:sdk-ui:3.5.1-SNAPSHOT-2024-06-17-1718636797")
+  implementation("com.lucrasports.sdk:sdk-core:3.6.0-SNAPSHOT-2024-06-25-1719348518")
+  implementation("com.lucrasports.sdk:sdk-ui:3.6.0-SNAPSHOT-2024-06-25-1719348518")
 
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin

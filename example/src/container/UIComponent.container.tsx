@@ -66,7 +66,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
             </TouchableOpacity>
             <View style={Styles.spacer} />
           </View>
-
+          
           <Text className="text-white mt-2">Profile Pill</Text>
           <LucraProfilePill key={profilePillKey} />
 

@@ -9,6 +9,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
@@ -34,8 +35,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 
 @ReactModule(name = LucraClientModule.NAME)
-internal class LucraClientModule(private val context: ReactApplicationContext) :
-    NativeLucraClientSpec(context) {
+class LucraClientModule(private val context: ReactApplicationContext): ReactContextBaseJavaModule(context) {
 
   private var fullAppFlowDialogFragment: DialogFragment? = null
   private var _deepLinkEmitter = MutableStateFlow<String>("")
@@ -48,7 +48,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun initialize(options: ReadableMap, promise: Promise) {
+  fun initialize(options: ReadableMap, promise: Promise) {
     val apiURL =
         options.getString("apiURL") ?: throw Exception("LucraSDK no api passed to constructor")
     val apiKey =
@@ -226,7 +226,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun present(flow: String) {
+  fun present(flow: String) {
     val lucraFlow = LucraUtils.getLucraFlow(flow)
 
     fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
@@ -256,7 +256,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
+  fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
     LucraClient().createContest(gameTypeId, atStake) {
       when (it) {
         is GamesMatchup.CreateGamesMatchupResult.Failure -> {
@@ -276,7 +276,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
+  fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
     LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
       when (it) {
         is GamesMatchup.MatchupActionResult.Failure -> throwLucraJSError(promise, it.failure)
@@ -286,7 +286,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun cancelGamesMatchup(matchupId: String, promise: Promise) {
+  fun cancelGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().cancelGamesYouPlayContest(matchupId) {
       when (it) {
         is GamesMatchup.MatchupActionResult.Failure -> throwLucraJSError(promise, it.failure)
@@ -295,7 +295,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
     }
   }
 
-  override fun getGamesMatchup(matchupId: String, promise: Promise) {
+  fun getGamesMatchup(matchupId: String, promise: Promise) {
     LucraClient().getGamesMatchup(matchupId) { result ->
       when (result) {
         is GamesMatchup.RetrieveGamesMatchupResult.Failure ->
@@ -335,8 +335,8 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  suspend fun emitDeepLink(link: String) {
-    _deepLinkEmitter.emit(link)
+  fun emitDeepLink(link: String) {
+    _deepLinkEmitter.tryEmit(link)
   }
 
   @ReactMethod
@@ -355,7 +355,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun configureUser(user: ReadableMap, promise: Promise) {
+  fun configureUser(user: ReadableMap, promise: Promise) {
     // small trick to simplify code a bit
     val addressJS = if (user.hasKey("address")) user.getMap("address")!! else user
     val newUser =
@@ -390,7 +390,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod()
-  override fun getUser(promise: Promise) {
+  fun getUser(promise: Promise) {
     LucraClient().getSDKUser {
       when (it) {
         is SDKUserResult.Error -> promise.resolve(null)
@@ -424,7 +424,7 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun getSportsMatchup(contestId: String, promise: Promise) {
+  fun getSportsMatchup(contestId: String, promise: Promise) {
     LucraClient().getSportsMatchup(
             matchupId = contestId,
         ) { result ->
@@ -440,17 +440,17 @@ internal class LucraClientModule(private val context: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun logout(promise: Promise?) {
+  fun logout(promise: Promise?) {
     LucraClient().logout(this.context)
   }
 
   @ReactMethod
-  override fun addListener(eventName: String) {
+  fun addListener(eventName: String) {
     // intentionally left blank
   }
 
   @ReactMethod
-  override fun removeListeners(count: Double) {
+  fun removeListeners(count: Double) {
     // intentionally left blank
   }
 
