@@ -149,6 +149,13 @@ type MatchupInfo = {
 
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
 
+interface LucraContestListener {
+  onGamesContestCreated: (contestId: string) => void;
+  onSportsContestCreated: (contestId: string) => void;
+  onGamesContestAccepted: (contestId: string) => void;
+  onSportsContestAccepted: (contestId: string) => void;
+}
+
 export const LucraSDK = {
   ENVIRONMENT: {
     PRODUCTION: 'production',
@@ -174,6 +181,23 @@ export const LucraSDK = {
         let newDeepLink = await deepLinkEmitter(data.link);
         LucraClient.emitDeepLink(newDeepLink);
       }
+    });
+  },
+  addContestListener: (listener: LucraContestListener) => {
+    eventEmitter.addListener('gamesContestCreated', (data) => {
+      listener.onGamesContestCreated(data.contestId);
+    });
+  
+    eventEmitter.addListener('sportsContestCreated', (data) => {
+      listener.onSportsContestCreated(data.contestId);
+    });
+  
+    eventEmitter.addListener('gamesContestAccepted', (data) => {
+      listener.onGamesContestAccepted(data.contestId);
+    });
+  
+    eventEmitter.addListener('sportsContestAccepted', (data) => {
+      listener.onSportsContestAccepted(data.contestId);
     });
   },
   addListener: (type: 'user', cb: (data: any) => void) => {
