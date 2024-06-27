@@ -109,7 +109,8 @@ public class LucraSwiftClient: NSObject {
     )
 
     eventSinkCancellable = nativeClient.$event.sink { event in 
-      guard let event = event else {
+        guard let event = event else { return }
+        
         switch event {
         case .gamesMatchupCreated(let id):
             self.delegate?.sendEvent(name: "gamesContestCreated", result: ["contestId": id])
@@ -119,9 +120,9 @@ public class LucraSwiftClient: NSObject {
             self.delegate?.sendEvent(name: "sportsContestCreated", result: ["contestId": id])
         case .sportsMatchupAccepted(let id):
             self.delegate?.sendEvent(name: "sportsContestAccepted", result: ["contestId": id])
+        @unknown default:
+            fatalError()
         }
-        return
-      }
     }
 
     userSinkCancellable = nativeClient.$user.sink { user in
