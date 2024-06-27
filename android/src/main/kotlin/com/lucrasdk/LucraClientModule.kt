@@ -126,7 +126,6 @@ class LucraClientModule(private val context: ReactApplicationContext): ReactCont
                 override fun onEvent(event: LucraEvent) {
                   when (event) {
                     is LucraEvent.GamesContest.Created -> {
-                      Log.d("Sample", "Games contest created: ${event.contestId}")
                         sendEvent(context, "gamesContestCreated",
                             Arguments.makeNativeMap(
                                 bundleOf("contestId" to event.contestId)
@@ -152,7 +151,7 @@ class LucraClientModule(private val context: ReactApplicationContext): ReactCont
                   }
                   Toast.makeText(
                           context,
-                          "Event has been triggered --> ${event}",
+                          "Matchup Event has been triggered --> ${event}",
                           Toast.LENGTH_LONG
                       )
                       .show()

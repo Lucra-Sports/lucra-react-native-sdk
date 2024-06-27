@@ -12,6 +12,7 @@ public class LucraSwiftClient: NSObject {
   private var nativeClient: LucraSDK.LucraClient!
   private var userCallback: RCTResponseSenderBlock?
   private var userSinkCancellable: AnyCancellable?
+  private var eventSinkCancellable: AnyCancellable?
   private let deepLinkEmitter = PassthroughSubject<String, Never>()
 
   static public var shared = LucraSwiftClient()
@@ -106,6 +107,22 @@ public class LucraSwiftClient: NSObject {
         appearance: clientTheme
       )
     )
+
+    eventSinkCancellable = nativeClient.$event.sink { event in 
+      guard let event = event else {
+        switch event {
+        case .gamesMatchupCreated(let id):
+            self.delegate?.sendEvent(name: "gamesContestCreated", result: ["contestId": id])
+        case .gamesMatchupAccepted(let id):
+            self.delegate?.sendEvent(name: "gamesContestAccepted", result: ["contestId": id])
+        case .sportsMatchupCreated(let id):
+            self.delegate?.sendEvent(name: "sportsContestCreated", result: ["contestId": id])
+        case .sportsMatchupAccepted(let id):
+            self.delegate?.sendEvent(name: "sportsContestAccepted", result: ["contestId": id])
+        }
+        return
+      }
+    }
 
     userSinkCancellable = nativeClient.$user.sink { user in
       guard let user = user else {
