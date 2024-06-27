@@ -56,7 +56,7 @@ export default function App() {
           },
           onSportsContestAccepted: (contestId: string) => {
             console.log('Sports contest accepted:', contestId);
-          }
+          },
         });
 
         setIsReady(true);

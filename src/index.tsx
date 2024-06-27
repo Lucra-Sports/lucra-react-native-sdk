@@ -187,15 +187,15 @@ export const LucraSDK = {
     eventEmitter.addListener('gamesContestCreated', (data) => {
       listener.onGamesContestCreated(data.contestId);
     });
-  
+
     eventEmitter.addListener('sportsContestCreated', (data) => {
       listener.onSportsContestCreated(data.contestId);
     });
-  
+
     eventEmitter.addListener('gamesContestAccepted', (data) => {
       listener.onGamesContestAccepted(data.contestId);
     });
-  
+
     eventEmitter.addListener('sportsContestAccepted', (data) => {
       listener.onSportsContestAccepted(data.contestId);
     });

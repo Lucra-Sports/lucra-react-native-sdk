@@ -30,6 +30,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "prettier:fix": "prettier --write .",
     "prepack": "bob build",
     "example": "yarn workspace example",
     "prepare": "bob build",
