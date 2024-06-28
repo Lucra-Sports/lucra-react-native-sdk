@@ -441,7 +441,7 @@ let user = await LucraSDK.getUser();
 You can subscribe to changes in the user object via callback (currently only supported in iOS)
 
 ```ts
-LucraSDK.addListener("user", ({ user, error }) => {
+const listener = LucraSDK.addListener("user", ({ user, error }) => {
   if (error) {
     // Android will return this error when the user is not logged in
     console.log('user callback error', error);
@@ -455,6 +455,9 @@ LucraSDK.addListener("user", ({ user, error }) => {
     console.log(`✅ recevied user callback: ${user}`);
   }
 });
+
+// If you are done listening for the user
+listener()
 ```
 
 ## Embed flows in a view
@@ -531,6 +534,30 @@ const initialLink = await Linking.getInitialURL();
 if (initialLink) {
   // same as above
 }
+```
+
+## Games Contest Listener
+
+You can also listen for the events when creating a games or sport contest.
+
+```ts
+const unsubscribe = LucraSDK.addContestListener({
+  onGamesContestCreated: (contestId: string) => {
+    console.log('Games contest created:', contestId);
+  },
+  onSportsContestCreated: (contestId: string) => {
+    console.log('Sports contest created:', contestId);
+  },
+  onGamesContestAccepted: (contestId: string) => {
+    console.log('Games contest accepted:', contestId);
+  },
+  onSportsContestAccepted: (contestId: string) => {
+    console.log('Sports contest accepted:', contestId);
+  },
+});
+
+// Once you are done or on hot reload
+unsubscribe();
 ```
 
 ## Push notifications

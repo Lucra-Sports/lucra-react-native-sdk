@@ -44,6 +44,21 @@ export default function App() {
           return 'lucra://flow/profile';
         });
 
+        LucraSDK.addContestListener({
+          onGamesContestCreated: (contestId: string) => {
+            console.log('Games contest created:', contestId);
+          },
+          onSportsContestCreated: (contestId: string) => {
+            console.log('Sports contest created:', contestId);
+          },
+          onGamesContestAccepted: (contestId: string) => {
+            console.log('Games contest accepted:', contestId);
+          },
+          onSportsContestAccepted: (contestId: string) => {
+            console.log('Sports contest accepted:', contestId);
+          },
+        });
+
         setIsReady(true);
       })
       .catch((error) => {

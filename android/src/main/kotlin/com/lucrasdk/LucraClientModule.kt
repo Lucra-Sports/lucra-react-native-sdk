@@ -3,6 +3,7 @@ package com.lucrasdk
 import android.app.Application
 import android.util.Log
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.Arguments
@@ -125,18 +126,32 @@ class LucraClientModule(private val context: ReactApplicationContext): ReactCont
                 override fun onEvent(event: LucraEvent) {
                   when (event) {
                     is LucraEvent.GamesContest.Created -> {
-                      Log.d("Sample", "Games contest created: ${event.contestId}")
+                        sendEvent(context, "gamesContestCreated",
+                            Arguments.makeNativeMap(
+                                bundleOf("contestId" to event.contestId)
+                            ))
                     }
                     is LucraEvent.SportsContest.Created -> {
-                      Log.d("Sample", "Sports contest created: ${event.contestId}")
+                        sendEvent(context, "sportsContestCreated",
+                            Arguments.makeNativeMap(
+                                bundleOf("contestId" to event.contestId)
+                            ))
                     }
-                    else -> {
-                      Log.d("Sample", "Other Event: $event")
-                    }
+
+                      is LucraEvent.GamesContest.Accepted ->
+                          sendEvent(context, "gamesContestAccepted",
+                              Arguments.makeNativeMap(
+                                  bundleOf("contestId" to event.contestId)
+                              ))
+                      is LucraEvent.SportsContest.Accepted ->
+                          sendEvent(context, "sportsContestAccepted",
+                              Arguments.makeNativeMap(
+                                  bundleOf("contestId" to event.contestId)
+                              ))
                   }
                   Toast.makeText(
                           context,
-                          "Event has been triggered --> ${event}",
+                          "Matchup Event has been triggered --> ${event}",
                           Toast.LENGTH_LONG
                       )
                       .show()

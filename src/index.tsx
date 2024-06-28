@@ -149,6 +149,13 @@ type MatchupInfo = {
 
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
 
+type LucraContestListener = {
+  onGamesContestCreated: (contestId: string) => void;
+  onSportsContestCreated: (contestId: string) => void;
+  onGamesContestAccepted: (contestId: string) => void;
+  onSportsContestAccepted: (contestId: string) => void;
+};
+
 export const LucraSDK = {
   ENVIRONMENT: {
     PRODUCTION: 'production',
@@ -176,8 +183,47 @@ export const LucraSDK = {
       }
     });
   },
+  addContestListener: (listener: LucraContestListener) => {
+    const gamesContestCreatedEmitter = eventEmitter.addListener(
+      'gamesContestCreated',
+      (data) => {
+        listener.onGamesContestCreated(data.contestId);
+      }
+    );
+
+    const sportsContestCreatedEmitter = eventEmitter.addListener(
+      'sportsContestCreated',
+      (data) => {
+        listener.onSportsContestCreated(data.contestId);
+      }
+    );
+
+    const gamesContextAcceptedEmitter = eventEmitter.addListener(
+      'gamesContestAccepted',
+      (data) => {
+        listener.onGamesContestAccepted(data.contestId);
+      }
+    );
+
+    const sportContestAcceptedEmitter = eventEmitter.addListener(
+      'sportsContestAccepted',
+      (data) => {
+        listener.onSportsContestAccepted(data.contestId);
+      }
+    );
+
+    return () => {
+      gamesContestCreatedEmitter.remove();
+      sportsContestCreatedEmitter.remove();
+      gamesContextAcceptedEmitter.remove();
+      sportContestAcceptedEmitter.remove();
+    };
+  },
   addListener: (type: 'user', cb: (data: any) => void) => {
-    return eventEmitter.addListener(type, cb);
+    const emitter = eventEmitter.addListener(type, cb);
+    return () => {
+      emitter.remove();
+    };
   },
   configureUser: async (user: LucraUserConfig): Promise<void> => {
     await LucraClient.configureUser(user);

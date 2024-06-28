@@ -198,6 +198,7 @@ operation.
 Creates a new game contest.
 
 - **Parameters:**
+
   - `gameTypeId`: ID associated with the game type.
   - `atStake`: Amount of money being wagered.
   - `onResult`: Callback with a result of type `CreateGamesMatchupResult`.
@@ -225,6 +226,7 @@ LucraClient().createContest(
 Accepts a contest with the given ID.
 
 - **Parameters:**
+
   - `matchupId`: ID of the contest.
   - `teamId`: ID of the team the user wants to join.
   - `onResult`: Callback with a result of type `MatchupActionResult`.
@@ -252,6 +254,7 @@ LucraClient().acceptGamesYouPlayContest(
 Cancels a contest with the given ID.
 
 - **Parameters:**
+
   - `matchupId`: ID of the contest.
   - `onResult`: Callback with a result of type `MatchupActionResult`.
 
@@ -303,7 +306,7 @@ Represents the types of errors that can occur when creating a `GamesMatchup`.
 
 ### UI styling
 
-**Requires `:sdk-ui`***
+**Requires `:sdk-ui`\***
 
 Your can customize your Lucra implementation with your own color scheme and fonts by providing
 the `ClientTheme` object to `LucraClient`.
@@ -371,7 +374,7 @@ LucraClient.initialize(
 
 ### Showing full Lucra flow
 
-**Requires `:sdk-ui`***
+**Requires `:sdk-ui`\***
 
 Launch the LucraFragment in your Activity or Fragment by passing in a LucraFlow. The following flows
 are supported:
@@ -411,5 +414,3 @@ supportFragmentManager.beginTransaction()
 val lucraDialog = LucraClient().getLucraDialogFragment(lucraFlow)
 lucraDialog.show(supportFragmentManager, LUCRA_FRAGMENT_TAG)
 ```
-
-
