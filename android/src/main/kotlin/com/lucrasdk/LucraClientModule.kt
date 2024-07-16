@@ -2,7 +2,6 @@ package com.lucrasdk
 
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
@@ -149,12 +148,6 @@ class LucraClientModule(private val context: ReactApplicationContext): ReactCont
                                   bundleOf("contestId" to event.contestId)
                               ))
                   }
-                  Toast.makeText(
-                          context,
-                          "Matchup Event has been triggered --> ${event}",
-                          Toast.LENGTH_LONG
-                      )
-                      .show()
                 }
               }
           )
