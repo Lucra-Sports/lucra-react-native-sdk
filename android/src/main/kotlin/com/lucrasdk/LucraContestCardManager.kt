@@ -11,7 +11,7 @@ import com.lucrasports.sdk.core.ui.LucraUiProvider
 
 
 class LucraContestCardManager(private val callerContext: ReactApplicationContext) :
-    SimpleViewManager<LucraContestCard>() {
+    SimpleViewManager<AutoWrappingFrameLayout>() {
 
     private var fragment: DialogFragment? = null
     private var context: ThemedReactContext? = null
@@ -20,13 +20,13 @@ class LucraContestCardManager(private val callerContext: ReactApplicationContext
         return NAME
     }
 
-    public override fun createViewInstance(context: ThemedReactContext): LucraContestCard {
+    public override fun createViewInstance(context: ThemedReactContext): AutoWrappingFrameLayout {
         this.context = context
-        return LucraContestCard(context)
+        return AutoWrappingFrameLayout(context)
     }
 
     @ReactProp(name = "contestId")
-    fun setContestId(view: LucraContestCard?, contestId: String?) {
+    fun setContestId(view: AutoWrappingFrameLayout?, contestId: String?) {
         val component =
             LucraClient()
                 .getLucraComponent(
