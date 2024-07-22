@@ -73,8 +73,11 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white mt-2">Create Contest Button</Text>
           <LucraCreateContestButton />
 
-          <Text className="text-white mt-2"> Contest Card</Text>
-          <LucraContestCard contestId="123" className="mt-4" />
+          <Text className="text-white mt-2"> Contest Card </Text>
+          <LucraContestCard
+            contestId="83c74839-d21a-46f5-9b3d-39bec62c11a9"
+            style={{ height: 250 }} // On Android, you'll have to specify a height
+          />
 
           <Text className="text-white mt-2"> Recommended Matchups</Text>
           <LucraRecommendedMatchup className="mt-4" />
@@ -86,6 +89,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
                 className="mt-4"
                 key={miniFeedKey}
                 playerIds={[]}
+                style={{ height: 500 }} // On Android, you'll have to specify a height
               />
             </ScrollView>
           </View>

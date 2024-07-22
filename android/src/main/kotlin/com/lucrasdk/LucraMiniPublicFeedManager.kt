@@ -11,7 +11,7 @@ import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 
 class LucraMiniPublicFeedManager(private val callerContext: ReactApplicationContext) :
-SimpleViewManager<LucraMiniPublicFeed>() {
+    SimpleViewManager<LucraMiniPublicFeed>() {
 
     private var fragment: DialogFragment? = null
     private var context: ThemedReactContext? = null
@@ -32,19 +32,19 @@ SimpleViewManager<LucraMiniPublicFeed>() {
             LucraUiProvider.LucraComponent.MiniPublicFeed(
                 playerIds?.toArrayList()?.map { it.toString() } ?: emptyList()
             ) {
-        fragment = LucraClient().getLucraDialogFragment(it)
-        fragment?.show(
-            (context!!.currentActivity as FragmentActivity).supportFragmentManager,
-            it.toString()
-        )
+                fragment = LucraClient().getLucraDialogFragment(it)
+                fragment?.show(
+                    (context!!.currentActivity as FragmentActivity).supportFragmentManager,
+                    it.toString()
+                )
+            }
+
+        val miniPublicFeed = LucraClient().getLucraComponent(context!!, feedComponent)
+
+        view?.addView(miniPublicFeed)
     }
 
-    val miniPublicFeed = LucraClient().getLucraComponent(context!!, feedComponent)
-
-    view?.addView(miniPublicFeed)
-}
-
-companion object {
-    const val NAME = "LucraMiniPublicFeed"
-}
+    companion object {
+        const val NAME = "LucraMiniPublicFeed"
+    }
 }
