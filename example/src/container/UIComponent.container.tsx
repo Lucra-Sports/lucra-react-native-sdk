@@ -91,7 +91,6 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
                 className="mt-4"
                 key={miniFeedKey}
                 playerIds={[]}
-                style={{ height: 500 }} // On Android, you'll have to specify a height
               />
             </ScrollView>
           </View>

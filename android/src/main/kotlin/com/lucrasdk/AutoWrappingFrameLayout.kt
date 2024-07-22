@@ -2,6 +2,7 @@ package com.lucrasdk
 
 
 import android.content.Context
+import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.children
@@ -14,13 +15,27 @@ import com.facebook.react.uimanager.UIManagerModule
  * update the size and call RN functions to update the size in real time. Android would do this
  * out of the box in native world, but not here!
  */
-class AutoWrappingFrameLayout(context: Context) : FrameLayout(context) {
+class AutoWrappingFrameLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private var viewAdded = false
+    private var pendingChild: View? = null
 
-    override fun addView(child: View?) {
-        super.addView(child)
-        viewAdded = true
+    /**
+     * use waitForAttach = true if the component is added via `createViewInstance`
+     */
+    fun addView(child: View?, waitForAttach: Boolean) {
+        if (!waitForAttach) {
+            super.addView(child)
+            viewAdded = true
+            pendingChild = null
+        } else {
+            viewAdded = false
+            pendingChild = child
+        }
     }
 
     override fun requestLayout() {
@@ -34,6 +49,15 @@ class AutoWrappingFrameLayout(context: Context) : FrameLayout(context) {
             MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
         )
         layout(left, top, right, bottom)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (!viewAdded && pendingChild != null) {
+            post {
+                addView(pendingChild, false)
+            }
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

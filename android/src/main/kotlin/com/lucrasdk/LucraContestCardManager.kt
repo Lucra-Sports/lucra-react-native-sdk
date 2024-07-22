@@ -43,7 +43,7 @@ class LucraContestCardManager(private val callerContext: ReactApplicationContext
                     }
                 )
 
-        view?.addView(component)
+        view?.addView(component, false)
     }
 
     companion object {
