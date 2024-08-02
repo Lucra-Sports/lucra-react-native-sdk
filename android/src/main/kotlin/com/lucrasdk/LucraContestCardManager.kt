@@ -2,6 +2,7 @@ package com.lucrasdk
 
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -22,7 +23,9 @@ class LucraContestCardManager(private val callerContext: ReactApplicationContext
 
     public override fun createViewInstance(context: ThemedReactContext): AutoWrappingFrameLayout {
         this.context = context
-        return AutoWrappingFrameLayout(context)
+        val view = AutoWrappingFrameLayout(context)
+        view.setViewTreeViewModelStoreOwner(LucraViewModelStoreOwner)
+        return view
     }
 
     @ReactProp(name = "contestId")
