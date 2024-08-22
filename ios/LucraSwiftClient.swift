@@ -201,7 +201,7 @@ public class LucraSwiftClient: NSObject {
       firstName: user["firstName"] as? String,
       lastName: user["lastName"] as? String,
       address: sdkAddress,
-      dateOfBirth: user["dateOfBirth"] as? String,
+      dateOfBirth: user["dateOfBirth"] as? Date
     )
 
     Task {
