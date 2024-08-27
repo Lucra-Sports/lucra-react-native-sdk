@@ -246,13 +246,13 @@ public class LucraSwiftClient: NSObject {
     switch nativeClient.user {
     case .some(let user):
       var userJS: [String: Any] = [
-        "username": user.username!,
-        "avatarURL": user.avatarURL!,
-        "phoneNumber": user.phoneNumber!,
-        "email": user.email!,
-        "firstName": user.firstName!,
-        "lastName": user.lastName!,
-        "dateOfBirth": user.dateOfBirth!,
+        "username": user.username ?? NSNull(),
+        "avatarURL": user.avatarURL ?? NSNull(),
+        "phoneNumber": user.phoneNumber ?? NSNull(),
+        "email": user.email ?? NSNull(),
+        "firstName": user.firstName ?? NSNull(),
+        "lastName": user.lastName ?? NSNull(),
+        "dateOfBirth": user.dateOfBirth ?? NSNull(),
       ]
 
       switch user.address {
