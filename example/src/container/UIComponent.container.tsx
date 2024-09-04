@@ -73,8 +73,13 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white mt-2">Create Contest Button</Text>
           <LucraCreateContestButton />
 
-          <Text className="text-white mt-2"> Contest Card</Text>
-          <LucraContestCard contestId="123" className="mt-4" />
+          <Text className="text-white mt-2"> Contest Card </Text>
+          <View style={Styles.cardContainer}>
+            <LucraContestCard
+              contestId="83c74839-d21a-46f5-9b3d-39bec62c11a9"
+              style={Styles.contestCard}
+            />
+          </View>
 
           <Text className="text-white mt-2"> Recommended Matchups</Text>
           <LucraRecommendedMatchup className="mt-4" />
@@ -119,6 +124,13 @@ const Styles = StyleSheet.create({
   },
   chevron: {
     tintColor: 'white',
+  },
+  cardContainer: {
+    alignSelf: 'stretch',
+    padding: 16,
+  },
+  contestCard: {
+    alignSelf: 'stretch',
   },
   header: {
     flexDirection: 'row',

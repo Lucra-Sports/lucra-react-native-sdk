@@ -64,7 +64,6 @@ public class LucraSwiftClient: NSObject {
       let onPrimary = theme["onPrimary"] as? String
       let onSecondary = theme["onSecondary"] as? String
       let onTertiary = theme["onTertiary"] as? String
-      let fontFamilyName = theme["fontFamilyName"] as? String
 
       clientTheme = ClientTheme(
         background: background,
@@ -76,8 +75,7 @@ public class LucraSwiftClient: NSObject {
         onSurface: onSurface,
         onPrimary: onPrimary,
         onSecondary: onSecondary,
-        onTertiary: onTertiary,
-        fontFamilyName: fontFamilyName)
+        onTertiary: onTertiary)
     }
 
     let nativeEnvironment: LucraSDK.LucraEnvironment = {
@@ -154,6 +152,7 @@ public class LucraSwiftClient: NSObject {
           "address": addressMap as Any,
           "balance": user.balance,
           "accountStatus": user.accountStatus.rawValue,
+          "dateOfBirth": user.dateOfBirth as Any,
         ]
       ]
 
@@ -201,7 +200,8 @@ public class LucraSwiftClient: NSObject {
       email: user["email"] as? String,
       firstName: user["firstName"] as? String,
       lastName: user["lastName"] as? String,
-      address: sdkAddress
+      address: sdkAddress,
+      dateOfBirth: user["dateOfBirth"] as? Date
     )
 
     Task {
@@ -246,12 +246,13 @@ public class LucraSwiftClient: NSObject {
     switch nativeClient.user {
     case .some(let user):
       var userJS: [String: Any] = [
-        "username": user.username!,
-        "avatarURL": user.avatarURL!,
-        "phoneNumber": user.phoneNumber!,
-        "email": user.email!,
-        "firstName": user.firstName!,
-        "lastName": user.lastName!,
+        "username": user.username ?? NSNull(),
+        "avatarURL": user.avatarURL ?? NSNull(),
+        "phoneNumber": user.phoneNumber ?? NSNull(),
+        "email": user.email ?? NSNull(),
+        "firstName": user.firstName ?? NSNull(),
+        "lastName": user.lastName ?? NSNull(),
+        "dateOfBirth": user.dateOfBirth ?? NSNull(),
       ]
 
       switch user.address {

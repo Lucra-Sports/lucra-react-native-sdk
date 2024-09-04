@@ -21,10 +21,10 @@ PODS:
   - hermes-engine/Pre-built (0.73.5)
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
-  - lucra-react-native-sdk (1.3.1):
-    - LucraSDK (= 1.6.4)
+  - lucra-react-native-sdk (1.5.2):
+    - LucraSDK (= 1.8.0)
     - React-Core
-  - LucraSDK (1.6.4):
+  - LucraSDK (1.8.0):
     - Auth0
     - Resolver
     - ZendeskSupportSDK
@@ -1296,8 +1296,8 @@ SPEC CHECKSUMS:
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: 399bd8ddcb4f1ef2cabcdbd5976b7a1b66739cf0
-  LucraSDK: d623abcd9cbc361edf05ad79f40c3b99601ee352
+  lucra-react-native-sdk: e84ec083bc1ca87621d6e332f1c98d03fabf2b2d
+  LucraSDK: 721368e65f10082832e9a90d3b27c60faa7128ef
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 2544c0f1081a5fa12e108bb8cb40e5f4581ccd87
   RCTTypeSafety: 50efabe2b115c11ed03fbf3fd79e2f163ddb5d7c
@@ -1346,7 +1346,7 @@ SPEC CHECKSUMS:
   RNVectorIcons: 81e919c3a9e56e4916f9e74cfe9cd2e489146f08
   SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
+  Yoga: 9e6a04eacbd94f97d94577017e9f23b3ab41cf6c
   ZendeskCommonUISDK: 720e6e34eff34ddae5feb1935f788a0893eaf672
   ZendeskCoreSDK: 04db322c3e087d21984ff80118a890305fab2533
   ZendeskMessagingAPISDK: 9ce539eebcaa014fe6acc44da31262a2c52891c1

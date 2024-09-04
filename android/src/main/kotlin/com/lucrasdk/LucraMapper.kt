@@ -169,8 +169,8 @@ object LucraMapper {
         map.putString("id", user.idString)
         map.putString("socialConnectionId", user.socialConnectionId)
         map.putString("username", user.username)
-        map.putString("avatarUrl", user.avatar_url)
-        map.putInt("loyaltyPoints", user.loyalty_points as Int)
+        map.putString("avatarUrl", user.avatarUrl)
+        map.putInt("loyaltyPoints", user.loyaltyPoints as Int)
         return map
     }
 

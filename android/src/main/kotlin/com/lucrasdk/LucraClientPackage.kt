@@ -24,9 +24,6 @@ class LucraClientPackage : ReactPackage {
     ): MutableList<NativeModule> = listOf(LucraClientModule(reactContext)).toMutableList()
 }
 
-//      viewManagers.add(LucraContestCardManager())
-//    return viewManagers
-//  }
 //
 //  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
 //    if (name == LucraClientModule.NAME) {
