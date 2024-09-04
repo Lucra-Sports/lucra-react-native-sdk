@@ -6,13 +6,13 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios --simulator=\"iPhone 15\"",
     "start": "react-native start",
-    "pods:next": "cd ios && rm -rf Pods && rm -f Podfile.lock && RCT_NEW_ARCH_ENABLED=1 USE_FRAMEWORKS=static pod install",
-    "pods": "cd ios && rm -rf Pods && rm -f Podfile.lock && USE_FRAMEWORKS=static pod install",
+    "pods:next": "cd ios && rm -rf Pods && rm -f Podfile.lock && RCT_NEW_ARCH_ENABLED=1 USE_FRAMEWORKS=static bundle exec pod install --repo-update",
+    "pods": "cd ios && rm -rf Pods && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update",
     "android:logcat": "adb logcat",
     "nuke": "rm -rf $TMPDIR/react-* && watchman watch-del-all && rm -rf ios/build && rm -rf node_modules/ && rm -rf ./ios/Pods && yarn",
     "codegen": "./codegen.sh",
-    "build:android": "cd android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
-    "build:ios": "cd ios && xcodebuild -workspace LucraSDKExample.xcworkspace -scheme LucrasdkExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO"
+    "build:android": "react-native build-android --extra-params \"--no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a\"",
+    "build:ios": "react-native build-ios --scheme LucrasdkExample --mode Debug --extra-params \"-sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO\""
   },
   "dependencies": {
     "@react-navigation/native": "^6.0.8",

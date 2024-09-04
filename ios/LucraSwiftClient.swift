@@ -106,21 +106,21 @@ public class LucraSwiftClient: NSObject {
       )
     )
 
-    eventSinkCancellable = nativeClient.$event.sink { event in 
-        guard let event = event else { return }
-        
-        switch event {
-        case .gamesMatchupCreated(let id):
-            self.delegate?.sendEvent(name: "gamesContestCreated", result: ["contestId": id])
-        case .gamesMatchupAccepted(let id):
-            self.delegate?.sendEvent(name: "gamesContestAccepted", result: ["contestId": id])
-        case .sportsMatchupCreated(let id):
-            self.delegate?.sendEvent(name: "sportsContestCreated", result: ["contestId": id])
-        case .sportsMatchupAccepted(let id):
-            self.delegate?.sendEvent(name: "sportsContestAccepted", result: ["contestId": id])
-        @unknown default:
-            fatalError()
-        }
+    eventSinkCancellable = nativeClient.$event.sink { event in
+      guard let event = event else { return }
+
+      switch event {
+      case .gamesMatchupCreated(let id):
+        self.delegate?.sendEvent(name: "gamesContestCreated", result: ["contestId": id])
+      case .gamesMatchupAccepted(let id):
+        self.delegate?.sendEvent(name: "gamesContestAccepted", result: ["contestId": id])
+      case .sportsMatchupCreated(let id):
+        self.delegate?.sendEvent(name: "sportsContestCreated", result: ["contestId": id])
+      case .sportsMatchupAccepted(let id):
+        self.delegate?.sendEvent(name: "sportsContestAccepted", result: ["contestId": id])
+      @unknown default:
+        fatalError()
+      }
     }
 
     userSinkCancellable = nativeClient.$user.sink { user in
@@ -162,16 +162,16 @@ public class LucraSwiftClient: NSObject {
     nativeClient.registerDeeplinkProvider { lucraDeepLink in
       var cancellable: AnyCancellable?
       let deeplink = await withCheckedContinuation { [weak self] continuation in
-          guard let self else { return }
-          
-          cancellable = deepLinkEmitter.sink { value in
-            continuation.resume(returning: value)
-              cancellable?.cancel()
-              cancellable = nil
-          }
-          self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
+        guard let self else { return }
 
+        cancellable = deepLinkEmitter.sink { value in
+          continuation.resume(returning: value)
+          cancellable?.cancel()
+          cancellable = nil
         }
+        self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
+
+      }
       return deeplink
     }
 
@@ -493,8 +493,12 @@ public class LucraSwiftClient: NSObject {
     return self.nativeClient.ui.component(.userProfilePill)
   }
 
-  @objc public func getMiniFeed(_ userIDs: [String]?, onSizeChanged: @escaping (CGSize) -> Void) -> UIView {
-    return self.nativeClient.ui.component(.miniPublicFeed(playerIDs: userIDs), parentUIViewController: UIViewController(), onSizeChanged: onSizeChanged)
+  @objc public func getMiniFeed(_ userIDs: [String]?, onSizeChanged: @escaping (CGSize) -> Void)
+    -> UIView
+  {
+    return self.nativeClient.ui.component(
+      .miniPublicFeed(playerIDs: userIDs), parentUIViewController: UIViewController(),
+      onSizeChanged: onSizeChanged)
   }
 
   @objc public func getCreateContestButton() -> UIView {
@@ -505,7 +509,11 @@ public class LucraSwiftClient: NSObject {
     return self.nativeClient.ui.component(.recommendedMatchup)
   }
 
-  @objc public func getContestCard(_ contestId: String?, onSizeChanged: @escaping (CGSize) -> Void) -> UIView {
-    return self.nativeClient.ui.component(.contestCard(contestId: contestId!), parentUIViewController: UIViewController(), onSizeChanged: onSizeChanged)
+  @objc public func getContestCard(_ contestId: String?, onSizeChanged: @escaping (CGSize) -> Void)
+    -> UIView
+  {
+    return self.nativeClient.ui.component(
+      .contestCard(contestId: contestId!), parentUIViewController: UIViewController(),
+      onSizeChanged: onSizeChanged)
   }
 }
