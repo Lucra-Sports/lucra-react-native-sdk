@@ -289,6 +289,7 @@ export const LucraSDK = {
   registerCreditConversionProvider: (
     provider: (cashAmount: number) => Promise<LucraConvertCreditResponse>
   ) => {
+    LucraClient.registerConvertToCreditProvider();
     creditConversionEmitter = provider;
   },
   handleLucraLink: async (link: string): Promise<boolean> => {
