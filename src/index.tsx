@@ -147,7 +147,26 @@ type MatchupInfo = {
   teams: MatchupTeamInfo[];
 };
 
+type LucraConvertCreditResponse = {
+  id: string;
+  type: string;
+  title: string;
+  convertedAmount: number;
+  iconUrl?: string | undefined;
+  convertedAmountDisplay: string;
+  shortDescription: string;
+  longDescription: string;
+  metaData: Record<string, string>;
+  cardColor: string;
+  cardTextColor: string;
+  pillColor: string;
+  pillTextColor: string;
+};
+
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
+let creditConversionEmitter:
+  | ((cashAmount: number) => Promise<LucraConvertCreditResponse>)
+  | null = null;
 
 type LucraContestListener = {
   onGamesContestCreated: (contestId: string) => void;
@@ -180,6 +199,13 @@ export const LucraSDK = {
       if (deepLinkEmitter) {
         let newDeepLink = await deepLinkEmitter(data.link);
         LucraClient.emitDeepLink(newDeepLink);
+      }
+    });
+
+    eventEmitter.addListener('_creditConversion', async (data) => {
+      if (creditConversionEmitter) {
+        let newDeepLink = await creditConversionEmitter(data.link);
+        LucraClient.emitCreditConversion(newDeepLink);
       }
     });
   },
@@ -259,6 +285,11 @@ export const LucraSDK = {
   },
   registerDeepLinkProvider: (provider: (url: string) => Promise<string>) => {
     deepLinkEmitter = provider;
+  },
+  registerCreditConversionProvider: (
+    provider: (cashAmount: number) => Promise<LucraConvertCreditResponse>
+  ) => {
+    creditConversionEmitter = provider;
   },
   handleLucraLink: async (link: string): Promise<boolean> => {
     return LucraClient.handleLucraLink(link);

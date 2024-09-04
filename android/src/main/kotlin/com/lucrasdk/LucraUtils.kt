@@ -1,5 +1,6 @@
 package com.lucrasdk
 
+import com.facebook.react.bridge.ReadableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 
@@ -31,6 +32,19 @@ class LucraUtils {
         "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
         else -> throw IllegalArgumentException("Invalid flow: $flow")
       }
+    }
+
+    fun convertReadableMapToStringMap(readableMap: ReadableMap): Map<String, String> {
+      val map = mutableMapOf<String, String>()
+      val iterator = readableMap.keySetIterator()
+      while (iterator.hasNextKey()) {
+        val key = iterator.nextKey()
+        val value = readableMap.getString(key)
+        if (value != null) {
+            map[key] = value
+        }
+      }
+      return map
     }
   }
 }

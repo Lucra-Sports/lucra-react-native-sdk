@@ -21,6 +21,7 @@ interface Spec extends TurboModule {
   addListener: (eventType: string) => void;
   removeListeners: (count: number) => void;
   emitDeepLink: (deepLink: string) => void;
+  emitCreditConversion: (creditConversion: Object) => void;
   handleLucraLink: (link: string) => Promise<boolean>;
   registerDeviceTokenHex: (token: string) => Promise<void>;
   registerDeviceTokenBase64: (token: string) => Promise<void>;
