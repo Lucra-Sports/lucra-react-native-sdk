@@ -75,7 +75,7 @@ public class LucraSwiftClient: NSObject {
         onSurface: onSurface,
         onPrimary: onPrimary,
         onSecondary: onSecondary,
-        onTertiary: onTertiary)
+        onTertiary: onTertiary
     }
 
     let nativeEnvironment: LucraSDK.LucraEnvironment = {
