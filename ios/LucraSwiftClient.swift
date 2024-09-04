@@ -154,7 +154,7 @@ public class LucraSwiftClient: NSObject {
           "accountStatus": user.accountStatus.rawValue,
           "dateOfBirth": user.dateOfBirth as Any,
         ]
-      
+      ]
 
       self.delegate?.sendEvent(name: "user", result: userMap)
     }
