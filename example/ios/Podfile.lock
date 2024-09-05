@@ -22,9 +22,9 @@ PODS:
   - JWTDecode (3.1.0)
   - libevent (2.1.12)
   - lucra-react-native-sdk (1.5.3):
-    - LucraSDK (= 1.8.0)
+    - LucraSDK (= 1.8.2)
     - React-Core
-  - LucraSDK (1.8.0):
+  - LucraSDK (1.8.2):
     - Auth0
     - Resolver
     - ZendeskSupportSDK
@@ -1297,8 +1297,8 @@ SPEC CHECKSUMS:
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: 546dd1d7bc224d9e14ffb4b259b14a57d6d5010f
-  LucraSDK: 721368e65f10082832e9a90d3b27c60faa7128ef
+  lucra-react-native-sdk: 1ccbcd697c73920be18743ef1d30d27f499564ed
+  LucraSDK: 973d7682597106eeb1b509b65ce3b61c96b2f441
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 2544c0f1081a5fa12e108bb8cb40e5f4581ccd87
   RCTTypeSafety: 50efabe2b115c11ed03fbf3fd79e2f163ddb5d7c

@@ -204,7 +204,7 @@ export const LucraSDK = {
 
     eventEmitter.addListener('_creditConversion', async (data) => {
       if (creditConversionEmitter) {
-        let newDeepLink = await creditConversionEmitter(data.link);
+        let newDeepLink = await creditConversionEmitter(data.amount);
         LucraClient.emitCreditConversion(newDeepLink);
       }
     });

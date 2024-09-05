@@ -84,6 +84,14 @@ RCT_EXPORT_METHOD(emitDeepLink : (NSString *)deepLink) {
   [client emitDeepLink:deepLink];
 }
 
+RCT_EXPORT_METHOD(emitCreditConversion : (NSDictionary *)conversion) {
+    [client emitCreditConversion:conversion];
+}
+
+RCT_EXPORT_METHOD(registerConvertToCreditProvider) {
+    [client registerConvertToCreditProvider];
+}
+
 RCT_EXPORT_METHOD(logout
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 extension String {
 
@@ -21,6 +22,12 @@ extension String {
     guard data.count > 0 else { return nil }
 
     return data
+  }
+  var color: Color? {
+    guard let hexData = hexadecimal else { return nil }
+    return Color(
+      red: Double(hexData[0]) / 255.0, green: Double(hexData[1]) / 255.0,
+      blue: Double(hexData[2]) / 255.0, opacity: 1.0)
   }
 
 }
