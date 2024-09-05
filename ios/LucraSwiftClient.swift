@@ -586,4 +586,8 @@ public class LucraSwiftClient: NSObject {
       .contestCard(contestId: contestId!), parentUIViewController: UIViewController(),
       onSizeChanged: onSizeChanged)
   }
+    
+  @MainActor @objc public func handleVenmoUrl(url: URL) -> Bool {
+      return self.nativeClient.handlePaypalVenmoCallback(url: url)
+  }
 }

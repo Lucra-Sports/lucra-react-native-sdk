@@ -654,3 +654,20 @@ registerCreditConversionProvider(async (cashAmount: number) => {
   };
 });
 ```
+
+## Venmo iOS
+
+The Lucra iOS SDK offers Venmo as a payment option. This guide covers implementation steps.
+
+First you need to modify your `info.plist`. See the [iOS SDK instructions](https://docs.lucrasports.com/lucra-sdk/3v52KwIeTxQOM0ni1gLl/integration-documents/ios-sdk/module-integration/payments/venmo).
+
+You then need to modify your `AppDelegate.mm`:
+
+```obj-c
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+    // Handle the incoming URL
+    NSLog(@"Received URL: %@", url.absoluteString);
+
+    return [[LucraClient sharedInstance] handleVenmoUrl:url];
+}
+```
