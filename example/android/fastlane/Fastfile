@@ -1,0 +1,34 @@
+require 'json'
+
+firebase_app_id = '1:33355554746:android:1ca6c47009c467afdec783'
+default_platform(:android)
+
+def get_package_json_version
+  package_json_path = '../../package.json'
+  package_json = JSON.parse(File.read(package_json_path))
+  package_json['version']
+end
+
+platform :android do
+  desc 'Build and distribute Android app'
+  lane :deploy do
+    update_version_and_build
+    firebase_app_distribution(
+      app: firebase_app_id,
+      release_notes: '-',
+      service_credentials_file: ENV['FIREBASE_SERVICE_CREDENTIALS_FILE']
+    )
+  end
+
+  private_lane :update_version_and_build do
+    version_name = get_package_json_version
+    latest_release = firebase_app_distribution_get_latest_release(app: firebase_app_id,
+                                                                  service_credentials_file: ENV['FIREBASE_SERVICE_CREDENTIALS_FILE'])
+    next_release = latest_release[:buildVersion].to_i + 1
+    gradle(task: 'assemble', build_type: 'Release',
+           properties: {
+             'versionCode' => next_release,
+             'versionName' => version_name
+           })
+  end
+end
