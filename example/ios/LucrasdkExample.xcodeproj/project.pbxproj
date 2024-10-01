@@ -385,7 +385,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.lucrasports.mobile-rnsample-sandbox";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.lucrasports.mobile-rnsample";
 				PRODUCT_NAME = LucrasdkExample;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -438,7 +438,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.lucrasports.mobile-rnsample-sandbox";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.lucrasports.mobile-rnsample";
 				PRODUCT_NAME = LucrasdkExample;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
