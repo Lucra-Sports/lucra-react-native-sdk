@@ -71,7 +71,9 @@ jobs:
           FIREBASE_SERVICE_CREDENTIALS_FILE="${{ runner.temp }}/firebase-service-account.json"
           echo "FIREBASE_SERVICE_CREDENTIALS_FILE=$FIREBASE_SERVICE_CREDENTIALS_FILE" >> $GITHUB_ENV
           set +x # Disable logging secrets
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > "$FIREBASE_SERVICE_CREDENTIALS_FILE"
+          cat <<EOF > "$FIREBASE_SERVICE_CREDENTIALS_FILE"
+          ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          EOF
           set -x # Re-enable logging
 
       - name: Cache turborepo for Android
