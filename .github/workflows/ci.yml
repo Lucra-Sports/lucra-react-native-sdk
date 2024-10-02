@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - rodrigo/RNS-20
   pull_request:
     branches:
       - main
