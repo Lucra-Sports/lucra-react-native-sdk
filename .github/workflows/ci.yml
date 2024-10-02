@@ -53,7 +53,7 @@ jobs:
       TURBO_CACHE_DIR: .turbo/android
       GPR_USER: LucraReactNativeCi
       GPR_KEY: ${{ secrets.GPR_KEY }}
-      FIREBASE_SERVICE_CREDENTIALS_FILE: ${{ secrets.FIREBASE_SERVICE_CREDENTIALS_FILE }}
+      FIREBASE_SERVICE_CREDENTIALS_FILE: ${{ runner.temp }}/firebase-service-account.json
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -66,6 +66,11 @@ jobs:
         with:
           bundler-cache: true
           working-directory: example/android
+
+      - name: Set up Firebase authentication
+        run: |
+          set -e +x
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > "$FIREBASE_SERVICE_CREDENTIALS_FILE"
 
       - name: Cache turborepo for Android
         uses: actions/cache@v3
