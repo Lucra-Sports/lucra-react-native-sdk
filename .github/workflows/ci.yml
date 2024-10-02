@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - rodrigo/RNS-20
   pull_request:
     branches:
       - main
@@ -69,7 +68,8 @@ jobs:
 
       - name: Set up Firebase authentication
         run: |
-          echo "FIREBASE_SERVICE_CREDENTIALS_FILE=${{ runner.temp }}/firebase-service-account.json" >> $GITHUB_ENV
+          FIREBASE_SERVICE_CREDENTIALS_FILE="${{ runner.temp }}/firebase-service-account.json"
+          echo "FIREBASE_SERVICE_CREDENTIALS_FILE=$FIREBASE_SERVICE_CREDENTIALS_FILE" >> $GITHUB_ENV
           set +x # Disable logging secrets
           echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > "$FIREBASE_SERVICE_CREDENTIALS_FILE"
           set -x # Re-enable logging
@@ -121,6 +121,7 @@ jobs:
 
   build-ios:
     runs-on: macos-14
+    if: false # Testing android, avoid ios build
     env:
       TURBO_CACHE_DIR: .turbo/ios
     steps:
