@@ -53,12 +53,19 @@ jobs:
       TURBO_CACHE_DIR: .turbo/android
       GPR_USER: LucraReactNativeCi
       GPR_KEY: ${{ secrets.GPR_KEY }}
+      FIREBASE_SERVICE_CREDENTIALS_FILE: ${{ secrets.FIREBASE_SERVICE_CREDENTIALS_FILE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      - name: Set up Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          working-directory: example/android
 
       - name: Cache turborepo for Android
         uses: actions/cache@v3
@@ -103,7 +110,7 @@ jobs:
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: |
-          yarn turbo run build:android --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          yarn turbo run release:android --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
 
   build-ios:
     runs-on: macos-14
