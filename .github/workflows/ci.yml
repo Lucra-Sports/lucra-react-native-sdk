@@ -182,4 +182,4 @@ jobs:
 
       - name: Build example for iOS
         run: |
-          cd example/ios && bundle exec fastlane distribute
+          yarn turbo run release:ios --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
