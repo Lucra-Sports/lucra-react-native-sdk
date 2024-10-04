@@ -22,13 +22,19 @@ platform :android do
     latest_release = firebase_app_distribution_get_latest_release(app: firebase_app_id,
                                                                   service_credentials_file: firebase_service_credentials_file)
     next_release = latest_release[:buildVersion].to_i + 1
+    increment_version_code(
+      gradle_file_path: './app/build.gradle',
+      version_code: next_release
+    )
+    increment_version_name(
+      gradle_file_path: './app/build.gradle',
+      version_name: version_name
+    )
     gradle(task: 'assemble',
            build_type: 'Release',
            flags: '--no-daemon --console=plain',
            properties: {
-             'reactNativeArchitectures' => 'arm64-v8a',
-             'versionCode' => next_release,
-             'versionName' => version_name
+             'reactNativeArchitectures' => 'arm64-v8a'
            })
   end
 end
