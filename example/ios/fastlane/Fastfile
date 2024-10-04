@@ -36,12 +36,14 @@ platform :ios do
       current_build_number += 1
     end
     increment_build_number(build_number: current_build_number)
-    update_code_signing_settings(
-      use_automatic_signing: true
-    )
     gym(
       scheme: 'LucrasdkExample',
+      workspace: './LucrasdkExample.xcworkspace',
       configuration: 'Release',
+      export_method: 'app-store',
+      export_options: {
+        signing_style: 'automatic'
+      },
       xcargs: "CC=clang \
       CPLUSPLUS=clang++ \
       LD=clang \
