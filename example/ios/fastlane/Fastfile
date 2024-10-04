@@ -12,7 +12,9 @@ platform :ios do
   lane :distribute do
     authenticate
     update_version_and_build
-    pilot
+    pilot(
+      skip_waiting_for_build_processing: true
+    )
   end
 
   private_lane :authenticate do
