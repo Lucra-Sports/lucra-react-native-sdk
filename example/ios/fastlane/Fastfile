@@ -1,0 +1,47 @@
+require 'json'
+
+APP_STORE_CONNECT_API_KEY_ID = ENV['APP_STORE_CONNECT_API_KEY_ID']
+APP_STORE_CONNECT_API_KEY_ISSUER_ID = ENV['APP_STORE_CONNECT_API_KEY_ISSUER_ID']
+APP_STORE_CONNECT_API_KEY_CONTENT = ENV['APP_STORE_CONNECT_API_KEY_CONTENT']
+package_json_file = '../../package.json'
+
+default_platform(:ios)
+
+platform :ios do
+  desc 'Build and distribute to Testflight'
+  lane :distribute do
+    authenticate
+    update_version_and_build
+    pilot
+  end
+
+  private_lane :authenticate do
+    app_store_connect_api_key(
+      key_id: APP_STORE_CONNECT_API_KEY_ID,
+      issuer_id: APP_STORE_CONNECT_API_KEY_ISSUER_ID,
+      key_content: APP_STORE_CONNECT_API_KEY_CONTENT
+    )
+  end
+
+  private_lane :update_version_and_build do
+    package_json = JSON.parse(File.read(package_json_file))
+    app_version = package_json['version']
+    increment_version_number(
+      version_number: app_version
+    )
+    current_build_number = latest_testflight_build_number(version: app_version)
+    if current_build_number.nil?
+      current_build_number = 1
+    else
+      current_build_number += 1
+    end
+    increment_build_number(build_number: current_build_number)
+    automatic_code_signing(
+      use_automatic_signing: true
+    )
+    gym(
+      scheme: 'LucrasdkExample',
+      configuration: 'Release'
+    )
+  end
+end

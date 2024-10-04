@@ -17,7 +17,7 @@
       ],
       "outputs": []
     },
-    "build:ios": {
+    "release:ios": {
       "inputs": [
         "package.json",
         "*.podspec",
@@ -27,7 +27,8 @@
         "example/package.json",
         "example/ios",
         "!example/ios/build",
-        "!example/ios/Pods"
+        "!example/ios/Pods",
+        "!example/ios/fastlane/report.xml"
       ],
       "outputs": []
     }

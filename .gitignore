@@ -74,3 +74,4 @@ lib/
 # Fastlane
 #
 example/android/fastlane/report.xml
+example/ios/fastlane/report.xml

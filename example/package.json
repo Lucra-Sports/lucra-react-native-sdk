@@ -13,7 +13,8 @@
     "codegen": "./codegen.sh",
     "build:android": "react-native build-android --extra-params \"--no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a\"",
     "build:ios": "react-native build-ios --scheme LucrasdkExample --mode Debug --extra-params \"-sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO\"",
-    "release:android": "cd android && bundle exec fastlane distribute"
+    "release:android": "cd android && bundle exec fastlane distribute",
+    "release:ios": "cd ios && bundle exec fastlane distribute"
   },
   "dependencies": {
     "@react-navigation/native": "^6.0.8",
