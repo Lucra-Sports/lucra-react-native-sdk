@@ -49,7 +49,6 @@ jobs:
 
   build-android:
     runs-on: ubuntu-latest
-    if: false # Testing ios, avoid android build
     env:
       TURBO_CACHE_DIR: .turbo/android
       GPR_USER: LucraReactNativeCi
@@ -65,7 +64,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          working-directory: example/android
+          working-directory: example
 
       - name: Set up Firebase authentication
         run: |
@@ -169,7 +168,7 @@ jobs:
 
       - name: Set up Fastlane
         run: |
-          cd example/ios
+          cd example
           gem install bundler:2.4.7
           bundle install
 
