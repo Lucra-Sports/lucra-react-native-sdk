@@ -36,12 +36,21 @@ platform :ios do
       current_build_number += 1
     end
     increment_build_number(build_number: current_build_number)
-    automatic_code_signing(
+    update_code_signing_settings(
       use_automatic_signing: true
     )
     gym(
       scheme: 'LucrasdkExample',
-      configuration: 'Release'
+      configuration: 'Release',
+      xcargs: "CC=clang \
+      CPLUSPLUS=clang++ \
+      LD=clang \
+      LDPLUSPLUS=clang++ \
+      GCC_OPTIMIZATION_LEVEL=0 \
+      GCC_PRECOMPILE_PREFIX_HEADER=YES \
+      ASSETCATALOG_COMPILER_OPTIMIZATION=time \
+      DEBUG_INFORMATION_FORMAT=dwarf \
+      COMPILER_INDEX_STORE_ENABLE=NO"
     )
   end
 end
