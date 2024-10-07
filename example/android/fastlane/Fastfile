@@ -1,0 +1,40 @@
+require 'json'
+
+firebase_app_id = '1:33355554746:android:1ca6c47009c467afdec783'
+firebase_service_credentials_file = ENV['FIREBASE_SERVICE_CREDENTIALS_FILE']
+package_json_file = '../../package.json'
+default_platform(:android)
+
+platform :android do
+  desc 'Build and distribute Android app'
+  lane :distribute do
+    update_version_and_build
+    firebase_app_distribution(
+      app: firebase_app_id,
+      release_notes: '-',
+      service_credentials_file: firebase_service_credentials_file
+    )
+  end
+
+  private_lane :update_version_and_build do
+    package_json = JSON.parse(File.read(package_json_file))
+    version_name = package_json['version']
+    latest_release = firebase_app_distribution_get_latest_release(app: firebase_app_id,
+                                                                  service_credentials_file: firebase_service_credentials_file)
+    next_release = latest_release[:buildVersion].to_i + 1
+    increment_version_code(
+      gradle_file_path: './app/build.gradle',
+      version_code: next_release
+    )
+    increment_version_name(
+      gradle_file_path: './app/build.gradle',
+      version_name: version_name
+    )
+    gradle(task: 'assemble',
+           build_type: 'Release',
+           flags: '--no-daemon --console=plain',
+           properties: {
+             'reactNativeArchitectures' => 'arm64-v8a'
+           })
+  end
+end
