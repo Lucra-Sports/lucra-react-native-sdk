@@ -60,6 +60,22 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Set up Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          working-directory: example
+
+      - name: Set up Firebase authentication
+        run: |
+          FIREBASE_SERVICE_CREDENTIALS_FILE="${{ runner.temp }}/firebase-service-account.json"
+          echo "FIREBASE_SERVICE_CREDENTIALS_FILE=$FIREBASE_SERVICE_CREDENTIALS_FILE" >> $GITHUB_ENV
+          set +x # Disable logging secrets
+          cat <<EOF > "$FIREBASE_SERVICE_CREDENTIALS_FILE"
+          ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          EOF
+          set -x # Re-enable logging
+
       - name: Cache turborepo for Android
         uses: actions/cache@v3
         with:
@@ -70,8 +86,10 @@ jobs:
 
       - name: Check turborepo cache for Android
         run: |
-          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'build:android').cache.status")
-
+          # Run the turbo command and save the output to a temporary file
+          yarn turbo run release:android --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json > turbo_output.json
+          # Parse and extract the cache status
+          TURBO_CACHE_STATUS=$(node -p "require('./turbo_output.json').tasks.find(t => t.task === 'release:android').cache.status")
           if [[ $TURBO_CACHE_STATUS == "HIT" ]]; then
             echo "turbo_cache_hit=1" >> $GITHUB_ENV
           fi
@@ -103,12 +121,15 @@ jobs:
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: |
-          yarn turbo run build:android --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          yarn turbo run release:android --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
 
   build-ios:
-    runs-on: macos-14
+    runs-on: self-hosted
     env:
       TURBO_CACHE_DIR: .turbo/ios
+      APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
+      APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
+      APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -126,8 +147,10 @@ jobs:
 
       - name: Check turborepo cache for iOS
         run: |
-          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'build:ios').cache.status")
-
+          # Run the turbo command and save the output to a temporary file
+          yarn turbo run release:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json > turbo_output.json
+          # Parse and extract the cache status
+          TURBO_CACHE_STATUS=$(node -p "require('./turbo_output.json').tasks.find(t => t.task === 'release:ios').cache.status")
           if [[ $TURBO_CACHE_STATUS == "HIT" ]]; then
             echo "turbo_cache_hit=1" >> $GITHUB_ENV
           fi
@@ -143,13 +166,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cocoapods-
 
-      - name: Validate Podfile.lock consistency
+      - name: Set up Fastlane
         run: |
-          cd example/ios
-          if ! cmp -s Podfile.lock Pods/Manifest.lock; then
-            echo "Podfile.lock is out of sync, requiring pod install"
-            echo "pod_install_required=1" >> $GITHUB_ENV
-          fi
+          cd example
+          gem install bundler:2.4.7
+          bundle install
 
       - name: Install cocoapods
         if: env.turbo_cache_hit != 1 && (steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1')
@@ -161,4 +182,4 @@ jobs:
 
       - name: Build example for iOS
         run: |
-          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          yarn turbo run release:ios --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
