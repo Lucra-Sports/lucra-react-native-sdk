@@ -7,7 +7,7 @@
 		<string>com.venmo.touch.v2</string>
 		<string>venmo</string>
 	</array>
-	<key>CFBundleURLTypes</key>
+	<!-- <key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLSchemes</key>
@@ -17,9 +17,9 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>Venmro URL Scheme</string>
+			<string>Venmo URL Scheme</string>
 		</dict>
-	</array>
+	</array> -->
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
