@@ -624,3 +624,50 @@ Publishing the package can be automatically be done for you via GitHub action:
 - Modify the version on the root `package.json`
 - Go to the [Publish Workflow](https://github.com/Lucra-Sports/lucra-react-native-sdk/actions/workflows/publish.yml) and trigger a run via the `Run Workflow` button on the top right corner.
 - It will automagically transpile and publish a version to the GitHub package registry and then create a tag and commit it to the repo for you.
+
+## Credit conversion provider
+
+To allow users to withdraw money in credits relevant to your internal system, you must register a `creditConversionProvider`. The Convert to Credit feature allows end users to convert dollars they've deposited or won playing contests into credit they can use within your ecosystem. The conversion process can be configured with a multiplier to incentivize opting for this conversion over other withdrawal methods.
+
+```ts
+import { registerCreditConversionProvider } from '@lucra-sports/lucra-react-native-sdk';
+
+registerCreditConversionProvider(async (cashAmount: number) => {
+  let convertedAmount = cashAmount * 3;
+  return {
+    id: 'unique-id',
+    type: 'game-credits',
+    title: 'Game Credits',
+    convertedAmount,
+    iconUrl: 'https://my-image.com/image.png', // optional
+    convertedAmountDisplay: `${convertedAmount} credits`,
+    shortDescription: 'This is a short description for the end user.',
+    longDescription:
+      'This is a longer, more descriptive version of a message you want the end user to see about.',
+    metaData: {
+      foo: 'bar',
+    },
+    cardColor: '#5A1668',
+    cardTextColor: '#FFFFFF',
+    pillColor: '#5A1668',
+    pillTextColor: '#FFFFFF',
+  };
+});
+```
+
+## Venmo iOS
+
+The Lucra iOS SDK offers Venmo as a payment option. This guide covers implementation steps.
+
+First you need to modify your `info.plist`. See the [iOS SDK instructions](https://docs.lucrasports.com/lucra-sdk/3v52KwIeTxQOM0ni1gLl/integration-documents/ios-sdk/module-integration/payments/venmo).
+
+You then need to modify your `AppDelegate.mm`:
+
+```obj-c
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+    // Handle the incoming URL
+    NSLog(@"Received URL: %@", url.absoluteString);
+
+    return [[LucraClient sharedInstance] handleVenmoUrl:url];
+}
+```

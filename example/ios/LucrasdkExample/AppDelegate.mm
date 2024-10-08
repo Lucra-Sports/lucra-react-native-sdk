@@ -1,5 +1,5 @@
 #import "AppDelegate.h"
-
+#import "LucraClient.h"
 #import <React/RCTBundleURLProvider.h>
 
 @implementation AppDelegate
@@ -13,6 +13,13 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(nonnull NSData *)deviceToken {
   
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+    // Handle the incoming URL
+    NSLog(@"Received URL: %@", url.absoluteString);
+    
+    return [[LucraClient sharedInstance] handleVenmoUrl:url];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

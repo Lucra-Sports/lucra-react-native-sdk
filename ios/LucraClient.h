@@ -14,4 +14,11 @@
 
 @property(nonatomic, assign) BOOL setBridgeOnMainQueue;
 
+// Method to access the stored instance
++ (instancetype)sharedInstance;
+
+// Method to set the stored instance (optional, if you need to assign the instance manually)
++ (void)setSharedInstance:(LucraClient *)instance;
+
+- (bool)handleVenmoUrl:(NSURL*) url;
 @end
