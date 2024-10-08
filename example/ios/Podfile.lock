@@ -1,7 +1,7 @@
 PODS:
-  - Auth0 (2.8.0):
-    - JWTDecode (~> 3.1)
-    - SimpleKeychain (~> 1.1)
+  - Auth0 (2.9.0):
+    - JWTDecode (= 3.2.0)
+    - SimpleKeychain (= 1.2.0)
   - boost (1.83.0)
   - BVLinearGradient (2.8.2):
     - React-Core
@@ -19,12 +19,12 @@ PODS:
   - hermes-engine (0.73.5):
     - hermes-engine/Pre-built (= 0.73.5)
   - hermes-engine/Pre-built (0.73.5)
-  - JWTDecode (3.1.0)
+  - JWTDecode (3.2.0)
   - libevent (2.1.12)
   - lucra-react-native-sdk (1.5.3):
-    - LucraSDK (= 1.8.2)
+    - LucraSDK (= 1.8.5)
     - React-Core
-  - LucraSDK (1.8.2):
+  - LucraSDK (1.8.5):
     - Auth0
     - Resolver
     - ZendeskSupportSDK
@@ -1080,22 +1080,22 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - SimpleKeychain (1.1.0)
+  - SimpleKeychain (1.2.0)
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
-  - ZendeskCommonUISDK (9.0.1)
-  - ZendeskCoreSDK (5.0.3)
-  - ZendeskMessagingAPISDK (6.0.0):
-    - ZendeskSDKConfigurationsSDK (~> 4.0.0)
-  - ZendeskMessagingSDK (6.0.1):
-    - ZendeskCommonUISDK (~> 9.0.1)
-    - ZendeskMessagingAPISDK (~> 6.0.0)
-  - ZendeskSDKConfigurationsSDK (4.0.0)
-  - ZendeskSupportProvidersSDK (8.0.3):
-    - ZendeskCoreSDK (~> 5.0.3)
-  - ZendeskSupportSDK (8.0.3):
-    - ZendeskMessagingSDK (~> 6.0.1)
-    - ZendeskSupportProvidersSDK (~> 8.0.3)
+  - ZendeskCommonUISDK (9.0.3)
+  - ZendeskCoreSDK (5.0.5)
+  - ZendeskMessagingAPISDK (6.0.2):
+    - ZendeskSDKConfigurationsSDK (~> 4.0.1)
+  - ZendeskMessagingSDK (6.0.3):
+    - ZendeskCommonUISDK (~> 9.0.3)
+    - ZendeskMessagingAPISDK (~> 6.0.2)
+  - ZendeskSDKConfigurationsSDK (4.0.1)
+  - ZendeskSupportProvidersSDK (9.0.0):
+    - ZendeskCoreSDK (~> 5.0.5)
+  - ZendeskSupportSDK (9.0.0):
+    - ZendeskMessagingSDK (~> 6.0.3)
+    - ZendeskSupportProvidersSDK (~> 9.0.0)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1286,7 +1286,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Auth0: 7e37a200dfba2adbd7be5590c2653c7218d48169
+  Auth0: 6b2e6b418e7ee787442739d4f9ea58ce755e23d9
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   BVLinearGradient: 916632041121a658c704df89d99f04acb038de0f
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
@@ -1295,10 +1295,10 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
-  JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
+  JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lucra-react-native-sdk: 1ccbcd697c73920be18743ef1d30d27f499564ed
-  LucraSDK: 973d7682597106eeb1b509b65ce3b61c96b2f441
+  lucra-react-native-sdk: 8c75ab01f06bf80a90d74603f43adc6c9ab3c0a7
+  LucraSDK: b52df3d3ce0b04860665bf8065738f283be9154a
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 2544c0f1081a5fa12e108bb8cb40e5f4581ccd87
   RCTTypeSafety: 50efabe2b115c11ed03fbf3fd79e2f163ddb5d7c
@@ -1345,16 +1345,16 @@ SPEC CHECKSUMS:
   RNPermissions: 294531ede5a64d1528463e88fffef05675842042
   RNScreens: 136d868cc4a78b41042a1a5f1cb42b99a47033f5
   RNVectorIcons: 81e919c3a9e56e4916f9e74cfe9cd2e489146f08
-  SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
+  SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
-  ZendeskCommonUISDK: 720e6e34eff34ddae5feb1935f788a0893eaf672
-  ZendeskCoreSDK: 04db322c3e087d21984ff80118a890305fab2533
-  ZendeskMessagingAPISDK: 9ce539eebcaa014fe6acc44da31262a2c52891c1
-  ZendeskMessagingSDK: d0f65229188cb4936a56be6707992a2511b5175b
-  ZendeskSDKConfigurationsSDK: 79c444da987390456ec05657ffa2f5ca0eb54aef
-  ZendeskSupportProvidersSDK: 2fbd2a9597af5d69760088bfb5e0e595e942f218
-  ZendeskSupportSDK: 22156384d20d30b0aeb263c03f49bef44e1364b2
+  ZendeskCommonUISDK: f3ce3e7a1bd7762550a78dbaff57509f3112c22b
+  ZendeskCoreSDK: c542b3f82abc3ee52e1291c6fb3436515e098806
+  ZendeskMessagingAPISDK: 5b3a9d16f2f4d8b3c07b4ca0451a7cf9bfd8107d
+  ZendeskMessagingSDK: 3915f0647246f079dd20bf2fd85084f495598fde
+  ZendeskSDKConfigurationsSDK: d0b28eeb9c3d88191cfd2c7f246b2522c8c357f4
+  ZendeskSupportProvidersSDK: 281acf2bb731d2a67f913cfe653ed0da9f5b2f42
+  ZendeskSupportSDK: b512cfc74b6bf8490e589f02cf52e27ed4f2bebe
 
 PODFILE CHECKSUM: fe6a3680fd6413b213049c70cc33cc7a320bccee
 

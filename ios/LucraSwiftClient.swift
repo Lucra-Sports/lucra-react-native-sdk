@@ -39,36 +39,41 @@ public class LucraSwiftClient: NSObject {
       let longDescription = jsMap["longDescription"] as! String
 
       let cardColorString = jsMap["cardColor"] as! String
+        let cardColorTextString = jsMap["cardColorText"] as! String
       let pillColorString = jsMap["pillColor"] as! String
-      let outlineColorString = jsMap["outlineColor"] as! String
-      let glowColorString = jsMap["glowColor"] as! String
-      let textColorString = jsMap["textColor"] as! String
+        let pillTextColorString = jsMap["pillColorText"] as! String
+//      let outlineColorString = jsMap["outlineColor"] as! String
+//      let glowColorString = jsMap["glowColor"] as! String
+//      let textColorString = jsMap["textColor"] as! String
 
       let theme = CreditWithdrawal.Theme(
-        cardColor: cardColorString.color!, pillColor: pillColorString.color!,
-        outlineColor: outlineColorString.color!, glowColor: glowColorString.color!,
-        textColor: textColorString.color!)
+        cardColor: cardColorString.color!, cardTextColor: cardColorTextString.color!, pillColor: pillColorString.color!, pillTextColor: pillTextColorString.color!
+//        outlineColor: outlineColorString.color!, glowColor: glowColorString.color!,
+//        textColor: textColorString.color!
+      )
 
       let metadata = jsMap["metaData"]
-
-      let metadataJSON = try? JSONSerialization.data(withJSONObject: metadata!, options: [])
-      let metadataString = String(data: metadataJSON ?? Data(), encoding: .utf8)
+//
+//      let metadataJSON = try? JSONSerialization.data(withJSONObject: metadata!, options: [])
+//      let metadataString = String(data: metadataJSON ?? Data(), encoding: .utf8)
 
       let result = CreditWithdrawal(
         id: id,
         title: title,
-        icon: icon,
+        iconUrl: icon,
         theme: theme,
         conversionTerms: conversionTerms,
         convertedAmount: Decimal(convertedAmount),
         convertedDisplayAmount: convertedDisplayAmount,
         shortDescription: shortDescription,
         longDescription: longDescription,
-        metadata: metadataString!)
+//        TODO: Test this, in theory metadata is a [String:Any] map
+        metaData: metadata as? [String: String])
 
       return result
     }
   }
+    
   @objc weak public var delegate: LucraClientDelegate? = nil
   private var nativeClient: LucraSDK.LucraClient!
   private var userCallback: RCTResponseSenderBlock?
