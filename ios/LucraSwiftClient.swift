@@ -31,7 +31,7 @@ public class LucraSwiftClient: NSObject {
 
       let id = jsMap["id"] as! String
       let title = jsMap["title"] as! String
-      let icon = jsMap["iconUrl"] as? String ?? ""
+      let icon = jsMap["iconUrl"] as? String
       let conversionTerms = jsMap["conversionTerms"] as! String
       let convertedAmount = jsMap["convertedAmount"] as! Double
       let convertedDisplayAmount = jsMap["convertedAmountDisplay"] as! String
