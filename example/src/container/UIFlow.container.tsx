@@ -50,9 +50,9 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
+          onPress={() => LucraSDK.present(LucraSDK.FLOW.VERIFY_IDENTITY)}
         >
-          <Text className="font-bold text-white">Profile</Text>
+          <Text className="font-bold text-white">Verify Identity</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -71,9 +71,23 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.VERIFY_IDENTITY)}
+          onPress={() => LucraSDK.present(LucraSDK.FLOW.CREATE_GAMES_MATCHUP)}
         >
-          <Text className="font-bold text-white">Verify Identity</Text>
+          <Text className="font-bold text-white">Create Games Matchup</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          onPress={() => LucraSDK.present(LucraSDK.FLOW.CREATE_SPORTS_MATCHUP)}
+        >
+          <Text className="font-bold text-white">Create Sports Matchup</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
+        >
+          <Text className="font-bold text-white">Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -85,16 +99,9 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.CREATE_GAMES_MATCHUP)}
+          onPress={() => LucraSDK.present(LucraSDK.FLOW.MY_MATCHUP)}
         >
-          <Text className="font-bold text-white">Create Games Matchup</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.CREATE_SPORTS_MATCHUP)}
-        >
-          <Text className="font-bold text-white">Create Sports Matchup</Text>
+          <Text className="font-bold text-white">My Matchups</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

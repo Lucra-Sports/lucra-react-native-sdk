@@ -6,6 +6,7 @@ import { default as LucraCreateContestButtonNative } from './LucraCreateContestB
 import {
   StyleSheet,
   type ViewProps,
+  type NativeEventSubscription,
   View,
   NativeEventEmitter,
 } from 'react-native';
@@ -162,7 +163,8 @@ type LucraConvertCreditResponse = {
   pillColor: string;
   pillTextColor: string;
 };
-
+let deepLinkSubscription: NativeEventSubscription;
+let creditConversionSubscription: NativeEventSubscription;
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
 let creditConversionEmitter:
   | ((cashAmount: number) => Promise<LucraConvertCreditResponse>)
@@ -195,19 +197,26 @@ export const LucraSDK = {
   },
   init: async (options: LucraSDKParams): Promise<void> => {
     await LucraClient.initialize(options);
-    eventEmitter.addListener('_deepLink', async (data) => {
-      if (deepLinkEmitter) {
-        let newDeepLink = await deepLinkEmitter(data.link);
-        LucraClient.emitDeepLink(newDeepLink);
+    deepLinkSubscription?.remove();
+    deepLinkSubscription = eventEmitter.addListener(
+      '_deepLink',
+      async (data) => {
+        if (deepLinkEmitter) {
+          let newDeepLink = await deepLinkEmitter(data.link);
+          LucraClient.emitDeepLink(newDeepLink);
+        }
       }
-    });
-
-    eventEmitter.addListener('_creditConversion', async (data) => {
-      if (creditConversionEmitter) {
-        let newDeepLink = await creditConversionEmitter(data.amount);
-        LucraClient.emitCreditConversion(newDeepLink);
+    );
+    creditConversionSubscription?.remove();
+    creditConversionSubscription = eventEmitter.addListener(
+      '_creditConversion',
+      async (data) => {
+        if (creditConversionEmitter) {
+          let newDeepLink = await creditConversionEmitter(data.amount);
+          LucraClient.emitCreditConversion(newDeepLink);
+        }
       }
-    });
+    );
   },
   addContestListener: (listener: LucraContestListener) => {
     const gamesContestCreatedEmitter = eventEmitter.addListener(
