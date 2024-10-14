@@ -79,7 +79,6 @@ public class LucraSwiftClient: NSObject {
   private var userCallback: RCTResponseSenderBlock?
   private var userSinkCancellable: AnyCancellable?
   private var eventSinkCancellable: AnyCancellable?
-  private var deepLinkCancellable: AnyCancellable?
   private let deepLinkEmitter = PassthroughSubject<String, Never>()
   private let creditConversionEmitter = PassthroughSubject<[String: Any], Never>()
 
@@ -95,17 +94,8 @@ public class LucraSwiftClient: NSObject {
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
-      
-    if nativeClient != nil {
-      eventSinkCancellable?.cancel()
-      eventSinkCancellable = nil
-      userSinkCancellable?.cancel()
-      userSinkCancellable = nil
-      deepLinkCancellable?.cancel()
-      deepLinkCancellable = nil
-      nativeClient = nil
-    }
-      
+    guard nativeClient == nil else { return }
+
     guard let apiURL = options["apiURL"] as? String
     else {
       rejecter(
@@ -237,12 +227,14 @@ public class LucraSwiftClient: NSObject {
     }
 
     nativeClient.registerDeeplinkProvider { lucraDeepLink in
+      var cancellable: AnyCancellable?
       let deeplink = await withCheckedContinuation { [weak self] continuation in
         guard let self else { return }
-          self.deepLinkCancellable = deepLinkEmitter.sink { value in
+
+        cancellable = deepLinkEmitter.sink { value in
           continuation.resume(returning: value)
-          self.deepLinkCancellable?.cancel()
-          self.deepLinkCancellable = nil
+          cancellable?.cancel()
+          cancellable = nil
         }
         self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
 

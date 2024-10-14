@@ -8,8 +8,6 @@ import {
   Text,
   TouchableOpacity,
   Button,
-  BackHandler,
-  Platform,
   Alert,
 } from 'react-native';
 import { Assets } from '../Assets';
@@ -86,9 +84,6 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           <Button
             title="Restart required"
             onPress={() => {
-              if (Platform.OS === 'android') {
-                return BackHandler.exitApp();
-              }
               Alert.alert(
                 'Restart required',
                 'Close and re open the app for config changes to take place'
