@@ -17,6 +17,7 @@
     "release:ios": "cd ios && bundle exec fastlane distribute"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.9.13",
     "nativewind": "^2.0.11",

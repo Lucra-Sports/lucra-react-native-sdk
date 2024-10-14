@@ -68,7 +68,7 @@ export type LucraUserConfig = {
   lastName?: string;
   address?: {
     address?: string;
-    adressCont?: string;
+    addressCont?: string;
     city?: string;
     state?: string;
     zip?: string;

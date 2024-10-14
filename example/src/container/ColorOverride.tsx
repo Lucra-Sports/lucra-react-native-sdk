@@ -1,8 +1,6 @@
 import React, { useState, type FC } from 'react';
 import ColorPicker, {
   Panel5,
-  Swatches,
-  Preview,
   OpacitySlider,
   HueSlider,
 } from 'reanimated-color-picker';
@@ -17,7 +15,6 @@ import {
 
 import { DEFAULT, CHAOS, T1, DUPR, PSF } from '../theme';
 import { useAppContext } from '../AppContext';
-import { NavigationContainer } from '@react-navigation/native';
 
 type ColorOptionProps = {
   name: string;
@@ -79,38 +76,46 @@ const ColorOption: FC<ColorOptionProps> = ({ name, value, onUpdate }) => {
 };
 
 export function ColorOverride() {
-  const { theme, setThemeValue, setTheme } = useAppContext();
+  const {
+    state: { theme },
+    ready,
+    setThemeValue,
+    dispatch,
+  } = useAppContext();
+  if (!ready) {
+    return null;
+  }
   return (
     <View>
       <View className="flex-row justify-between mt-4 mb-4">
         <ThemePill
           title="DEFAULT"
           onPress={() => {
-            setTheme(DEFAULT);
+            dispatch({ type: 'SET_THEME', theme: DEFAULT });
           }}
         />
         <ThemePill
           title="CHAOS"
           onPress={() => {
-            setTheme(CHAOS);
+            dispatch({ type: 'SET_THEME', theme: CHAOS });
           }}
         />
         <ThemePill
           title="T1"
           onPress={() => {
-            setTheme(T1);
+            dispatch({ type: 'SET_THEME', theme: T1 });
           }}
         />
         <ThemePill
           title="DUPR"
           onPress={() => {
-            setTheme(DUPR);
+            dispatch({ type: 'SET_THEME', theme: DUPR });
           }}
         />
         <ThemePill
           title="PSF"
           onPress={() => {
-            setTheme(PSF);
+            dispatch({ type: 'SET_THEME', theme: PSF });
           }}
         />
       </View>

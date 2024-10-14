@@ -1,5 +1,4 @@
 import React from 'react';
-import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   View,
@@ -8,14 +7,21 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  Button,
+  BackHandler,
+  Platform,
+  Alert,
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
+import { ClientOverride } from './ClientOverride';
 import { ColorOverride } from './ColorOverride';
+import { useAppContext } from '../AppContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
 export const MainContainer: React.FC<Props> = ({ navigation }) => {
+  const { state } = useAppContext();
   return (
     <SafeAreaView className="flex-1">
       <ScrollView className="flex-1 p-4">
@@ -46,7 +52,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View className="mt-4">
-          <Text>Configuration</Text>
+          <Text>CONFIGURATION</Text>
           <TouchableOpacity
             className="mt-2 bg-darkPurple p-4 border-t rounded-t-xl border-lightPurple"
             onPress={() => {
@@ -56,7 +62,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white">API Calls Example</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="mt-2 bg-darkPurple p-4 border-t rounded-t-xl border-lightPurple"
+            className="bg-darkPurple p-4 border-t border-lightPurple"
             onPress={() => {
               navigation.navigate('ConfigureUser');
             }}
@@ -66,10 +72,31 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <View className="mt-4">
+          <Text>CLIENT OVERRIDES</Text>
+          <ClientOverride />
+        </View>
+
+        <View className="mt-4">
           <Text>COLOR OVERRIDES</Text>
           <ColorOverride />
         </View>
       </ScrollView>
+      <View>
+        {state.dirty && (
+          <Button
+            title="Restart required"
+            onPress={() => {
+              if (Platform.OS === 'android') {
+                return BackHandler.exitApp();
+              }
+              Alert.alert(
+                'Restart required',
+                'Close and re open the app for config changes to take place'
+              );
+            }}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 };

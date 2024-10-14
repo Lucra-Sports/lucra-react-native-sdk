@@ -1,4 +1,4 @@
-import { useEffect, type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { Platform } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
@@ -10,14 +10,19 @@ type LucraSDKInitProps = {
 };
 
 const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
-  const { theme } = useAppContext();
+  const { state, ready } = useAppContext();
+  const [initialized, setInitialized] = useState(false);
   useEffect(() => {
+    if (initialized || !ready) {
+      return;
+    }
+    setInitialized(true);
     LucraSDK.init({
-      apiURL: 'api-sample.sandbox.lucrasports.com',
-      apiKey: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
-      environment: LucraSDK.ENVIRONMENT.SANDBOX,
+      apiURL: state.apiURL,
+      apiKey: state.apiKey,
+      environment: state.environment,
       theme: {
-        ...theme,
+        ...state.theme,
         fontFamily:
           Platform.OS === 'ios'
             ? 'Inter'
@@ -48,10 +53,10 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
             console.log('Sports contest accepted:', contestId);
           },
         });
-        console.log('finished');
         onStateChange(true);
       })
       .catch((error) => {
+        setInitialized(false);
         console.error('Error initializing LucraSDK', error);
       });
 
@@ -64,7 +69,7 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
           console.log('Permission error:', error);
         });
     }
-  }, [theme, onStateChange]);
+  }, [state, ready, initialized, onStateChange]);
   return null;
 };
 

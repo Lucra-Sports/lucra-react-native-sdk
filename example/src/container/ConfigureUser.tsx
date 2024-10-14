@@ -13,6 +13,22 @@ import {
   type LucraUserConfig,
 } from '@lucra-sports/lucra-react-native-sdk';
 
+type InputProps = {
+  placeholder: string;
+  value: string;
+  onChangeText: (val: string) => void;
+};
+const Input = ({ placeholder, value, onChangeText }: InputProps) => {
+  return (
+    <TextInput
+      className="text-white border border-gray-300 p-2 mt-2 mb-2"
+      placeholder={placeholder}
+      value={value}
+      onChangeText={onChangeText}
+    />
+  );
+};
+
 type FormState = {
   username?: string | null;
   avatarURL?: string | null;
@@ -69,13 +85,12 @@ function getLucraUserConfig(state: FormState): LucraUserConfig {
   if (Object.values(state.address).some(Boolean)) {
     lucraUserConfig.address = {
       address: state.address.address ?? undefined,
-      adressCont: state.address.addressCont ?? undefined,
+      addressCont: state.address.addressCont ?? undefined,
       city: state.address.city ?? undefined,
       state: state.address.state ?? undefined,
       zip: state.address.zip ?? undefined,
     };
   }
-  console.log('saving', lucraUserConfig);
   return lucraUserConfig;
 }
 
@@ -155,7 +170,7 @@ const ConfigureUser: React.FC = () => {
       setLoading(true);
       setMessage('Saving user config');
       await LucraSDK.configureUser(getLucraUserConfig(state));
-      setMessage('');
+      setMessage('User Updated Successfully!');
     } catch (error) {
       console.error(error);
     } finally {
@@ -166,73 +181,82 @@ const ConfigureUser: React.FC = () => {
   if (!loggedIn) {
     return (
       <View>
-        <TextInput>Not logged in</TextInput>
+        <Text>Not logged in</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView className="p-10">
-      {message ? <TextInput>{message}</TextInput> : null}
-      <TextInput
+    <ScrollView className="p-10 bg-black">
+      {message ? (
+        <View className="bg-sky-700 p-2 items-center">
+          <Text className="text-white">{message}</Text>
+        </View>
+      ) : null}
+      <View className="items-center">
+        <Text className="text-white text-center">
+          Values will be passed in to the SDK configure(user:) function
+        </Text>
+      </View>
+      <Input
         placeholder="Username"
         value={state.username ?? ''}
         onChangeText={(value) => handleChange('username', value)}
       />
-      <TextInput
+      <Input
         placeholder="Avatar URL"
         value={state.avatarURL ?? ''}
         onChangeText={(value) => handleChange('avatarURL', value)}
       />
-      <TextInput
+      <Input
         placeholder="Phone"
         value={state.phoneNumber ?? ''}
         onChangeText={(value) => handleChange('phoneNumber', value)}
       />
-      <TextInput
+      <Input
         placeholder="Email"
         value={state.email ?? ''}
         onChangeText={(value) => handleChange('email', value)}
       />
-      <TextInput
+      <Input
         placeholder="First Name"
         value={state.firstName ?? ''}
         onChangeText={(value) => handleChange('firstName', value)}
       />
-      <TextInput
+      <Input
         placeholder="Last Name"
         value={state.lastName ?? ''}
         onChangeText={(value) => handleChange('lastName', value)}
       />
-      <TextInput
+      <Input
         placeholder="Address"
         value={state.address?.address ?? ''}
         onChangeText={(value) => handleAddressChange('address', value)}
       />
-      <TextInput
+      <Input
         placeholder="Address Continued"
         value={state.address?.addressCont ?? ''}
         onChangeText={(value) => handleAddressChange('addressCont', value)}
       />
-      <TextInput
+      <Input
         placeholder="City"
         value={state.address?.city ?? ''}
         onChangeText={(value) => handleAddressChange('city', value)}
       />
-      <TextInput
+      <Input
         placeholder="State"
         value={state.address?.state ?? ''}
         onChangeText={(value) => handleAddressChange('state', value)}
       />
-      <TextInput
+      <Input
         placeholder="Zip"
-        value={state.address?.state ?? ''}
+        value={state.address?.zip ?? ''}
         onChangeText={(value) => handleAddressChange('zip', value)}
       />
       <View className="flex-row">
-        <Text>Date of birth:</Text>
+        <Text className="text-white">Date of birth:</Text>
         <TouchableOpacity onPress={() => setOpen(true)}>
-          <Text>
+          <Text className="text-white">
             {state.dateOfBirth
               ? `${state.dateOfBirth.toLocaleDateString()}`
               : 'Set date of birth'}
