@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -10,11 +10,26 @@ import {
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import {
+  LucraProfilePill,
+  LucraSDK,
+} from '@lucra-sports/lucra-react-native-sdk';
+import { useFocusEffect } from '@react-navigation/native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UIFlow'>;
 
 export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
+  const [profilePillKey, setProfilePillKey] = useState(
+    Math.random().toString()
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const keyPill = Math.random().toString();
+      setProfilePillKey(keyPill);
+    }, [])
+  );
+
   return (
     <SafeAreaView className="flex-1">
       <View className="pt-4 px-4 flex-1 g-2 bg-transparent">
@@ -32,13 +47,7 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
             />
           </TouchableOpacity>
           <View style={Styles.spacer} />
-          <TouchableOpacity
-            className="rounded-full bg-darkPurple px-4 h-8 flex-row items-center justify-center g-2"
-            onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
-          >
-            <Image source={Assets.BoltIcon} className="h-4 w-4" />
-            <Text style={Styles.fundText}>0,00$</Text>
-          </TouchableOpacity>
+          <LucraProfilePill key={profilePillKey} />
         </View>
 
         <TouchableOpacity

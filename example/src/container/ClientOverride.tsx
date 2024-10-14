@@ -2,10 +2,12 @@ import React, { type FC } from 'react';
 import { Switch, Text, TextInput, View } from 'react-native';
 
 import { useAppContext } from '../AppContext';
+import { defaultAppConfig } from '../AppConfig';
 
 type ClientOptionProps = {
   name: string;
   value: string;
+  placeholder?: string;
   readonly?: boolean;
   onChange: (value: string) => void;
 };
@@ -13,6 +15,7 @@ type ClientOptionProps = {
 const ClientOption: FC<ClientOptionProps> = ({
   name,
   value,
+  placeholder,
   readonly,
   onChange,
 }) => {
@@ -21,6 +24,7 @@ const ClientOption: FC<ClientOptionProps> = ({
       <Text className="text-white">{name}</Text>
       <TextInput
         readOnly={readonly}
+        placeholder={placeholder}
         onChangeText={onChange}
         className="text-white"
       >
@@ -39,14 +43,15 @@ export function ClientOverride() {
     <View className="flex-1 mt-4 mb-4">
       <ClientOption
         name="Environment"
+        placeholder={defaultAppConfig.environment}
         value={state.environment}
-        readonly
         onChange={(value: string) =>
           dispatch({ type: 'SET_FIELD', field: 'environment', value })
         }
       />
       <ClientOption
         name="API URL"
+        placeholder={defaultAppConfig.apiURL}
         value={state.apiURL}
         onChange={(value: string) =>
           dispatch({ type: 'SET_FIELD', field: 'apiURL', value })
@@ -54,6 +59,7 @@ export function ClientOverride() {
       />
       <ClientOption
         name="API Key"
+        placeholder={defaultAppConfig.apiKey}
         value={state.apiKey}
         onChange={(value: string) =>
           dispatch({ type: 'SET_FIELD', field: 'apiKey', value })
@@ -61,6 +67,7 @@ export function ClientOverride() {
       />
       <ClientOption
         name="URL Schema"
+        placeholder={defaultAppConfig.urlScheme}
         value={state.urlScheme}
         readonly
         onChange={(value: string) =>
@@ -68,7 +75,8 @@ export function ClientOverride() {
         }
       />
       <ClientOption
-        name="Merchan ID"
+        name="Merchant ID"
+        placeholder={defaultAppConfig.merchantId}
         value={state.merchantId}
         readonly
         onChange={(value: string) =>

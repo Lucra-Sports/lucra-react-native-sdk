@@ -4,6 +4,7 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 import { useAppContext } from './AppContext';
+import { defaultAppConfig } from './AppConfig';
 
 type LucraSDKInitProps = {
   onStateChange: (ready: boolean) => void;
@@ -18,9 +19,9 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
     }
     setInitialized(true);
     LucraSDK.init({
-      apiURL: state.apiURL,
-      apiKey: state.apiKey,
-      environment: state.environment,
+      apiURL: state.apiURL || defaultAppConfig.apiURL,
+      apiKey: state.apiKey || defaultAppConfig.apiKey,
+      environment: state.environment || defaultAppConfig.environment,
       theme: {
         ...state.theme,
         fontFamily:
