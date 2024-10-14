@@ -14,10 +14,8 @@ import type { RootStackParamList } from '../Routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import {
-  LucraFlowView,
   LucraMiniPublicFeed,
   LucraProfilePill,
-  LucraSDK,
   LucraCreateContestButton,
   LucraRecommendedMatchup,
   LucraContestCard,
@@ -32,18 +30,13 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
     Math.random().toString()
   );
   const [miniFeedKey, setMiniFeedKey] = useState(Math.random().toString());
-  const [embeddedViewKey, setEmbeddedViewKey] = useState(
-    Math.random().toString()
-  );
 
   useFocusEffect(
     useCallback(() => {
       const keyPill = Math.random().toString();
       const keyFeed = Math.random().toString();
-      const embeddedKey = Math.random().toString();
       setProfilePillKey(keyPill);
       setMiniFeedKey(keyFeed);
-      setEmbeddedViewKey(embeddedKey);
     }, [])
   );
 
@@ -94,13 +87,6 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
               />
             </ScrollView>
           </View>
-
-          <Text className="text-white mt-2"> Embedded Flow</Text>
-          <LucraFlowView
-            key={embeddedViewKey}
-            flow={LucraSDK.FLOW.PROFILE}
-            className="h-96"
-          />
         </View>
       </ScrollView>
     </SafeAreaView>

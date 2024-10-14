@@ -6,12 +6,14 @@ import { UIFlowContainer } from './container/UIFlow.container';
 import { UIComponentContainer } from './container/UIComponent.container';
 import { ApiContainer } from './container/Api.container';
 import ConfigureUser from './container/ConfigureUser';
+import { UIEmbeddedPublicFeed } from './container/UIEmbeddedPublicFeed';
 
 export type RootStackParamList = {
   Main: undefined;
   UIFlow: undefined;
   APIFlow: undefined;
   UIComponent: undefined;
+  UIEmbeddedPublicFeed: undefined;
   ConfigureUser: undefined;
 };
 
@@ -43,6 +45,13 @@ export const Routes: FC = () => {
       <Stack.Screen
         name="UIComponent"
         component={UIComponentContainer}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="UIEmbeddedPublicFeed"
+        component={UIEmbeddedPublicFeed}
         options={{
           headerShown: false,
         }}

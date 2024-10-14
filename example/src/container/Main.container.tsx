@@ -38,7 +38,15 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
               navigation.navigate('UIFlow');
             }}
           >
-            <Text className="text-white">UI Flow Example</Text>
+            <Text className="text-white">Sheet Flows</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-darkPurple p-4 border-t border-lightPurple "
+            onPress={() => {
+              navigation.navigate('UIEmbeddedPublicFeed');
+            }}
+          >
+            <Text className="text-white">Embedded Public Feed</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-darkPurple p-4 border-t border-lightPurple rounded-b-xl"
@@ -46,7 +54,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
               navigation.navigate('UIComponent');
             }}
           >
-            <Text className="text-white">UI Components Example</Text>
+            <Text className="text-white">Components</Text>
           </TouchableOpacity>
         </View>
         <View className="mt-4">
