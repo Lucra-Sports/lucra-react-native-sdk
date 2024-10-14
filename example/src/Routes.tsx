@@ -5,12 +5,14 @@ import { MainContainer } from './container/Main.container';
 import { UIFlowContainer } from './container/UIFlow.container';
 import { UIComponentContainer } from './container/UIComponent.container';
 import { ApiContainer } from './container/Api.container';
+import ConfigureUser from './container/ConfigureUser';
 
 export type RootStackParamList = {
   Main: undefined;
   UIFlow: undefined;
   APIFlow: undefined;
   UIComponent: undefined;
+  ConfigureUser: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -52,6 +54,7 @@ export const Routes: FC = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="ConfigureUser" component={ConfigureUser} />
     </Stack.Navigator>
   );
 };

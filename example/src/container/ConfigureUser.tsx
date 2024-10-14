@@ -1,0 +1,260 @@
+import React, { useReducer, useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import DatePicker from 'react-native-date-picker';
+import {
+  LucraSDK,
+  type LucraUserConfig,
+} from '@lucra-sports/lucra-react-native-sdk';
+
+type FormState = {
+  username?: string | null;
+  avatarURL?: string | null;
+  phoneNumber?: string | null;
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  address: {
+    address?: string | null;
+    addressCont?: string | null;
+    city?: string | null;
+    state?: string | null;
+    zip?: string | null;
+  };
+  dateOfBirth?: Date | null;
+};
+
+type FormAction =
+  | { type: 'SET_FIELD'; field: keyof FormState; value: any }
+  | {
+      type: 'SET_ADDRESS_FIELD';
+      field: keyof FormState['address'];
+      value: string;
+    }
+  | { type: 'SET_INITIAL_DATA'; data: FormState };
+
+const initialState: FormState = {
+  username: null,
+  avatarURL: null,
+  phoneNumber: null,
+  email: null,
+  firstName: null,
+  lastName: null,
+  address: {
+    address: null,
+    addressCont: null,
+    city: null,
+    state: null,
+    zip: null,
+  },
+  dateOfBirth: new Date(),
+};
+
+function getLucraUserConfig(state: FormState): LucraUserConfig {
+  const lucraUserConfig: LucraUserConfig = {
+    username: state.username ?? undefined,
+    avatarURL: state.avatarURL ?? undefined,
+    phoneNumber: state.phoneNumber ?? undefined,
+    email: state.email ?? undefined,
+    firstName: state.firstName ?? undefined,
+    lastName: state.lastName ?? undefined,
+    dateOfBirth: state.dateOfBirth ?? undefined,
+  };
+  if (Object.values(state.address).some(Boolean)) {
+    lucraUserConfig.address = {
+      address: state.address.address ?? undefined,
+      adressCont: state.address.addressCont ?? undefined,
+      city: state.address.city ?? undefined,
+      state: state.address.state ?? undefined,
+      zip: state.address.zip ?? undefined,
+    };
+  }
+  console.log('saving', lucraUserConfig);
+  return lucraUserConfig;
+}
+
+function formReducer(state: FormState, action: FormAction): FormState {
+  switch (action.type) {
+    case 'SET_FIELD':
+      return { ...state, [action.field]: action.value };
+    case 'SET_ADDRESS_FIELD':
+      return {
+        ...state,
+        ['address']: {
+          ...state.address,
+          [action.field]: action.value,
+        },
+      };
+    case 'SET_INITIAL_DATA':
+      return { ...state, ...action.data };
+    default:
+      return state;
+  }
+}
+
+const ConfigureUser: React.FC = () => {
+  const [state, dispatch] = useReducer(formReducer, initialState);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = await LucraSDK.getUser();
+        setLoggedIn(true);
+        dispatch({
+          type: 'SET_INITIAL_DATA',
+          data: {
+            ...user,
+            address: {
+              ...(user?.address ?? {
+                address: null,
+                addressCont: null,
+                city: null,
+                state: null,
+                zip: null,
+              }),
+            },
+            dateOfBirth: user.dateOfBirth
+              ? new Date(user.dateOfBirth)
+              : new Date(),
+          },
+        });
+      } catch (error) {
+        setLoggedIn(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleChange = (field: keyof FormState, value: string | Date) => {
+    dispatch({ type: 'SET_FIELD', field, value });
+  };
+
+  const handleAddressChange = (
+    field: keyof FormState['address'],
+    value: string
+  ) => {
+    dispatch({ type: 'SET_ADDRESS_FIELD', field, value });
+  };
+
+  const handleSubmit = async () => {
+    if (loading) {
+      return;
+    }
+    try {
+      setLoading(true);
+      setMessage('Saving user config');
+      await LucraSDK.configureUser(getLucraUserConfig(state));
+      setMessage('');
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!loggedIn) {
+    return (
+      <View>
+        <TextInput>Not logged in</TextInput>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView className="p-10">
+      {message ? <TextInput>{message}</TextInput> : null}
+      <TextInput
+        placeholder="Username"
+        value={state.username ?? ''}
+        onChangeText={(value) => handleChange('username', value)}
+      />
+      <TextInput
+        placeholder="Avatar URL"
+        value={state.avatarURL ?? ''}
+        onChangeText={(value) => handleChange('avatarURL', value)}
+      />
+      <TextInput
+        placeholder="Phone"
+        value={state.phoneNumber ?? ''}
+        onChangeText={(value) => handleChange('phoneNumber', value)}
+      />
+      <TextInput
+        placeholder="Email"
+        value={state.email ?? ''}
+        onChangeText={(value) => handleChange('email', value)}
+      />
+      <TextInput
+        placeholder="First Name"
+        value={state.firstName ?? ''}
+        onChangeText={(value) => handleChange('firstName', value)}
+      />
+      <TextInput
+        placeholder="Last Name"
+        value={state.lastName ?? ''}
+        onChangeText={(value) => handleChange('lastName', value)}
+      />
+      <TextInput
+        placeholder="Address"
+        value={state.address?.address ?? ''}
+        onChangeText={(value) => handleAddressChange('address', value)}
+      />
+      <TextInput
+        placeholder="Address Continued"
+        value={state.address?.addressCont ?? ''}
+        onChangeText={(value) => handleAddressChange('addressCont', value)}
+      />
+      <TextInput
+        placeholder="City"
+        value={state.address?.city ?? ''}
+        onChangeText={(value) => handleAddressChange('city', value)}
+      />
+      <TextInput
+        placeholder="State"
+        value={state.address?.state ?? ''}
+        onChangeText={(value) => handleAddressChange('state', value)}
+      />
+      <TextInput
+        placeholder="Zip"
+        value={state.address?.state ?? ''}
+        onChangeText={(value) => handleAddressChange('zip', value)}
+      />
+      <View className="flex-row">
+        <Text>Date of birth:</Text>
+        <TouchableOpacity onPress={() => setOpen(true)}>
+          <Text>
+            {state.dateOfBirth
+              ? `${state.dateOfBirth.toLocaleDateString()}`
+              : 'Set date of birth'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <DatePicker
+        modal
+        date={state.dateOfBirth ?? new Date()}
+        open={open}
+        mode="date"
+        onCancel={() => {
+          setOpen(false);
+        }}
+        onConfirm={(date) => {
+          setOpen(false);
+          handleChange('dateOfBirth', date);
+        }}
+      />
+      <Button title="Submit" onPress={handleSubmit} />
+    </ScrollView>
+  );
+};
+
+export default ConfigureUser;

@@ -56,21 +56,12 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white">API Calls Example</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-darkPurple p-4 rounded-b-xl border-t border-lightPurple"
-            onPress={async () => {
-              await LucraSDK.configureUser({
-                firstName: 'blah',
-                address: {
-                  address: 'quack',
-                },
-              });
-
-              let user = await LucraSDK.getUser();
-
-              console.log('Updated user', user);
+            className="mt-2 bg-darkPurple p-4 border-t rounded-t-xl border-lightPurple"
+            onPress={() => {
+              navigation.navigate('ConfigureUser');
             }}
           >
-            <Text className="text-white">Example call configure user</Text>
+            <Text className="text-white">Configure User</Text>
           </TouchableOpacity>
         </View>
 

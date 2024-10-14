@@ -73,6 +73,7 @@ export type LucraUserConfig = {
     state?: string;
     zip?: string;
   };
+  dateOfBirth?: Date;
 };
 
 export type LucraUser = {
@@ -92,6 +93,7 @@ export type LucraUser = {
   } | null;
   balance: number;
   accountStatus: VerificationStatus;
+  dateOfBirth: Date | null;
 };
 
 if (LucraClient == null) {
