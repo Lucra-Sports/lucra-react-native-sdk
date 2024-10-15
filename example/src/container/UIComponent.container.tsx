@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import type { FC } from 'react';
 import {
+  Platform,
   Image,
   ScrollView,
   SafeAreaView,
@@ -34,13 +35,16 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
   const [playerId1, setPlayerId1] = useState('');
   const [playerId2, setPlayerId2] = useState('');
   const [miniFeedKey, setMiniFeedKey] = useState(Math.random().toString());
+  const [contestKey, setContestKey] = useState(Math.random().toString());
 
   useFocusEffect(
     useCallback(() => {
       const keyPill = Math.random().toString();
       const keyFeed = Math.random().toString();
+      const keyContest = Math.random().toString();
       setProfilePillKey(keyPill);
       setMiniFeedKey(keyFeed);
+      setContestKey(keyContest);
     }, [])
   );
 
@@ -79,8 +83,9 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
               onChangeText={setTestContestId}
             />
             <LucraContestCard
-              key={testContestId}
-              contestId={testContestId}
+              key={`${contestKey}-${testContestId}`}
+              // TODO possible bug on android if this is set to empty string ''
+              contestId={testContestId ?? '0'}
               style={Styles.contestCard}
             />
           </View>
@@ -95,7 +100,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
                 className="bg-white p-2 mb-2"
                 placeholder="Enter Player ID 1"
                 value={playerId1}
-                onChangeText={setPlayerId1}
+                onChangeText={(val) => setPlayerId1(val)}
               />
               <TextInput
                 className="bg-white p-2 mb-2"
@@ -103,11 +108,16 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
                 value={playerId2}
                 onChangeText={setPlayerId2}
               />
-              <LucraMiniPublicFeed
-                className="mt-4"
-                key={`${miniFeedKey}-${playerId1}-${playerId2}`}
-                playerIds={[playerId1, playerId2].filter(Boolean)}
-              />
+              {Platform.OS === 'android' ? (
+                <Text className="text-white">Crashes on android</Text>
+              ) : (
+                <LucraMiniPublicFeed
+                  className="mt-4"
+                  key={`${miniFeedKey}`}
+                  // TODO possible bug on android
+                  playerIds={[]}
+                />
+              )}
             </ScrollView>
           </View>
         </View>
