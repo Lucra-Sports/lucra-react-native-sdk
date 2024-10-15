@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
@@ -29,6 +30,9 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
   const [profilePillKey, setProfilePillKey] = useState(
     Math.random().toString()
   );
+  const [testContestId, setTestContestId] = useState('');
+  const [playerId1, setPlayerId1] = useState('');
+  const [playerId2, setPlayerId2] = useState('');
   const [miniFeedKey, setMiniFeedKey] = useState(Math.random().toString());
 
   useFocusEffect(
@@ -68,8 +72,15 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
 
           <Text className="text-white mt-2"> Contest Card </Text>
           <View style={Styles.cardContainer}>
+            <TextInput
+              className="bg-white p-2 mb-2"
+              placeholder="Enter Matchup ID"
+              value={testContestId}
+              onChangeText={setTestContestId}
+            />
             <LucraContestCard
-              contestId="83c74839-d21a-46f5-9b3d-39bec62c11a9"
+              key={testContestId}
+              contestId={testContestId}
               style={Styles.contestCard}
             />
           </View>
@@ -80,10 +91,22 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white my-2">Mini feed</Text>
           <View className="flex-row items-center g-2 pb-5">
             <ScrollView className="flex-1 p-4">
+              <TextInput
+                className="bg-white p-2 mb-2"
+                placeholder="Enter Player ID 1"
+                value={playerId1}
+                onChangeText={setPlayerId1}
+              />
+              <TextInput
+                className="bg-white p-2 mb-2"
+                placeholder="Enter Player ID 2"
+                value={playerId2}
+                onChangeText={setPlayerId2}
+              />
               <LucraMiniPublicFeed
                 className="mt-4"
-                key={miniFeedKey}
-                playerIds={[]}
+                key={`${miniFeedKey}-${playerId1}-${playerId2}`}
+                playerIds={[playerId1, playerId2].filter(Boolean)}
               />
             </ScrollView>
           </View>

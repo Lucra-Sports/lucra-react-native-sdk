@@ -5,6 +5,7 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 import { useAppContext } from './AppContext';
 import { defaultAppConfig } from './AppConfig';
+import { useEventsContext } from './EventsContext';
 
 type LucraSDKInitProps = {
   onStateChange: (ready: boolean) => void;
@@ -12,6 +13,7 @@ type LucraSDKInitProps = {
 
 const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
   const { state, ready } = useAppContext();
+  const [, setEvents] = useEventsContext();
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
     if (initialized || !ready) {
@@ -43,15 +45,31 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
         LucraSDK.addContestListener({
           onGamesContestCreated: (contestId: string) => {
             console.log('Games contest created:', contestId);
+            setEvents((events) => [
+              ...events,
+              { type: 'Games contest created', id: contestId },
+            ]);
           },
           onSportsContestCreated: (contestId: string) => {
             console.log('Sports contest created:', contestId);
+            setEvents((events) => [
+              ...events,
+              { type: 'Sports contest created', id: contestId },
+            ]);
           },
           onGamesContestAccepted: (contestId: string) => {
             console.log('Games contest accepted:', contestId);
+            setEvents((events) => [
+              ...events,
+              { type: 'Games contest accepted', id: contestId },
+            ]);
           },
           onSportsContestAccepted: (contestId: string) => {
             console.log('Sports contest accepted:', contestId);
+            setEvents((events) => [
+              ...events,
+              { type: 'Sports contest accepted', id: contestId },
+            ]);
           },
         });
         onStateChange(true);
@@ -70,7 +88,7 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
           console.log('Permission error:', error);
         });
     }
-  }, [state, ready, initialized, onStateChange]);
+  }, [state, ready, initialized, onStateChange, setEvents]);
   return null;
 };
 

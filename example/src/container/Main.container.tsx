@@ -75,6 +75,15 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           >
             <Text className="text-white">Configure User</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            className="bg-darkPurple p-4 border-t border-lightPurple rounded-b-xl"
+            onPress={() => {
+              navigation.navigate('EventViewer');
+            }}
+          >
+            <Text className="text-white">Event Viewer</Text>
+          </TouchableOpacity>
         </View>
 
         <View className="mt-4">

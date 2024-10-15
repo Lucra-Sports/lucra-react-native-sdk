@@ -6,6 +6,7 @@ import { StatusBar, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { AppContextProvider } from './AppContext';
 import LucraSDKInit from './LucraSDKInit';
+import { EventsContextProvider } from './EventsContext';
 
 LucraSDK.addListener('user', (user) => {
   console.log(`✅ Received user callback: ${JSON.stringify(user)}`);
@@ -16,17 +17,19 @@ export default function App() {
 
   return (
     <AppContextProvider>
-      <LucraSDKInit onStateChange={setIsReady} />
-      {!isReady ? (
-        <Text>Loading...</Text>
-      ) : (
-        <NavigationContainer>
-          <LinearGradient colors={['#6360EB', '#001448']} className="h-full">
-            <StatusBar barStyle="light-content" />
-            <Routes />
-          </LinearGradient>
-        </NavigationContainer>
-      )}
+      <EventsContextProvider>
+        <LucraSDKInit onStateChange={setIsReady} />
+        {!isReady ? (
+          <Text>Loading...</Text>
+        ) : (
+          <NavigationContainer>
+            <LinearGradient colors={['#6360EB', '#001448']} className="h-full">
+              <StatusBar barStyle="light-content" />
+              <Routes />
+            </LinearGradient>
+          </NavigationContainer>
+        )}
+      </EventsContextProvider>
     </AppContextProvider>
   );
 }

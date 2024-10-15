@@ -113,7 +113,7 @@ function formReducer(state: FormState, action: FormAction): FormState {
   }
 }
 
-const ConfigureUser: React.FC = () => {
+export const ConfigureUser: React.FC = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
   const [loggedIn, setLoggedIn] = useState(false);
   const [open, setOpen] = useState(false);
@@ -280,5 +280,3 @@ const ConfigureUser: React.FC = () => {
     </ScrollView>
   );
 };
-
-export default ConfigureUser;
