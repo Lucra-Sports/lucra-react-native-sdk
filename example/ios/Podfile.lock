@@ -1081,19 +1081,19 @@ PODS:
     - React-Core
   - RNPermissions (4.1.5):
     - React-Core
-  - RNReanimated (3.15.4):
+  - RNReanimated (3.15.5):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.15.4)
-    - RNReanimated/worklets (= 3.15.4)
-  - RNReanimated/reanimated (3.15.4):
+    - RNReanimated/reanimated (= 3.15.5)
+    - RNReanimated/worklets (= 3.15.5)
+  - RNReanimated/reanimated (3.15.5):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - ReactCommon/turbomodule/core
-  - RNReanimated/worklets (3.15.4):
+  - RNReanimated/worklets (3.15.5):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1388,7 +1388,7 @@ SPEC CHECKSUMS:
   RNCClipboard: 5e503962f0719ace8f7fdfe9c60282b526305c85
   RNGestureHandler: 79c035e2243d3b7f4f353e7eb32869eace6b596c
   RNPermissions: 294531ede5a64d1528463e88fffef05675842042
-  RNReanimated: f7f97a0af81bf1e89541ec70db9a6ad487014197
+  RNReanimated: 39e51016ec96da586de4747db982dd032a47ba81
   RNScreens: a4d9ce8f68f833f4e42410140eafd88e38bba163
   RNVectorIcons: 81e919c3a9e56e4916f9e74cfe9cd2e489146f08
   SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
