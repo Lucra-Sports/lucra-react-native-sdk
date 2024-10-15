@@ -4,7 +4,7 @@ import { Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { useEventsContext, type LucraEvent } from '../EventsContext';
 import { useCallback } from 'react';
 
-export const EventViewer = () => {
+export const EventViewer: React.FC = () => {
   const [events] = useEventsContext();
   const renderItem = useCallback(({ item }: { item: LucraEvent }) => {
     return (

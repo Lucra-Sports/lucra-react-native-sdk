@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, Button, ScrollView } from 'react-native';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
-export const GamesYouPlay = () => {
+export const GamesYouPlay: React.FC = () => {
   const [wager, setWager] = useState(1);
   const [info, setInfo] = useState('');
   const [matchup, setMatchup] = useState<{ matchupId: string } | null>();

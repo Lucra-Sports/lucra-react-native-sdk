@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react';
-import type { FC } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -15,7 +14,7 @@ import { LucraFlowView, LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UIEmbeddedPublicFeed'>;
 
-export const UIEmbeddedPublicFeed: FC<Props> = ({ navigation }) => {
+export const UIEmbeddedPublicFeed: React.FC<Props> = ({ navigation }) => {
   // Lucra components die when full screen flows are launched, react-native-screens is not compatible with jetpack-compose.
   // By generating a new key, we force the component to re-mount which fixes them for now
   const [embeddedViewKey, setEmbeddedViewKey] = useState(

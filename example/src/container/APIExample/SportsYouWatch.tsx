@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, Button, ScrollView } from 'react-native';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
-export const SportsYouWatch = () => {
+export const SportsYouWatch: React.FC = () => {
   const [matchupID, setMatchupId] = useState('');
   const [info, setInfo] = useState('');
   const getMatchupInfo = async () => {
