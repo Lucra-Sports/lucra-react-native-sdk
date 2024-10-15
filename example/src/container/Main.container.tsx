@@ -15,6 +15,8 @@ import type { RootStackParamList } from '../Routes';
 import { ClientOverride } from './ClientOverride';
 import { ColorOverride } from './ColorOverride';
 import { useAppContext } from '../AppContext';
+import packageJson from '../../package.json';
+import SDKPackageJson from '../../../package.json';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
@@ -30,6 +32,10 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           // eslint-disable-next-line react-native/no-inline-styles
           style={{ tintColor: 'white' }}
         />
+        <View>
+          <Text className="text-white">RN SDK {SDKPackageJson.version}</Text>
+          <Text className="text-white">RN EXAMPLE {packageJson.version}</Text>
+        </View>
         <View className="mt-4">
           <Text>SDK Navigation</Text>
           <TouchableOpacity

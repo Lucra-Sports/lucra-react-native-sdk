@@ -8,10 +8,14 @@ export const GamesYouPlay = () => {
   const [matchup, setMatchup] = useState<{ matchupId: string } | null>();
   const [fullMatchupInfo, setFullMatchupInfo] = useState('');
   const createGamesMatchup = async () => {
-    setInfo('Creating game matchup');
-    const matchupInfo = await LucraSDK.createGamesMatchup('DARTS', wager);
-    setMatchup(matchupInfo);
-    setInfo(JSON.stringify(matchupInfo));
+    try {
+      setInfo('Creating game matchup');
+      const matchupInfo = await LucraSDK.createGamesMatchup('DARTS', wager);
+      setMatchup(matchupInfo);
+      setInfo(JSON.stringify(matchupInfo));
+    } catch (error) {
+      setInfo(String(error));
+    }
   };
 
   const loadFullMatchup = async () => {
@@ -31,10 +35,14 @@ export const GamesYouPlay = () => {
     if (!matchup) {
       return;
     }
-    await LucraSDK.cancelGamesMatchup(matchup?.matchupId);
-    setMatchup(null);
-    setInfo('');
-    setFullMatchupInfo('');
+    try {
+      await LucraSDK.cancelGamesMatchup(matchup?.matchupId);
+      setMatchup(null);
+      setInfo('');
+      setFullMatchupInfo('');
+    } catch (error) {
+      setInfo(String(error));
+    }
   };
   return (
     <ScrollView className="gap-4 p-2">

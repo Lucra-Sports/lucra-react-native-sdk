@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import {
   Image,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -106,12 +107,15 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
           <Text className="font-bold text-white">Public Feed</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.MY_MATCHUP)}
-        >
-          <Text className="font-bold text-white">My Matchups</Text>
-        </TouchableOpacity>
+        {/* TODO review if iOS has a way to display myMatchups flow */}
+        {Platform.OS === 'android' ? (
+          <TouchableOpacity
+            className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+            onPress={() => LucraSDK.present(LucraSDK.FLOW.MY_MATCHUP)}
+          >
+            <Text className="font-bold text-white">My Matchups</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     </SafeAreaView>
   );

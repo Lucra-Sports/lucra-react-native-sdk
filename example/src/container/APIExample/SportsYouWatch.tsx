@@ -6,13 +6,17 @@ export const SportsYouWatch = () => {
   const [matchupID, setMatchupId] = useState('');
   const [info, setInfo] = useState('');
   const getMatchupInfo = async () => {
-    setInfo('Searching...');
-    const matchupInfo = await LucraSDK.getSportsMatchup(matchupID);
-    if (!matchupInfo) {
-      setInfo('No matchup info');
-      return;
+    try {
+      setInfo('Searching...');
+      const matchupInfo = await LucraSDK.getSportsMatchup(matchupID);
+      if (!matchupInfo) {
+        setInfo('No matchup info');
+        return;
+      }
+      setInfo(JSON.stringify(matchupInfo));
+    } catch (error) {
+      setInfo(String(error));
     }
-    setInfo(JSON.stringify(matchupInfo));
   };
   return (
     <View className="gap-4 p-2">
