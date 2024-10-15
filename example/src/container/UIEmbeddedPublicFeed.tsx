@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import type { FC } from 'react';
 import {
   Image,
-  ScrollView,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,

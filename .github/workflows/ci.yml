@@ -176,7 +176,7 @@ jobs:
         if: env.turbo_cache_hit != 1 && (steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1')
         run: |
           cd example/ios
-          pod install
+          pod install --repo-update
         env:
           NO_FLIPPER: 1
 
