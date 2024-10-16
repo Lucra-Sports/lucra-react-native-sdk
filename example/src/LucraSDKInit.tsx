@@ -1,29 +1,36 @@
-import { useEffect, useState, type FC } from 'react';
-import { Platform } from 'react-native';
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { Platform, type EmitterSubscription } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 import { useAppContext } from './AppContext';
 import { defaultAppConfig } from './AppConfig';
 import { useEventsContext } from './EventsContext';
+import { setupDeepLink } from './setupDeepLink';
 
 type LucraSDKInitProps = {
   onStateChange: (ready: boolean) => void;
 };
 
-const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
+const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
   const { state, ready } = useAppContext();
   const [, setEvents] = useEventsContext();
   const [initialized, setInitialized] = useState(false);
+  const urlScheme = state.urlScheme
+    ? state.urlScheme
+    : defaultAppConfig.urlScheme;
   useEffect(() => {
     if (initialized || !ready) {
       return;
     }
+    let deepLinkListener: EmitterSubscription;
     setInitialized(true);
     LucraSDK.init({
       apiURL: state.apiURL || defaultAppConfig.apiURL,
       apiKey: state.apiKey || defaultAppConfig.apiKey,
       environment: state.environment || defaultAppConfig.environment,
+      urlScheme: defaultAppConfig.urlScheme,
       theme: {
         ...state.theme,
         fontFamily:
@@ -38,10 +45,7 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
-        LucraSDK.registerDeepLinkProvider(async () => {
-          return 'lucra://flow/profile';
-        });
-
+        deepLinkListener = setupDeepLink(urlScheme);
         LucraSDK.addContestListener({
           onGamesContestCreated: (contestId: string) => {
             console.log('Games contest created:', contestId);
@@ -88,7 +92,10 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
           console.log('Permission error:', error);
         });
     }
-  }, [state, ready, initialized, onStateChange, setEvents]);
+    return () => {
+      deepLinkListener?.remove();
+    };
+  }, [state, ready, initialized, onStateChange, setEvents, urlScheme]);
   return null;
 };
 

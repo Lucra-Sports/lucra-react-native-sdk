@@ -514,14 +514,14 @@ registerDeepLinkProvider(async (lucraDeepLink) => {
 For handling deep links that contain lucra information, you need to unpack your deep link and then pass it to the Lucra client to detect if a flow is embedded.
 
 ```ts
-import { handleLucraLink } from '@lucra-sports/lucra-react-native-sdk';
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { Linking } from 'react-native';
 import { linkExpander } from 'my-link-shortener';
 
 // on app start
 const linkingSubscription = Linking.addEventListener('url', async ({ url }) => {
   const deepLink = await linkExpander(url);
-  const handled = await handleLucraLink(deepLink);
+  const handled = await LucraSDK.handleLucraLink(deepLink);
   if (handled) {
     // Lucra has detected a link and will take over, displaying a full flow
     return;

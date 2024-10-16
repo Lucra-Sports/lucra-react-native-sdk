@@ -22,9 +22,9 @@ export const defaultAppConfig: AppConfig = {
   apiURL: 'api-sample.sandbox.lucrasports.com',
   apiKey: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
   environment: LucraSDK.ENVIRONMENT.SANDBOX,
-  urlScheme: 'TODO:',
+  urlScheme: 'lucraexample',
   merchantId: 'com.todo.in.upcoming.pr',
-  deeplinksEnabled: false,
+  deeplinksEnabled: true,
   theme: DEFAULT,
   dirty: false,
 };
