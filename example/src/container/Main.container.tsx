@@ -1,19 +1,27 @@
 import React from 'react';
-import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
+  View,
   Image,
   SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
+  Button,
+  Alert,
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
+import { ClientOverride } from './ClientOverride';
+import { ColorOverride } from './ColorOverride';
+import { useAppContext } from '../AppContext';
+import packageJson from '../../package.json';
+import SDKPackageJson from '../../../package.json';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
 export const MainContainer: React.FC<Props> = ({ navigation }) => {
+  const { state } = useAppContext();
   return (
     <SafeAreaView className="flex-1">
       <ScrollView className="flex-1 p-4">
@@ -24,48 +32,89 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           // eslint-disable-next-line react-native/no-inline-styles
           style={{ tintColor: 'white' }}
         />
-        <TouchableOpacity
-          className="mt-4 bg-darkPurple p-4 rounded-t-xl"
-          onPress={() => {
-            navigation.navigate('UIFlow');
-          }}
-        >
-          <Text className="text-white">UI Flow Example</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="bg-darkPurple p-4 border-t border-lightPurple"
-          onPress={() => {
-            navigation.navigate('UIComponent');
-          }}
-        >
-          <Text className="text-white">UI Components Example</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="bg-darkPurple p-4 border-t border-lightPurple"
-          onPress={() => {
-            navigation.navigate('APIFlow');
-          }}
-        >
-          <Text className="text-white">API Calls Example</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="bg-darkPurple p-4 rounded-b-xl border-t border-lightPurple"
-          onPress={async () => {
-            await LucraSDK.configureUser({
-              firstName: 'blah',
-              address: {
-                address: 'quack',
-              },
-            });
+        <View>
+          <Text className="text-white">RN SDK {SDKPackageJson.version}</Text>
+          <Text className="text-white">RN EXAMPLE {packageJson.version}</Text>
+        </View>
+        <View className="mt-4">
+          <Text>SDK Navigation</Text>
+          <TouchableOpacity
+            className="mt-2 bg-darkPurple p-4 rounded-t-xl"
+            onPress={() => {
+              navigation.navigate('UIFlow');
+            }}
+          >
+            <Text className="text-white">Sheet Flows</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-darkPurple p-4 border-t border-lightPurple "
+            onPress={() => {
+              navigation.navigate('UIEmbeddedPublicFeed');
+            }}
+          >
+            <Text className="text-white">Embedded Public Feed</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-darkPurple p-4 border-t border-lightPurple rounded-b-xl"
+            onPress={() => {
+              navigation.navigate('UIComponent');
+            }}
+          >
+            <Text className="text-white">Components</Text>
+          </TouchableOpacity>
+        </View>
+        <View className="mt-4">
+          <Text>CONFIGURATION</Text>
+          <TouchableOpacity
+            className="mt-2 bg-darkPurple p-4 border-t rounded-t-xl border-lightPurple"
+            onPress={() => {
+              navigation.navigate('APIFlow');
+            }}
+          >
+            <Text className="text-white">API Calls Example</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-darkPurple p-4 border-t border-lightPurple"
+            onPress={() => {
+              navigation.navigate('ConfigureUser');
+            }}
+          >
+            <Text className="text-white">Configure User</Text>
+          </TouchableOpacity>
 
-            let user = await LucraSDK.getUser();
+          <TouchableOpacity
+            className="bg-darkPurple p-4 border-t border-lightPurple rounded-b-xl"
+            onPress={() => {
+              navigation.navigate('EventViewer');
+            }}
+          >
+            <Text className="text-white">Event Viewer</Text>
+          </TouchableOpacity>
+        </View>
 
-            console.log('Updated user', user);
-          }}
-        >
-          <Text className="text-white">Example call configure user</Text>
-        </TouchableOpacity>
+        <View className="mt-4">
+          <Text>CLIENT OVERRIDES</Text>
+          <ClientOverride />
+        </View>
+
+        <View className="mt-4">
+          <Text>COLOR OVERRIDES</Text>
+          <ColorOverride />
+        </View>
       </ScrollView>
+      <View>
+        {state.dirty && (
+          <Button
+            title="Restart required"
+            onPress={() => {
+              Alert.alert(
+                'Restart required',
+                'Close and re open the app for config changes to take place'
+              );
+            }}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 };

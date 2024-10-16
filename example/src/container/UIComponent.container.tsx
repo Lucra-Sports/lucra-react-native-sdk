@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import type { FC } from 'react';
 import {
+  Platform,
   Image,
   ScrollView,
   SafeAreaView,
@@ -8,16 +9,15 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import {
-  LucraFlowView,
   LucraMiniPublicFeed,
   LucraProfilePill,
-  LucraSDK,
   LucraCreateContestButton,
   LucraRecommendedMatchup,
   LucraContestCard,
@@ -31,19 +31,20 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
   const [profilePillKey, setProfilePillKey] = useState(
     Math.random().toString()
   );
+  const [testContestId, setTestContestId] = useState('');
+  const [playerId1, setPlayerId1] = useState('');
+  const [playerId2, setPlayerId2] = useState('');
   const [miniFeedKey, setMiniFeedKey] = useState(Math.random().toString());
-  const [embeddedViewKey, setEmbeddedViewKey] = useState(
-    Math.random().toString()
-  );
+  const [contestKey, setContestKey] = useState(Math.random().toString());
 
   useFocusEffect(
     useCallback(() => {
       const keyPill = Math.random().toString();
       const keyFeed = Math.random().toString();
-      const embeddedKey = Math.random().toString();
+      const keyContest = Math.random().toString();
       setProfilePillKey(keyPill);
       setMiniFeedKey(keyFeed);
-      setEmbeddedViewKey(embeddedKey);
+      setContestKey(keyContest);
     }, [])
   );
 
@@ -75,8 +76,16 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
 
           <Text className="text-white mt-2"> Contest Card </Text>
           <View style={Styles.cardContainer}>
+            <TextInput
+              className="bg-white p-2 mb-2"
+              placeholder="Enter Matchup ID"
+              value={testContestId}
+              onChangeText={setTestContestId}
+            />
             <LucraContestCard
-              contestId="83c74839-d21a-46f5-9b3d-39bec62c11a9"
+              key={`${contestKey}-${testContestId}`}
+              // TODO possible bug on android if this is set to empty string ''
+              contestId={testContestId ?? '0'}
               style={Styles.contestCard}
             />
           </View>
@@ -87,20 +96,30 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
           <Text className="text-white my-2">Mini feed</Text>
           <View className="flex-row items-center g-2 pb-5">
             <ScrollView className="flex-1 p-4">
-              <LucraMiniPublicFeed
-                className="mt-4"
-                key={miniFeedKey}
-                playerIds={[]}
+              <TextInput
+                className="bg-white p-2 mb-2"
+                placeholder="Enter Player ID 1"
+                value={playerId1}
+                onChangeText={(val) => setPlayerId1(val)}
               />
+              <TextInput
+                className="bg-white p-2 mb-2"
+                placeholder="Enter Player ID 2"
+                value={playerId2}
+                onChangeText={setPlayerId2}
+              />
+              {Platform.OS === 'android' ? (
+                <Text className="text-white">Crashes on android</Text>
+              ) : (
+                <LucraMiniPublicFeed
+                  className="mt-4"
+                  key={`${miniFeedKey}`}
+                  // TODO possible bug on android
+                  playerIds={[]}
+                />
+              )}
             </ScrollView>
           </View>
-
-          <Text className="text-white mt-2"> Embedded Flow</Text>
-          <LucraFlowView
-            key={embeddedViewKey}
-            flow={LucraSDK.FLOW.PROFILE}
-            className="h-96"
-          />
         </View>
       </ScrollView>
     </SafeAreaView>

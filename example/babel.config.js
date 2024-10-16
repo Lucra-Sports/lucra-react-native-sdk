@@ -15,5 +15,6 @@ module.exports = {
     ],
     'nativewind/babel',
     'babel-plugin-transform-typescript-metadata',
+    'react-native-reanimated/plugin',
   ],
 };

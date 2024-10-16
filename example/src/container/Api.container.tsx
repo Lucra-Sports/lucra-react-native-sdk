@@ -67,6 +67,20 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          onPress={() => navigation.navigate('SportsYouWatch')}
+        >
+          <Text className="font-bold text-white">Sports You Watch</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          onPress={() => navigation.navigate('GamesYouPlay')}
+        >
+          <Text className="font-bold text-white">Games You Play</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
           onPress={() => {
             LucraSDK.createGamesMatchup('DARTS', 1.0)
               .then((res) => {
@@ -106,10 +120,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
           onPress={async () => {
             try {
-              // TODO revert to use `currentMatchupId` instead of this hard coded id
-              const info = await LucraSDK.getSportsMatchup(
-                'dfa88d17-34b8-4137-bc0f-b62cc36eb806'
-              );
+              const info = await LucraSDK.getSportsMatchup(currentMatchupId);
               console.warn(
                 `getSportsMatchup Response: ${JSON.stringify(info, null, 2)}`
               );
