@@ -5,7 +5,8 @@ export const CustomSchemeProvider = (urlScheme: string) => {
     },
     parseDeepLink(deepLink: string): string | null {
       try {
-        const lucraLink = deepLink.split(`${urlScheme}://link=`)[1] || '';
+        const prefix = `${urlScheme}://link=`;
+        const lucraLink = deepLink.split(prefix)[1] || '';
         return lucraLink ?? null;
       } catch (error) {
         console.error('Invalid deep link:', error);

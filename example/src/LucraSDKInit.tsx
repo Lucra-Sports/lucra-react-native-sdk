@@ -17,9 +17,7 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
   const { state, ready } = useAppContext();
   const [, setEvents] = useEventsContext();
   const [initialized, setInitialized] = useState(false);
-  const urlScheme = state.urlScheme
-    ? state.urlScheme
-    : defaultAppConfig.urlScheme;
+  const urlScheme = defaultAppConfig.urlScheme;
   useEffect(() => {
     if (initialized || !ready) {
       return;

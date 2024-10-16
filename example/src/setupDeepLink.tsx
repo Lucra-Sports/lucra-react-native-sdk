@@ -2,12 +2,9 @@ import { Linking } from 'react-native';
 
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { CustomSchemeProvider } from './customSchemeProvider';
-import { defaultAppConfig } from './AppConfig';
 
 export function setupDeepLink(urlScheme: string) {
-  const deepLinkProvider = CustomSchemeProvider(
-    urlScheme ? urlScheme : defaultAppConfig.urlScheme
-  );
+  const deepLinkProvider = CustomSchemeProvider(urlScheme);
   LucraSDK.registerDeepLinkProvider(async (lucraLink: string) => {
     const deepLink = deepLinkProvider.createDeepLink(
       encodeURIComponent(lucraLink)
