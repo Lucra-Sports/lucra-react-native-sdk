@@ -15,8 +15,6 @@ import type { RootStackParamList } from '../Routes';
 import { ClientOverride } from './ClientOverride';
 import { ColorOverride } from './ColorOverride';
 import { useAppContext } from '../AppContext';
-import packageJson from '../../package.json';
-import SDKPackageJson from '../../../package.json';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
