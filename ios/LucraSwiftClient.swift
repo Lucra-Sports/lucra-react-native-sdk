@@ -94,7 +94,7 @@ public class LucraSwiftClient: NSObject {
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
-    guard nativeClient == nil else { return }
+    guard nativeClient == nil else { return resolver(nil) }
 
     guard let apiURL = options["apiURL"] as? String
     else {
