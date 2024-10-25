@@ -1,13 +1,11 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Platform, type EmitterSubscription } from 'react-native';
-import { PERMISSIONS, request } from 'react-native-permissions';
+import { Platform } from 'react-native';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 import { useAppContext } from './AppContext';
 import { defaultAppConfig } from './AppConfig';
 import { useEventsContext } from './EventsContext';
-import { setupDeepLink } from './setupDeepLink';
 
 type LucraSDKInitProps = {
   onStateChange: (ready: boolean) => void;
@@ -22,7 +20,6 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
     if (initialized || !ready) {
       return;
     }
-    let deepLinkListener: EmitterSubscription;
     setInitialized(true);
     LucraSDK.init({
       apiURL: state.apiURL || defaultAppConfig.apiURL,
@@ -43,7 +40,6 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
-        deepLinkListener = setupDeepLink(urlScheme);
         LucraSDK.addContestListener({
           onGamesContestCreated: (contestId: string) => {
             console.log('Games contest created:', contestId);
@@ -80,19 +76,6 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
         setInitialized(false);
         console.error('Error initializing LucraSDK', error);
       });
-
-    if (Platform.OS === 'android') {
-      request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-        .then((result) => {
-          console.log('Permission result:', result);
-        })
-        .catch((error) => {
-          console.log('Permission error:', error);
-        });
-    }
-    return () => {
-      deepLinkListener?.remove();
-    };
   }, [state, ready, initialized, onStateChange, setEvents, urlScheme]);
   return null;
 };

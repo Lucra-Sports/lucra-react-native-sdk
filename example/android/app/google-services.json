@@ -1,0 +1,410 @@
+{
+  "project_info": {
+    "project_number": "33355554746",
+    "project_id": "lucrasports",
+    "storage_bucket": "lucrasports.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:6246ef98cea1368ddec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-fiu7nn1bumnic63gugu7md41lffi39j1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lucrasports",
+            "certificate_hash": "5591c2bba2efd1ace7911d1f4a18e9c698ffa8c9"
+          }
+        },
+        {
+          "client_id": "33355554746-mgjoc23malh48iih5v0scf9i063vsola.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lucrasports",
+            "certificate_hash": "96cc66cadd5324a325f1308559cb66c87c4604b5"
+          }
+        },
+        {
+          "client_id": "33355554746-phniffds5i8m9ve096acdbthfdm1nr08.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lucrasports",
+            "certificate_hash": "cb3adf9a856af34f36a7671ecf6bc3671c488c67"
+          }
+        },
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:b6ea66b5a993a570dec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-jhkd5ths7m50kdv6lu8n07vkc3d9uduh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lucrasports.debug",
+            "certificate_hash": "2a7b3dc67abbd5077fb1f936fd6eee5a4b9d8ae5"
+          }
+        },
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:1ca6c47009c467afdec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.mobile.rnsample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:2cf694bcc3e42897dec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.sandbox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:9cbe1a34f80da021dec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.sdk.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:19fd0739b55ff59adec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.sdk.app.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:8d91c50341cab335dec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.sdk.app.dev2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:0b22081a14f30572dec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.sdk.app.sandbox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:26c45d4b1317e9e5dec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.sdk.app.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33355554746:android:a1d58ee21a8bc661dec783",
+        "android_client_info": {
+          "package_name": "com.lucrasports.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33355554746-lf030hlhat19hh7c7kccv5brpf99vjer.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lucrasports.staging",
+            "certificate_hash": "2a7b3dc67abbd5077fb1f936fd6eee5a4b9d8ae5"
+          }
+        },
+        {
+          "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvPfTf_nCNeGu_94kQptHMKY_0Wzp14ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33355554746-bdis95jfll0kj55fl07ne69eqcftr16b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33355554746-3ms1tkl5tb3gtgccs1h8to8hicf39222.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lucrasports.LucraSports-staging"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

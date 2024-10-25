@@ -1,5 +1,4 @@
 import React from 'react';
-import { AppState } from 'react-native';
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlowView } from './LucraFlowView';
 import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
@@ -168,12 +167,6 @@ type LucraConvertCreditResponse = {
   pillTextColor: string;
 };
 
-type LucraDeepLinkRequest = {
-  link: string;
-};
-
-let initialized: boolean;
-let deepLinkQueue: LucraDeepLinkRequest[] = [];
 let deepLinkSubscription: NativeEventSubscription;
 let creditConversionSubscription: NativeEventSubscription;
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
@@ -186,15 +179,6 @@ type LucraContestListener = {
   onSportsContestCreated: (contestId: string) => void;
   onGamesContestAccepted: (contestId: string) => void;
   onSportsContestAccepted: (contestId: string) => void;
-};
-
-const flushDeepLinkQueue = () => {
-  while (deepLinkQueue.length) {
-    const deepLink = deepLinkQueue.shift();
-    if (deepLink) {
-      LucraClient.handleLucraLink(deepLink?.link);
-    }
-  }
 };
 
 export const LucraSDK = {
@@ -238,15 +222,6 @@ export const LucraSDK = {
         }
       }
     );
-    initialized = true;
-    if (AppState.currentState === 'active') {
-      flushDeepLinkQueue();
-    }
-    AppState.addEventListener('change', (nextAppState) => {
-      if (nextAppState === 'active') {
-        flushDeepLinkQueue();
-      }
-    });
   },
   addContestListener: (listener: LucraContestListener) => {
     const gamesContestCreatedEmitter = eventEmitter.addListener(
@@ -332,10 +307,6 @@ export const LucraSDK = {
     creditConversionEmitter = provider;
   },
   handleLucraLink: async (link: string): Promise<boolean> => {
-    if (!initialized || AppState.currentState !== 'active') {
-      deepLinkQueue.push({ link });
-      return false;
-    }
     return LucraClient.handleLucraLink(link);
   },
   registerDeviceTokenHex: async (token: string): Promise<void> => {

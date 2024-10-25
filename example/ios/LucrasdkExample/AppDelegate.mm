@@ -1,14 +1,15 @@
 #import "AppDelegate.h"
 #import "LucraClient.h"
 #import <React/RCTBundleURLProvider.h>
-
 #import <React/RCTLinkingManager.h>
+#import <Firebase.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.moduleName = @"LucrasdkExample";
+  [FIRApp configure];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
