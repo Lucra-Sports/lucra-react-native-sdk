@@ -3484,6 +3484,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-firebase/analytics@npm:^21.2.0":
+  version: 21.2.0
+  resolution: "@react-native-firebase/analytics@npm:21.2.0"
+  peerDependencies:
+    "@react-native-firebase/app": 21.2.0
+  checksum: 10c0/39cb1812bb422bdec583294060e62e9d4aae00e509e8d268288b85a8459158d32c790585525dbe27a67b5345b79dc2fdf0e3a19080d2af8ee8498addbe7a4bd8
+  languageName: node
+  linkType: hard
+
 "@react-native-firebase/app@npm:^21.2.0":
   version: 21.2.0
   resolution: "@react-native-firebase/app@npm:21.2.0"
@@ -4181,6 +4190,7 @@ __metadata:
     "@babel/runtime": "npm:^7.20.0"
     "@react-native-async-storage/async-storage": "npm:^2.0.0"
     "@react-native-clipboard/clipboard": "npm:^1.14.2"
+    "@react-native-firebase/analytics": "npm:^21.2.0"
     "@react-native-firebase/app": "npm:^21.2.0"
     "@react-native-firebase/dynamic-links": "npm:^21.2.0"
     "@react-native/babel-preset": "npm:0.73.21"

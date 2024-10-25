@@ -1,7 +1,8 @@
 apply plugin: "com.android.application"
-apply plugin: 'com.google.gms.google-services'
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
+apply plugin: "com.google.firebase.crashlytics"
 
 react {
 
@@ -61,6 +62,8 @@ dependencies {
   } else {
     implementation jscFlavor
   }
+  implementation platform('com.google.firebase:firebase-bom:33.4.0')
+  implementation 'com.google.firebase:firebase-crashlytics-ktx:19.2.0'
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
