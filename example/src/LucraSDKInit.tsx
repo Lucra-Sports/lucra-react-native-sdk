@@ -38,6 +38,7 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
+        console.warn('LucraSDK initialized');
         LucraSDK.registerDeepLinkProvider(async () => {
           return 'lucra://flow/profile';
         });
@@ -75,8 +76,8 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
         onStateChange(true);
       })
       .catch((error) => {
-        setInitialized(false);
         console.error('Error initializing LucraSDK', error);
+        setInitialized(false);
       });
 
     if (Platform.OS === 'android') {

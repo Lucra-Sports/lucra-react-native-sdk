@@ -25,6 +25,7 @@ const ClientOption: FC<ClientOptionProps> = ({
       <TextInput
         readOnly={readonly}
         placeholder={placeholder}
+        placeholderTextColor={'#A0AEC0'}
         onChangeText={onChange}
         className="text-white"
       >
