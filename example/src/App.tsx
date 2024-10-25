@@ -18,6 +18,7 @@ export default function App() {
   const [isReady, setIsReady] = React.useState(false);
 
   useEffect(() => {
+    // Lucra requires location permissions for compliance when creating a new match or game, so Android location permissions are requested as early as possible.
     if (Platform.OS === 'android') {
       request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
         .then((result) => {
