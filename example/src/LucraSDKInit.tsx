@@ -75,8 +75,8 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
         onStateChange(true);
       })
       .catch((error) => {
-        setInitialized(false);
         console.error('Error initializing LucraSDK', error);
+        setInitialized(false);
       });
 
     if (Platform.OS === 'android') {
