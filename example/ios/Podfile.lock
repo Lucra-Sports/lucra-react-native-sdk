@@ -2140,7 +2140,7 @@ SPEC CHECKSUMS:
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   hermes-engine: 9de51d2f67336348a6cd5b686330e436d1dbd522
   JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
-  lucra-react-native-sdk: 9d7c4a1de970c71151788e0595ee52258341a273
+  lucra-react-native-sdk: e2d7d471f752366d955e5bf1ab93353b54176007
   LucraSDK: b52df3d3ce0b04860665bf8065738f283be9154a
   RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: 4c2c4a088b6f0ccfcbd53c9d5614b0238ad57909
