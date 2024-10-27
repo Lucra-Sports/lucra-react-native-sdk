@@ -22,7 +22,6 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
     }
 
     setInitialized(true);
-    console.log('Calling SDK INIT');
     LucraSDK.init({
       apiURL: state.apiURL || defaultAppConfig.apiURL,
       apiKey: state.apiKey || defaultAppConfig.apiKey,

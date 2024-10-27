@@ -2188,7 +2188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-clipboard/clipboard@npm:^1.14.2":
+"@react-native-clipboard/clipboard@npm:^1.14.3":
   version: 1.14.3
   resolution: "@react-native-clipboard/clipboard@npm:1.14.3"
   peerDependencies:
@@ -2840,7 +2840,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/native-stack@npm:^6.9.13":
+"@react-navigation/native-stack@npm:^6.11.0":
   version: 6.11.0
   resolution: "@react-navigation/native-stack@npm:6.11.0"
   dependencies:
@@ -2856,7 +2856,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/native@npm:^6.0.8":
+"@react-navigation/native@npm:^6.1.18":
   version: 6.1.18
   resolution: "@react-navigation/native@npm:6.1.18"
   dependencies:
@@ -5191,26 +5191,25 @@ __metadata:
     "@babel/preset-env": "npm:^7.20.0"
     "@babel/runtime": "npm:^7.20.0"
     "@react-native-async-storage/async-storage": "npm:^2.0.0"
-    "@react-native-clipboard/clipboard": "npm:^1.14.2"
+    "@react-native-clipboard/clipboard": "npm:^1.14.3"
     "@react-native/babel-preset": "npm:0.73.21"
     "@react-native/metro-config": "npm:0.73.5"
     "@react-native/typescript-config": "npm:0.73.1"
-    "@react-navigation/native": "npm:^6.0.8"
-    "@react-navigation/native-stack": "npm:^6.9.13"
+    "@react-navigation/native": "npm:^6.1.18"
+    "@react-navigation/native-stack": "npm:^6.11.0"
     "@types/react": "npm:^18.3.3"
     babel-plugin-module-resolver: "npm:^5.0.0"
     babel-plugin-transform-typescript-metadata: "npm:^0.3.2"
-    nativewind: "npm:^4.0.1"
+    nativewind: "npm:^4.1.21"
     react: "npm:18.2.0"
     react-native: "npm:^0.73.5"
     react-native-date-picker: "npm:^5.0.7"
-    react-native-gesture-handler: "npm:^2.20.0"
-    react-native-linear-gradient: "npm:^2.8.3"
+    react-native-gesture-handler: "npm:^2.20.2"
     react-native-permissions: "npm:^4.1.5"
     react-native-reanimated: "npm:^3.16.1"
-    react-native-safe-area-context: "npm:^4.8.1"
-    react-native-screens: "npm:^3.21.0"
-    react-native-vector-icons: "npm:^10.0.3"
+    react-native-safe-area-context: "npm:^4.12.0"
+    react-native-screens: "npm:^3.35.0"
+    react-native-vector-icons: "npm:^10.2.0"
     reanimated-color-picker: "npm:^3.0.4"
     tailwindcss: "npm:^3.4.3"
   languageName: unknown
@@ -8103,7 +8102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nativewind@npm:^4.0.1":
+"nativewind@npm:^4.1.21":
   version: 4.1.21
   resolution: "nativewind@npm:4.1.21"
   dependencies:
@@ -9011,7 +9010,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:^2.20.0":
+"react-native-gesture-handler@npm:^2.20.2":
   version: 2.20.2
   resolution: "react-native-gesture-handler@npm:2.20.2"
   dependencies:
@@ -9023,16 +9022,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/94c16a40370adfaaff8af6aec5938a8d5c5704afaf7ec569d9e11c66ecc3b5c763314c091a76573885636c04d9e6084de3696d59595c56aac9eb17b2f28e5c6c
-  languageName: node
-  linkType: hard
-
-"react-native-linear-gradient@npm:^2.8.3":
-  version: 2.8.3
-  resolution: "react-native-linear-gradient@npm:2.8.3"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/cd41bf28e9f468173f1e5e768685128ebf8bbf9077710e43b63482c1a76f37bff8ab3d1d6adfd7b4d54e648672356c02bea46c47cdbdb1844ebe5c5caf720114
   languageName: node
   linkType: hard
 
@@ -9073,7 +9062,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-safe-area-context@npm:^4.12.0, react-native-safe-area-context@npm:^4.8.1":
+"react-native-safe-area-context@npm:^4.12.0":
   version: 4.12.0
   resolution: "react-native-safe-area-context@npm:4.12.0"
   peerDependencies:
@@ -9083,7 +9072,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-screens@npm:^3.21.0":
+"react-native-screens@npm:^3.35.0":
   version: 3.35.0
   resolution: "react-native-screens@npm:3.35.0"
   dependencies:
@@ -9096,7 +9085,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-vector-icons@npm:^10.0.3":
+"react-native-vector-icons@npm:^10.2.0":
   version: 10.2.0
   resolution: "react-native-vector-icons@npm:10.2.0"
   dependencies:
