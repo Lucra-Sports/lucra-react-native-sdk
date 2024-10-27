@@ -9,7 +9,7 @@ module.exports = {
   },
   project: {
     ios: {
-      automaticPodsInstallation: false,
+      automaticPodsInstallation: true,
     },
   },
   assets: ['./assets/fonts/'],

@@ -6,7 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios --simulator=\"iPhone 16 Pro\"",
     "start": "react-native start",
-    "pods": "cd ios && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update",
+    "pods": "cd ios && rm -rf Pods && rm -f Podfile.lock && bundle exec pod install --repo-update",
     "android:logcat": "adb logcat",
     "nuke": "rm -rf $TMPDIR/react-* && watchman watch-del-all && rm -rf ios/build && rm -rf node_modules/ && rm -rf ./ios/Pods && yarn",
     "codegen": "./codegen.sh",
