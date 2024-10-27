@@ -1,10 +1,14 @@
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
 source 'https://cdn.cocoapods.org/'
 
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
 
-platform :ios, '15.0'
+platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
 use_frameworks! :linkage => :static
@@ -15,6 +19,7 @@ target 'LucrasdkExample' do
   use_react_native!(
     :path => config[:reactNativePath],
     :app_path => "#{Pod::Config.instance.installation_root}/.."
+    # :privacy_file_aggregation_enabled => false
   )
 
   post_install do |installer|

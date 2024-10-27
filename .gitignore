@@ -87,3 +87,10 @@ example/.env
 #
 example/android/fastlane/report.xml
 example/ios/fastlane/report.xml
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
