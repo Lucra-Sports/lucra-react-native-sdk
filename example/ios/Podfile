@@ -13,9 +13,9 @@ prepare_react_native_project!
 
 use_frameworks! :linkage => :static
 
-
 target 'LucrasdkExample' do
   config = use_native_modules!
+  
   pod "Resolver", :git => "https://github.com/ospfranco/Resolver.git", :branch => "master"
   
   use_react_native!(
