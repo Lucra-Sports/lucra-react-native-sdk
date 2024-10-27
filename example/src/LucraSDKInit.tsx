@@ -40,7 +40,6 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
-        console.log('SDK initialized');
         LucraSDK.registerDeepLinkProvider(async () => {
           return 'lucra://flow/profile';
         });
