@@ -177,7 +177,7 @@ jobs:
           cd example/ios
           if ! cmp -s Podfile.lock Pods/Manifest.lock; then
             echo "Podfile.lock is out of sync, requiring pod install"
-            rm -rf ~/Library/Caches/CocoaPods
+            rm -rf ${{env.TURBO_CACHE_DIR}}
             rm -rf Pods/
             echo "pod_install_required=1" >> $GITHUB_ENV
           fi
