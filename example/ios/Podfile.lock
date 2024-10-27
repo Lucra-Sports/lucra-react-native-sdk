@@ -1690,7 +1690,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNPermissions (4.1.5):
+  - RNPermissions (5.0.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1949,6 +1949,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - Resolver (from `https://github.com/ospfranco/Resolver.git`, branch `master`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -1963,7 +1964,6 @@ SPEC REPOS:
     - Auth0
     - JWTDecode
     - LucraSDK
-    - Resolver
     - SimpleKeychain
     - SocketRocket
     - ZendeskCommonUISDK
@@ -2106,6 +2106,9 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  Resolver:
+    :branch: master
+    :git: https://github.com/ospfranco/Resolver.git
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
@@ -2122,6 +2125,11 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-vector-icons"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
+
+CHECKOUT OPTIONS:
+  Resolver:
+    :commit: 0347a5cf087cb827ccb822c6f9262ccc9c9a5577
+    :git: https://github.com/ospfranco/Resolver.git
 
 SPEC CHECKSUMS:
   Auth0: 2876d0c36857422eda9cb580a6cc896c7d14cb36
@@ -2192,11 +2200,11 @@ SPEC CHECKSUMS:
   React-utils: 6ad4233ab2f2fad81950589ddc45b989227787db
   ReactCodegen: ee779c5ae16faa2d22fddc1d85d8f5e87999f460
   ReactCommon: 0e529e04289b43b55281c109c19e9141f4f8d2e2
-  Resolver: 0e2ce51257e9366c54afe1b9e9be25059e9b9300
+  Resolver: 89e3fa61be7350b5faa3cb45cef11c2d9f6a7b2b
   RNCAsyncStorage: 5601d6c658f0bf0a3714ea53e2b42ad25ac550ea
   RNCClipboard: df38bb41ad5b85865af186f060591536417c8b73
   RNGestureHandler: 598e45cedb905b157e9764acbef0b5e365693451
-  RNPermissions: 62a8df5d15b7215670f387832d15f3c165fcb871
+  RNPermissions: f98ab9a5a1e1189b8e488b33762cf4e45f691ec1
   RNReanimated: bbfc101f2f9f69e403c581a4dd8ddfec31134e15
   RNScreens: f493b156fe5de2434806b5a2c410800b2cd76c0e
   RNVectorIcons: 8c7af262a73890caabbac2bb081ddbaa1b8a768c
@@ -2211,6 +2219,6 @@ SPEC CHECKSUMS:
   ZendeskSupportProvidersSDK: 281acf2bb731d2a67f913cfe653ed0da9f5b2f42
   ZendeskSupportSDK: b512cfc74b6bf8490e589f02cf52e27ed4f2bebe
 
-PODFILE CHECKSUM: f19b8d16556dac082c0ce3fda2e0945ed8e25021
+PODFILE CHECKSUM: 5a8b1478da6b55fa53c45558ae8571aca60ed688
 
 COCOAPODS: 1.15.2
