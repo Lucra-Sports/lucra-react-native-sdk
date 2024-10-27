@@ -187,9 +187,7 @@ jobs:
         run: |
           cd example/ios
           pod repo update
-          pod install
-        env:
-          NO_FLIPPER: 1
+          pod install --repo-update
 
       - name: Build example for iOS
         run: |
