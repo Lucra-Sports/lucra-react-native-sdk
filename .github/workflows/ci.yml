@@ -172,6 +172,10 @@ jobs:
           gem install bundler:2.4.7
           bundle install
 
+      - name: Install cocoapods
+        run: |
+          gem install cocoapods
+
       - name: Validate Podfile.lock consistency
         run: |
           cd example/ios
@@ -186,8 +190,8 @@ jobs:
         if: env.turbo_cache_hit != 1 && (steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1')
         run: |
           cd example/ios
-          bundle exec pod repo update
-          bundle exec pod install --repo-update
+          pod repo update
+          pod install --repo-update
 
       - name: Build example for iOS
         run: |
