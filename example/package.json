@@ -22,7 +22,7 @@
     "@react-navigation/native-stack": "^6.11.0",
     "nativewind": "^4.1.21",
     "react": "18.2.0",
-    "react-native": "^0.73.5",
+    "react-native": "^0.73.10",
     "react-native-date-picker": "^5.0.7",
     "react-native-gesture-handler": "^2.20.2",
     "react-native-permissions": "^4.1.5",
