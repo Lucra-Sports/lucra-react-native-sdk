@@ -1,3 +1,4 @@
+import '../global.css';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
@@ -14,10 +15,11 @@ LucraSDK.addListener('user', (user) => {
 
 export default function App() {
   const [isReady, setIsReady] = React.useState(false);
-
+  console.log('Is ready:', isReady);
   return (
     <AppContextProvider>
       <EventsContextProvider>
+        <Text>Init</Text>
         <LucraSDKInit onStateChange={setIsReady} />
         {!isReady ? (
           <LinearGradient colors={['#6360EB', '#001448']} className="h-full">

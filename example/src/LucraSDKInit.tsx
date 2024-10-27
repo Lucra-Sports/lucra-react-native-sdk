@@ -15,11 +15,14 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
   const { state, ready } = useAppContext();
   const [, setEvents] = useEventsContext();
   const [initialized, setInitialized] = useState(false);
+
   useEffect(() => {
     if (initialized || !ready) {
       return;
     }
+
     setInitialized(true);
+    console.log('Calling SDK INIT');
     LucraSDK.init({
       apiURL: state.apiURL || defaultAppConfig.apiURL,
       apiKey: state.apiKey || defaultAppConfig.apiKey,
@@ -38,6 +41,7 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
+        console.log('SDK initialized');
         LucraSDK.registerDeepLinkProvider(async () => {
           return 'lucra://flow/profile';
         });
@@ -89,6 +93,7 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
         });
     }
   }, [state, ready, initialized, onStateChange, setEvents]);
+
   return null;
 };
 
