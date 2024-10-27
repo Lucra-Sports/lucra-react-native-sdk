@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => "15.0" }
+  s.platforms    = { :ios => "15.1" }
   s.source       = { :git => "https://github.com/Lucra-Sports/lucra-react-native-sdk", :tag => "#{s.version}" }
   s.source_files = "ios/**/*.{h,mm,swift}"
   
