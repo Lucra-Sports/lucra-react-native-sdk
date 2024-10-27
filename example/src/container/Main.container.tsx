@@ -22,7 +22,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
   const { state } = useAppContext();
   return (
     <SafeAreaView className="flex-1">
-      <ScrollView className="flex-1 p-4">
+      <ScrollView className="flex-1" contentContainerClassName="p-4">
         <Image
           source={Assets.LucraLogo}
           resizeMode="contain"
@@ -30,10 +30,10 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           // eslint-disable-next-line react-native/no-inline-styles
           style={{ tintColor: 'white' }}
         />
-        <View className="mt-4">
+        <View className="mt-4 gap-0.5">
           <Text className="text-white">SDK Navigation</Text>
           <TouchableOpacity
-            className="mt-2 bg-darkPurple p-4 rounded-t-xl"
+            className="mt-2 bg-indigo-700 p-4 rounded-t-xl"
             onPress={() => {
               navigation.navigate('UIFlow');
             }}
@@ -41,7 +41,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white">Sheet Flows</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-darkPurple p-4 border-t border-lightPurple "
+            className="bg-indigo-700 p-4"
             onPress={() => {
               navigation.navigate('UIEmbeddedPublicFeed');
             }}
@@ -49,7 +49,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white">Embedded Public Feed</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-darkPurple p-4 border-t border-lightPurple rounded-b-xl"
+            className="bg-indigo-700 p-4 rounded-b-xl"
             onPress={() => {
               navigation.navigate('UIComponent');
             }}
@@ -57,10 +57,10 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white">Components</Text>
           </TouchableOpacity>
         </View>
-        <View className="mt-4">
+        <View className="mt-4 gap-0.5">
           <Text className="text-white">Configuration</Text>
           <TouchableOpacity
-            className="mt-2 bg-darkPurple p-4 rounded-t-xl border-lightPurple"
+            className="mt-2 bg-indigo-700 p-4 rounded-t-xl "
             onPress={() => {
               navigation.navigate('APIFlow');
             }}
@@ -68,7 +68,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white">API Calls Example</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-darkPurple p-4 border-t border-lightPurple"
+            className="bg-indigo-700 p-4 "
             onPress={() => {
               navigation.navigate('ConfigureUser');
             }}
@@ -77,7 +77,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="bg-darkPurple p-4 border-t border-lightPurple rounded-b-xl"
+            className="bg-indigo-700 p-4 rounded-b-xl"
             onPress={() => {
               navigation.navigate('EventViewer');
             }}
@@ -87,7 +87,7 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <View className="mt-4">
-          <Text className="text-white">Client Overrides</Text>
+          <Text className="text-white">Lucra SDK Client Parameters</Text>
           <ClientOverride />
         </View>
 

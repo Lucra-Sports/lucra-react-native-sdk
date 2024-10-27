@@ -30,8 +30,8 @@ export const UIEmbeddedPublicFeed: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1">
-      <View className="flex-1 g-2 bg-transparent">
-        <View className="flex-row items-center g-2">
+      <View className="flex-1 gap-2 bg-transparent">
+        <View className="flex-row items-center gap-2">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -50,7 +50,7 @@ export const UIEmbeddedPublicFeed: React.FC<Props> = ({ navigation }) => {
         <LucraFlowView
           key={embeddedViewKey}
           flow={LucraSDK.FLOW.PUBLIC_FEED}
-          className="h-[100%]"
+          style={{ flex: 1 }}
         />
       </View>
     </SafeAreaView>
