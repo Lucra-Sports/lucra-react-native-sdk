@@ -50,6 +50,7 @@ export const UIEmbeddedPublicFeed: React.FC<Props> = ({ navigation }) => {
         <LucraFlowView
           key={embeddedViewKey}
           flow={LucraSDK.FLOW.PUBLIC_FEED}
+          // eslint-disable-next-line react-native/no-inline-styles
           style={{ flex: 1 }}
         />
       </View>

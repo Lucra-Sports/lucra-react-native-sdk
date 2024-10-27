@@ -61,6 +61,7 @@
     "@react-native/eslint-config": "^0.73.1",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.3.3",
+    "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
