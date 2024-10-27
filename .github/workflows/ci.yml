@@ -186,8 +186,8 @@ jobs:
         if: env.turbo_cache_hit != 1 && (steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1')
         run: |
           cd example/ios
-          pod repo update
-          pod install --repo-update
+          bundle exec pod repo update
+          bundle exec pod install --repo-update
 
       - name: Build example for iOS
         run: |
