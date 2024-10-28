@@ -1,10 +1,10 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import "LucraCreateContestButton.h"
 
-#import <react/renderer/components/RNLucraCreateContestButtonSpec/ComponentDescriptors.h>
-#import <react/renderer/components/RNLucraCreateContestButtonSpec/EventEmitters.h>
-#import <react/renderer/components/RNLucraCreateContestButtonSpec/Props.h>
-#import <react/renderer/components/RNLucraCreateContestButtonSpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/LucraClientSpec/ComponentDescriptors.h>
+#import <react/renderer/components/LucraClientSpec/EventEmitters.h>
+#import <react/renderer/components/LucraClientSpec/Props.h>
+#import <react/renderer/components/LucraClientSpec/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 #import "Utils.h"
@@ -45,11 +45,11 @@ using namespace facebook::react;
   const auto &newViewProps =
       *std::static_pointer_cast<LucraCreateContestButtonProps const>(props);
 
-  if (oldViewProps.color != newViewProps.color) {
-    NSString *colorToConvert =
-        [[NSString alloc] initWithUTF8String:newViewProps.color.c_str()];
-    [_view setBackgroundColor:[Utils hexStringToColor:colorToConvert]];
-  }
+//  if (oldViewProps.color != newViewProps.color) {
+//    NSString *colorToConvert =
+//        [[NSString alloc] initWithUTF8String:newViewProps.color.c_str()];
+//    [_view setBackgroundColor:[Utils hexStringToColor:colorToConvert]];
+//  }
 
   [super updateProps:props oldProps:oldProps];
 }
