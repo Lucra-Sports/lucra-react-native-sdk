@@ -1,5 +1,5 @@
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "LucraFlowView.h"
+#import "LucraRecommendedMatchup.h"
 
 #import <react/renderer/components/LucraClientSpec/ComponentDescriptors.h>
 #import <react/renderer/components/LucraClientSpec/EventEmitters.h>
@@ -11,23 +11,23 @@
 
 using namespace facebook::react;
 
-@interface LucraFlowView () <RCTLucraFlowViewViewProtocol>
+@interface LucraRecommendedMatchup () <RCTLucraRecommendedMatchupViewProtocol>
 
 @end
 
-@implementation LucraFlowView {
+@implementation LucraRecommendedMatchup {
   UIView *_view;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider {
   return concreteComponentDescriptorProvider<
-      LucraFlowViewComponentDescriptor>();
+      LucraRecommendedMatchupComponentDescriptor>();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps =
-        std::make_shared<const LucraFlowViewProps>();
+        std::make_shared<const LucraRecommendedMatchupProps>();
     _props = defaultProps;
 
     _view = [[UIView alloc] init];
@@ -41,9 +41,9 @@ using namespace facebook::react;
 - (void)updateProps:(Props::Shared const &)props
            oldProps:(Props::Shared const &)oldProps {
   const auto &oldViewProps =
-      *std::static_pointer_cast<LucraFlowViewProps const>(_props);
+      *std::static_pointer_cast<LucraRecommendedMatchupProps const>(_props);
   const auto &newViewProps =
-      *std::static_pointer_cast<LucraFlowViewProps const>(props);
+      *std::static_pointer_cast<LucraRecommendedMatchupProps const>(props);
   //
   //    if (oldViewProps.color != newViewProps.color) {
   //        NSString * colorToConvert = [[NSString alloc] initWithUTF8String:
@@ -54,8 +54,8 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
-Class<RCTComponentViewProtocol> LucraFlowViewCls(void) {
-  return LucraFlowView.class;
+Class<RCTComponentViewProtocol> LucraRecommendedMatchupCls(void) {
+  return LucraRecommendedMatchup.class;
 }
 
 @end
