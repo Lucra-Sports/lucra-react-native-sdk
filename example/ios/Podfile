@@ -1,3 +1,5 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
 source 'https://cdn.cocoapods.org/'
 
@@ -8,7 +10,7 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, 15.1
+platform :ios, "15.1"
 prepare_react_native_project!
 
 use_frameworks! :linkage => :static
