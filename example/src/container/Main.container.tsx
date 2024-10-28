@@ -15,8 +15,6 @@ import type { RootStackParamList } from '../Routes';
 import { ClientOverride } from './ClientOverride';
 import { ColorOverride } from './ColorOverride';
 import { useAppContext } from '../AppContext';
-import packageJson from '../../package.json';
-import SDKPackageJson from '../../../package.json';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
@@ -32,12 +30,8 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           // eslint-disable-next-line react-native/no-inline-styles
           style={{ tintColor: 'white' }}
         />
-        <View>
-          <Text className="text-white">RN SDK {SDKPackageJson.version}</Text>
-          <Text className="text-white">RN EXAMPLE {packageJson.version}</Text>
-        </View>
         <View className="mt-4">
-          <Text>SDK Navigation</Text>
+          <Text className="text-white">SDK Navigation</Text>
           <TouchableOpacity
             className="mt-2 bg-darkPurple p-4 rounded-t-xl"
             onPress={() => {
@@ -64,9 +58,9 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View className="mt-4">
-          <Text>CONFIGURATION</Text>
+          <Text className="text-white">Configuration</Text>
           <TouchableOpacity
-            className="mt-2 bg-darkPurple p-4 border-t rounded-t-xl border-lightPurple"
+            className="mt-2 bg-darkPurple p-4 rounded-t-xl border-lightPurple"
             onPress={() => {
               navigation.navigate('APIFlow');
             }}
@@ -93,12 +87,12 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <View className="mt-4">
-          <Text>CLIENT OVERRIDES</Text>
+          <Text className="text-white">Client Overrides</Text>
           <ClientOverride />
         </View>
 
         <View className="mt-4">
-          <Text>COLOR OVERRIDES</Text>
+          <Text className="text-white">Color Overrides</Text>
           <ColorOverride />
         </View>
       </ScrollView>

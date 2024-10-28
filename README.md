@@ -753,14 +753,6 @@ export const App = () => {
 
 For android you need to add the necessary [native code](https://github.com/Lucra-Sports/lucra-android-sdk?tab=readme-ov-file#setting-up-push-notifications) in order for you to get the device token and handle incoming push notifications.
 
-# Publishing the package
-
-Publishing the package can be automatically be done for you via GitHub action:
-
-- Modify the version on the root `package.json`
-- Go to the [Publish Workflow](https://github.com/Lucra-Sports/lucra-react-native-sdk/actions/workflows/publish.yml) and trigger a run via the `Run Workflow` button on the top right corner.
-- It will automagically transpile and publish a version to the GitHub package registry and then create a tag and commit it to the repo for you.
-
 ## Credit conversion provider
 
 To allow users to withdraw money in credits relevant to your internal system, you must register a `creditConversionProvider`. The Convert to Credit feature allows end users to convert dollars they've deposited or won playing contests into credit they can use within your ecosystem. The conversion process can be configured with a multiplier to incentivize opting for this conversion over other withdrawal methods.
@@ -807,3 +799,9 @@ You then need to modify your `AppDelegate.mm`:
     return [[LucraClient sharedInstance] handleVenmoUrl:url];
 }
 ```
+
+# For Maintainers
+
+## Publishing
+
+Publishing the package can be automatically be done for you via GitHub action, just push a tag with a SEMVER format (e.g. `3.1.2`) and the CI will automatically publish that commit with the tag version.

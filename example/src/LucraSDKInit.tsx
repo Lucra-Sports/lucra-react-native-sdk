@@ -73,8 +73,8 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
         onStateChange(true);
       })
       .catch((error) => {
-        setInitialized(false);
         console.error('Error initializing LucraSDK', error);
+        setInitialized(false);
       });
   }, [state, ready, initialized, onStateChange, setEvents, urlScheme]);
   return null;
