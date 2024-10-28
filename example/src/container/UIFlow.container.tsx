@@ -33,8 +33,8 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 bg-indigo-900">
-      <View className="pt-4 px-4 flex-1 gap-2 bg-transparent">
-        <View className="flex-row items-center g-2 pb-5">
+      <View className="pt-4 px-4 flex-1 gap-2">
+        <View className="flex-row items-center gap-2 pb-5">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
