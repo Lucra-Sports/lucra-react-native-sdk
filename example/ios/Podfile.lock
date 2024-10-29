@@ -15,7 +15,7 @@ PODS:
     - DoubleConversion
     - glog
     - hermes-engine
-    - LucraSDK (= 1.8.5)
+    - LucraSDK (= 1.9.0)
     - RCT-Folly (= 2024.01.01.00)
     - RCTRequired
     - RCTTypeSafety
@@ -33,7 +33,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - LucraSDK (1.8.5):
+  - LucraSDK (1.9.0):
     - Auth0
     - Resolver
     - ZendeskSupportSDK
@@ -2140,8 +2140,8 @@ SPEC CHECKSUMS:
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   hermes-engine: 9de51d2f67336348a6cd5b686330e436d1dbd522
   JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
-  lucra-react-native-sdk: e2d7d471f752366d955e5bf1ab93353b54176007
-  LucraSDK: b52df3d3ce0b04860665bf8065738f283be9154a
+  lucra-react-native-sdk: e8dd8a765eda5df6aec8258aa5fb1df39d3e5fb8
+  LucraSDK: 04c06f5dfbd8c52fff7062d67ae5be8fa80efbca
   RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: 4c2c4a088b6f0ccfcbd53c9d5614b0238ad57909
   RCTRequired: 2d8a683a7848bc0baf5883f0792c1ac43f6267b5
@@ -2219,6 +2219,6 @@ SPEC CHECKSUMS:
   ZendeskSupportProvidersSDK: 281acf2bb731d2a67f913cfe653ed0da9f5b2f42
   ZendeskSupportSDK: b512cfc74b6bf8490e589f02cf52e27ed4f2bebe
 
-PODFILE CHECKSUM: 19540b42dcb6c84050c7c506e10f99c684de49bd
+PODFILE CHECKSUM: d07ee0ac1967926d50aa2fd79768759184f75cfd
 
 COCOAPODS: 1.15.2
