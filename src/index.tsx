@@ -126,6 +126,7 @@ type LucraSDKParams = {
         }
       | string;
   };
+  urlScheme?: string;
   merchantID?: string;
 };
 
@@ -165,6 +166,7 @@ type LucraConvertCreditResponse = {
   pillColor: string;
   pillTextColor: string;
 };
+
 let deepLinkSubscription: NativeEventSubscription;
 let creditConversionSubscription: NativeEventSubscription;
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
@@ -180,6 +182,7 @@ type LucraContestListener = {
 };
 
 export const LucraSDK = {
+  ready: false,
   ENVIRONMENT: {
     PRODUCTION: 'production',
     STAGING: 'staging',
@@ -316,7 +319,6 @@ export const LucraSDK = {
     return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
   },
 };
-
 export type LucraSDKError = {
   code:
     | 'notInitialized'

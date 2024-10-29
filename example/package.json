@@ -1,13 +1,13 @@
 {
   "name": "LucrasdkExample",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios --simulator=\"iPhone 16 Pro\"",
     "start": "react-native start",
     "pods:next": "cd ios && rm -rf Pods && rm -f Podfile.lock && RCT_NEW_ARCH_ENABLED=1 USE_FRAMEWORKS=static bundle exec pod install --repo-update",
-    "pods": "cd ios && rm -rf Pods && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update",
+    "pods": "cd ios && rm -rf Pods && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update && rm -f ios/.xcode.env.local",
     "android:logcat": "adb logcat",
     "nuke": "rm -rf $TMPDIR/react-* && watchman watch-del-all && rm -rf ios/build && rm -rf node_modules/ && rm -rf ./ios/Pods && yarn",
     "codegen": "./codegen.sh",
@@ -19,6 +19,9 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-native-clipboard/clipboard": "^1.14.2",
+    "@react-native-firebase/analytics": "^21.2.0",
+    "@react-native-firebase/app": "^21.2.0",
+    "@react-native-firebase/dynamic-links": "^21.2.0",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.9.13",
     "nativewind": "^2.0.11",
