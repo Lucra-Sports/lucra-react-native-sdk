@@ -50,7 +50,7 @@ function handleLucraSDKError(e: LucraSDKError) {
 export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1">
-      <View className="pt-4 px-4 flex-1 g-2 bg-transparent">
+      <View className="pt-4 px-4 flex-1 gap-2 bg-transparent">
         <View className="flex-row items-center g-2">
           <TouchableOpacity
             onPress={() => {
@@ -66,21 +66,21 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => navigation.navigate('SportsYouWatch')}
         >
-          <Text className="font-bold text-white">Sports You Watch</Text>
+          <Text className="text-white">Sports You Watch</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => navigation.navigate('GamesYouPlay')}
         >
-          <Text className="font-bold text-white">Games You Play</Text>
+          <Text className="text-white">Games You Play</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => {
             LucraSDK.createGamesMatchup('DARTS', 1.0)
               .then((res) => {
@@ -93,31 +93,31 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
               });
           }}
         >
-          <Text className="font-bold text-white">Create Games Matchup</Text>
+          <Text className="text-white">Create Games Matchup</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => {
             LucraSDK.acceptGamesMatchup('INSERT_ID_HERE', 'TEAM_ID').catch(
               handleLucraSDKError
             );
           }}
         >
-          <Text className="font-bold text-white">Accept Games match up</Text>
+          <Text className="text-white">Accept Games match up</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
             await LucraSDK.logout();
           }}
         >
-          <Text className="font-bold text-white">Log out</Text>
+          <Text className="text-white">Log out</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
             try {
               const info = await LucraSDK.getSportsMatchup(currentMatchupId);
@@ -129,11 +129,11 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
             }
           }}
         >
-          <Text className="font-bold text-white">Get Sports Matchup info</Text>
+          <Text className="text-white">Get Sports Matchup info</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg"
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => {
             LucraSDK.cancelGamesMatchup(currentMatchupId)
               .then(() => {
@@ -142,7 +142,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
               .catch(handleLucraSDKError);
           }}
         >
-          <Text className="font-bold text-white">Cancel Matchup</Text>
+          <Text className="text-white">Cancel Matchup</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

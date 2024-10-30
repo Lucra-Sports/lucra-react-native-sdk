@@ -32,9 +32,9 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView className="flex-1">
-      <View className="pt-4 px-4 flex-1 g-2 bg-transparent">
-        <View className="flex-row items-center g-2 pb-5">
+    <SafeAreaView className="flex-1 bg-indigo-900">
+      <View className="pt-4 px-4 flex-1 gap-2">
+        <View className="flex-row items-center gap-2 pb-5">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -52,56 +52,56 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() => LucraSDK.present(LucraSDK.FLOW.ONBOARDING)}
         >
           <Text className="font-bold text-white">Onboarding</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() => LucraSDK.present(LucraSDK.FLOW.VERIFY_IDENTITY)}
         >
           <Text className="font-bold text-white">Verify Identity</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
         >
           <Text className="font-bold text-white">Add Funds</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() => LucraSDK.present(LucraSDK.FLOW.WITHDRAW_FUNDS)}
         >
           <Text className="font-bold text-white">Withdraw Funds</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() => LucraSDK.present(LucraSDK.FLOW.CREATE_GAMES_MATCHUP)}
         >
           <Text className="font-bold text-white">Create Games Matchup</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() => LucraSDK.present(LucraSDK.FLOW.CREATE_SPORTS_MATCHUP)}
         >
           <Text className="font-bold text-white">Create Sports Matchup</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
         >
           <Text className="font-bold text-white">Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() => LucraSDK.present(LucraSDK.FLOW.PUBLIC_FEED)}
         >
           <Text className="font-bold text-white">Public Feed</Text>
@@ -110,7 +110,7 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
         {/* TODO review if iOS has a way to display myMatchups flow */}
         {Platform.OS === 'android' ? (
           <TouchableOpacity
-            className="w-full border border-lightPurple p-4 items-center justify-center rounded-lg mb-2"
+            className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
             onPress={() => LucraSDK.present(LucraSDK.FLOW.MY_MATCHUP)}
           >
             <Text className="font-bold text-white">My Matchups</Text>

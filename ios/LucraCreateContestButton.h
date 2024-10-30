@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface LucraCreateContestButtonView : RCTViewComponentView
+@interface LucraCreateContestButton : RCTViewComponentView
 @end
 
 NS_ASSUME_NONNULL_END

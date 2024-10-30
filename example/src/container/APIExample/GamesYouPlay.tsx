@@ -1,8 +1,22 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, Button, ScrollView } from 'react-native';
+import {
+  View,
+  TextInput,
+  Text,
+  Button,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../Routes';
+import { Assets } from '../../Assets';
 
-export const GamesYouPlay: React.FC = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'GamesYouPlay'>;
+
+export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
   const [wager, setWager] = useState(1);
   const [info, setInfo] = useState('');
   const [matchup, setMatchup] = useState<{ matchupId: string } | null>();
@@ -45,27 +59,42 @@ export const GamesYouPlay: React.FC = () => {
     }
   };
   return (
-    <ScrollView className="gap-4 p-2">
-      <Text className="font-bold">API Example Create Games Matchup</Text>
-      <TextInput
-        className="bg-white p-2"
-        value={wager.toString()}
-        onChangeText={(val) => setWager(parseInt(val, 10))}
-        keyboardType="numeric"
-        placeholder="Wager"
-      />
-      <Text className="text-white font-bold">Matchup info</Text>
-      <Text className="text-white">{info}</Text>
-      <Text className="text-white font-bold">Full Matchup info</Text>
-      <Text className="text-white">{fullMatchupInfo}</Text>
-      {!matchup ? (
-        <Button title="Create Matchup" onPress={createGamesMatchup} />
-      ) : (
-        <View>
-          <Button title="Load Full Matchup" onPress={loadFullMatchup} />
-          <Button title="Cancel Matchup" onPress={cancelMatchup} />
+    <SafeAreaView className="flex-1 bg-indigo-900">
+      <ScrollView className="flex-1" contentContainerClassName="p-4 gap-2">
+        <View className="flex-row items-center">
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+          >
+            <Image
+              source={Assets.ChevronLeft}
+              className="h-8 w-8"
+              tintColor={'white'}
+            />
+          </TouchableOpacity>
+          <Text className="text-white">Games You Play</Text>
         </View>
-      )}
-    </ScrollView>
+        <TextInput
+          className="bg-white p-2"
+          value={wager.toString()}
+          onChangeText={(val) => setWager(parseInt(val, 10))}
+          keyboardType="numeric"
+          placeholder="Wager"
+        />
+        <Text className="text-white font-bold">Matchup info</Text>
+        <Text className="text-white">{info}</Text>
+        <Text className="text-white font-bold">Full Matchup info</Text>
+        <Text className="text-white">{fullMatchupInfo}</Text>
+        {!matchup ? (
+          <Button title="Create Matchup" onPress={createGamesMatchup} />
+        ) : (
+          <View>
+            <Button title="Load Full Matchup" onPress={loadFullMatchup} />
+            <Button title="Cancel Matchup" onPress={cancelMatchup} />
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 };

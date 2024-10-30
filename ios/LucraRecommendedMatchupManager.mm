@@ -4,10 +4,10 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
 
-@interface LucraRecommendedMatchup : RCTViewManager
+@interface LucraRecommendedMatchupManager : RCTViewManager
 @end
 
-@implementation LucraRecommendedMatchup
+@implementation LucraRecommendedMatchupManager
 
 RCT_EXPORT_MODULE(LucraRecommendedMatchup)
 
