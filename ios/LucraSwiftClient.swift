@@ -39,23 +39,24 @@ public class LucraSwiftClient: NSObject {
       let longDescription = jsMap["longDescription"] as! String
 
       let cardColorString = jsMap["cardColor"] as! String
-        let cardColorTextString = jsMap["cardColorText"] as! String
+      let cardColorTextString = jsMap["cardColorText"] as! String
       let pillColorString = jsMap["pillColor"] as! String
-        let pillTextColorString = jsMap["pillColorText"] as! String
-//      let outlineColorString = jsMap["outlineColor"] as! String
-//      let glowColorString = jsMap["glowColor"] as! String
-//      let textColorString = jsMap["textColor"] as! String
+      let pillTextColorString = jsMap["pillColorText"] as! String
+      //      let outlineColorString = jsMap["outlineColor"] as! String
+      //      let glowColorString = jsMap["glowColor"] as! String
+      //      let textColorString = jsMap["textColor"] as! String
 
       let theme = CreditWithdrawal.Theme(
-        cardColor: cardColorString.color!, cardTextColor: cardColorTextString.color!, pillColor: pillColorString.color!, pillTextColor: pillTextColorString.color!
-//        outlineColor: outlineColorString.color!, glowColor: glowColorString.color!,
-//        textColor: textColorString.color!
+        cardColor: cardColorString.color!, cardTextColor: cardColorTextString.color!,
+        pillColor: pillColorString.color!, pillTextColor: pillTextColorString.color!
+          //        outlineColor: outlineColorString.color!, glowColor: glowColorString.color!,
+          //        textColor: textColorString.color!
       )
 
       let metadata = jsMap["metaData"]
-//
-//      let metadataJSON = try? JSONSerialization.data(withJSONObject: metadata!, options: [])
-//      let metadataString = String(data: metadataJSON ?? Data(), encoding: .utf8)
+      //
+      //      let metadataJSON = try? JSONSerialization.data(withJSONObject: metadata!, options: [])
+      //      let metadataString = String(data: metadataJSON ?? Data(), encoding: .utf8)
 
       let result = CreditWithdrawal(
         id: id,
@@ -67,13 +68,13 @@ public class LucraSwiftClient: NSObject {
         convertedDisplayAmount: convertedDisplayAmount,
         shortDescription: shortDescription,
         longDescription: longDescription,
-//        TODO: Test this, in theory metadata is a [String:Any] map
+        //        TODO: Test this, in theory metadata is a [String:Any] map
         metaData: metadata as? [String: String])
 
       return result
     }
   }
-    
+
   @objc weak public var delegate: LucraClientDelegate? = nil
   private var nativeClient: LucraSDK.LucraClient!
   private var userCallback: RCTResponseSenderBlock?
@@ -94,7 +95,10 @@ public class LucraSwiftClient: NSObject {
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
-    guard nativeClient == nil else { return resolver(nil) }
+    guard nativeClient == nil else {
+      resolver(nil)
+      return
+    }
 
     guard let apiURL = options["apiURL"] as? String
     else {
@@ -450,8 +454,8 @@ public class LucraSwiftClient: NSObject {
   }
 
   @objc public func registerConvertToCreditProvider() {
-      let convertToCreditProvider = MyConvertToCreditProvider(outer: self)
-      self.nativeClient.registerConvertToCreditProvider(convertToCreditProvider)
+    let convertToCreditProvider = MyConvertToCreditProvider(outer: self)
+    self.nativeClient.registerConvertToCreditProvider(convertToCreditProvider)
   }
 
   @objc
@@ -593,8 +597,8 @@ public class LucraSwiftClient: NSObject {
       .contestCard(contestId: contestId!), parentUIViewController: UIViewController(),
       onSizeChanged: onSizeChanged)
   }
-    
+
   @MainActor @objc public func handleVenmoUrl(url: URL) -> Bool {
-      return self.nativeClient.handlePaypalVenmoCallback(url: url)
+    return self.nativeClient.handlePaypalVenmoCallback(url: url)
   }
 }

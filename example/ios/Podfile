@@ -1,10 +1,16 @@
+# ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
 source 'https://cdn.cocoapods.org/'
 
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
 
-platform :ios, '15.0'
+platform :ios, 15.1
 prepare_react_native_project!
 
 use_frameworks! :linkage => :static
@@ -12,7 +18,9 @@ $RNFirebaseAsStaticFramework = true
 
 target 'LucrasdkExample' do
   config = use_native_modules!
-
+  
+  pod "Resolver", :git => "https://github.com/ospfranco/Resolver.git", :branch => "master"
+  
   use_react_native!(
     path: config[:reactNativePath],
     app_path: "#{Pod::Config.instance.installation_root}/.."

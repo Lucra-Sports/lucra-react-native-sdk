@@ -1,8 +1,8 @@
 import React from 'react';
 import LucraClient from './NativeLucraClient';
-export { default as LucraFlowView } from './LucraFlowView';
-import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
-import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonComponent';
+export { default as LucraFlowView } from './LucraFlowViewNativeComponent';
+import { default as LucraProfilePillNative } from './LucraProfilePillNativeComponent';
+import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonNativeComponent';
 import {
   StyleSheet,
   type ViewProps,
@@ -10,9 +10,9 @@ import {
   View,
   NativeEventEmitter,
 } from 'react-native';
-export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
-export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupComponent';
-export { default as LucraContestCard } from './LucraContestCardComponent';
+export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedNativeComponent';
+export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupNativeComponent';
+export { default as LucraContestCard } from './LucraContestCardNativeComponent';
 import { type SportsMatchupType } from './types';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);

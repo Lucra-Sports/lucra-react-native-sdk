@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -55,7 +55,7 @@ jobs:
       GPR_KEY: ${{ secrets.GPR_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -118,6 +118,14 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build example for Android
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        env:
+          JAVA_OPTS: '-XX:MaxHeapSize=6g'
+        run: |
+          yarn turbo run build:android --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+
+      - name: Release example for Android
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: |
@@ -172,22 +180,34 @@ jobs:
           gem install bundler:2.4.7
           bundle install
 
+      - name: Install cocoapods
+        run: |
+          gem install cocoapods
+
       - name: Validate Podfile.lock consistency
         run: |
-          cd example/ios
           if ! cmp -s Podfile.lock Pods/Manifest.lock; then
+            rm -rf ${{env.TURBO_CACHE_DIR}}
+            cd example/ios
             echo "Podfile.lock is out of sync, requiring pod install"
+            rm -rf Pods/
+            pod cache clean --all
             echo "pod_install_required=1" >> $GITHUB_ENV
           fi
 
       - name: Install cocoapods
         if: env.turbo_cache_hit != 1 && (steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1')
         run: |
-          cd example/ios
+          pod repo update
           pod install --repo-update
-        env:
-          NO_FLIPPER: 1
+        working-directory: example/ios
 
       - name: Build example for iOS
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        run: |
+          yarn turbo run build:ios --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+
+      - name: Release example for iOS
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           yarn turbo run release:ios --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"

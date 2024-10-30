@@ -37,7 +37,6 @@ RCT_CUSTOM_VIEW_PROPERTY(playerIds, NSString, UIView)
    ]]; 
     
     [self.bridge.uiManager setIntrinsicContentSize:feedView.intrinsicContentSize forView:view];
-
 }
 
 @end

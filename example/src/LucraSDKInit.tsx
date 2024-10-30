@@ -20,6 +20,7 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
     if (initialized || !ready) {
       return;
     }
+
     setInitialized(true);
     LucraSDK.init({
       apiURL: state.apiURL || defaultAppConfig.apiURL,

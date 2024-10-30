@@ -1,9 +1,9 @@
+import '../global.css';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { Routes } from './Routes';
 import { Platform, StatusBar, Text, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { AppContextProvider } from './AppContext';
 import LucraSDKInit from './LucraSDKInit';
 import { EventsContextProvider } from './EventsContext';
@@ -31,30 +31,26 @@ export default function App() {
   }, []);
 
   return (
-    <AppContextProvider>
-      <EventsContextProvider>
-        <LucraSDKInit onStateChange={setIsReady} />
-        {!isReady ? (
-          <LinearGradient colors={['#6360EB', '#001448']} className="h-full">
+    <View className="h-full bg-indigo-900">
+      <AppContextProvider>
+        <EventsContextProvider>
+          <LucraSDKInit onStateChange={setIsReady} />
+          <StatusBar barStyle="light-content" />
+          {!isReady ? (
             <View className="flex-1 items-center justify-center">
               <Text className="text-white">Loading...</Text>
             </View>
-          </LinearGradient>
-        ) : (
-          <>
-            <DeepLinkManager />
-            <NavigationContainer>
-              <LinearGradient
-                colors={['#6360EB', '#001448']}
-                className="h-full"
-              >
+          ) : (
+            <>
+              <DeepLinkManager />
+              <NavigationContainer>
                 <StatusBar barStyle="light-content" />
                 <Routes />
-              </LinearGradient>
-            </NavigationContainer>
-          </>
-        )}
-      </EventsContextProvider>
-    </AppContextProvider>
+              </NavigationContainer>
+            </>
+          )}
+        </EventsContextProvider>
+      </AppContextProvider>
+    </View>
   );
 }

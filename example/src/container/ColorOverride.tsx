@@ -20,6 +20,7 @@ type ColorOptionProps = {
   name: string;
   value: string;
   onUpdate: (value: string) => void;
+  className?: string;
 };
 
 type ThemePillProps = {
@@ -30,48 +31,51 @@ type ThemePillProps = {
 const ThemePill: FC<ThemePillProps> = ({ title, onPress }) => {
   return (
     <TouchableOpacity
-      className="bg-slate-400 rounded-full px-4 py-1"
+      className="bg-indigo-700 rounded-full px-4 py-1"
       onPress={onPress}
     >
-      <Text>{title}</Text>
+      <Text className="text-white font-bold">{title}</Text>
     </TouchableOpacity>
   );
 };
 
-const ColorOption: FC<ColorOptionProps> = ({ name, value, onUpdate }) => {
+const ColorOption: FC<ColorOptionProps> = ({
+  name,
+  value,
+  onUpdate,
+  className,
+}) => {
   const [showModal, setShowModal] = useState(false);
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex-row justify-between bg-darkPurple p-4 border-t border-lightPurple">
-        <View>
-          <Text className="text-white">{name}</Text>
-          <Text className="text-white">{value}</Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => setShowModal(true)}
-          className="w-8 h-8 rounded-md"
-          style={{
-            backgroundColor: value,
-          }}
-        />
-        <Modal visible={showModal} animationType="slide">
-          <SafeAreaView>
-            <ColorPicker
-              value={value}
-              onComplete={(v) => {
-                onUpdate(v.hex);
-              }}
-            >
-              <Panel5 />
-              <HueSlider />
-              <OpacitySlider />
-            </ColorPicker>
-          </SafeAreaView>
-
-          <Button title="Ok" onPress={() => setShowModal(false)} />
-        </Modal>
+    <View className={`flex-row justify-between p-4 bg-indigo-700 ${className}`}>
+      <View>
+        <Text className="text-white">{name}</Text>
+        <Text className="text-neutral-400">{value}</Text>
       </View>
-    </SafeAreaView>
+      <TouchableOpacity
+        onPress={() => setShowModal(true)}
+        className="w-8 h-8 rounded-md"
+        style={{
+          backgroundColor: value,
+        }}
+      />
+      <Modal visible={showModal} animationType="slide">
+        <SafeAreaView>
+          <ColorPicker
+            value={value}
+            onComplete={(v) => {
+              onUpdate(v.hex);
+            }}
+          >
+            <Panel5 />
+            <HueSlider />
+            <OpacitySlider />
+          </ColorPicker>
+        </SafeAreaView>
+
+        <Button title="Ok" onPress={() => setShowModal(false)} />
+      </Modal>
+    </View>
   );
 };
 
@@ -86,8 +90,8 @@ export function ColorOverride() {
     return null;
   }
   return (
-    <View>
-      <View className="flex-row justify-between mt-4 mb-4">
+    <>
+      <View className="flex-row justify-between py-4 gap-2">
         <ThemePill
           title="DEFAULT"
           onPress={() => {
@@ -119,13 +123,14 @@ export function ColorOverride() {
           }}
         />
       </View>
-      <View>
+      <View className="gap-0.5">
         <ColorOption
           name="Background"
           value={theme.background}
           onUpdate={(value: string) => {
             setThemeValue('background', value);
           }}
+          className="rounded-t-xl"
         />
         <ColorOption
           name="Surface"
@@ -189,8 +194,9 @@ export function ColorOverride() {
           onUpdate={(value: string) => {
             setThemeValue('onTertiary', value);
           }}
+          className="rounded-b-xl"
         />
       </View>
-    </View>
+    </>
   );
 }

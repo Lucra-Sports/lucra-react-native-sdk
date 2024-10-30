@@ -6,12 +6,17 @@ import {
   Button,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView,
+  Image,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {
   LucraSDK,
   type LucraUserConfig,
 } from '@lucra-sports/lucra-react-native-sdk';
+import { Assets } from '../Assets';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../Routes';
 
 type InputProps = {
   placeholder: string;
@@ -21,7 +26,7 @@ type InputProps = {
 const Input = ({ placeholder, value, onChangeText }: InputProps) => {
   return (
     <TextInput
-      className="text-white border border-gray-300 p-2 mt-2 mb-2"
+      className="text-white border border-indigo-300 rounded p-4"
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}
@@ -113,7 +118,9 @@ function formReducer(state: FormState, action: FormAction): FormState {
   }
 }
 
-export const ConfigureUser: React.FC = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'ConfigureUser'>;
+
+export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
   const [state, dispatch] = useReducer(formReducer, initialState);
   const [loggedIn, setLoggedIn] = useState(false);
   const [open, setOpen] = useState(false);
@@ -187,96 +194,112 @@ export const ConfigureUser: React.FC = () => {
   }
 
   return (
-    <ScrollView className="p-10 bg-black">
-      {message ? (
-        <View className="bg-sky-700 p-2 items-center">
-          <Text className="text-white">{message}</Text>
-        </View>
-      ) : null}
-      <View className="items-center">
-        <Text className="text-white text-center">
-          Values will be passed in to the SDK configure(user:) function
-        </Text>
-      </View>
-      <Input
-        placeholder="Username"
-        value={state.username ?? ''}
-        onChangeText={(value) => handleChange('username', value)}
-      />
-      <Input
-        placeholder="Avatar URL"
-        value={state.avatarURL ?? ''}
-        onChangeText={(value) => handleChange('avatarURL', value)}
-      />
-      <Input
-        placeholder="Phone"
-        value={state.phoneNumber ?? ''}
-        onChangeText={(value) => handleChange('phoneNumber', value)}
-      />
-      <Input
-        placeholder="Email"
-        value={state.email ?? ''}
-        onChangeText={(value) => handleChange('email', value)}
-      />
-      <Input
-        placeholder="First Name"
-        value={state.firstName ?? ''}
-        onChangeText={(value) => handleChange('firstName', value)}
-      />
-      <Input
-        placeholder="Last Name"
-        value={state.lastName ?? ''}
-        onChangeText={(value) => handleChange('lastName', value)}
-      />
-      <Input
-        placeholder="Address"
-        value={state.address?.address ?? ''}
-        onChangeText={(value) => handleAddressChange('address', value)}
-      />
-      <Input
-        placeholder="Address Continued"
-        value={state.address?.addressCont ?? ''}
-        onChangeText={(value) => handleAddressChange('addressCont', value)}
-      />
-      <Input
-        placeholder="City"
-        value={state.address?.city ?? ''}
-        onChangeText={(value) => handleAddressChange('city', value)}
-      />
-      <Input
-        placeholder="State"
-        value={state.address?.state ?? ''}
-        onChangeText={(value) => handleAddressChange('state', value)}
-      />
-      <Input
-        placeholder="Zip"
-        value={state.address?.zip ?? ''}
-        onChangeText={(value) => handleAddressChange('zip', value)}
-      />
-      <View className="flex-row">
-        <Text className="text-white">Date of birth:</Text>
-        <TouchableOpacity onPress={() => setOpen(true)}>
-          <Text className="text-white">
-            {state.dateOfBirth
-              ? `${state.dateOfBirth.toLocaleDateString()}`
-              : 'Set date of birth'}
-          </Text>
+    <SafeAreaView className="flex-1 bg-indigo-900">
+      <View className="flex-row items-center">
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <Image
+            source={Assets.ChevronLeft}
+            className="h-8 w-8"
+            tintColor={'white'}
+          />
         </TouchableOpacity>
+        <Text className="text-white">Configure User</Text>
       </View>
-      <DatePicker
-        modal
-        date={state.dateOfBirth ?? new Date()}
-        open={open}
-        mode="date"
-        onCancel={() => {
-          setOpen(false);
-        }}
-        onConfirm={(date) => {
-          setOpen(false);
-          handleChange('dateOfBirth', date);
-        }}
-      />
-      <Button title="Submit" onPress={handleSubmit} />
-    </ScrollView>
+      <ScrollView contentContainerClassName="p-4 gap-3">
+        {message ? (
+          <View className="bg-sky-700 p-2 items-center">
+            <Text className="text-white">{message}</Text>
+          </View>
+        ) : null}
+        <View className="">
+          <Text className="text-white">
+            Values will be saved to the user object in the SDK
+          </Text>
+        </View>
+        <Input
+          placeholder="Username"
+          value={state.username ?? ''}
+          onChangeText={(value) => handleChange('username', value)}
+        />
+        <Input
+          placeholder="Avatar URL"
+          value={state.avatarURL ?? ''}
+          onChangeText={(value) => handleChange('avatarURL', value)}
+        />
+        <Input
+          placeholder="Phone"
+          value={state.phoneNumber ?? ''}
+          onChangeText={(value) => handleChange('phoneNumber', value)}
+        />
+        <Input
+          placeholder="Email"
+          value={state.email ?? ''}
+          onChangeText={(value) => handleChange('email', value)}
+        />
+        <Input
+          placeholder="First Name"
+          value={state.firstName ?? ''}
+          onChangeText={(value) => handleChange('firstName', value)}
+        />
+        <Input
+          placeholder="Last Name"
+          value={state.lastName ?? ''}
+          onChangeText={(value) => handleChange('lastName', value)}
+        />
+        <Input
+          placeholder="Address"
+          value={state.address?.address ?? ''}
+          onChangeText={(value) => handleAddressChange('address', value)}
+        />
+        <Input
+          placeholder="Address Continued"
+          value={state.address?.addressCont ?? ''}
+          onChangeText={(value) => handleAddressChange('addressCont', value)}
+        />
+        <Input
+          placeholder="City"
+          value={state.address?.city ?? ''}
+          onChangeText={(value) => handleAddressChange('city', value)}
+        />
+        <Input
+          placeholder="State"
+          value={state.address?.state ?? ''}
+          onChangeText={(value) => handleAddressChange('state', value)}
+        />
+        <Input
+          placeholder="Zip"
+          value={state.address?.zip ?? ''}
+          onChangeText={(value) => handleAddressChange('zip', value)}
+        />
+        <View className="flex-row">
+          <Text className="text-white">Date of birth:</Text>
+          <TouchableOpacity onPress={() => setOpen(true)}>
+            <Text className="text-white">
+              {state.dateOfBirth
+                ? `${state.dateOfBirth.toLocaleDateString()}`
+                : 'Set date of birth'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <DatePicker
+          modal
+          date={state.dateOfBirth ?? new Date()}
+          open={open}
+          mode="date"
+          onCancel={() => {
+            setOpen(false);
+          }}
+          onConfirm={(date) => {
+            setOpen(false);
+            handleChange('dateOfBirth', date);
+          }}
+        />
+        <Button title="Submit" onPress={handleSubmit} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };

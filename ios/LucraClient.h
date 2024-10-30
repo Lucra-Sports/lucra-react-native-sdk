@@ -2,10 +2,10 @@
 #import <LucraClientSpec/LucraClientSpec.h>
 #else
 #import <React/RCTBridge.h>
-#import <React/RCTEventEmitter.h>
 #endif
+#import <React/RCTEventEmitter.h>
 
-@interface LucraClient : RCTEventEmitter
+@interface LucraClient: RCTEventEmitter
 #ifdef RCT_NEW_ARCH_ENABLED
                                 <NativeLucraClientSpec>
 #else

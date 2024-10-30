@@ -49,10 +49,10 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 bg-indigo-900">
       <ScrollView className="flex-1">
-        <View className="pt-4 px-4 flex-1 g-2 bg-transparent">
-          <View className="flex-row items-center g-2 pb-5">
+        <View className="pt-4 px-4 flex-1 gap-2 bg-transparent">
+          <View className="flex-row items-center gap-2 pb-5">
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
@@ -91,10 +91,10 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
           </View>
 
           <Text className="text-white mt-2"> Recommended Matchups</Text>
-          <LucraRecommendedMatchup className="mt-4" />
+          <LucraRecommendedMatchup />
 
           <Text className="text-white my-2">Mini feed</Text>
-          <View className="flex-row items-center g-2 pb-5">
+          <View className="flex-row items-center gap-2 pb-5">
             <ScrollView className="flex-1 p-4">
               <TextInput
                 className="bg-white p-2 mb-2"
@@ -112,7 +112,6 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
                 <Text className="text-white">Crashes on android</Text>
               ) : (
                 <LucraMiniPublicFeed
-                  className="mt-4"
                   key={`${miniFeedKey}`}
                   // TODO possible bug on android
                   playerIds={[]}

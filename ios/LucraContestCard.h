@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface LucraFlowView : RCTViewComponentView
+@interface LucraContestCard : RCTViewComponentView
 @end
 
 NS_ASSUME_NONNULL_END
