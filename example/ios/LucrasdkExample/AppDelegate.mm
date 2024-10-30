@@ -1,12 +1,15 @@
 #import "AppDelegate.h"
 #import "LucraClient.h"
+#import <Firebase.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTLinkingManager.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   self.moduleName = @"LucrasdkExample";
+  [FIRApp configure];
 
   return [super application:application
       didFinishLaunchingWithOptions:launchOptions];
@@ -23,8 +26,12 @@
                 (NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   // Handle the incoming URL
   NSLog(@"Received URL: %@", url.absoluteString);
-
-  return [[LucraClient sharedInstance] handleVenmoUrl:url];
+  if ([[url host] isEqualToString:@"venmo.com"]) {
+    return [[LucraClient sharedInstance] handleVenmoUrl:url];
+  }
+  return [RCTLinkingManager application:application
+                                openURL:url
+                                options:options];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {

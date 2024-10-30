@@ -14,6 +14,7 @@ platform :ios, 15.1
 prepare_react_native_project!
 
 use_frameworks! :linkage => :static
+$RNFirebaseAsStaticFramework = true
 
 target 'LucrasdkExample' do
   config = use_native_modules!
@@ -21,8 +22,8 @@ target 'LucrasdkExample' do
   pod "Resolver", :git => "https://github.com/ospfranco/Resolver.git", :branch => "master"
   
   use_react_native!(
-    :path => config[:reactNativePath],
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    path: config[:reactNativePath],
+    app_path: "#{Pod::Config.instance.installation_root}/.."
   )
 
   post_install do |installer|
@@ -30,7 +31,7 @@ target 'LucrasdkExample' do
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false
+      mac_catalyst_enabled: false
     )
   end
 end

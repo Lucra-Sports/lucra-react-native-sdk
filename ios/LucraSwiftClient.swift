@@ -121,6 +121,7 @@ public class LucraSwiftClient: NSObject {
 
     let environment = options["environment"] as? String ?? "develop"
     let merchantID = options["merchantID"] as? String
+    let urlScheme = options["urlScheme"] as? String ?? ""
 
     var clientTheme = ClientTheme()
 
@@ -170,7 +171,7 @@ public class LucraSwiftClient: NSObject {
           apiURL: apiURL,
           apiKey: apiKey,
           environment: nativeEnvironment,
-          urlScheme: "",
+          urlScheme: urlScheme,
           merchantID: merchantID
         ),
         appearance: clientTheme
@@ -526,6 +527,7 @@ public class LucraSwiftClient: NSObject {
           client: self.nativeClient,
           animated: true
         )
+        resolve(true)
       } else {
         resolve(false)
       }

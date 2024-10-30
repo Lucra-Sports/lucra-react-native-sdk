@@ -1,6 +1,6 @@
-import { useEffect, useState, type FC } from 'react';
+import React from 'react';
+import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { PERMISSIONS, request } from 'react-native-permissions';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 import { useAppContext } from './AppContext';
@@ -11,11 +11,11 @@ type LucraSDKInitProps = {
   onStateChange: (ready: boolean) => void;
 };
 
-const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
+const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
   const { state, ready } = useAppContext();
   const [, setEvents] = useEventsContext();
   const [initialized, setInitialized] = useState(false);
-
+  const urlScheme = defaultAppConfig.urlScheme;
   useEffect(() => {
     if (initialized || !ready) {
       return;
@@ -26,6 +26,7 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
       apiURL: state.apiURL || defaultAppConfig.apiURL,
       apiKey: state.apiKey || defaultAppConfig.apiKey,
       environment: state.environment || defaultAppConfig.environment,
+      urlScheme: defaultAppConfig.urlScheme,
       theme: {
         ...state.theme,
         fontFamily:
@@ -40,10 +41,6 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
-        LucraSDK.registerDeepLinkProvider(async () => {
-          return 'lucra://flow/profile';
-        });
-
         LucraSDK.addContestListener({
           onGamesContestCreated: (contestId: string) => {
             console.log('Games contest created:', contestId);
@@ -80,18 +77,7 @@ const LucraSDKInit: FC<LucraSDKInitProps> = ({ onStateChange }) => {
         console.error('Error initializing LucraSDK', error);
         setInitialized(false);
       });
-
-    if (Platform.OS === 'android') {
-      request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-        .then((result) => {
-          console.log('Permission result:', result);
-        })
-        .catch((error) => {
-          console.log('Permission error:', error);
-        });
-    }
-  }, [state, ready, initialized, onStateChange, setEvents]);
-
+  }, [state, ready, initialized, onStateChange, setEvents, urlScheme]);
   return null;
 };
 

@@ -514,14 +514,14 @@ registerDeepLinkProvider(async (lucraDeepLink) => {
 For handling deep links that contain lucra information, you need to unpack your deep link and then pass it to the Lucra client to detect if a flow is embedded.
 
 ```ts
-import { handleLucraLink } from '@lucra-sports/lucra-react-native-sdk';
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { Linking } from 'react-native';
 import { linkExpander } from 'my-link-shortener';
 
 // on app start
 const linkingSubscription = Linking.addEventListener('url', async ({ url }) => {
   const deepLink = await linkExpander(url);
-  const handled = await handleLucraLink(deepLink);
+  const handled = await LucraSDK.handleLucraLink(deepLink);
   if (handled) {
     // Lucra has detected a link and will take over, displaying a full flow
     return;
@@ -533,6 +533,142 @@ const linkingSubscription = Linking.addEventListener('url', async ({ url }) => {
 const initialLink = await Linking.getInitialURL();
 if (initialLink) {
   // same as above
+}
+```
+
+## DeepLink configuration
+
+Depending on the deeplink provider you use you may need additional configuration.
+
+### Using RN Linking
+
+Make sure to modify your AppDelegate.mm file to handle the openURL event and forward it to RCTLinkingManager
+Note that in case you need to natively handle other incoming urls you can condition each one and forward to the correct link manager.
+
+```swift
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+  // Handle the incoming URL
+  NSLog(@"Received URL: %@", url.absoluteString);
+  if ([[url host] isEqualToString:@"venmo.com"]) {
+    return [[LucraClient sharedInstance] handleVenmoUrl:url];
+  }
+  return [RCTLinkingManager application:application openURL:url options:options];
+}
+```
+
+### Using Firebase
+
+If using firebase some additional steps are required, start by following the general setup https://rnfirebase.io/
+
+After that for iOS make sure to enable firebase to use static frameworks editing your /ios/Podfile
+
+```ruby
+# right after `use_frameworks! :linkage => :static`
+$RNFirebaseAsStaticFramework = true
+```
+
+For Android you also need to setup crashlytics.
+
+First on your android/build.gradle file add the dependency
+
+```gradle
+   dependencies {
+    <!-- your other dependencies -->
+     classpath 'com.google.gms:google-services:4.4.2'
+     classpath("com.android.tools.build:gradle")
+     classpath("com.facebook.react:react-native-gradle-plugin")
+     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+     classpath("com.google.gms:google-services:4.4.1")
+    <!-- your other dependencies -->
+
+    // Add crashlytics because is required by the sdk
+     classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.8'
+   }
+```
+
+Next edit your android/app/build.gradle file
+At the top apply the plugin
+
+```gradle
+ <!-- your other dependencies -->
+ apply plugin: "com.android.application"
+ apply plugin: "org.jetbrains.kotlin.android"
+ apply plugin: "com.facebook.react"
+ apply plugin: "com.google.gms.google-services"
+ <!-- your other dependencies -->
+
+ // Apply crashlytics
+ apply plugin: "com.google.firebase.crashlytics"
+```
+
+### Using firebase Dynamic Links
+
+Follow the setup steps at https://rnfirebase.io/dynamic-links/usage
+
+### Notes on managing deeplinks
+
+To avoid calling the Lucra SDK before it is initialized you can render the deeplink handling functionality conditionally
+
+```ts
+const App = ()=>{
+// initialize LucraSDK
+return  {!isReady ? (
+          <Text>Loading...</Text>
+        ) : (
+          <>
+            <DeepLinkManager />
+            ...Other components
+        }
+}
+
+```
+
+When your app goes to the background and is opened by a deeplink the UI may not be ready yet, you can leverage RN AppState and save the link for latter.
+
+DeeplinkManager.tsx
+
+```ts
+export function DeepLinkManager() {
+  // save the deeplink
+  const savedDeepLink = useRef('');
+
+  // listen for Appstate changes to consume the saved deeplink of any
+  useEffect(() => {
+    const appStateListener = AppState.addEventListener(
+      'change',
+      async (newAppState) => {
+        if (newAppState === 'active' && savedDeepLink.current) {
+          const handled = await LucraSDK.handleLucraLink(savedDeepLink.current);
+          //or something if if not handled by Lucra SDK
+        }
+      }
+    );
+
+    const handleDeepLink = async ({ url }: { url: string }) => {
+      // App is not active yet so we save the link for latter
+      if (AppState.currentState !== 'active') {
+        savedDeepLink.current = url;
+        return;
+      }
+
+      // Otherwise is ready and can be used directly
+      const handled = await LucraSDK.handleLucraLink(url);
+    };
+
+    // Specific firebase deeplink listeners
+    dynamicLinks()
+      .getInitialLink()
+      .then((link) => {
+        handleDeepLink({ url: link?.url || '' });
+      });
+    const unsubscribe = dynamicLinks().onLink(handleDeepLink);
+    return () => {
+      unsubscribe();
+      appStateListener.remove();
+    };
+  }, []);
+
+  return null;
 }
 ```
 
