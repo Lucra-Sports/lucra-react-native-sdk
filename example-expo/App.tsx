@@ -22,7 +22,7 @@ export default function App() {
         onTertiary: '#FFFFFF',
       },
     }).then(() => {
-      LucraSDK.present(LucraSDK.FLOW.ONBOARDING);
+      LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS);
     });
   }, []);
 
