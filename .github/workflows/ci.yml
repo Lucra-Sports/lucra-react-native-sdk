@@ -117,7 +117,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build example for Android
+      - name: Release example for Android
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        env:
+          JAVA_OPTS: '-XX:MaxHeapSize=6g'
+        run: |
+          yarn turbo run build:android --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+
+      - name: Release example for Android
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: |
@@ -178,21 +186,28 @@ jobs:
 
       - name: Validate Podfile.lock consistency
         run: |
-          cd example/ios
           if ! cmp -s Podfile.lock Pods/Manifest.lock; then
-            echo "Podfile.lock is out of sync, requiring pod install"
             rm -rf ${{env.TURBO_CACHE_DIR}}
+            cd example/ios
+            echo "Podfile.lock is out of sync, requiring pod install"
             rm -rf Pods/
+            pod cache clean --all
             echo "pod_install_required=1" >> $GITHUB_ENV
           fi
 
       - name: Install cocoapods
         if: env.turbo_cache_hit != 1 && (steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1')
         run: |
-          cd example/ios
           pod repo update
           pod install --repo-update
+        working-directory: example/ios
 
       - name: Build example for iOS
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        run: |
+          yarn turbo run build:ios --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+
+      - name: Release example for iOS
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           yarn turbo run release:ios --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"

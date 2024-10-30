@@ -94,3 +94,5 @@ example/ios/fastlane/report.xml
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+.npmrc
