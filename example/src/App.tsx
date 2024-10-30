@@ -16,7 +16,6 @@ export default function App() {
   const [isReady, setIsReady] = React.useState(false);
   return (
     <View className="h-full bg-indigo-900">
-      <View className="p-4 bg-white rounded-t-xl mt-12" />
       <AppContextProvider>
         <EventsContextProvider>
           <LucraSDKInit onStateChange={setIsReady} />
