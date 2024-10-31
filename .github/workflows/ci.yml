@@ -206,7 +206,7 @@ jobs:
       - name: Build example for iOS
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         run: |
-          yarn turbo run build:ios --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          cd example && yarn build:ios
 
       - name: Release example for iOS
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
