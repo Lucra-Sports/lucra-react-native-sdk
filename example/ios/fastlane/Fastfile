@@ -14,8 +14,8 @@ platform :ios do
     gym(
       scheme: 'LucrasdkExample',
       workspace: './LucrasdkExample.xcworkspace',
-      configuration: 'Release',
-      export_method: 'app-store',
+      configuration: 'Debug',
+      export_method: 'development',
       export_options: {
         signing_style: 'automatic'
       },
