@@ -10,14 +10,17 @@ default_platform(:ios)
 platform :ios do
   desc 'Build and distribute to Testflight'
   lane :build_example do
-    xcode_select("/Applications/Xcode 16.0.app")
     gym(
       scheme: 'LucrasdkExample',
       workspace: './LucrasdkExample.xcworkspace',
       configuration: 'Release',
       export_method: 'app-store',
+      export_xcargs: '-allowProvisioningUpdates',
       export_options: {
-        signing_style: 'automatic'
+        'signingStyle' => 'manual',
+            provisioningProfiles: {
+                  bundle_id => 'Lucra SDK React Native Sample'
+              }
       },
       export_xcargs: '-allowProvisioningUpdates',
       xcargs: "-allowProvisioningUpdates \
