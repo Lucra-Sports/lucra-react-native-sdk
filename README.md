@@ -567,6 +567,23 @@ After that for iOS make sure to enable firebase to use static frameworks editing
 $RNFirebaseAsStaticFramework = true
 ```
 
+If using the new architecture you may notice firebase dynamic links not working on iOS when the app is closed, dynamic Links will be deprecated soon and they mention some workarounds updating your AppDelegate.mm file https://github.com/invertase/react-native-firebase/issues/4548#issuecomment-2302400275
+
+Alternatively you can workaround the issue with getInitialLink using react-native Linking
+
+```ts
+if (Platform.OS === 'ios') {
+  Linking.getInitialURL().then((res) => {
+    console.log('Resolved with Linking', res);
+    dynamicLinks()
+      .resolveLink(res || '')
+      .then((link) => {
+        handleDeepLink({ url: link.url });
+      });
+  });
+}
+```
+
 For Android you also need to setup crashlytics.
 
 First on your android/build.gradle file add the dependency
