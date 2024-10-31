@@ -15,11 +15,10 @@ platform :ios do
       workspace: './LucrasdkExample.xcworkspace',
       configuration: 'Release',
       export_method: 'app-store',
-      export_xcargs: '-allowProvisioningUpdates',
       export_options: {
-        'signingStyle' => 'manual',
+            "signingStyle" => "manual",
             provisioningProfiles: {
-                  bundle_id => 'Lucra SDK React Native Sample'
+                  "com.lucrasports.mobile-rnsample" => "com.lucrasports.mobile-rnsample AppStore"
               }
       },
       export_xcargs: '-allowProvisioningUpdates',
