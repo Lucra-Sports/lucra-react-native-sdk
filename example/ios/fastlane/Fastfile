@@ -10,6 +10,7 @@ default_platform(:ios)
 platform :ios do
   desc 'Build and distribute to Testflight'
   lane :build_example do
+    xcode_select("/Applications/Xcode.app")
     gym(
       scheme: 'LucrasdkExample',
       workspace: './LucrasdkExample.xcworkspace',
