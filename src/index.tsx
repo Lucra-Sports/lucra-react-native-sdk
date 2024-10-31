@@ -102,10 +102,17 @@ if (LucraClient == null) {
   );
 }
 
+export enum LucraEnvironment {
+  PRODUCTION = 'production',
+  STAGING = 'staging',
+  SANDBOX = 'sandbox',
+  DEVELOP = 'develop',
+}
+
 export type LucraSDKParams = {
   apiURL: string;
   apiKey: string;
-  environment: string;
+  environment: LucraEnvironment;
   theme?: {
     background?: string;
     surface?: string;
@@ -183,12 +190,7 @@ type LucraContestListener = {
 
 export const LucraSDK = {
   ready: false,
-  ENVIRONMENT: {
-    PRODUCTION: 'production',
-    STAGING: 'staging',
-    SANDBOX: 'sandbox',
-    DEVELOP: 'develop',
-  },
+  ENVIRONMENT: LucraEnvironment,
   FLOW: {
     ONBOARDING: 'onboarding',
     VERIFY_IDENTITY: 'verifyIdentity',
