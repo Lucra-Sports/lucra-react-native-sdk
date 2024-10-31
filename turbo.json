@@ -44,7 +44,8 @@
         "example/ios",
         "!example/ios/build",
         "!example/ios/Pods",
-        "!example/ios/fastlane/report.xml"
+        "!example/ios/fastlane/report.xml",
+        ".yarn/install-state.gz"
       ],
       "outputs": []
     },
