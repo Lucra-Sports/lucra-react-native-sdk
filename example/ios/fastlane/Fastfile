@@ -9,6 +9,26 @@ default_platform(:ios)
 
 platform :ios do
   desc 'Build and distribute to Testflight'
+  lane :build_example do
+    gym(
+      scheme: 'LucrasdkExample',
+      workspace: './LucrasdkExample.xcworkspace',
+      configuration: 'Release',
+      export_method: 'app-store',
+      export_options: {
+        signing_style: 'automatic'
+      },
+      export_xcargs: '-allowProvisioningUpdates',
+      xcargs: "-allowProvisioningUpdates \
+      CC=clang \
+      CPLUSPLUS=clang++ \
+      LD=clang \
+      LDPLUSPLUS=clang++ \
+      GCC_PRECOMPILE_PREFIX_HEADER=YES \
+      ASSETCATALOG_COMPILER_OPTIMIZATION=time \
+      COMPILER_INDEX_STORE_ENABLE=NO"
+    )
+  end
   lane :distribute do
     authenticate
     update_version_and_build
@@ -38,23 +58,6 @@ platform :ios do
       current_build_number += 1
     end
     increment_build_number(build_number: current_build_number)
-    gym(
-      scheme: 'LucrasdkExample',
-      workspace: './LucrasdkExample.xcworkspace',
-      configuration: 'Release',
-      export_method: 'app-store',
-      export_options: {
-        signing_style: 'automatic'
-      },
-      export_xcargs: '-allowProvisioningUpdates',
-      xcargs: "-allowProvisioningUpdates \
-      CC=clang \
-      CPLUSPLUS=clang++ \
-      LD=clang \
-      LDPLUSPLUS=clang++ \
-      GCC_PRECOMPILE_PREFIX_HEADER=YES \
-      ASSETCATALOG_COMPILER_OPTIMIZATION=time \
-      COMPILER_INDEX_STORE_ENABLE=NO"
-    )
+    build_example
   end
 end
