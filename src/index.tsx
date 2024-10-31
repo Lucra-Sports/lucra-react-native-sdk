@@ -102,7 +102,7 @@ if (LucraClient == null) {
   );
 }
 
-type LucraSDKParams = {
+export type LucraSDKParams = {
   apiURL: string;
   apiKey: string;
   environment: string;
