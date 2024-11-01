@@ -1,4 +1,5 @@
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import { Platform, Linking } from 'react-native';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import { useEffect, useRef } from 'react';
 
@@ -57,6 +58,17 @@ export function DeepLinkManager() {
       const handled = await LucraSDK.handleLucraLink(url);
       console.log(`Link handled by Lucrasdk ${handled}`);
     };
+
+    if (Platform.OS === 'ios') {
+      Linking.getInitialURL().then((res) => {
+        console.log('Resolved with Linking', res);
+        dynamicLinks()
+          .resolveLink(res || '')
+          .then((link) => {
+            handleDeepLink({ url: link.url });
+          });
+      });
+    }
 
     dynamicLinks()
       .getInitialLink()
