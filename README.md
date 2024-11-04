@@ -295,7 +295,7 @@ class MyApplication : Application(), ImageLoaderFactory {
 
 ### Firebase
 
-For Android you also need to setup crashlytics.
+You will need to add the firebase crashlytics plugin to your app's configuration.
 
 First on your `android/build.gradle` file add the dependency to the buildscript:
 
@@ -395,6 +395,8 @@ export default function App() {
 }
 ```
 
+## Api calls
+
 To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information:
 
 ```ts
@@ -475,7 +477,7 @@ let user = await LucraSDK.getUser();
 
 ## User callback
 
-You can subscribe to changes in the user object via callback (currently only supported in iOS)
+You can subscribe to changes in the user object via callback
 
 ```ts
 const listener = LucraSDK.addListener("user", ({ user, error }) => {
