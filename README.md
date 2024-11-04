@@ -37,6 +37,12 @@ npm i -s @lucra-sports/lucra-react-native-sdk
 
 ## iOS
 
+The minimum target version is iOS 15.1, so you will also have to update this on your project (You can do it in the XCode general tab) and on your podfile:
+
+```
+platform :ios, 15.1
+```
+
 In your `ios` folder Podfile:
 
 Add the following lines to the top of your Podfile to allow Cocoa Pods to find our native SDK dependency, check out the [example Podfile](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/example/ios/Podfile) for a reference:
@@ -51,11 +57,13 @@ source 'git@github.com:Lucra-Sports/lucra-ios-sdk.git'
 
 # Independent of which method you choose, always add these
 source 'https://cdn.cocoapods.org/'
-
-use_frameworks! linkage: :static
 ```
 
-You will need to disable Flipper as it fails to link when using `use_frameworks!``:
+use_frameworks! linkage: :static
+
+### Flipper
+
+If you are using Flipper. you will need to disable Flipper as it fails to link when using `use_frameworks!``:
 
 ```ruby
 # You can either comment out this line
@@ -63,12 +71,6 @@ You will need to disable Flipper as it fails to link when using `use_frameworks!
 
 # Or choose the disabled configuration
 flipper_config = FlipperConfiguration.disabled
-```
-
-The minimum target version is iOS 15.1, so you will also have to update this on your project (You can do it in the XCode general tab) and on your podfile:
-
-```
-platform :ios, 15.1
 ```
 
 ### Add Lucra private pod repo
@@ -298,6 +300,11 @@ let lucraSDKOptions = {
     onPrimary: '#001448',
     onSecondary: '#FFFFFF',
     onTertiary: '#FFFFFF',
+    // Fonts
+    //
+    // For iOS you need to pass the cannonical name of your linked font
+    // You can find this by opening your font files in FontBook
+    //
     // For android you need to pass the path inside the Android assets folder
     // If you have linked your assets using the default location /assets/fonts
     // Then the android linked fonts should land in /android/app/src/main/assets/font
@@ -329,6 +336,8 @@ export default function App() {
   return (<>...</>);
 }
 ```
+
+## Full-screen Flows
 
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
 
@@ -462,7 +471,7 @@ listener()
 
 ## Embed flows in a view
 
-You can embed a flow inside a normal react native views. Unfortunately on Android if you are using react-native-screens you will face an issue where components might disappear. This is due to incompatibility between jetpack compose, which the SDK uses internally. In order to get around this you need to re-mount the components whenever the screen is focused.
+You can embed a flow inside a normal React-Native views. Unfortunately on Android if you are using react-native-screens you will face an issue where components might disappear. This is due to incompatibility between jetpack compose, which the SDK uses internally. In order to get around this you need to re-mount the components whenever the screen is focused.
 
 Here is a snippet on how to achieve this:
 
@@ -556,7 +565,7 @@ Note that in case you need to natively handle other incoming urls you can condit
 }
 ```
 
-### Using Firebase
+# Using Firebase
 
 If using firebase some additional steps are required, start by following the general setup https://rnfirebase.io/
 
@@ -586,36 +595,20 @@ if (Platform.OS === 'ios') {
 
 For Android you also need to setup crashlytics.
 
-First on your android/build.gradle file add the dependency
+First on your `android/build.gradle` file add the dependency to the buildscript:
 
 ```gradle
-   dependencies {
+  dependencies {
     <!-- your other dependencies -->
-     classpath 'com.google.gms:google-services:4.4.2'
-     classpath("com.android.tools.build:gradle")
-     classpath("com.facebook.react:react-native-gradle-plugin")
-     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-     classpath("com.google.gms:google-services:4.4.1")
-    <!-- your other dependencies -->
-
-    // Add crashlytics because is required by the sdk
-     classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.8'
-   }
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.8' // Add this
+  }
 ```
 
-Next edit your android/app/build.gradle file
-At the top apply the plugin
+Next edit your `android/app/build.gradle` file. At the top of the file apply the plugin:
 
 ```gradle
- <!-- your other dependencies -->
- apply plugin: "com.android.application"
- apply plugin: "org.jetbrains.kotlin.android"
- apply plugin: "com.facebook.react"
- apply plugin: "com.google.gms.google-services"
- <!-- your other dependencies -->
-
- // Apply crashlytics
- apply plugin: "com.google.firebase.crashlytics"
+<!-- your other plugins -->
+apply plugin: "com.google.firebase.crashlytics"
 ```
 
 ### Using firebase Dynamic Links
@@ -689,6 +682,8 @@ export function DeepLinkManager() {
 }
 ```
 
+# Listeners
+
 ## Games Contest Listener
 
 You can also listen for the events when creating a games or sport contest.
@@ -713,9 +708,9 @@ const unsubscribe = LucraSDK.addContestListener({
 unsubscribe();
 ```
 
-## Push notifications
+# Push notifications
 
-### iOS
+## iOS
 
 Read the [native documentation on push notifications](https://docs.lucrasports.com/lucra-sdk/jpYRPQyBRCy9WVvSjRgO/integration-documents/ios-sdk/module-integration/push-notifications). First you need to register for remote push notifications, depending on which library you are using this process will change. You will then need to get the device token so it can be passed to the Lucra SDK. Here is one example using [react-native-push-notifications](https://github.com/react-native-push-notification/ios).
 
@@ -766,7 +761,7 @@ export const App = () => {
 };
 ```
 
-### Android
+## Android
 
 For android you need to add the necessary [native code](https://github.com/Lucra-Sports/lucra-android-sdk?tab=readme-ov-file#setting-up-push-notifications) in order for you to get the device token and handle incoming push notifications.
 
