@@ -6,17 +6,13 @@ The package works in both the new and old architecture.
 
 You will need to specify our **private** native dependencies as they are hosted in GitHub packages. There are two ways to install a private dependency.
 
-## With GitHub Personal Access token
+You need to create a Personal Access Token (PAT)
 
 <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">Managing Personal Access Tokens</a>
 
 Select "Classic" with the `packages:read` and `repo` permissions enabled and name it `Lucra Token`. When installing the native dependencies you will be prompted for your username and this token. In case you are setting up a CI system you will also have to use this token in a combination with a username.
 
 <img src="https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/assets/token.png?raw=true" width="300"/>
-
-## With SSH
-
-You can skip creating a token if you have set up SSH for your GitHub account. In the next steps, you will see how to declare the dependency both ways. However, bear in mind if setting up in a CI you might need to create a token to correctly add the private repo to CocoaPods.
 
 # Installation
 
@@ -125,7 +121,7 @@ $RNFirebaseAsStaticFramework = true
 
 Lucra Android Native SDK artifacts are privately hosted on https://github.com/Lucra-Sports/lucra-android.
 
-You will need a private access token (PAT) to pull these packages at build time.
+You will need the personal access token (PAT) created above to pull these packages at build time.
 
 [See how to create personal access token](#personal_token_anchor)
 
@@ -160,7 +156,7 @@ Both approaches work for local and build servers, but `~ .gradle/gradle.properti
 
 ### Provide GPR Access with GPR credentials
 
-After GPR_USER and GPR_KEY are correctly fetched at build time, you'll then need to provide repository access for gradle to resolve the private artifacts at build time.
+After `GPR_USER` and `GPR_KEY` are correctly fetched at build time, you'll then need to provide repository access for gradle to resolve the private artifacts at build time.
 
 In your root Android project's `build.gradle`
 
@@ -186,18 +182,6 @@ In your root Android project's `build.gradle`
 ### Android Auth0 compliance (if not already using Auth0)
 
 We use Auth0 for auth, if your app doesn't use it already, add the following to your app's default config.
-
-Gradle.kts
-
-```
-android{
-    defaultConfig {
-        addManifestPlaceholders(mapOf("auth0Domain" to "LUCRA_SDK", "auth0Scheme" to "LUCRA_SDK"))
-    }
-}
-```
-
-Groovy
 
 ```
 android {
@@ -280,7 +264,7 @@ The following manifest permissions, features, receivers and services are require
 ### Application Requirements
 
 Lucra leverages [Coil](https://coil-kt.github.io/coil/) to render images and SVGs. In your
-application class, provide the LucraCoilImageLoader
+application class, provide the `LucraCoilImageLoader`
 
 ```kotlin
 // Don't forget to set the app manifest to use this Application
