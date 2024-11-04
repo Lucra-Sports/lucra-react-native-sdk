@@ -22,7 +22,7 @@ You can skip creating a token if you have set up SSH for your GitHub account. In
 
 ## NPM
 
-After you have your token you need to create a `.npmrc` file and you need to tell the package needs to be fetched from the github registry:
+After you have your token you need to create a `.npmrc` file at the root of your project and you need to tell the package needs to be fetched from the github registry:
 
 ```
 //npm.pkg.github.com/:_authToken=GITHUB_PERSONAL_TOKEN
