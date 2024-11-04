@@ -2,15 +2,15 @@
 
 # Pre-Installation
 
-You will need to specify our **private** native iOS dependency, hosted in GitHub packages, in your Podfile. There are two ways to install a private dependency:
+The package works in both the new and old architecture.
 
-<a name="personal_token_anchor"></a>
+You will need to specify our **private** native dependencies as they are hosted in GitHub packages. There are two ways to install a private dependency.
 
 ## With GitHub Personal Access token
 
-https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+<a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">Managing Personal Access Tokens</a>
 
-Select "Classic" with the `packages:read` and `repo` permissions enabled and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token. In case you are setting up a CI system you will also have to use this token in a combination with a username.
+Select "Classic" with the `packages:read` and `repo` permissions enabled and name it `Lucra Token`. When installing the native dependencies you will be prompted for your username and this token. In case you are setting up a CI system you will also have to use this token in a combination with a username.
 
 <img src="https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/assets/token.png?raw=true" width="300"/>
 
@@ -22,7 +22,7 @@ You can skip creating a token if you have set up SSH for your GitHub account. In
 
 ## NPM
 
-After you have your token setup you need to create a `.npmrc` file and you need to tell the package needs to be fetched from the github registry:
+After you have your token you need to create a `.npmrc` file and you need to tell the package needs to be fetched from the github registry:
 
 ```
 //npm.pkg.github.com/:_authToken=GITHUB_PERSONAL_TOKEN
@@ -35,9 +35,11 @@ Install the package to your React Native Repo by running:
 npm i -s @lucra-sports/lucra-react-native-sdk
 ```
 
+Usually you don't want to commit this file into the git repo history. So it's better to add it to your gitignore and each user on your organization has their own file and CI as well.
+
 ## iOS
 
-The minimum target version is iOS 15.1, so you will also have to update this on your project (You can do it in the XCode general tab) and on your podfile:
+The minimum target version is iOS 15.1, so you will also have to update this on your project (You can do it in the XCode general tab) and in your podfile:
 
 ```
 platform :ios, 15.1
@@ -73,6 +75,8 @@ If you are using Flipper. you will need to disable Flipper as it fails to link w
 flipper_config = FlipperConfiguration.disabled
 ```
 
+Flipper has been removed in the latest React-Native versions, so this might not apply to your app.
+
 ### Add Lucra private pod repo
 
 Run the following command to add the native SDK dependency locally that you added previously as a source in the Podfile
@@ -89,7 +93,9 @@ pod repo add LucraSDK git@github.com/Lucra-Sports/lucra-ios-sdk
   run: pod repo add LucraSDK https://${{secrets.LUCRA_USERNAME}}:${{secrets.LUCRA_TOKEN}}@github.com/Lucra-Sports/lucra-ios-sdk.git
 ```
 
-### Permissions
+# iOS Setup
+
+## Permissions
 
 The following keys will need to be set in `Info.plist` or the binary may be rejected and the app will crash.
 
@@ -104,6 +110,17 @@ NSLocationWhenInUseUsageDescription
 NSMotionUsageDescription
 NSCameraUsageDescription
 NSPhotoLibraryUsageDescription
+```
+
+## Firebase
+
+If using firebase some additional steps are required, start by following the general setup https://rnfirebase.io/
+
+Make sure to enable firebase to use static frameworks editing your `/ios/Podfile`:
+
+```ruby
+# right after `use_frameworks! :linkage => :static`
+$RNFirebaseAsStaticFramework = true
 ```
 
 ## Android
@@ -276,9 +293,29 @@ class MyApplication : Application(), ImageLoaderFactory {
 
 ```
 
+### Firebase
+
+For Android you also need to setup crashlytics.
+
+First on your `android/build.gradle` file add the dependency to the buildscript:
+
+```gradle
+  dependencies {
+    // Your other buildscript dependencies
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.8' // Add this
+  }
+```
+
+Next edit your `android/app/build.gradle` file. At the top of the file apply the plugin:
+
+```gradle
+// Your other plugins
+apply plugin: "com.google.firebase.crashlytics" // Add this
+```
+
 # Usage
 
-Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else. The initialization is a promise since communication with the backend is necessary.
+Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else. The initialization is a promise since communication with the backend is async and required on init.
 
 ```ts
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
@@ -342,15 +379,6 @@ export default function App() {
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
 
 ```ts
-// Posible flows are
-// ONBOARDING
-// VERIFY_IDENTITY
-// PROFILE
-// ADD_FUNDS
-// CREATE_GAMES_MATCHUP
-// WITHDRAW_FUNDS
-// PUBLIC_FEED
-// MY_MATCHUP
 export default function App() {
   return (
     <View style={styles.container}>
@@ -565,16 +593,7 @@ Note that in case you need to natively handle other incoming urls you can condit
 }
 ```
 
-# Using Firebase
-
-If using firebase some additional steps are required, start by following the general setup https://rnfirebase.io/
-
-After that for iOS make sure to enable firebase to use static frameworks editing your /ios/Podfile
-
-```ruby
-# right after `use_frameworks! :linkage => :static`
-$RNFirebaseAsStaticFramework = true
-```
+# Firebase Quirks
 
 If using the new architecture you may notice firebase dynamic links not working on iOS when the app is closed, dynamic Links will be deprecated soon and they mention some workarounds updating your AppDelegate.mm file https://github.com/invertase/react-native-firebase/issues/4548#issuecomment-2302400275
 
@@ -593,29 +612,11 @@ if (Platform.OS === 'ios') {
 }
 ```
 
-For Android you also need to setup crashlytics.
-
-First on your `android/build.gradle` file add the dependency to the buildscript:
-
-```gradle
-  dependencies {
-    <!-- your other dependencies -->
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.8' // Add this
-  }
-```
-
-Next edit your `android/app/build.gradle` file. At the top of the file apply the plugin:
-
-```gradle
-<!-- your other plugins -->
-apply plugin: "com.google.firebase.crashlytics"
-```
-
-### Using firebase Dynamic Links
+## Using firebase Dynamic Links
 
 Follow the setup steps at https://rnfirebase.io/dynamic-links/usage
 
-### Notes on managing deeplinks
+## Notes on managing deeplinks
 
 To avoid calling the Lucra SDK before it is initialized you can render the deeplink handling functionality conditionally
 
@@ -765,7 +766,7 @@ export const App = () => {
 
 For android you need to add the necessary [native code](https://github.com/Lucra-Sports/lucra-android-sdk?tab=readme-ov-file#setting-up-push-notifications) in order for you to get the device token and handle incoming push notifications.
 
-## Credit conversion provider
+# Credit conversion provider
 
 To allow users to withdraw money in credits relevant to your internal system, you must register a `creditConversionProvider`. The Convert to Credit feature allows end users to convert dollars they've deposited or won playing contests into credit they can use within your ecosystem. The conversion process can be configured with a multiplier to incentivize opting for this conversion over other withdrawal methods.
 
@@ -795,7 +796,7 @@ registerCreditConversionProvider(async (cashAmount: number) => {
 });
 ```
 
-## Venmo iOS
+# Venmo iOS
 
 The Lucra iOS SDK offers Venmo as a payment option. This guide covers implementation steps.
 
