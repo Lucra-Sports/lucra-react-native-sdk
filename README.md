@@ -93,7 +93,7 @@ pod repo add LucraSDK git@github.com/Lucra-Sports/lucra-ios-sdk
   run: pod repo add LucraSDK https://${{secrets.LUCRA_USERNAME}}:${{secrets.LUCRA_TOKEN}}@github.com/Lucra-Sports/lucra-ios-sdk.git
 ```
 
-## Permissions
+### Permissions
 
 The following keys will need to be set in `Info.plist` or the binary may be rejected and the app will crash.
 
@@ -110,7 +110,7 @@ NSCameraUsageDescription
 NSPhotoLibraryUsageDescription
 ```
 
-## Firebase
+### Firebase
 
 If using firebase some additional steps are required, start by following the general setup https://rnfirebase.io/
 
