@@ -93,8 +93,6 @@ pod repo add LucraSDK git@github.com/Lucra-Sports/lucra-ios-sdk
   run: pod repo add LucraSDK https://${{secrets.LUCRA_USERNAME}}:${{secrets.LUCRA_TOKEN}}@github.com/Lucra-Sports/lucra-ios-sdk.git
 ```
 
-# iOS Setup
-
 ## Permissions
 
 The following keys will need to be set in `Info.plist` or the binary may be rejected and the app will crash.
@@ -477,7 +475,7 @@ let user = await LucraSDK.getUser();
 
 ## User callback
 
-You can subscribe to changes in the user object via callback
+You can subscribe to changes in the user object via callback:
 
 ```ts
 const listener = LucraSDK.addListener("user", ({ user, error }) => {
@@ -499,9 +497,9 @@ const listener = LucraSDK.addListener("user", ({ user, error }) => {
 listener()
 ```
 
-## Embed flows in a view
+## Embed Flows
 
-You can embed a flow inside a normal React-Native views. Unfortunately on Android if you are using react-native-screens you will face an issue where components might disappear. This is due to incompatibility between jetpack compose, which the SDK uses internally. In order to get around this you need to re-mount the components whenever the screen is focused.
+You can embed a flow inside a normal React-Native views. Unfortunately on Android if you are using `react-native-screens` you will face an issue where components might disappear. This is due to incompatibility between jetpack compose, which the SDK uses internally. In order to get around this you need to re-mount the components whenever the screen is focused.
 
 Here is a snippet on how to achieve this:
 
@@ -575,7 +573,7 @@ if (initialLink) {
 }
 ```
 
-## DeepLink configuration
+## Deep Link Configuration
 
 Depending on the deeplink provider you use you may need additional configuration.
 
