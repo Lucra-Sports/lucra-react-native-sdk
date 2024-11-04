@@ -46,12 +46,7 @@ In your `ios` folder Podfile:
 Add the following lines to the top of your Podfile to allow Cocoa Pods to find our native SDK dependency, check out the [example Podfile](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/example/ios/Podfile) for a reference:
 
 ```ruby
-# Pick one of the following two
-# Use https if you are using a GitHub token method
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
-# OR
-# Use SSL if you have set up your SSH credentials for your GitHub account
-source 'git@github.com:Lucra-Sports/lucra-ios-sdk.git'
 
 # Independent of which method you choose, always add these
 source 'https://cdn.cocoapods.org/'
