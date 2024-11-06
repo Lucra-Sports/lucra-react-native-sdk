@@ -2205,19 +2205,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lucra-sports/lucra-react-native-sdk@npm:^1.6.0":
-  version: 1.6.1
-  resolution: "@lucra-sports/lucra-react-native-sdk@npm:1.6.1::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40lucra-sports%2Flucra-react-native-sdk%2F1.6.1%2Fba70d815f90fb5c508d81a246ee26d8288a0a9ee"
-  dependencies:
-    react: "npm:18.2.0"
-    react-native: "npm:0.73.5"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/db1b12aa33e7a7773f62a087921d7d700a139b774c54fade524e627cae44d0cb55aa562c492e3d69058681bca29aff0dacc2f1bdb85e629f63964ad58bd4790a
-  languageName: node
-  linkType: hard
-
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -4481,7 +4468,6 @@ __metadata:
   resolution: "example-expo@workspace:."
   dependencies:
     "@babel/core": "npm:^7.20.0"
-    "@lucra-sports/lucra-react-native-sdk": "npm:^1.6.0"
     "@types/react": "npm:~18.2.45"
     expo: "npm:^50.0.0"
     expo-build-properties: "npm:~0.11.1"
