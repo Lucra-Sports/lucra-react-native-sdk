@@ -47,6 +47,10 @@ export default {
           ios: {
             deploymentTarget: '15.0',
             useFrameworks: 'static',
+            networkInspector: false,
+          },
+          android: {
+            networkInspector: false,
           },
         },
       ],

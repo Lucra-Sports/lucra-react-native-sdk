@@ -65,6 +65,8 @@ plugins: [
       ios: {
         deploymentTarget: '15.0',
         useFrameworks: 'static',
+        // Note: Important to turn off to avoid issues with geocomply service
+        networkInspector: false
       },
     },
   ],
@@ -79,6 +81,30 @@ In the meantime, you can:
 
 - Run `expo prebuild` to generate the native Android project.
 - Manually apply the necessary changes to the `android` directory as described in the SDK's Android installation section.
+
+### Using Expo Dev Client
+
+When working with expo-dev-client, it's essential to disable the EX_DEV_CLIENT_NETWORK_INSPECTOR variable to prevent conflicts with internal GeoComply services. Failure to do so may result in restricted functionality, such as the inability to add or withdraw funds, as these services could interpret network inspection as tampering.
+
+To ensure that EX_DEV_CLIENT_NETWORK_INSPECTOR is turned off, include the following configuration in your app.config.js:
+
+```js
+    plugins: [
+      [
+        'expo-build-properties',
+        {
+          ios: {
+            networkInspector: false,
+            ...
+          },
+          android: {
+            networkInspector: false,
+            ...
+          },
+        },
+      ],
+    ],
+```
 
 ## iOS
 
