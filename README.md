@@ -2,27 +2,23 @@
 
 # Pre-Installation
 
-You will need to specify our **private** native iOS dependency, hosted in GitHub packages, in your Podfile. There are two ways to install a private dependency:
+The package works in both the new and old architecture.
 
-<a name="personal_token_anchor"></a>
+You will need to specify our **private** native dependencies as they are hosted in GitHub packages. There are two ways to install a private dependency.
 
-## With GitHub Personal Access token
+You need to create a Personal Access Token (PAT)
 
-https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+<a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">Managing Personal Access Tokens</a>
 
-Select "Classic" with the `packages:read` and `repo` permissions enabled and name it "Lucra Token". When installing the native dependencies you will be prompted for your username and this token. In case you are setting up a CI system you will also have to use this token in a combination with a username.
+Select "Classic" with the `packages:read` and `repo` permissions enabled and name it `Lucra Token`. When installing the native dependencies you will be prompted for your username and this token. In case you are setting up a CI system you will also have to use this token in a combination with a username.
 
 <img src="https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/assets/token.png?raw=true" width="300"/>
-
-## With SSH
-
-You can skip creating a token if you have set up SSH for your GitHub account. In the next steps, you will see how to declare the dependency both ways. However, bear in mind if setting up in a CI you might need to create a token to correctly add the private repo to CocoaPods.
 
 # Installation
 
 ## NPM
 
-After you have your token setup you need to create a `.npmrc` file and you need to tell the package needs to be fetched from the github registry:
+After you have your token you need to create a `.npmrc` file at the root of your project and you need to tell the package needs to be fetched from the github registry:
 
 ```
 //npm.pkg.github.com/:_authToken=GITHUB_PERSONAL_TOKEN
@@ -34,6 +30,8 @@ Install the package to your React Native Repo by running:
 ```sh
 npm i -s @lucra-sports/lucra-react-native-sdk
 ```
+
+Usually you don't want to commit this file into the git repo history. So it's better to add it to your gitignore and each user on your organization has their own file and CI as well.
 
 # Integrating with an Expo React Native App
 
@@ -84,25 +82,28 @@ In the meantime, you can:
 
 ## iOS
 
+The minimum target version is iOS 15.1, so you will also have to update this on your project (You can do it in the XCode general tab) and in your podfile:
+
+```
+platform :ios, 15.1
+```
+
 In your `ios` folder Podfile:
 
 Add the following lines to the top of your Podfile to allow Cocoa Pods to find our native SDK dependency, check out the [example Podfile](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/example/ios/Podfile) for a reference:
 
 ```ruby
-# Pick one of the following two
-# Use https if you are using a GitHub token method
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
-# OR
-# Use SSL if you have set up your SSH credentials for your GitHub account
-source 'git@github.com:Lucra-Sports/lucra-ios-sdk.git'
 
 # Independent of which method you choose, always add these
 source 'https://cdn.cocoapods.org/'
-
-use_frameworks! linkage: :static
 ```
 
-You will need to disable Flipper as it fails to link when using `use_frameworks!``:
+use_frameworks! linkage: :static
+
+### Flipper
+
+If you are using Flipper. you will need to disable Flipper as it fails to link when using `use_frameworks!``:
 
 ```ruby
 # You can either comment out this line
@@ -112,11 +113,7 @@ You will need to disable Flipper as it fails to link when using `use_frameworks!
 flipper_config = FlipperConfiguration.disabled
 ```
 
-The minimum target version is iOS 15, so you will also have to update this on your project (You can do it in the XCode general tab) and on your podfile:
-
-```
-platform :ios, 15.0
-```
+Flipper has been removed in the latest React-Native versions, so this might not apply to your app.
 
 ### Add Lucra private pod repo
 
@@ -151,11 +148,22 @@ NSCameraUsageDescription
 NSPhotoLibraryUsageDescription
 ```
 
+### Firebase
+
+If using firebase some additional steps are required, start by following the general setup https://rnfirebase.io/
+
+Make sure to enable firebase to use static frameworks editing your `/ios/Podfile`:
+
+```ruby
+# right after `use_frameworks! :linkage => :static`
+$RNFirebaseAsStaticFramework = true
+```
+
 ## Android
 
 Lucra Android Native SDK artifacts are privately hosted on https://github.com/Lucra-Sports/lucra-android.
 
-You will need a private access token (PAT) to pull these packages at build time.
+You will need the personal access token (PAT) created above to pull these packages at build time.
 
 [See how to create personal access token](#personal_token_anchor)
 
@@ -190,7 +198,7 @@ Both approaches work for local and build servers, but `~ .gradle/gradle.properti
 
 ### Provide GPR Access with GPR credentials
 
-After GPR_USER and GPR_KEY are correctly fetched at build time, you'll then need to provide repository access for gradle to resolve the private artifacts at build time.
+After `GPR_USER` and `GPR_KEY` are correctly fetched at build time, you'll then need to provide repository access for gradle to resolve the private artifacts at build time.
 
 In your root Android project's `build.gradle`
 
@@ -216,18 +224,6 @@ In your root Android project's `build.gradle`
 ### Android Auth0 compliance (if not already using Auth0)
 
 We use Auth0 for auth, if your app doesn't use it already, add the following to your app's default config.
-
-Gradle.kts
-
-```
-android{
-    defaultConfig {
-        addManifestPlaceholders(mapOf("auth0Domain" to "LUCRA_SDK", "auth0Scheme" to "LUCRA_SDK"))
-    }
-}
-```
-
-Groovy
 
 ```
 android {
@@ -310,7 +306,7 @@ The following manifest permissions, features, receivers and services are require
 ### Application Requirements
 
 Lucra leverages [Coil](https://coil-kt.github.io/coil/) to render images and SVGs. In your
-application class, provide the LucraCoilImageLoader
+application class, provide the `LucraCoilImageLoader`
 
 ```kotlin
 // Don't forget to set the app manifest to use this Application
@@ -321,9 +317,29 @@ class MyApplication : Application(), ImageLoaderFactory {
 
 ```
 
+### Firebase
+
+You will need to add the firebase crashlytics plugin to your app's configuration.
+
+First on your `android/build.gradle` file add the dependency to the buildscript:
+
+```gradle
+  dependencies {
+    // Your other buildscript dependencies
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.8' // Add this
+  }
+```
+
+Next edit your `android/app/build.gradle` file. At the top of the file apply the plugin:
+
+```gradle
+// Your other plugins
+apply plugin: "com.google.firebase.crashlytics" // Add this
+```
+
 # Usage
 
-Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else. The initialization is a promise since communication with the backend is necessary.
+Import the SDK from the `@lucra-sports/lucra-react-native-sdk` package, you must initialize the SDK with an API key and an environment before anything else. The initialization is a promise since communication with the backend is async and required on init.
 
 ```ts
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
@@ -345,6 +361,11 @@ let lucraSDKOptions = {
     onPrimary: '#001448',
     onSecondary: '#FFFFFF',
     onTertiary: '#FFFFFF',
+    // Fonts
+    //
+    // For iOS you need to pass the cannonical name of your linked font
+    // You can find this by opening your font files in FontBook
+    //
     // For android you need to pass the path inside the Android assets folder
     // If you have linked your assets using the default location /assets/fonts
     // Then the android linked fonts should land in /android/app/src/main/assets/font
@@ -377,18 +398,11 @@ export default function App() {
 }
 ```
 
+## Full-screen Flows
+
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
 
 ```ts
-// Posible flows are
-// ONBOARDING
-// VERIFY_IDENTITY
-// PROFILE
-// ADD_FUNDS
-// CREATE_GAMES_MATCHUP
-// WITHDRAW_FUNDS
-// PUBLIC_FEED
-// MY_MATCHUP
 export default function App() {
   return (
     <View style={styles.container}>
@@ -404,6 +418,8 @@ export default function App() {
   );
 }
 ```
+
+## Api calls
 
 To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information:
 
@@ -485,7 +501,7 @@ let user = await LucraSDK.getUser();
 
 ## User callback
 
-You can subscribe to changes in the user object via callback (currently only supported in iOS)
+You can subscribe to changes in the user object via callback:
 
 ```ts
 const listener = LucraSDK.addListener("user", ({ user, error }) => {
@@ -507,9 +523,9 @@ const listener = LucraSDK.addListener("user", ({ user, error }) => {
 listener()
 ```
 
-## Embed flows in a view
+## Embed Flows
 
-You can embed a flow inside a normal react native views. Unfortunately on Android if you are using react-native-screens you will face an issue where components might disappear. This is due to incompatibility between jetpack compose, which the SDK uses internally. In order to get around this you need to re-mount the components whenever the screen is focused.
+You can embed a flow inside a normal React-Native views. Unfortunately on Android if you are using `react-native-screens` you will face an issue where components might disappear. This is due to incompatibility between jetpack compose, which the SDK uses internally. In order to get around this you need to re-mount the components whenever the screen is focused.
 
 Here is a snippet on how to achieve this:
 
@@ -561,14 +577,14 @@ registerDeepLinkProvider(async (lucraDeepLink) => {
 For handling deep links that contain lucra information, you need to unpack your deep link and then pass it to the Lucra client to detect if a flow is embedded.
 
 ```ts
-import { handleLucraLink } from '@lucra-sports/lucra-react-native-sdk';
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { Linking } from 'react-native';
 import { linkExpander } from 'my-link-shortener';
 
 // on app start
 const linkingSubscription = Linking.addEventListener('url', async ({ url }) => {
   const deepLink = await linkExpander(url);
-  const handled = await handleLucraLink(deepLink);
+  const handled = await LucraSDK.handleLucraLink(deepLink);
   if (handled) {
     // Lucra has detected a link and will take over, displaying a full flow
     return;
@@ -582,6 +598,118 @@ if (initialLink) {
   // same as above
 }
 ```
+
+## Deep Link Configuration
+
+Depending on the deeplink provider you use you may need additional configuration.
+
+### Using RN Linking
+
+Make sure to modify your AppDelegate.mm file to handle the openURL event and forward it to RCTLinkingManager
+Note that in case you need to natively handle other incoming urls you can condition each one and forward to the correct link manager.
+
+```swift
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+  // Handle the incoming URL
+  NSLog(@"Received URL: %@", url.absoluteString);
+  if ([[url host] isEqualToString:@"venmo.com"]) {
+    return [[LucraClient sharedInstance] handleVenmoUrl:url];
+  }
+  return [RCTLinkingManager application:application openURL:url options:options];
+}
+```
+
+# Firebase Quirks
+
+If using the new architecture you may notice firebase dynamic links not working on iOS when the app is closed, dynamic Links will be deprecated soon and they mention some workarounds updating your AppDelegate.mm file https://github.com/invertase/react-native-firebase/issues/4548#issuecomment-2302400275
+
+Alternatively you can workaround the issue with getInitialLink using react-native Linking
+
+```ts
+if (Platform.OS === 'ios') {
+  Linking.getInitialURL().then((res) => {
+    console.log('Resolved with Linking', res);
+    dynamicLinks()
+      .resolveLink(res || '')
+      .then((link) => {
+        handleDeepLink({ url: link.url });
+      });
+  });
+}
+```
+
+## Using firebase Dynamic Links
+
+Follow the setup steps at https://rnfirebase.io/dynamic-links/usage
+
+## Notes on managing deeplinks
+
+To avoid calling the Lucra SDK before it is initialized you can render the deeplink handling functionality conditionally
+
+```ts
+const App = ()=>{
+// initialize LucraSDK
+return  {!isReady ? (
+          <Text>Loading...</Text>
+        ) : (
+          <>
+            <DeepLinkManager />
+            ...Other components
+        }
+}
+
+```
+
+When your app goes to the background and is opened by a deeplink the UI may not be ready yet, you can leverage RN AppState and save the link for latter.
+
+DeeplinkManager.tsx
+
+```ts
+export function DeepLinkManager() {
+  // save the deeplink
+  const savedDeepLink = useRef('');
+
+  // listen for Appstate changes to consume the saved deeplink of any
+  useEffect(() => {
+    const appStateListener = AppState.addEventListener(
+      'change',
+      async (newAppState) => {
+        if (newAppState === 'active' && savedDeepLink.current) {
+          const handled = await LucraSDK.handleLucraLink(savedDeepLink.current);
+          //or something if if not handled by Lucra SDK
+        }
+      }
+    );
+
+    const handleDeepLink = async ({ url }: { url: string }) => {
+      // App is not active yet so we save the link for latter
+      if (AppState.currentState !== 'active') {
+        savedDeepLink.current = url;
+        return;
+      }
+
+      // Otherwise is ready and can be used directly
+      const handled = await LucraSDK.handleLucraLink(url);
+    };
+
+    // Specific firebase deeplink listeners
+    dynamicLinks()
+      .getInitialLink()
+      .then((link) => {
+        handleDeepLink({ url: link?.url || '' });
+      });
+    const unsubscribe = dynamicLinks().onLink(handleDeepLink);
+    return () => {
+      unsubscribe();
+      appStateListener.remove();
+    };
+  }, []);
+
+  return null;
+}
+```
+
+# Listeners
 
 ## Games Contest Listener
 
@@ -607,9 +735,9 @@ const unsubscribe = LucraSDK.addContestListener({
 unsubscribe();
 ```
 
-## Push notifications
+# Push notifications
 
-### iOS
+## iOS
 
 Read the [native documentation on push notifications](https://docs.lucrasports.com/lucra-sdk/jpYRPQyBRCy9WVvSjRgO/integration-documents/ios-sdk/module-integration/push-notifications). First you need to register for remote push notifications, depending on which library you are using this process will change. You will then need to get the device token so it can be passed to the Lucra SDK. Here is one example using [react-native-push-notifications](https://github.com/react-native-push-notification/ios).
 
@@ -660,11 +788,11 @@ export const App = () => {
 };
 ```
 
-### Android
+## Android
 
 For android you need to add the necessary [native code](https://github.com/Lucra-Sports/lucra-android-sdk?tab=readme-ov-file#setting-up-push-notifications) in order for you to get the device token and handle incoming push notifications.
 
-## Credit conversion provider
+# Credit conversion provider
 
 To allow users to withdraw money in credits relevant to your internal system, you must register a `creditConversionProvider`. The Convert to Credit feature allows end users to convert dollars they've deposited or won playing contests into credit they can use within your ecosystem. The conversion process can be configured with a multiplier to incentivize opting for this conversion over other withdrawal methods.
 
@@ -694,7 +822,7 @@ registerCreditConversionProvider(async (cashAmount: number) => {
 });
 ```
 
-## Venmo iOS
+# Venmo iOS
 
 The Lucra iOS SDK offers Venmo as a payment option. This guide covers implementation steps.
 

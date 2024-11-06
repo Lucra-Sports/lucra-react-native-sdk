@@ -1,5 +1,5 @@
-import React from 'react';
 import type { FC } from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MainContainer } from './container/Main.container';
 import { UIFlowContainer } from './container/UIFlow.container';
@@ -69,10 +69,34 @@ export const Routes: FC = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="EventViewer" component={EventViewer} />
-      <Stack.Screen name="ConfigureUser" component={ConfigureUser} />
-      <Stack.Screen name="SportsYouWatch" component={SportsYouWatch} />
-      <Stack.Screen name="GamesYouPlay" component={GamesYouPlay} />
+      <Stack.Screen
+        name="EventViewer"
+        component={EventViewer}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ConfigureUser"
+        component={ConfigureUser}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="SportsYouWatch"
+        component={SportsYouWatch}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="GamesYouPlay"
+        component={GamesYouPlay}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };

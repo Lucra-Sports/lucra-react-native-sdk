@@ -1,9 +1,11 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
+apply plugin: "com.google.firebase.crashlytics"
 
 react {
-
+  autolinkLibrariesWithApp()
 }
 
 def enableProguardInReleaseBuilds = false
@@ -37,6 +39,9 @@ android {
       keyPassword 'android'
     }
   }
+  compileOptions {
+    coreLibraryDesugaringEnabled true
+  }
   buildTypes {
     debug {
       signingConfig signingConfigs.debug
@@ -52,9 +57,10 @@ android {
 }
 
 dependencies {
+
+  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
   // The version of react-native is set by the React Native Gradle Plugin
   implementation("com.facebook.react:react-android")
-  implementation("com.facebook.react:flipper-integration")
   if (hermesEnabled.toBoolean()) {
     implementation("com.facebook.react:hermes-android")
   } else {
@@ -62,4 +68,3 @@ dependencies {
   }
 }
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

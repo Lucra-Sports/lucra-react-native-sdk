@@ -1,8 +1,11 @@
-import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import {
+  LucraEnvironment,
+  LucraSDK,
+} from '@lucra-sports/lucra-react-native-sdk';
 import { DEFAULT, type Theme } from './theme';
 
 export interface AppConfig {
-  environment: string;
+  environment: LucraEnvironment;
   apiURL: string;
   apiKey: string;
   urlScheme: string;
@@ -22,9 +25,9 @@ export const defaultAppConfig: AppConfig = {
   apiURL: 'api-sample.sandbox.lucrasports.com',
   apiKey: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
   environment: LucraSDK.ENVIRONMENT.SANDBOX,
-  urlScheme: 'TODO:',
+  urlScheme: 'lucraexample',
   merchantId: 'com.todo.in.upcoming.pr',
-  deeplinksEnabled: false,
+  deeplinksEnabled: true,
   theme: DEFAULT,
   dirty: false,
 };
@@ -32,7 +35,7 @@ export const defaultAppConfig: AppConfig = {
 export const initialAppConfig: AppConfig = {
   apiURL: '',
   apiKey: '',
-  environment: '',
+  environment: LucraEnvironment.SANDBOX,
   urlScheme: '',
   merchantId: '',
   deeplinksEnabled: false,

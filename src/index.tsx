@@ -1,8 +1,8 @@
 import React from 'react';
 import LucraClient from './NativeLucraClient';
-export { default as LucraFlowView } from './LucraFlowView';
-import { default as LucraProfilePillNative } from './LucraProfilePillComponent';
-import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonComponent';
+export { default as LucraFlowView } from './LucraFlowViewNativeComponent';
+import { default as LucraProfilePillNative } from './LucraProfilePillNativeComponent';
+import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonNativeComponent';
 import {
   StyleSheet,
   type ViewProps,
@@ -10,9 +10,9 @@ import {
   View,
   NativeEventEmitter,
 } from 'react-native';
-export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedComponent';
-export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupComponent';
-export { default as LucraContestCard } from './LucraContestCardComponent';
+export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedNativeComponent';
+export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupNativeComponent';
+export { default as LucraContestCard } from './LucraContestCardNativeComponent';
 import { type SportsMatchupType } from './types';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
@@ -102,10 +102,17 @@ if (LucraClient == null) {
   );
 }
 
-type LucraSDKParams = {
+export enum LucraEnvironment {
+  PRODUCTION = 'production',
+  STAGING = 'staging',
+  SANDBOX = 'sandbox',
+  DEVELOP = 'develop',
+}
+
+export type LucraSDKParams = {
   apiURL: string;
   apiKey: string;
-  environment: string;
+  environment: LucraEnvironment;
   theme?: {
     background?: string;
     surface?: string;
@@ -126,6 +133,7 @@ type LucraSDKParams = {
         }
       | string;
   };
+  urlScheme?: string;
   merchantID?: string;
 };
 
@@ -165,6 +173,7 @@ type LucraConvertCreditResponse = {
   pillColor: string;
   pillTextColor: string;
 };
+
 let deepLinkSubscription: NativeEventSubscription;
 let creditConversionSubscription: NativeEventSubscription;
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
@@ -180,12 +189,8 @@ type LucraContestListener = {
 };
 
 export const LucraSDK = {
-  ENVIRONMENT: {
-    PRODUCTION: 'production',
-    STAGING: 'staging',
-    SANDBOX: 'sandbox',
-    DEVELOP: 'develop',
-  },
+  ready: false,
+  ENVIRONMENT: LucraEnvironment,
   FLOW: {
     ONBOARDING: 'onboarding',
     VERIFY_IDENTITY: 'verifyIdentity',
@@ -316,7 +321,6 @@ export const LucraSDK = {
     return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
   },
 };
-
 export type LucraSDKError = {
   code:
     | 'notInitialized'

@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface LucraProfilePillView : RCTViewComponentView
+@interface LucraProfilePill : RCTViewComponentView
 @end
 
 NS_ASSUME_NONNULL_END
