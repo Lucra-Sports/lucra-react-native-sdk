@@ -30,6 +30,7 @@ export default {
         {
           ios: {
             deploymentTarget: '15.1',
+            networkInspector: false,
           },
         },
       ],
