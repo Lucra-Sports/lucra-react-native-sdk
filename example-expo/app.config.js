@@ -16,6 +16,7 @@ export default {
       bundleIdentifier: 'com.lucrasports.mobile-rnsample',
     },
     android: {
+      package: 'com.lucrasports.mobile.rnsample',
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#ffffff',
@@ -30,6 +31,10 @@ export default {
         {
           ios: {
             deploymentTarget: '15.1',
+            networkInspector: false,
+          },
+          android: {
+            minSdkVersion: 24,
             networkInspector: false,
           },
         },
