@@ -13,7 +13,10 @@
     "build:android": "cd android && bundle exec fastlane android build_example",
     "build:ios": "cd ios && bundle exec fastlane build_example",
     "release:android": "cd android && bundle exec fastlane distribute",
-    "release:ios": "cd ios && bundle exec fastlane distribute"
+    "release:ios": "cd ios && bundle exec fastlane distribute",
+    "detox:build-ios": "detox build --configuration ios.sim.debug",
+    "detox:run-ios": "detox test --configuration ios.sim.debug",
+    "detox:record-ios": "detox recorder --configuration ios.sim.debug --outputTestFile ./record.js --testName RecordTest --record"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.0.0",
@@ -48,6 +51,8 @@
     "@types/react": "^18.3.3",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
+    "detox": "^20.28.0",
+    "jest": "^29",
     "tailwindcss": "^3.4.14"
   },
   "engines": {

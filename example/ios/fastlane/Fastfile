@@ -15,7 +15,8 @@ platform :ios do
       workspace: './LucrasdkExample.xcworkspace',
       configuration: 'Debug',
       export_method: 'development',
-      sdk: 'iphonesimulator',
+      destination: 'generic/platform=iOS Simulator',
+      skip_archive: true,
       export_xcargs: '-allowProvisioningUpdates',
       xcargs: "-allowProvisioningUpdates \
       CC=clang \
