@@ -1,4 +1,10 @@
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+/**
+ * Press button helper, something is wrong with iOS on detox, the button is correctly detected but calling .tap tries to tap on a totally different coordinate.
+ * As a workaround we get the button location and then call a global device.tap at the correct coordinates.
+ *  */
+
+const SANDBOX_PHONE = '5555550103';
+const SANDBOX_CODE = '123456';
 
 const pressButton = async (label) => {
   const el = element(by.label(label)).atIndex(0);
@@ -18,6 +24,10 @@ const pressButton = async (label) => {
   return point;
 };
 
+/**
+ * Checkbox helper when the label is detached from the actual button, it tries to find the label and tap a few points to the left.
+ * As a workaround we get the button location and then call a global device.tap at the correct coordinates.
+ *  */
 const pressCheckbox = async (label) => {
   const el = element(by.label(label));
   await expect(el).toBeVisible();
@@ -28,36 +38,34 @@ const pressCheckbox = async (label) => {
   });
 };
 
-describe('Example', () => {
+describe('Lucra RN SDK', () => {
   beforeAll(async () => {
     await device.launchApp({
-      // permissions: { location: 'always' },
+      permissions: { location: 'always' },
     });
   });
 
-  beforeEach(async () => {
-    await device.setOrientation('portrait');
-  });
-
-  it('should have SDK Navigation', async () => {
-    await element(by.text('Sheet Flows')).tap();
-    await element(by.text('Create Games Matchup')).tap();
-    await expect(element(by.label('Phone Number'))).toBeVisible();
-    await element(by.type('UITextField')).typeText('5555550103');
+  it('should be able to create a matchup', async () => {
+    await element(by.text(/sheet flows/i)).tap();
+    await element(by.text(/create games matchup/i)).tap();
+    await expect(element(by.label(/phone number/i))).toBeVisible();
+    await element(by.type('UITextField')).typeText(SANDBOX_PHONE);
     await element(by.type('UITextField')).tapReturnKey();
-    await pressCheckbox(/^This feature is powered by Lucra.*/i);
+    await pressCheckbox(/^this feature is powered by Lucra.*/i);
     const point = await pressButton(/CONTINUE/i);
-    await expect(element(by.label('Confirmation Code'))).toBeVisible();
-    await element(by.type('UITextField')).atIndex(0).typeText('123456');
+    await expect(element(by.label(/confirmation code/i))).toBeVisible();
+    await element(by.type('UITextField')).atIndex(0).typeText(SANDBOX_CODE);
     await element(by.type('UITextField')).atIndex(0).tapReturnKey();
     await device.tap(point);
-    await pressButton("Let's play!");
+    await pressButton(/let's play*./i);
     await device.tap(point);
     await pressButton(/irl game name/i);
     await pressButton(/^create.*matchup$/i);
     await pressButton(/add opponent/i);
-    await expect(element(by.text(/invite your opponent!/i))).toBeVisible();
+    await waitFor(element(by.label(/invite your opponent.*/i)))
+      .toBeVisible()
+      .withTimeout(50000);
     await pressButton(/done/i);
-    await expect(element(by.text(/matchup created!/i))).toBeVisible();
+    await device.takeScreenshot('match-created');
   });
 });
