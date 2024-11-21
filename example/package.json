@@ -15,8 +15,7 @@
     "release:android": "cd android && bundle exec fastlane distribute",
     "release:ios": "cd ios && bundle exec fastlane distribute",
     "detox:build-ios": "detox build --configuration ios.sim.debug",
-    "detox:run-ios": "detox test --configuration ios.sim.debug",
-    "detox:record-ios": "detox recorder --configuration ios.sim.debug --outputTestFile ./record.js --testName RecordTest --record"
+    "detox:run-ios": "detox test --configuration ios.sim.debug"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.0.0",

@@ -1,5 +1,23 @@
 /** @type {Detox.DetoxConfig} */
 module.exports = {
+  logger: {
+    level: 'trace',
+  },
+  artifacts: {
+    plugins: {
+      screenshot: {
+        enabled: true,
+        keepOnlyFailedTestsArtifacts: false,
+        shouldTakeAutomaticSnapshots: true,
+        takeWhen: {
+          testDone: true,
+          testFailure: true,
+          testStart: false,
+          appNotReady: true,
+        },
+      },
+    },
+  },
   testRunner: {
     args: {
       $0: 'jest',
@@ -8,9 +26,6 @@ module.exports = {
     jest: {
       setupTimeout: 120000,
     },
-  },
-  logger: {
-    level: 'trace',
   },
   apps: {
     'ios.debug': {
@@ -38,7 +53,7 @@ module.exports = {
     simulator: {
       type: 'ios.simulator',
       device: {
-        type: 'iPhone 15',
+        type: 'iPhone 16',
       },
     },
     attached: {

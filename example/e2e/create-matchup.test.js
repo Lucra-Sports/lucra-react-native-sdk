@@ -11,10 +11,8 @@ const pressButton = async (label) => {
   await waitFor(el).toBeVisible().withTimeout(3000);
   await expect(el).toBeVisible();
   let attributes = await el.getAttributes();
-  console.log(attributes);
   if (attributes.elements) {
     attributes = attributes.elements[0];
-    console.log(attributes);
   }
   const point = {
     x: Math.floor(attributes.activationPoint.x),
@@ -66,6 +64,5 @@ describe('Lucra RN SDK', () => {
       .toBeVisible()
       .withTimeout(50000);
     await pressButton(/done/i);
-    await device.takeScreenshot('match-created');
   });
 });
