@@ -95,8 +95,16 @@ RCT_EXPORT_METHOD(emitCreditConversion : (NSDictionary *)conversion) {
     [swiftClient emitCreditConversion:conversion];
 }
 
+RCT_EXPORT_METHOD(emitAvailableRewards: (NSArray *)rewards) {
+    [swiftClient emitAvailableRewards:rewards];
+}
+
 RCT_EXPORT_METHOD(registerConvertToCreditProvider) {
     [swiftClient registerConvertToCreditProvider];
+}
+
+RCT_EXPORT_METHOD(registerRewardProvider) {
+    [swiftClient registerRewardProvider];
 }
 
 RCT_EXPORT_METHOD(logout

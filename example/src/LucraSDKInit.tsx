@@ -41,6 +41,14 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
+        LucraSDK.registerRewardProvider(
+          async () => {
+            return [];
+          },
+          async (reward) => {
+            console.log('Reward:', reward);
+          }
+        );
         LucraSDK.addContestListener({
           onGamesContestCreated: (contestId: string) => {
             console.log('Games contest created:', contestId);

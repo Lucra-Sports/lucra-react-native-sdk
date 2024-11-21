@@ -116,3 +116,13 @@ export type SportsMatchupType = {
   status: string;
   teams: SportsMatchupTeam[];
 };
+
+export type LucraReward = {
+  rewardId: string;
+  title: string;
+  descriptor: string;
+  iconUrl: string;
+  bannerIconUrl: string;
+  disclaimer: string;
+  metadata: string | null;
+};

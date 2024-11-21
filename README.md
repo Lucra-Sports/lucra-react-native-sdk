@@ -775,6 +775,38 @@ registerCreditConversionProvider(async (cashAmount: number) => {
 });
 ```
 
+# Reward Provider
+
+A reward provider is meant to allow users to see and claim rewards once their matchup has finished. It has two parts, a call that returns which rewards are available and will be displayed to the user. And a claim callback, which will be called once the user is ready to claim their reward after a matchup:
+
+```ts
+import {
+  registerRewardProvider,
+  type LucraReward,
+} from '@lucra-sports/lucra-react-native-sdk';
+
+async function getAvailableRewards(): LucraReward[] {
+  // your logic to fetch user available rewards comes here
+  return [
+    {
+      rewardId: 'Reward123',
+      title: 'My awesome reward',
+      descriptor: 'descriptor',
+      iconUrl: 'http://url.com/blah.jpg',
+      bannerIconUrl: 'another jpg url',
+      disclaimer: 'disclaimer',
+      metadata: JSON.stringify({ otherData: 'you want' }),
+    },
+  ];
+}
+
+async function claimReward(reward: LucraReward) {
+  // Assign the user their reward
+}
+
+registerRewardProvider(getAvailableRewards, claimReward);
+```
+
 # Venmo iOS
 
 The Lucra iOS SDK offers Venmo as a payment option. This guide covers implementation steps.

@@ -8,6 +8,8 @@ extension LucraSwiftClient {
     case gamesContestAccepted
     case sportsContestCreated
     case sportsContestAccepted
+    case _availableRewards
+    case _claimReward
   }
 
   @objc
