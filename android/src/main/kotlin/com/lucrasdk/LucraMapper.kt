@@ -111,7 +111,8 @@ object LucraMapper {
 
         val map = Arguments.createMap()
         map.putString("id", team.id)
-        map.putString("logoUrl", team.logoUrl)
+        // TODO this seems it has been deleted from the native SDK
+//        map.putString("logoUrl", team.logoUrl)
         map.putString("fullName", team.fullName)
         map.putString("name", team.name)
         map.putMap("sport", sportToMap(team.sport))
