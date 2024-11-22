@@ -10,11 +10,13 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.lucrasdk.LucraUtils.Companion.convertReadableMapToStringMap
+import com.lucrasdk.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.contest.SportsMatchup
@@ -23,6 +25,8 @@ import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMetho
 import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.events.LucraEvent
 import com.lucrasports.sdk.core.events.LucraEventListener
+import com.lucrasports.sdk.core.reward.LucraReward
+import com.lucrasports.sdk.core.reward.LucraRewardProvider
 import com.lucrasports.sdk.core.style_guide.ClientTheme
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
@@ -39,70 +43,76 @@ import kotlinx.coroutines.flow.first
 
 @ReactModule(name = LucraClientModule.NAME)
 class LucraClientModule(private val context: ReactApplicationContext) :
-    ReactContextBaseJavaModule(context) {
+        ReactContextBaseJavaModule(context) {
 
     private var fullAppFlowDialogFragment: DialogFragment? = null
     private var _deepLinkEmitter = MutableStateFlow<String>("")
     private var _deepLinkState: SharedFlow<String> = _deepLinkEmitter.asSharedFlow()
+
     private var _creditConversionEmitter = MutableStateFlow<ReadableMap?>(null)
     private var _creditConversionEmitterState: SharedFlow<ReadableMap?> =
-        _creditConversionEmitter.asSharedFlow()
+            _creditConversionEmitter.asSharedFlow()
+
+    private var _availableRewardsEmitter = MutableStateFlow<ReadableArray?>(null)
+    private var _availableRewardsEmitterState: SharedFlow<ReadableArray?> =
+            _availableRewardsEmitter.asSharedFlow()
 
     private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
         reactContext
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-            .emit(eventName, params)
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                .emit(eventName, params)
     }
 
     @ReactMethod
     fun initialize(options: ReadableMap, promise: Promise) {
         val apiURL =
-            options.getString("apiURL") ?: throw Exception("LucraSDK no api passed to constructor")
+                options.getString("apiURL")
+                        ?: throw Exception("LucraSDK no api passed to constructor")
         val apiKey =
-            options.getString("apiKey")
-                ?: throw Exception("LucraSDK no apiKey passed to constructor")
+                options.getString("apiKey")
+                        ?: throw Exception("LucraSDK no apiKey passed to constructor")
         val environment =
-            options.getString("environment")
-                ?: throw Exception("LucraSDK no environment passed to constructor")
+                options.getString("environment")
+                        ?: throw Exception("LucraSDK no environment passed to constructor")
 
         val theme = options.getMap("theme")
         var clientTheme = ClientTheme()
         var fontFamily: FontFamily? = null
         if (theme != null) {
             val colorStyle =
-                ColorStyle(
-                    theme.getString("background"),
-                    theme.getString("surface"),
-                    theme.getString("primary"),
-                    theme.getString("secondary"),
-                    theme.getString("tertiary"),
-                    theme.getString("onBackground"),
-                    theme.getString("onSurface"),
-                    theme.getString("onPrimary"),
-                    theme.getString("onSecondary"),
-                    theme.getString("onTertiary"),
-                )
+                    ColorStyle(
+                            theme.getString("background"),
+                            theme.getString("surface"),
+                            theme.getString("primary"),
+                            theme.getString("secondary"),
+                            theme.getString("tertiary"),
+                            theme.getString("onBackground"),
+                            theme.getString("onSurface"),
+                            theme.getString("onPrimary"),
+                            theme.getString("onSecondary"),
+                            theme.getString("onTertiary"),
+                    )
 
             val fontFamilyObj = theme.getMap("fontFamily")
             if (fontFamilyObj != null) {
                 if (!fontFamilyObj.hasKey("medium") ||
-                    !fontFamilyObj.hasKey("normal") ||
-                    !fontFamilyObj.hasKey("semibold") ||
-                    !fontFamilyObj.hasKey("bold")
+                                !fontFamilyObj.hasKey("normal") ||
+                                !fontFamilyObj.hasKey("semibold") ||
+                                !fontFamilyObj.hasKey("bold")
                 ) {
                     throw Exception(
-                        "LucraSDK all keys are required when setting a font: medium, normal, semibold and bold"
+                            "LucraSDK all keys are required when setting a font: medium, normal, semibold and bold"
                     )
                 }
 
                 // Strings will be there because of previous check
                 fontFamily =
-                    FontFamily(
-                        Font(fontFamilyObj.getString("medium")!!),
-                        Font(fontFamilyObj.getString("normal")!!),
-                        Font(fontFamilyObj.getString("semibold")!!),
-                        Font(fontFamilyObj.getString("bold")!!)
-                    )
+                        FontFamily(
+                                Font(fontFamilyObj.getString("medium")!!),
+                                Font(fontFamilyObj.getString("normal")!!),
+                                Font(fontFamilyObj.getString("semibold")!!),
+                                Font(fontFamilyObj.getString("bold")!!)
+                        )
             }
 
             clientTheme = ClientTheme(colorStyle, fontFamily)
@@ -110,13 +120,13 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
         try {
             LucraClient.initialize(
-                application = context.applicationContext as Application,
-                lucraUiProvider = buildLucraUIInstance(),
-                apiUrl = apiURL,
-                apiKey = apiKey,
-                environment = LucraUtils.getLucraEnvironment(environment),
-                clientTheme = clientTheme,
-                outputLogs = true,
+                    application = context.applicationContext as Application,
+                    lucraUiProvider = buildLucraUIInstance(),
+                    apiUrl = apiURL,
+                    apiKey = apiKey,
+                    environment = LucraUtils.getLucraEnvironment(environment),
+                    clientTheme = clientTheme,
+                    outputLogs = true,
             )
 
             LucraClient().setDeeplinkTransformer { lucraLink ->
@@ -128,51 +138,54 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             }
 
             LucraClient()
-                .setEventListener(
-                    object : LucraEventListener {
-                        override fun onEvent(event: LucraEvent) {
-                            when (event) {
-                                is LucraEvent.GamesContest.Created -> {
-                                    sendEvent(
-                                        context,
-                                        "gamesContestCreated",
-                                        Arguments.makeNativeMap(
-                                            bundleOf("contestId" to event.contestId)
-                                        )
-                                    )
+                    .setEventListener(
+                            object : LucraEventListener {
+                                override fun onEvent(event: LucraEvent) {
+                                    when (event) {
+                                        is LucraEvent.GamesContest.Created -> {
+                                            sendEvent(
+                                                    context,
+                                                    "gamesContestCreated",
+                                                    Arguments.makeNativeMap(
+                                                            bundleOf("contestId" to event.contestId)
+                                                    )
+                                            )
+                                        }
+                                        is LucraEvent.SportsContest.Created -> {
+                                            sendEvent(
+                                                    context,
+                                                    "sportsContestCreated",
+                                                    Arguments.makeNativeMap(
+                                                            bundleOf("contestId" to event.contestId)
+                                                    )
+                                            )
+                                        }
+                                        is LucraEvent.GamesContest.Accepted ->
+                                                sendEvent(
+                                                        context,
+                                                        "gamesContestAccepted",
+                                                        Arguments.makeNativeMap(
+                                                                bundleOf(
+                                                                        "contestId" to
+                                                                                event.contestId
+                                                                )
+                                                        )
+                                                )
+                                        is LucraEvent.SportsContest.Accepted ->
+                                                sendEvent(
+                                                        context,
+                                                        "sportsContestAccepted",
+                                                        Arguments.makeNativeMap(
+                                                                bundleOf(
+                                                                        "contestId" to
+                                                                                event.contestId
+                                                                )
+                                                        )
+                                                )
+                                    }
                                 }
-
-                                is LucraEvent.SportsContest.Created -> {
-                                    sendEvent(
-                                        context,
-                                        "sportsContestCreated",
-                                        Arguments.makeNativeMap(
-                                            bundleOf("contestId" to event.contestId)
-                                        )
-                                    )
-                                }
-
-                                is LucraEvent.GamesContest.Accepted ->
-                                    sendEvent(
-                                        context,
-                                        "gamesContestAccepted",
-                                        Arguments.makeNativeMap(
-                                            bundleOf("contestId" to event.contestId)
-                                        )
-                                    )
-
-                                is LucraEvent.SportsContest.Accepted ->
-                                    sendEvent(
-                                        context,
-                                        "sportsContestAccepted",
-                                        Arguments.makeNativeMap(
-                                            bundleOf("contestId" to event.contestId)
-                                        )
-                                    )
                             }
-                        }
-                    }
-                )
+                    )
 
             LucraClient().observeSDKUser { user ->
                 when (user) {
@@ -181,21 +194,17 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         res.putString("error", user.error.toString())
                         sendEvent(context, "user", res)
                     }
-
                     SDKUserResult.InvalidUsername -> {
                         // intentionally left blank
                     }
-
                     SDKUserResult.Loading -> {
                         // intentionally left blank
                     }
-
                     SDKUserResult.NotLoggedIn -> {
                         val res = Arguments.createMap()
                         res.putNull("user")
                         sendEvent(context, "user", res)
                     }
-
                     is SDKUserResult.Success -> {
                         val userMap = Arguments.createMap()
                         userMap.putString("username", user.sdkUser.username)
@@ -217,7 +226,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
                         sendEvent(context, "user", res)
                     }
-
                     SDKUserResult.WaitingForLogin -> {
                         // intentionally left blank
                     }
@@ -231,33 +239,35 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     private fun buildLucraUIInstance() =
-        LucraUi(
-            lucraFlowListener =
-            object : LucraFlowListener {
-                // Callback for entering Lucra permitted flow launch points.
-                override fun launchNewLucraFlowEntryPoint(
-                    entryLucraFlow: LucraUiProvider.LucraFlow
-                ): Boolean {
-                    LucraClient().getLucraDialogFragment(entryLucraFlow).also {
-                        it.show(
-                            (context.currentActivity as FragmentActivity)
-                                .supportFragmentManager,
-                            entryLucraFlow.toString()
-                        )
-                    }
-                    return true
-                }
+            LucraUi(
+                    lucraFlowListener =
+                            object : LucraFlowListener {
+                                // Callback for entering Lucra permitted flow launch points.
+                                override fun launchNewLucraFlowEntryPoint(
+                                        entryLucraFlow: LucraUiProvider.LucraFlow
+                                ): Boolean {
+                                    LucraClient().getLucraDialogFragment(entryLucraFlow).also {
+                                        it.show(
+                                                (context.currentActivity as FragmentActivity)
+                                                        .supportFragmentManager,
+                                                entryLucraFlow.toString()
+                                        )
+                                    }
+                                    return true
+                                }
 
-                // Callback for exiting all Lucra permitted flow launch points
-                override fun onFlowDismissRequested(
-                    entryLucraFlow: LucraUiProvider.LucraFlow
-                ) {
-                    (context.currentActivity as FragmentActivity).supportFragmentManager
-                        .findFragmentByTag(entryLucraFlow.toString())
-                        ?.let { (it as DialogFragment).dismiss() }
-                }
-            }
-        )
+                                // Callback for exiting all Lucra permitted flow launch points
+                                override fun onFlowDismissRequested(
+                                        entryLucraFlow: LucraUiProvider.LucraFlow
+                                ) {
+                                    (context.currentActivity as FragmentActivity)
+                                            .supportFragmentManager.findFragmentByTag(
+                                                    entryLucraFlow.toString()
+                                            )
+                                            ?.let { (it as DialogFragment).dismiss() }
+                                }
+                            }
+            )
 
     override fun getName(): String {
         return NAME
@@ -270,31 +280,30 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
 
         fullAppFlowDialogFragment?.show(
-            (context.currentActivity as FragmentActivity).supportFragmentManager,
-            lucraFlow.toString() // this tag will be used to dismiss in onFlowDismissRequested(flow)
-        )
+                (context.currentActivity as FragmentActivity).supportFragmentManager,
+                lucraFlow.toString() // this tag will be used to dismiss in
+                // onFlowDismissRequested(flow)
+                )
     }
 
     private fun throwLucraJSError(
-        promise: Promise,
-        failure: GamesMatchup.FailedCreateGamesMatchup
+            promise: Promise,
+            failure: GamesMatchup.FailedCreateGamesMatchup
     ) {
         val errorCode =
-            when (failure) {
-                is GamesMatchup.FailedCreateGamesMatchup.APIError -> "apiError"
-                is GamesMatchup.FailedCreateGamesMatchup.LocationError -> "locationError"
-                GamesMatchup.FailedCreateGamesMatchup.UserStateError.InsufficientFunds ->
-                    "insufficientFunds"
-
-                GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotAllowed -> "notAllowed"
-                GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotInitialized ->
-                    "notInitialized"
-
-                GamesMatchup.FailedCreateGamesMatchup.UserStateError.Unverified -> "unverified"
-                else -> {
-                    "unknownError"
+                when (failure) {
+                    is GamesMatchup.FailedCreateGamesMatchup.APIError -> "apiError"
+                    is GamesMatchup.FailedCreateGamesMatchup.LocationError -> "locationError"
+                    GamesMatchup.FailedCreateGamesMatchup.UserStateError.InsufficientFunds ->
+                            "insufficientFunds"
+                    GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotAllowed -> "notAllowed"
+                    GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotInitialized ->
+                            "notInitialized"
+                    GamesMatchup.FailedCreateGamesMatchup.UserStateError.Unverified -> "unverified"
+                    else -> {
+                        "unknownError"
+                    }
                 }
-            }
 
         promise.reject(errorCode, failure.toString())
     }
@@ -306,7 +315,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is GamesMatchup.CreateGamesMatchupResult.Failure -> {
                     throwLucraJSError(promise, it.failure)
                 }
-
                 is GamesMatchup.CreateGamesMatchupResult.GYPCreatedMatchupOutput -> {
                     val map = Arguments.createMap()
 
@@ -324,11 +332,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
         LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
             when (it) {
-                is GamesMatchup.MatchupActionResult.Failure -> throwLucraJSError(
-                    promise,
-                    it.failure
-                )
-
+                is GamesMatchup.MatchupActionResult.Failure ->
+                        throwLucraJSError(promise, it.failure)
                 GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
             }
         }
@@ -338,11 +343,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     fun cancelGamesMatchup(matchupId: String, promise: Promise) {
         LucraClient().cancelGamesYouPlayContest(matchupId) {
             when (it) {
-                is GamesMatchup.MatchupActionResult.Failure -> throwLucraJSError(
-                    promise,
-                    it.failure
-                )
-
+                is GamesMatchup.MatchupActionResult.Failure ->
+                        throwLucraJSError(promise, it.failure)
                 GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
             }
         }
@@ -352,8 +354,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().getGamesMatchup(matchupId) { result ->
             when (result) {
                 is GamesMatchup.RetrieveGamesMatchupResult.Failure ->
-                    promise.reject(result.failure.toString(), result.failure.toString())
-
+                        promise.reject(result.failure.toString(), result.failure.toString())
                 is GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput -> {
                     val res = Arguments.createMap()
                     res.putString("gameType", result.gameType)
@@ -399,42 +400,97 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun registerRewardProvider() {
+        LucraClient()
+                .setRewardProvider(
+                        object : LucraRewardProvider {
+                            override suspend fun availableRewards(): List<LucraReward> {
+                                sendEvent(context, "_availableRewards", null)
+                                val rewards = _availableRewardsEmitterState.first { it != null }!!
+                                return rewards.toArrayList().map {
+                                    val rewardMap = it as ReadableMap
+                                    LucraReward(
+                                            rewardId = rewardMap.getString("rewardId")!!,
+                                            title = rewardMap.getString("title")!!,
+                                            descriptor = rewardMap.getString("descriptor")!!,
+                                            iconUrl = rewardMap.getString("iconUrl")!!,
+                                            bannerIconUrl = rewardMap.getString("bannerIconUrl")!!,
+                                            disclaimer = rewardMap.getString("disclaimer")!!,
+                                            metadata = convertReadableMapToStringMap(rewardMap.getMap("metadata"))
+                                    )
+                                }
+                            }
+
+                            override fun claimReward(reward: LucraReward) {
+                                val map = Arguments.createMap()
+                                map.putString("rewardId", reward.rewardId)
+                                map.putString("title", reward.title)
+                                map.putString("descriptor", reward.descriptor)
+                                map.putString("iconUrl", reward.iconUrl)
+                                map.putString("bannerIconUrl", reward.bannerIconUrl)
+                                map.putString("disclaimer", reward.disclaimer)
+                                map.putMap("metadata",convertStringMapToWritableMap(reward.metadata))
+                                sendEvent(context, "_claimReward", map)
+                            }
+                        }
+                )
+    }
+
+    @ReactMethod
     fun registerConvertToCreditProvider() {
         LucraClient()
-            .setConvertToCreditProvider(
-                object : LucraConvertToCreditProvider {
-                    override suspend fun getCreditAmount(
-                        cashAmount: Double
-                    ): LucraConvertToCreditWithdrawMethod? {
-                        val linkMap = Arguments.createMap()
-                        linkMap.putDouble("amount", cashAmount)
-                        sendEvent(context, "_creditConversion", linkMap)
-                        val responseMap = _creditConversionEmitterState.first { it != null }!!
+                .setConvertToCreditProvider(
+                        object : LucraConvertToCreditProvider {
+                            override suspend fun getCreditAmount(
+                                    cashAmount: Double
+                            ): LucraConvertToCreditWithdrawMethod? {
+                                val linkMap = Arguments.createMap()
+                                linkMap.putDouble("amount", cashAmount)
+                                sendEvent(context, "_creditConversion", linkMap)
+                                val responseMap =
+                                        _creditConversionEmitterState.first { it != null }!!
 
-                        return LucraConvertToCreditWithdrawMethod(
-                            id = responseMap.getString("id")!!,
-                            title = responseMap.getString("title")!!,
-                            conversionTerms = responseMap.getString("conversionTerms")!!,
-                            amount = cashAmount,
-                            convertedAmount = responseMap.getDouble("convertedAmount"),
-                            iconUrl = responseMap.getString("iconUrl"),
-                            convertedAmountDisplay =
-                            responseMap.getString("convertedAmountDisplay")!!,
-                            shortDescription = responseMap.getString("shortDescription")!!,
-                            longDescription = responseMap.getString("longDescription")!!,
-                            metaData = responseMap.getMap("metaData")
-                                ?.let { convertReadableMapToStringMap(it) },
-                            theme =
-                            LucraWithdrawCardTheme(
-                                cardColor = responseMap.getString("cardColor")!!,
-                                cardTextColor = responseMap.getString("cardTextColor")!!,
-                                pillColor = responseMap.getString("pillColor")!!,
-                                pillTextColor = responseMap.getString("pillTextColor")!!,
-                            )
-                        )
-                    }
-                }
-            )
+                                return LucraConvertToCreditWithdrawMethod(
+                                        id = responseMap.getString("id")!!,
+                                        title = responseMap.getString("title")!!,
+                                        conversionTerms =
+                                                responseMap.getString("conversionTerms")!!,
+                                        amount = cashAmount,
+                                        convertedAmount = responseMap.getDouble("convertedAmount"),
+                                        iconUrl = responseMap.getString("iconUrl"),
+                                        convertedAmountDisplay =
+                                                responseMap.getString("convertedAmountDisplay")!!,
+                                        shortDescription =
+                                                responseMap.getString("shortDescription")!!,
+                                        longDescription =
+                                                responseMap.getString("longDescription")!!,
+                                        metaData =
+                                                responseMap.getMap("metaData")?.let {
+                                                    convertReadableMapToStringMap(it)
+                                                },
+                                        theme =
+                                                LucraWithdrawCardTheme(
+                                                        cardColor =
+                                                                responseMap.getString(
+                                                                        "cardColor"
+                                                                )!!,
+                                                        cardTextColor =
+                                                                responseMap.getString(
+                                                                        "cardTextColor"
+                                                                )!!,
+                                                        pillColor =
+                                                                responseMap.getString(
+                                                                        "pillColor"
+                                                                )!!,
+                                                        pillTextColor =
+                                                                responseMap.getString(
+                                                                        "pillTextColor"
+                                                                )!!,
+                                                )
+                                )
+                            }
+                        }
+                )
     }
 
     @ReactMethod
@@ -443,10 +499,10 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         if (lucraFlow != null) {
             fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
             fullAppFlowDialogFragment?.show(
-                (context.currentActivity as FragmentActivity).supportFragmentManager,
-                lucraFlow.toString() // this tag will be used to dismiss in
-                // onFlowDismissRequested(flow)
-            )
+                    (context.currentActivity as FragmentActivity).supportFragmentManager,
+                    lucraFlow.toString() // this tag will be used to dismiss in
+                    // onFlowDismissRequested(flow)
+                    )
             promise.resolve(true)
         } else {
             promise.resolve(false)
@@ -458,31 +514,29 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         // small trick to simplify code a bit
         val addressJS = if (user.hasKey("address")) user.getMap("address")!! else user
         val newUser =
-            SDKUser(
-                address = addressJS.getString("address"),
-                addressCont = addressJS.getString("addressCont"),
-                city = addressJS.getString("city"),
-                email = user.getString("email"),
-                firstName = user.getString("firstName"),
-                lastName = user.getString("lastName"),
-                phoneNumber = user.getString("phoneNumber"),
-                state = addressJS.getString("state"),
-                username = user.getString("username"),
-                zip = addressJS.getString("zip"),
-                avatarUrl = user.getString("avatarURL")
-            )
+                SDKUser(
+                        address = addressJS.getString("address"),
+                        addressCont = addressJS.getString("addressCont"),
+                        city = addressJS.getString("city"),
+                        email = user.getString("email"),
+                        firstName = user.getString("firstName"),
+                        lastName = user.getString("lastName"),
+                        phoneNumber = user.getString("phoneNumber"),
+                        state = addressJS.getString("state"),
+                        username = user.getString("username"),
+                        zip = addressJS.getString("zip"),
+                        avatarUrl = user.getString("avatarURL")
+                )
         LucraClient().configure(sdkUser = newUser) {
             when (it) {
                 is SDKUserResult.Success -> promise.resolve(null)
                 is SDKUserResult.InvalidUsername ->
-                    promise.reject("invalid_username", "username is not valid")
-
+                        promise.reject("invalid_username", "username is not valid")
                 is SDKUserResult.NotLoggedIn -> promise.reject("not_logged_in", "not logged in")
                 is SDKUserResult.Error -> promise.reject("unknown_error", it.toString())
                 SDKUserResult.Loading -> {
                     // Should not happen in this context
                 }
-
                 SDKUserResult.WaitingForLogin -> {
                     // Intentionally left blank
                 }
@@ -495,11 +549,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().getSDKUser {
             when (it) {
                 is SDKUserResult.Error -> promise.resolve(null)
-                SDKUserResult.InvalidUsername -> promise.reject(
-                    "invalid_username",
-                    "username is not valid"
-                )
-
+                SDKUserResult.InvalidUsername ->
+                        promise.reject("invalid_username", "username is not valid")
                 SDKUserResult.NotLoggedIn -> promise.reject("not_logged_in", "not logged in")
                 is SDKUserResult.Success -> {
                     val user = Arguments.createMap()
@@ -520,7 +571,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
                     promise.resolve(user)
                 }
-
                 SDKUserResult.Loading -> promise.reject("loading", "User is still loading")
                 SDKUserResult.WaitingForLogin -> {
                     // intentionally blank
@@ -532,13 +582,12 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     @ReactMethod
     fun getSportsMatchup(contestId: String, promise: Promise) {
         LucraClient().getSportsMatchup(
-            matchupId = contestId,
-        ) { result ->
+                        matchupId = contestId,
+                ) { result ->
             when (result) {
                 is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
                     promise.reject("could_not_resolve_sports_matchup", result.toString())
                 }
-
                 is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
                     promise.resolve(LucraMapper.sportsMatchupToMap(result.sportsMatchup))
                 }
