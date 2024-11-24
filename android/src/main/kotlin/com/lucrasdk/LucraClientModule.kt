@@ -395,6 +395,11 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun emitAvailableRewards(args: ReadableArray) {
+        _availableRewardsEmitter.tryEmit(args)
+    }
+
+    @ReactMethod
     fun emitCreditConversion(args: ReadableMap) {
         _creditConversionEmitter.tryEmit(args)
     }
@@ -408,7 +413,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                 sendEvent(context, "_availableRewards", null)
                                 val rewards = _availableRewardsEmitterState.first { it != null }!!
                                 return rewards.toArrayList().map {
-                                    val rewardMap = it as ReadableMap
+                                    val rewardMap = Arguments.makeNativeMap(it as Map<String, Any>)
                                     LucraReward(
                                             rewardId = rewardMap.getString("rewardId")!!,
                                             title = rewardMap.getString("title")!!,
