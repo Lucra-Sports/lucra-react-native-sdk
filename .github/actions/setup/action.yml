@@ -37,8 +37,6 @@ runs:
       shell: bash
 
     - name: Install dependencies example-expo
-      env:
-        GPR_KEY: ${{ secrets.GPR_KEY }}
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn --cwd example-expo install --immutable
       shell: bash
