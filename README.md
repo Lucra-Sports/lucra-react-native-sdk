@@ -45,62 +45,38 @@ To install the SDK in your Expo app, you have two main options:
 
 1. **Use Prebuild or Eject Your App**: If your app uses `expo prebuild` or has been ejected, you can follow the platform-specific installation steps for each platform as detailed below.
 
-2. **Modify `app.config.js` with Expo Plugins**: To avoid manual customization of the native directories, you can adjust your `app.config.js` file and utilize Expo plugins to handle the necessary configurations.
+2. **Use lucra-react-native-sdk expo plugin**: To avoid manual customization of the native directories, you can adjust your `app.config.js` file and utilize the provided Expo plugins to handle the necessary configurations.
 
 ### Using the Expo Build Properties Plugin
 
 The [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/) plugin allows you to modify native build properties directly from your `app.config.js`. This is useful for setting deployment targets and specifying frameworks without touching the native code.
 
-## Platform-Specific Instructions
-
-### iOS
-
-Update your `app.config.js` file with the following configuration to set the iOS deployment target and specify the use of static frameworks:
+Update your `app.config.js` file with the following configuration to set the iOS deployment target and android minSDKVersion:
 
 ```javascript
-plugins: [
-  [
-    'expo-build-properties',
-    {
-      ios: {
-        deploymentTarget: '15.0',
-        useFrameworks: 'static',
-        // The lucra SDK uses third-party services that require network inspection to be kept off.
-        networkInspector: false
-      },
-    },
-  ],
-],
-```
-
-### Android
-
-**Note:** Android requires additional configurations to pull dependencies from a Maven repository. We are in the process of providing an Expo plugin to handle these extra configurations.
-
-In the meantime, you can:
-
-- Run `npx expo prebuild` to generate the native Android project.
-- Manually apply the necessary changes to the `android` directory as described in the SDK's Android installation section.
-
-### Using Expo Dev Client
-
-When working with expo-dev-client, it's essential to disable the EX_DEV_CLIENT_NETWORK_INSPECTOR variable, The SDK uses third-party libraries that block network inspection.
-To ensure that EX_DEV_CLIENT_NETWORK_INSPECTOR is turned off, include the following configuration in your app.config.js:
-
-```js
     plugins: [
       [
         'expo-build-properties',
         {
-
-          android: {
+          ios: {
+            deploymentTarget: '15.1',
+            // The lucra SDK uses third-party services that require network inspection to be kept off.
             networkInspector: false,
-            ...
+          },
+          android: {
+            minSdkVersion: 24,
+            networkInspector: false,
           },
         },
       ],
+      ['../app.plugin.js'],
     ],
 ```
+
+### Using Expo Dev Client
+
+When working with expo-dev-client, it's essential to disable the EX_DEV_CLIENT_NETWORK_INSPECTOR variable, The SDK uses third-party libraries that block network inspection.
+To ensure that EX_DEV_CLIENT_NETWORK_INSPECTOR is turned off make sure networkInspector is false when using expo-build-properties.
 
 ## iOS
 
