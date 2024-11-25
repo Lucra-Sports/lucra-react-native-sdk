@@ -7,8 +7,8 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 export default function App() {
   useEffect(() => {
     LucraSDK.init({
-      apiURL: 'api-sample.sandbox.lucrasports.com',
-      apiKey: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
+      apiURL: process.env.EXPO_PUBLIC_LUCRASDK_API_URL ?? '',
+      apiKey: process.env.EXPO_PUBLIC_LUCRASDK_API_KEY ?? '',
       environment: LucraSDK.ENVIRONMENT.SANDBOX,
       theme: {
         background: '#001448',
