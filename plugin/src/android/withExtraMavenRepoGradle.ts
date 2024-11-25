@@ -1,4 +1,7 @@
-import { ConfigPlugin, withProjectBuildGradle } from '@expo/config-plugins';
+import {
+  type ConfigPlugin,
+  withProjectBuildGradle,
+} from '@expo/config-plugins';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { appendContents } from '../util/appendContents';
 

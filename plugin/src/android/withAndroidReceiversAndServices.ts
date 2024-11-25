@@ -1,4 +1,4 @@
-import { AndroidConfig, AndroidManifest } from '@expo/config-plugins';
+import { type AndroidManifest, AndroidConfig } from '@expo/config-plugins';
 
 const { getMainApplicationOrThrow } = AndroidConfig.Manifest;
 
