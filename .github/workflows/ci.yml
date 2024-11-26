@@ -126,6 +126,7 @@ jobs:
     runs-on: self-hosted
     env:
       TURBO_CACHE_DIR: .turbo/ios
+      GPR_KEY: ${{ secrets.GPR_KEY }}
       APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
       APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
       APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}

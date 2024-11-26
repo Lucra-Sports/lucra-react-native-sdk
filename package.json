@@ -13,6 +13,8 @@
     "android",
     "ios",
     "cpp",
+    "plugin",
+    "app.plugin.js",
     "*.podspec",
     "!lib/typescript/example",
     "!ios/build",
@@ -35,7 +37,7 @@
     "example": "yarn workspace example",
     "prepare": "bob build",
     "build-plugin": "tsc -p ./plugin/tsconfig.json",
-    "prepublishOnly": "npm run build-plugin"
+    "prepublishOnly": "yarn run build-plugin"
   },
   "keywords": [
     "react-native",

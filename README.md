@@ -69,7 +69,7 @@ Update your `app.config.js` file with the following configuration to set the iOS
           },
         },
       ],
-      ['../app.plugin.js'],
+      '@lucra-sports/lucra-react-native-sdk',
     ],
 ```
 
