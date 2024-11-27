@@ -19,7 +19,7 @@ import java.util.Locale
 
 object LucraMapper {
 
-    val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US);
+    val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US)
 
     fun sportIntervalsToMap(interval: SportsInterval): WritableMap {
 
@@ -111,8 +111,6 @@ object LucraMapper {
 
         val map = Arguments.createMap()
         map.putString("id", team.id)
-        // TODO this seems it has been deleted from the native SDK
-//        map.putString("logoUrl", team.logoUrl)
         map.putString("fullName", team.fullName)
         map.putString("name", team.name)
         map.putMap("sport", sportToMap(team.sport))
@@ -127,7 +125,6 @@ object LucraMapper {
 
         val players = Arguments.createArray()
         schedule.players?.map(::playerToMap)?.forEach { players.pushMap(it) }
-
 
         val map = Arguments.createMap()
         map.putString("id", schedule.id)
@@ -144,7 +141,7 @@ object LucraMapper {
         map.putString("awayScore", schedule.awayScore)
         map.putMap("sport", sportToMap(schedule.sport))
         schedule.projectionsPending?.let { map.putBoolean("projectionsPending", it) }
-            ?: map.putNull("projectionsPending")
+                ?: map.putNull("projectionsPending")
         return map
     }
 
