@@ -29,9 +29,9 @@ extension RewardProvider: LucraSDK.LucraRewardProvider {
                 title: reward["title"] as! String,
                 descriptor: reward["descriptor"] as! String,
                 iconUrl: reward["iconUrl"] as! String,
-                bannerIconUrl: reward["bannerIconUrl"] as! String,
-                disclaimer: reward["disclaimer"] as! String,
-                metadata: reward["metadata"] as! [String: String])
+                bannerIconUrl: reward["bannerIconUrl"] as? String,
+                disclaimer: reward["disclaimer"] as? String,
+                metadata: reward["metadata"] as? [String: String])
         }
         
     }
