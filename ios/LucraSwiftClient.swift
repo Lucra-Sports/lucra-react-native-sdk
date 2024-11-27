@@ -228,9 +228,9 @@ import LucraSDK
     creditConversionEmitter.send(conversion)
   }
 
-    @objc public func emitAvailableRewards(_ rewards: [[String: Any]]) {
-        rewardEmitter.send(rewards)
-    }
+  @objc public func emitAvailableRewards(_ rewards: [[String: Any]]) {
+    rewardEmitter.send(rewards)
+  }
 
   @objc public func getSportsMatchup(
     _ contestId: String, resolve: @escaping RCTPromiseResolveBlock,
@@ -397,8 +397,8 @@ import LucraSDK
   }
 
   @objc public func registerRewardProvider() {
-      self.rewardProvider = RewardProvider(outer: self)
-      self.nativeClient.registerRewardProvider(self.rewardProvider)
+    self.rewardProvider = RewardProvider(outer: self)
+    self.nativeClient.registerRewardProvider(self.rewardProvider)
   }
 
   @objc
