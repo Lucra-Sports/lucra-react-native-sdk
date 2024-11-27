@@ -18,7 +18,6 @@ public func teamToMap(_ team: LucraSDK.Team?) -> [String: Any]? {
 
   return [
     "id": team.id,
-    "logoUrl": team.logoUrl as Any,
     "fullName": team.fullName,
     "name": team.name,
     "sport": sportToMap(team.sport),

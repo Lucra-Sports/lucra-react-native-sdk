@@ -48,7 +48,6 @@ type LucraPlayer = {
 
 type LucraTeam = {
   id: string;
-  logoUrl?: string;
   fullName: string;
   name: string;
   sport: LucraSport;
