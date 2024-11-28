@@ -329,8 +329,7 @@ import LucraSDK
     }
   }
 
-  @objc
-  public func createGamesMatchup(
+  @objc public func createGamesMatchup(
     _ gameId: String,
     wagerAmount: Double,
     resolver: @escaping RCTPromiseResolveBlock,
@@ -406,20 +405,20 @@ import LucraSDK
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-    Task {
+    Task { @MainActor in
       do {
         let match = try await self.nativeClient.api.gamesMatchup(for: gameId)
-        if let match {
-          resolve(gamesMatchupToMap(match: match))
-        } else {
-          resolve(nil)
+        DispatchQueue.main.async {
+          if let match {
+            resolve(gamesMatchupToMap(match: match))
+          } else {
+            resolve(nil)
+          }
         }
       } catch {
         reject("\(error)", error.localizedDescription, nil)
       }
-
     }
-
   }
 
   @objc
