@@ -304,7 +304,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                     "unknownError"
                 }
             }
-
         promise.reject(errorCode, failure.toString())
     }
 
@@ -350,6 +349,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         }
     }
 
+    @ReactMethod
     fun getGamesMatchup(matchupId: String, promise: Promise) {
         LucraClient().getGamesMatchup(matchupId) { result ->
             when (result) {
