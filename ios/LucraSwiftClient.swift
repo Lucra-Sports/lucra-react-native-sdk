@@ -410,7 +410,7 @@ import LucraSDK
       do {
         let match = try await self.nativeClient.api.gamesMatchup(for: gameId)
         if let match {
-            resolve(gamesMatchupToMap(match: match))
+          resolve(gamesMatchupToMap(match: match))
         } else {
           resolve(nil)
         }
