@@ -13,6 +13,8 @@
     "android",
     "ios",
     "cpp",
+    "plugin",
+    "app.plugin.js",
     "*.podspec",
     "!lib/typescript/example",
     "!ios/build",
@@ -33,7 +35,9 @@
     "prettier:fix": "prettier --write .",
     "prepack": "bob build",
     "example": "yarn workspace example",
-    "prepare": "bob build"
+    "prepare": "bob build",
+    "build-plugin": "tsc -p ./plugin/tsconfig.json",
+    "prepublishOnly": "yarn run build-plugin"
   },
   "keywords": [
     "react-native",
@@ -59,6 +63,7 @@
     "react-native": "0.76.1"
   },
   "devDependencies": {
+    "@expo/config-plugins": "8.0.10",
     "@react-native-community/cli": "^15.0.0",
     "@react-native/eslint-config": "^0.76.0",
     "@types/jest": "^29.5.5",
