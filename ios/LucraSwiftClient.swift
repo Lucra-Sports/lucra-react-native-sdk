@@ -329,8 +329,7 @@ import LucraSDK
     }
   }
 
-  @objc
-  public func createGamesMatchup(
+  @objc public func createGamesMatchup(
     _ gameId: String,
     wagerAmount: Double,
     resolver: @escaping RCTPromiseResolveBlock,
@@ -401,48 +400,25 @@ import LucraSDK
     self.nativeClient.registerRewardProvider(self.rewardProvider)
   }
 
-  @objc
-  public func getGamesMatchup(
+  @objc public func getGamesMatchup(
     _ gameId: String,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-    Task {
+    Task { @MainActor in
       do {
         let match = try await self.nativeClient.api.gamesMatchup(for: gameId)
-        // All the values inside the teams will always be the same, so map to the first available value
-        let wagerAmount = match?.teams[0].wagerAmount ?? 0
-
-        if let match {
-          resolve([
-            "id": match.id,
-            "createdAt": match.createdAt.toString(),
-            "updatedAt": match.updatedAt.toString(),
-            "status": match.status.rawValue,
-            "isArchive": match.isArchive,
-            "wagerOpponentTeamIdAmount": wagerAmount,
-            "teams": match.teams.map { team in
-              return [
-                "id": team.id,
-                "outcome": team.outcome?.rawValue as Any,
-                "users": team.users.map { user in
-                  return [
-                    "id": user.id,
-                    "username": user.user.username,
-                  ]
-                },
-              ]
-            },
-          ])
-        } else {
-          resolve(nil)
+        DispatchQueue.main.async {
+          if let match {
+            resolve(gamesMatchupToMap(match: match))
+          } else {
+            resolve(nil)
+          }
         }
       } catch {
         reject("\(error)", error.localizedDescription, nil)
       }
-
     }
-
   }
 
   @objc

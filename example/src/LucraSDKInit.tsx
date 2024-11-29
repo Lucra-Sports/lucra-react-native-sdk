@@ -44,7 +44,6 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
-        console.log('register provider');
         LucraSDK.registerRewardProvider(
           async () => {
             // Available rewards
@@ -68,11 +67,9 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
                 metadata: null,
               },
             ];
-            console.log('calling rewards callback', exampleRewards);
             return exampleRewards;
           },
           async (reward) => {
-            console.log('Reward:', reward);
             setEvents((events) => [
               ...events,
               { type: 'Reward selected', id: JSON.stringify(reward) },

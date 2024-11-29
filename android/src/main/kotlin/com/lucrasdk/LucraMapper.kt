@@ -7,6 +7,8 @@ import com.lucrasports.matchup.MatchupType
 import com.lucrasports.matchup.SportsMatchupTeam
 import com.lucrasports.matchup.SportsMatchupType
 import com.lucrasports.matchup.sports_impl.SportsInterval
+import com.lucrasports.sdk.core.contest.GYPGame
+import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sports_contests.LucraLeague
 import com.lucrasports.sports_contests.LucraMetric
 import com.lucrasports.sports_contests.LucraPlayer
@@ -209,6 +211,53 @@ object LucraMapper {
         map.putBoolean("isPublic", matchup.isPublic)
         map.putString("status", matchup.status.rawValue)
         map.putArray("teams", teamsArray)
+        return map
+    }
+
+   fun GYPGameToMap(game: GYPGame): WritableMap {
+       val map = Arguments.createMap()
+       map.putString("id", game.id)
+       map.putString("name", game.name)
+       map.putString("description", game.description)
+       map.putString("iconUrl", game.iconUrl)
+       map.putString("imageUrl", game.imageUrl)
+       val categoriesArray = Arguments.createArray()
+       game.categoryIds.forEach { category ->
+           categoriesArray.pushString(category)
+       }
+       map.putArray("categoriesIds", categoriesArray)
+       return map
+   }
+
+    fun gamesMatchupToMap(match: GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput): WritableMap {
+        val map = Arguments.createMap()
+
+        map.putString("gameType", match.gameType)
+        map.putString("createdAt", match.createdAt)
+        map.putString("ownerId", match.ownerId)
+        map.putString("status", match.status)
+        map.putString("updatedAt", match.updatedAt)
+        map.putDouble("wagerAmount", match.wagerAmount)
+        map.putMap("game", GYPGameToMap(match.game))
+
+        val teamArray = Arguments.createArray()
+        match.teams.forEach { team ->
+            val teamRes = Arguments.createMap()
+            teamRes.putString("id", team.id)
+            teamRes.putString("outcome", team.outcome)
+
+            val userArr = Arguments.createArray()
+            team.users.forEach { user ->
+                val userRes = Arguments.createMap()
+                userRes.putString("id", user.id)
+                userRes.putString("username", user.username)
+
+                userArr.pushMap(userRes)
+            }
+            teamArray.pushMap(teamRes)
+        }
+
+        map.putArray("teams", teamArray)
         return map
     }
 }
