@@ -1,7 +1,10 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
+import {
+  LucraSDK,
+  type LucraReward,
+} from '@lucra-sports/lucra-react-native-sdk';
 
 import { useAppContext } from './AppContext';
 import { defaultAppConfig } from './AppConfig';
@@ -41,6 +44,38 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
       },
     })
       .then(() => {
+        LucraSDK.registerRewardProvider(
+          async () => {
+            // Available rewards
+            const exampleRewards: LucraReward[] = [
+              {
+                rewardId: '1',
+                title: 'Reward 1',
+                descriptor: 'Some reward',
+                iconUrl: 'https://picsum.photos/50',
+                bannerIconUrl: 'https://picsum.photos/100/50',
+                disclaimer: 'This is a test',
+                metadata: null,
+              },
+              {
+                rewardId: '2',
+                title: 'Reward 2',
+                descriptor: 'Other reward',
+                iconUrl: '://picsum.photos/50',
+                bannerIconUrl: 'https://picsum.photos/100/50',
+                disclaimer: 'This is also a test',
+                metadata: null,
+              },
+            ];
+            return exampleRewards;
+          },
+          async (reward) => {
+            setEvents((events) => [
+              ...events,
+              { type: 'Reward selected', id: JSON.stringify(reward) },
+            ]);
+          }
+        );
         LucraSDK.addContestListener({
           onGamesContestCreated: (contestId: string) => {
             console.log('Games contest created:', contestId);

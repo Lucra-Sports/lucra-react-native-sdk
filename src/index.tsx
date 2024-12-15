@@ -13,7 +13,9 @@ import {
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedNativeComponent';
 export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupNativeComponent';
 export { default as LucraContestCard } from './LucraContestCardNativeComponent';
-import { type SportsMatchupType } from './types';
+import { type SportsMatchupType, type LucraReward } from './types';
+import NativeLucraClient from './NativeLucraClient';
+export { type LucraReward } from './types';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
 
@@ -181,6 +183,11 @@ let creditConversionEmitter:
   | ((cashAmount: number) => Promise<LucraConvertCreditResponse>)
   | null = null;
 
+let availableRewardsSubscription: NativeEventSubscription;
+let rewardEmitter: (() => Promise<Array<LucraReward>>) | null = null;
+let claimRewardCallback: ((reward: LucraReward) => Promise<void>) | null = null;
+let claimRewardSubscription: NativeEventSubscription;
+
 type LucraContestListener = {
   onGamesContestCreated: (contestId: string) => void;
   onSportsContestCreated: (contestId: string) => void;
@@ -221,6 +228,25 @@ export const LucraSDK = {
         if (creditConversionEmitter) {
           let newDeepLink = await creditConversionEmitter(data.amount);
           LucraClient.emitCreditConversion(newDeepLink);
+        }
+      }
+    );
+    availableRewardsSubscription?.remove();
+    availableRewardsSubscription = eventEmitter.addListener(
+      '_availableRewards',
+      async () => {
+        if (rewardEmitter) {
+          let rewards = await rewardEmitter();
+          LucraClient.emitAvailableRewards(rewards);
+        }
+      }
+    );
+    claimRewardSubscription?.remove();
+    claimRewardSubscription = eventEmitter.addListener(
+      '_claimReward',
+      async (data) => {
+        if (claimRewardCallback) {
+          await claimRewardCallback(data.reward);
         }
       }
     );
@@ -320,7 +346,16 @@ export const LucraSDK = {
   getSportsMatchup: async (contestId: string): Promise<SportsMatchupType> => {
     return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
   },
+  registerRewardProvider: (
+    getAvailableRewards: () => Promise<Array<LucraReward>>,
+    claimReward: (reward: LucraReward) => Promise<void>
+  ) => {
+    NativeLucraClient.registerRewardProvider();
+    rewardEmitter = getAvailableRewards;
+    claimRewardCallback = claimReward;
+  },
 };
+
 export type LucraSDKError = {
   code:
     | 'notInitialized'

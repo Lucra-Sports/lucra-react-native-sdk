@@ -33,6 +33,51 @@ npm i -s @lucra-sports/lucra-react-native-sdk
 
 Usually you don't want to commit this file into the git repo history. So it's better to add it to your gitignore and each user on your organization has their own file and CI as well.
 
+# Integrating with an Expo React Native App
+
+This section provides instructions on how to integrate Lucra SDK into your Expo React Native application. The steps cover both iOS and Android platforms, focusing on projects that use `expo prebuild` or have been ejected, resulting in their own `ios` and `android` directories.
+
+**Note:** This integration does not work with **Expo Go**, as Expo Go does not support custom native modules. You will need to build a standalone app using Expo's build services or build it locally.
+
+## Expo Setup
+
+To install the SDK in your Expo app, you have two main options:
+
+1. **Use Prebuild or Eject Your App**: If your app uses `expo prebuild` or has been ejected, you can follow the platform-specific installation steps for each platform as detailed below.
+
+2. **Use lucra-react-native-sdk expo plugin**: To avoid manual customization of the native directories, you can adjust your `app.config.js` file and utilize the provided Expo plugins to handle the necessary configurations.
+
+### Using the Expo Build Properties Plugin
+
+The [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/) plugin allows you to modify native build properties directly from your `app.config.js`. This is useful for setting deployment targets and specifying frameworks without touching the native code.
+
+Update your `app.config.js` file with the following configuration to set the iOS deployment target and android minSDKVersion:
+
+```javascript
+    plugins: [
+      [
+        'expo-build-properties',
+        {
+          ios: {
+            deploymentTarget: '15.1',
+            // The lucra SDK uses third-party services that require network inspection to be kept off.
+            networkInspector: false,
+          },
+          android: {
+            minSdkVersion: 24,
+            networkInspector: false,
+          },
+        },
+      ],
+      '@lucra-sports/lucra-react-native-sdk',
+    ],
+```
+
+### Using Expo Dev Client
+
+When working with expo-dev-client, it's essential to disable the EX_DEV_CLIENT_NETWORK_INSPECTOR variable, The SDK uses third-party libraries that block network inspection.
+To ensure that EX_DEV_CLIENT_NETWORK_INSPECTOR is turned off make sure networkInspector is false when using expo-build-properties.
+
 ## iOS
 
 The minimum target version is iOS 15.1, so you will also have to update this on your project (You can do it in the XCode general tab) and in your podfile:
@@ -773,6 +818,38 @@ registerCreditConversionProvider(async (cashAmount: number) => {
     pillTextColor: '#FFFFFF',
   };
 });
+```
+
+# Reward Provider
+
+A reward provider is meant to allow users to see and claim rewards once their matchup has finished. It has two parts, a call that returns which rewards are available and will be displayed to the user. And a claim callback, which will be called once the user is ready to claim their reward after a matchup:
+
+```ts
+import {
+  registerRewardProvider,
+  type LucraReward,
+} from '@lucra-sports/lucra-react-native-sdk';
+
+async function getAvailableRewards(): LucraReward[] {
+  // your logic to fetch user available rewards comes here
+  return [
+    {
+      rewardId: 'Reward123',
+      title: 'My awesome reward',
+      descriptor: 'descriptor',
+      iconUrl: 'http://url.com/blah.jpg',
+      bannerIconUrl: 'another jpg url',
+      disclaimer: 'disclaimer',
+      metadata: JSON.stringify({ otherData: 'you want' }),
+    },
+  ];
+}
+
+async function claimReward(reward: LucraReward) {
+  // Assign the user their reward
+}
+
+registerRewardProvider(getAvailableRewards, claimReward);
 ```
 
 # Venmo iOS

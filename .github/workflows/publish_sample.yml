@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+env:
+  GPR_KEY: ${{ secrets.GPR_KEY }}
 
 jobs:
   release-android:
@@ -10,7 +12,6 @@ jobs:
     env:
       TURBO_CACHE_DIR: .turbo/android
       GPR_USER: LucraReactNativeCi
-      GPR_KEY: ${{ secrets.GPR_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

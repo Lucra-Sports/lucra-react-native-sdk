@@ -13,7 +13,8 @@ permissions:
 jobs:
   publish:
     runs-on: self-hosted
-
+    env:
+      GPR_KEY: ${{ secrets.GPR_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

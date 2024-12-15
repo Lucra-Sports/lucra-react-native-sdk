@@ -1,6 +1,8 @@
 package com.lucrasdk
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 
@@ -34,17 +36,32 @@ class LucraUtils {
       }
     }
 
-    fun convertReadableMapToStringMap(readableMap: ReadableMap): Map<String, String> {
+    fun convertReadableMapToStringMap(readableMap: ReadableMap?): Map<String, String> {
+      if (readableMap == null) {
+        return emptyMap()
+      }
+
       val map = mutableMapOf<String, String>()
       val iterator = readableMap.keySetIterator()
       while (iterator.hasNextKey()) {
         val key = iterator.nextKey()
         val value = readableMap.getString(key)
         if (value != null) {
-            map[key] = value
+          map[key] = value
         }
       }
       return map
+    }
+
+    fun convertStringMapToWritableMap(map: Map<String, String>?): WritableMap {
+      val writableMap = Arguments.createMap()
+      if(map == null) {
+        return writableMap
+      }
+      for ((key, value) in map) {
+        writableMap.putString(key, value)
+      }
+      return writableMap
     }
   }
 }
