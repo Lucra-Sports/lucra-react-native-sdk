@@ -100,27 +100,8 @@ PODS:
   - hermes-engine/Pre-built (0.76.1)
   - JWTDecode (3.2.0)
   - lucra-react-native-sdk (0.0.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
     - LucraSDK (= 2.0.0)
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
     - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - LucraSDK (2.0.0):
     - Auth0
     - Resolver
@@ -2110,7 +2091,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   hermes-engine: 46f1ffbf0297f4298862068dd4c274d4ac17a1fd
   JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
-  lucra-react-native-sdk: a5122340025b250f3d0a42b45cbcd4b76f3f19a1
+  lucra-react-native-sdk: 8ed9a7801a99458ce641eed1ba33ed0dbf208479
   LucraSDK: f5fd9b7ef1cceea70b7f231a761dce5af2e5dcd1
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
