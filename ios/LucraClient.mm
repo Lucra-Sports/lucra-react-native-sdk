@@ -153,7 +153,7 @@ RCT_EXPORT_METHOD(getSportsMatchup : (NSString *)matchupId resolve : (
 }
 
 - (void)sendEventWithName:(NSString *_Nonnull)name
-                   result:(NSDictionary<NSString *, id> *_Nonnull)result {
+                   result:(NSDictionary<NSString *, id> *)result {
   [self sendEventWithName:name body:result];
 }
 

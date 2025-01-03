@@ -11,6 +11,7 @@ extension LucraSwiftClient {
     case sportsMatchupCanceled
     case _availableRewards
     case _claimReward
+    case _viewRewards
   }
 
   @objc

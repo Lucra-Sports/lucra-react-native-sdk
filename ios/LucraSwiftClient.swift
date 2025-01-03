@@ -135,7 +135,7 @@ import LucraSDK
 
     userSinkCancellable = nativeClient.$user.sink { user in
       guard let user = user else {
-        self.delegate?.sendEvent(name: "user", result: ["user": nil as Any])
+        self.delegate?.sendEvent(name: "user", result: ["user": nil])
         return
       }
 

@@ -436,7 +436,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                     }
 
                     override fun viewRewards() {
-                        TODO("Not yet implemented")
+                        sendEvent(context, "_viewRewards", null)
                     }
                 }
             )
@@ -449,7 +449,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 object : LucraConvertToCreditProvider {
                     override suspend fun getCreditAmount(
                         cashAmount: Double
-                    ): LucraConvertToCreditWithdrawMethod? {
+                    ): LucraConvertToCreditWithdrawMethod {
                         val linkMap = Arguments.createMap()
                         linkMap.putDouble("amount", cashAmount)
                         sendEvent(context, "_creditConversion", linkMap)

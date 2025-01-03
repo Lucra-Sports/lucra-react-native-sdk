@@ -10,7 +10,7 @@ class RewardProvider: AnyObject {
 
 extension RewardProvider: LucraSDK.LucraRewardProvider {
   func viewRewards() {
-    // TODO: bind to RN
+    self.outer.delegate?.sendEvent(name: "_viewRewards", result: [:])
   }
 
   func availableRewards() async -> [LucraSDK.LucraReward] {

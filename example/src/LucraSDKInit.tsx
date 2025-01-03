@@ -74,8 +74,12 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
               ...events,
               { type: 'Reward selected', id: JSON.stringify(reward) },
             ]);
+          },
+          () => {
+            console.warn('You should show the rewards to the user');
           }
         );
+
         LucraSDK.addContestListener({
           onGamesMatchupCreated: (id: string) => {
             console.log('Games contest created:', id);

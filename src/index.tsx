@@ -187,6 +187,8 @@ let availableRewardsSubscription: NativeEventSubscription;
 let rewardEmitter: (() => Promise<Array<LucraReward>>) | null = null;
 let claimRewardCallback: ((reward: LucraReward) => Promise<void>) | null = null;
 let claimRewardSubscription: NativeEventSubscription;
+let viewRewardsCallback: (() => void) | null = null;
+let viewRewardsSubscription: NativeEventSubscription;
 
 type LucraContestListener = {
   onGamesMatchupCreated: (id: string) => void;
@@ -249,6 +251,15 @@ export const LucraSDK = {
       async (data) => {
         if (claimRewardCallback) {
           await claimRewardCallback(data.reward);
+        }
+      }
+    );
+    viewRewardsSubscription?.remove();
+    viewRewardsSubscription = eventEmitter.addListener(
+      '_viewRewards',
+      async () => {
+        if (viewRewardsCallback) {
+          viewRewardsCallback();
         }
       }
     );
@@ -371,11 +382,13 @@ export const LucraSDK = {
   },
   registerRewardProvider: (
     getAvailableRewards: () => Promise<Array<LucraReward>>,
-    claimReward: (reward: LucraReward) => Promise<void>
+    claimReward: (reward: LucraReward) => Promise<void>,
+    viewRewards: () => void
   ) => {
     NativeLucraClient.registerRewardProvider();
     rewardEmitter = getAvailableRewards;
     claimRewardCallback = claimReward;
+    viewRewardsCallback = viewRewards;
   },
 };
 
