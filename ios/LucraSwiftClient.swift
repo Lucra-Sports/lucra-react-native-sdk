@@ -233,12 +233,12 @@ import LucraSDK
   }
 
   @objc public func getSportsMatchup(
-    _ contestId: String, resolve: @escaping RCTPromiseResolveBlock,
+    _ matchupId: String, resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
       do {
-        guard let match = try await self.nativeClient.api.sportsMatchup(for: contestId) else {
+        guard let match = try await self.nativeClient.api.sportsMatchup(for: matchupId) else {
           resolve(nil)
           return
         }
@@ -248,11 +248,22 @@ import LucraSDK
         reject("\(error)", error.localizedDescription, nil)
       }
     }
-
+  }
+  
+  @objc public func cancelSportsMathup(_ matchupId: String resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    Task { @MainActor in
+      do {
+        guard let match = try await self.nativeClient.api.sportsMatchup(for: matchupId) else {
+          reject("NotFound", "Matchup not found", nil)
+          return
+        }
+        
+        match.can
+      }
+    }
   }
 
-  @objc
-  public func getUser(
+  @objc public func getUser(
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
