@@ -412,6 +412,15 @@ export default function App() {
         title="Show Add Funds"
         onPress={() => LucraSDK.present({name: LucraSDK.FLOW.ADD_FUNDS})}
       />
+      <Button
+        title="Create game matchup"
+        // Some of the flows take parameters
+        onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP, gameId: 'pingpong'})}
+        // Some of the other flows that take parameters
+        // onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP})}
+        // LucraSDK.present({name LucraSDK.FLOW.GAME_CONTEST_DETAILS, matchupId: 'id', teamInviteId: 'id'})
+        // LucraSDK.present({name LucraSDK.FLOW.SPORT_CONTEST_DETAILS, matchupId: 'id'})
+      />
     </View>
   );
 }
@@ -828,7 +837,11 @@ registerCreditConversionProvider(async (cashAmount: number) => {
 
 # Reward Provider
 
-A reward provider is meant to allow users to see and claim rewards once their matchup has finished. It has two parts, a call that returns which rewards are available and will be displayed to the user. And a claim callback, which will be called once the user is ready to claim their reward after a matchup:
+A reward provider is meant to allow users to see and claim rewards once their matchup has finished. It has three parts:
+
+- A callback that returns which rewards are available and will be displayed to the user
+- A claim callback, which will be called once the user is ready to claim their reward after a matchup
+- A viewRewards callback which will be triggered by the SDK for you to show the rewards to the user
 
 ```ts
 import {
@@ -855,7 +868,11 @@ async function claimReward(reward: LucraReward) {
   // Assign the user their reward
 }
 
-registerRewardProvider(getAvailableRewards, claimReward);
+function viewRewards() {
+  // Show the users the match rewards
+}
+
+registerRewardProvider(getAvailableRewards, claimReward, viewRewards);
 ```
 
 # Venmo iOS

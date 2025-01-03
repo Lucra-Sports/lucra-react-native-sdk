@@ -254,22 +254,6 @@ import LucraSDK
     }
   }
 
-//  @objc public func cancelSportsMatchup(
-//    _ matchupId: String, resolve: @escaping RCTPromiseResolveBlock,
-//    reject: @escaping RCTPromiseRejectBlock
-//  ) {
-//    Task { @MainActor in
-//      do {
-//        guard let match = try await self.nativeClient.api.sportsMatchup(for: matchupId) else {
-//          reject("NotFound", "Matchup not found", nil)
-//          return
-//        }
-//
-//        //        self.nativeClient.api.can
-//      }
-//    }
-//  }
-
   @objc public func getUser(
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
@@ -304,43 +288,11 @@ import LucraSDK
     }
   }
 
-  private func getLucraFlow(
-    _ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?
-  )
-    -> LucraSDK.LucraFlow
-  {
-    switch lucraFlow {
-    case "profile":
-      return .profile
-    case "addFunds":
-      return .addFunds
-    case "onboarding":
-      return .onboarding
-    case "verifyIdentity":
-      return .verifyIdentity
-    case "createGamesMatchup":
-      return .createGamesMatchup(gameId: gameId)
-    case "createSportsMatchup":
-      return .createSportsMatchup
-    case "withdrawFunds":
-      return .withdrawFunds
-    case "publicFeed":
-      return .publicFeed
-    case "gameContestDetails":
-      return .gamesContestDetails(matchupId: matchupId!, teamInviteId: teamInviteId!)
-    case "sportContestDetails":
-      return .sportsContestDetails(matchupId: matchupId!)
-    default:
-      assertionFailure("Unimplemented lucra flow \(lucraFlow)")
-      return .profile
-    }
-  }
-
   @objc public func present(
     _ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?
   ) {
     DispatchQueue.main.async {
-      let nativeFlow = self.getLucraFlow(
+      let nativeFlow = LucraUtils.stringToLucraFlow(
         lucraFlow, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId)
       UIViewController.topViewController?.present(
         lucraFlow: nativeFlow,
@@ -506,7 +458,7 @@ import LucraSDK
   }
 
   @objc public func getFlowController(_ flow: String) -> UIViewController {
-    let nativeFlow = getLucraFlow(flow, matchupId: nil, teamInviteId: nil, gameId: nil)
+    let nativeFlow = LucraUtils.stringToLucraFlow(flow, matchupId: nil, teamInviteId: nil, gameId: nil)
     return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
   }
 

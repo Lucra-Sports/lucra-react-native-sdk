@@ -211,7 +211,8 @@ export const LucraSDK = {
     CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
     WITHDRAW_FUNDS: 'withdrawFunds',
     PUBLIC_FEED: 'publicFeed',
-    MY_MATCHUP: 'myMatchup',
+    // GAME_CONTEST_DETAILS: 'gameContestDetails',
+    // SPORT_CONTEST_DETAILS: 'sportContestDetails',
   },
   init: async (options: LucraSDKParams): Promise<void> => {
     await LucraClient.initialize(options);
