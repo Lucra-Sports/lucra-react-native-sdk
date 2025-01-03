@@ -135,7 +135,7 @@ import LucraSDK
 
     userSinkCancellable = nativeClient.$user.sink { user in
       guard let user = user else {
-        self.delegate?.sendEvent(name: "user", result: ["user": nil])
+        self.delegate?.sendEvent(name: "user", result: ["user": nil as Any])
         return
       }
 
@@ -254,21 +254,21 @@ import LucraSDK
     }
   }
 
-  @objc public func cancelSportsMatchup(
-    _ matchupId: String, resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
-  ) {
-    Task { @MainActor in
-      do {
-        guard let match = try await self.nativeClient.api.sportsMatchup(for: matchupId) else {
-          reject("NotFound", "Matchup not found", nil)
-          return
-        }
-
-        //        self.nativeClient.api.can
-      }
-    }
-  }
+//  @objc public func cancelSportsMatchup(
+//    _ matchupId: String, resolve: @escaping RCTPromiseResolveBlock,
+//    reject: @escaping RCTPromiseRejectBlock
+//  ) {
+//    Task { @MainActor in
+//      do {
+//        guard let match = try await self.nativeClient.api.sportsMatchup(for: matchupId) else {
+//          reject("NotFound", "Matchup not found", nil)
+//          return
+//        }
+//
+//        //        self.nativeClient.api.can
+//      }
+//    }
+//  }
 
   @objc public func getUser(
     resolve: @escaping RCTPromiseResolveBlock,

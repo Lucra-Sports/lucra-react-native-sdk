@@ -136,10 +136,10 @@ RCT_EXPORT_METHOD(getSportsMatchup : (NSString *)matchupId resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient getSportsMatchup:matchupId resolve:resolve reject:reject];
 }
-
-RCT_EXPORT_METHOD(cancelSportsMatchup : (NSString *)matchupId resolve : (RCTPromiseResolveBlock) resolve reject: (RCTPromiseRejectBlock)reject) {
-  [swiftClient cancelSportsMatchup:matchupId resolve:resolve reject:reject];
-}
+//
+//RCT_EXPORT_METHOD(cancelSportsMatchup : (NSString *)matchupId resolve : (RCTPromiseResolveBlock) resolve reject: (RCTPromiseRejectBlock)reject) {
+//  [swiftClient cancelSportsMatchup:matchupId resolve:resolve reject:reject];
+//}
 
 #if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

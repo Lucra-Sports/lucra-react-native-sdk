@@ -182,25 +182,25 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                             )
                                         )
                                     )
-                                is LucraEvent.GamesContest.Cancelled ->
+                                is LucraEvent.GamesContest.Canceled ->
                                     sendEvent(
                                         context,
                                         "gamesMatchupCancelled",
                                         Arguments.makeNativeMap(
                                             bundleOf(
                                                 "id" to
-                                                        event.contestId
+                                                        event.matchupId
                                             )
                                         )
                                     )
-                                is LucraEvent.SportsContest.Cancelled ->
+                                is LucraEvent.SportsContest.Canceled ->
                                     sendEvent(
                                         context,
                                         "sportsMatchupCancelled",
                                         Arguments.makeNativeMap(
                                             bundleOf(
                                                 "id" to
-                                                        event.contestId
+                                                        event.matchupId
                                             )
                                         )
                                     )
@@ -433,6 +433,10 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         map.putString("disclaimer", reward.disclaimer)
                         map.putMap("metadata",convertStringMapToWritableMap(reward.metadata))
                         sendEvent(context, "_claimReward", map)
+                    }
+
+                    override fun viewRewards() {
+                        TODO("Not yet implemented")
                     }
                 }
             )
