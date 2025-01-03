@@ -296,14 +296,19 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun present(flowName: String, matchupId: String?, teaminviteId: String?, gameTypeId: String?) {
-        val lucraFlow = LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId)
+    fun present(args: ReadableMap) {
+        val flowName = args.getString("name")!!
+        val matchupId = args.getString("matchupId")
+        val teaminviteId = args.getString("teaminviteId")
+        val gameTypeId = args.getString("gameId")
 
-        fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
+        val flow = LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId)
+
+        fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(flow)
 
         fullAppFlowDialogFragment?.show(
             (context.currentActivity as FragmentActivity).supportFragmentManager,
-            lucraFlow.toString() // this tag will be used to dismiss in
+            flow.toString() // this tag will be used to dismiss in
             // onFlowDismissRequested(flow)
         )
     }
