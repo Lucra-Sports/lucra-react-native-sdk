@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 env:
   GPR_KEY: ${{ secrets.GPR_KEY }}
 
