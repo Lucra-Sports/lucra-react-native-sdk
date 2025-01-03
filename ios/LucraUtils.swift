@@ -1,6 +1,23 @@
 import LucraSDK
 
 class LucraUtils {
+  static public func stringToEnvironment(_ environment: String) -> LucraSDK.LucraEnvironment {
+    let nativeEnvironment: LucraSDK.LucraEnvironment = {
+      switch environment {
+      case "develop":
+        return .develop
+      case "staging":
+        return .staging
+      case "sandbox":
+        return .sandbox
+      case "production":
+        return .production
+      default:
+        return .unknown
+      }
+    }()
+    return nativeEnvironment
+  }
   static public func stringToLucraFlow(
     _ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?
   ) -> LucraSDK.LucraFlow {

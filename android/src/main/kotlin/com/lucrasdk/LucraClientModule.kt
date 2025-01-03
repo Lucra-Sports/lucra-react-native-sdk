@@ -296,8 +296,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun present(flow: String) {
-        val lucraFlow = LucraUtils.getLucraFlow(flow)
+    fun present(flowName: String, matchupId: String?, teaminviteId: String?, gameTypeId: String?) {
+        val lucraFlow = LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId)
 
         fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
 

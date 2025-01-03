@@ -84,20 +84,7 @@ import LucraSDK
         onTertiary: onTertiary)
     }
 
-    let nativeEnvironment: LucraSDK.LucraEnvironment = {
-      switch environment {
-      case "develop":
-        return .develop
-      case "staging":
-        return .staging
-      case "sandbox":
-        return .sandbox
-      case "production":
-        return .production
-      default:
-        return .unknown
-      }
-    }()
+    let nativeEnvironment = LucraUtils.stringToEnvironment(environment)
 
     nativeClient = LucraSDK.LucraClient(
       config: .init(
@@ -458,7 +445,8 @@ import LucraSDK
   }
 
   @objc public func getFlowController(_ flow: String) -> UIViewController {
-    let nativeFlow = LucraUtils.stringToLucraFlow(flow, matchupId: nil, teamInviteId: nil, gameId: nil)
+    let nativeFlow = LucraUtils.stringToLucraFlow(
+      flow, matchupId: nil, teamInviteId: nil, gameId: nil)
     return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
   }
 

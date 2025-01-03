@@ -418,13 +418,16 @@ export default function App() {
         onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP, gameId: 'pingpong'})}
         // Some of the other flows that take parameters
         // onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP})}
-        // LucraSDK.present({name LucraSDK.FLOW.GAME_CONTEST_DETAILS, matchupId: 'id', teamInviteId: 'id'})
-        // LucraSDK.present({name LucraSDK.FLOW.SPORT_CONTEST_DETAILS, matchupId: 'id'})
       />
     </View>
   );
 }
 ```
+
+<!-- this two are not ready
+        // LucraSDK.present({name LucraSDK.FLOW.GAME_CONTEST_DETAILS, matchupId: 'id', teamInviteId: 'id'})
+        // LucraSDK.present({name LucraSDK.FLOW.SPORT_CONTEST_DETAILS, matchupId: 'id'})
+-->
 
 ## Api calls
 
