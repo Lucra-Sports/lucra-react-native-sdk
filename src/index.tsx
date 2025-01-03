@@ -221,7 +221,7 @@ function present(params: { name: typeof Flows.PROFILE }): void;
 function present(params: { name: typeof Flows.ADD_FUNDS }): void;
 function present(params: {
   name: typeof Flows.CREATE_GAMES_MATCHUP;
-  gameId: string;
+  gameId?: string;
 }): void;
 function present(params: { name: typeof Flows.CREATE_SPORTS_MATCHUP }): void;
 function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): void;
