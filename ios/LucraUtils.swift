@@ -42,6 +42,8 @@ class LucraUtils {
       return .gamesContestDetails(matchupId: matchupId!, teamInviteId: teamInviteId!)
     case "sportContestDetails":
       return .sportsContestDetails(matchupId: matchupId!)
+    case "myMatchup":
+      return .myMatchups
     default:
       assertionFailure("Unimplemented lucra flow \(lucraFlow)")
       return .profile

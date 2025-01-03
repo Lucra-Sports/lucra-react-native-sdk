@@ -115,15 +115,12 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
           <Text className="font-bold text-white">Public Feed</Text>
         </TouchableOpacity>
 
-        {/* TODO review if iOS has a way to display myMatchups flow */}
-        {Platform.OS === 'android' ? (
-          <TouchableOpacity
-            className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-            onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.MY_MATCHUP })}
-          >
-            <Text className="font-bold text-white">My Matchups</Text>
-          </TouchableOpacity>
-        ) : null}
+        <TouchableOpacity
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+          onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.MY_MATCHUP })}
+        >
+          <Text className="font-bold text-white">My Matchups</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
