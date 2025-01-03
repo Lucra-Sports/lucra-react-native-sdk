@@ -199,22 +199,42 @@ type LucraContestListener = {
   onGamesMatchupCanceled: (id: string) => void;
 };
 
+const Flows = {
+  ONBOARDING: 'onboarding',
+  VERIFY_IDENTITY: 'verifyIdentity',
+  PROFILE: 'profile',
+  ADD_FUNDS: 'addFunds',
+  CREATE_GAMES_MATCHUP: 'createGamesMatchup',
+  CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
+  WITHDRAW_FUNDS: 'withdrawFunds',
+  PUBLIC_FEED: 'publicFeed',
+  MY_MATCHUP: 'myMatchup',
+  // GAME_CONTEST_DETAILS: 'gameContestDetails',
+  // SPORT_CONTEST_DETAILS: 'sportContestDetails',
+} as const;
+
+type FlowNames = (typeof Flows)[keyof typeof Flows];
+
+function present(params: { name: typeof Flows.ONBOARDING }): void;
+function present(params: { name: typeof Flows.VERIFY_IDENTITY }): void;
+function present(params: { name: typeof Flows.PROFILE }): void;
+function present(params: { name: typeof Flows.ADD_FUNDS }): void;
+function present(params: {
+  name: typeof Flows.CREATE_GAMES_MATCHUP;
+  gameId: string;
+}): void;
+function present(params: { name: typeof Flows.CREATE_SPORTS_MATCHUP }): void;
+function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): void;
+function present(params: { name: typeof Flows.PUBLIC_FEED }): void;
+function present(params: { name: typeof Flows.MY_MATCHUP }): void;
+function present(params: { name: FlowNames; gameId?: string }) {
+  LucraClient.present(params);
+}
+
 export const LucraSDK = {
   ready: false,
   ENVIRONMENT: LucraEnvironment,
-  FLOW: {
-    ONBOARDING: 'onboarding',
-    VERIFY_IDENTITY: 'verifyIdentity',
-    PROFILE: 'profile',
-    ADD_FUNDS: 'addFunds',
-    CREATE_GAMES_MATCHUP: 'createGamesMatchup',
-    CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
-    WITHDRAW_FUNDS: 'withdrawFunds',
-    PUBLIC_FEED: 'publicFeed',
-    MY_MATCHUP: 'myMatchup',
-    // GAME_CONTEST_DETAILS: 'gameContestDetails',
-    // SPORT_CONTEST_DETAILS: 'sportContestDetails',
-  },
+  FLOW: Flows,
   init: async (options: LucraSDKParams): Promise<void> => {
     await LucraClient.initialize(options);
     deepLinkSubscription?.remove();
@@ -330,15 +350,7 @@ export const LucraSDK = {
   getUser: async (): Promise<LucraUser> => {
     return (await LucraClient.getUser()) as LucraUser;
   },
-  present: (params: {
-    name: string;
-    matchupId?: string;
-    teamInviteId?: string;
-    gameId?: string;
-  }) => {
-    LucraClient.present(params);
-  },
-  // API calls
+  present: present,
   createGamesMatchup: (
     gameTypeId: string,
     wagerAmount: number
