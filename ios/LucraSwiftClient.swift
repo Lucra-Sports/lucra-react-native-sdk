@@ -117,13 +117,17 @@ import LucraSDK
 
       switch event {
       case .gamesMatchupCreated(let id):
-        self.delegate?.sendEvent(name: "gamesContestCreated", result: ["contestId": id])
+        self.delegate?.sendEvent(name: "gamesMatchupCreated", result: ["id": id])
       case .gamesMatchupAccepted(let id):
-        self.delegate?.sendEvent(name: "gamesContestAccepted", result: ["contestId": id])
+        self.delegate?.sendEvent(name: "gamesMatchupAccepted", result: ["id": id])
+      case .gamesMatchupCanceled(let id):
+        self.delegate?.sendEvent(name: "gamesMatchupCanceled", result: ["id": id])
       case .sportsMatchupCreated(let id):
-        self.delegate?.sendEvent(name: "sportsContestCreated", result: ["contestId": id])
+        self.delegate?.sendEvent(name: "sportsMatchupCreated", result: ["id": id])
       case .sportsMatchupAccepted(let id):
-        self.delegate?.sendEvent(name: "sportsContestAccepted", result: ["contestId": id])
+        self.delegate?.sendEvent(name: "sportsMatchupAccepted", result: ["id": id])
+      case .sportsMatchupCanceled(let id):
+        self.delegate?.sendEvent(name: "sportsMatchupCanceled", result: ["id": id])
       @unknown default:
         fatalError()
       }
@@ -249,16 +253,19 @@ import LucraSDK
       }
     }
   }
-  
-  @objc public func cancelSportsMathup(_ matchupId: String resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+
+  @objc public func cancelSportsMatchup(
+    _ matchupId: String, resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
     Task { @MainActor in
       do {
         guard let match = try await self.nativeClient.api.sportsMatchup(for: matchupId) else {
           reject("NotFound", "Matchup not found", nil)
           return
         }
-        
-        match.can
+
+        //        self.nativeClient.api.can
       }
     }
   }
@@ -297,7 +304,9 @@ import LucraSDK
     }
   }
 
-  private func getLucraFlow(_ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?)
+  private func getLucraFlow(
+    _ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?
+  )
     -> LucraSDK.LucraFlow
   {
     switch lucraFlow {
@@ -327,7 +336,9 @@ import LucraSDK
     }
   }
 
-  @objc public func present(_ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?) {
+  @objc public func present(
+    _ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?
+  ) {
     DispatchQueue.main.async {
       let nativeFlow = self.getLucraFlow(
         lucraFlow, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId)

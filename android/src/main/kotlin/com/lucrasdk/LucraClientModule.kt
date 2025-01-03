@@ -145,28 +145,28 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                 is LucraEvent.GamesContest.Created -> {
                                     sendEvent(
                                         context,
-                                        "gamesContestCreated",
+                                        "gamesMatchupCreated",
                                         Arguments.makeNativeMap(
-                                            bundleOf("contestId" to event.contestId)
+                                            bundleOf("id" to event.contestId)
                                         )
                                     )
                                 }
                                 is LucraEvent.SportsContest.Created -> {
                                     sendEvent(
                                         context,
-                                        "sportsContestCreated",
+                                        "sportsMatchupCreated",
                                         Arguments.makeNativeMap(
-                                            bundleOf("contestId" to event.contestId)
+                                            bundleOf("id" to event.contestId)
                                         )
                                     )
                                 }
                                 is LucraEvent.GamesContest.Accepted ->
                                     sendEvent(
                                         context,
-                                        "gamesContestAccepted",
+                                        "gamesMatchupAccepted",
                                         Arguments.makeNativeMap(
                                             bundleOf(
-                                                "contestId" to
+                                                "id" to
                                                         event.contestId
                                             )
                                         )
@@ -174,10 +174,32 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                 is LucraEvent.SportsContest.Accepted ->
                                     sendEvent(
                                         context,
-                                        "sportsContestAccepted",
+                                        "sportsMatchupAccepted",
                                         Arguments.makeNativeMap(
                                             bundleOf(
-                                                "contestId" to
+                                                "id" to
+                                                        event.contestId
+                                            )
+                                        )
+                                    )
+                                is LucraEvent.GamesContest.Cancelled ->
+                                    sendEvent(
+                                        context,
+                                        "gamesMatchupCancelled",
+                                        Arguments.makeNativeMap(
+                                            bundleOf(
+                                                "id" to
+                                                        event.contestId
+                                            )
+                                        )
+                                    )
+                                is LucraEvent.SportsContest.Cancelled ->
+                                    sendEvent(
+                                        context,
+                                        "sportsMatchupCancelled",
+                                        Arguments.makeNativeMap(
+                                            bundleOf(
+                                                "id" to
                                                         event.contestId
                                             )
                                         )

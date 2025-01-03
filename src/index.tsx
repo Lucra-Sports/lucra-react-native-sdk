@@ -189,10 +189,12 @@ let claimRewardCallback: ((reward: LucraReward) => Promise<void>) | null = null;
 let claimRewardSubscription: NativeEventSubscription;
 
 type LucraContestListener = {
-  onGamesContestCreated: (contestId: string) => void;
-  onSportsContestCreated: (contestId: string) => void;
-  onGamesContestAccepted: (contestId: string) => void;
-  onSportsContestAccepted: (contestId: string) => void;
+  onGamesMatchupCreated: (id: string) => void;
+  onSportsMatchupCreated: (id: string) => void;
+  onGamesMatchupAccepted: (id: string) => void;
+  onSportsMatchupAccepted: (id: string) => void;
+  onSportsMatchupCanceled: (id: string) => void;
+  onGamesMatchupCanceled: (id: string) => void;
 };
 
 export const LucraSDK = {
@@ -252,39 +254,55 @@ export const LucraSDK = {
     );
   },
   addContestListener: (listener: LucraContestListener) => {
-    const gamesContestCreatedEmitter = eventEmitter.addListener(
-      'gamesContestCreated',
+    const gamesMatchupCreatedEmitter = eventEmitter.addListener(
+      'gamesMatchupCreated',
       (data) => {
-        listener.onGamesContestCreated(data.contestId);
+        listener.onGamesMatchupCreated(data.id);
       }
     );
 
-    const sportsContestCreatedEmitter = eventEmitter.addListener(
-      'sportsContestCreated',
+    const sportsMatchupCreatedEmitter = eventEmitter.addListener(
+      'sportsMatchupCreated',
       (data) => {
-        listener.onSportsContestCreated(data.contestId);
+        listener.onSportsMatchupCreated(data.id);
       }
     );
 
     const gamesContextAcceptedEmitter = eventEmitter.addListener(
-      'gamesContestAccepted',
+      'gamesMatchupAccepted',
       (data) => {
-        listener.onGamesContestAccepted(data.contestId);
+        listener.onGamesMatchupAccepted(data.id);
       }
     );
 
-    const sportContestAcceptedEmitter = eventEmitter.addListener(
-      'sportsContestAccepted',
+    const sportMatchupAcceptedEmitter = eventEmitter.addListener(
+      'sportsMatchupAccepted',
       (data) => {
-        listener.onSportsContestAccepted(data.contestId);
+        listener.onSportsMatchupAccepted(data.id);
+      }
+    );
+
+    const gamesMatchupCanceledEmitter = eventEmitter.addListener(
+      'gamesMatchupCanceled',
+      (data) => {
+        listener.onGamesMatchupCanceled(data.id);
+      }
+    );
+
+    const sportsMatchupCanceledEmitter = eventEmitter.addListener(
+      'sportsMatchupCanceled',
+      (data) => {
+        listener.onSportsMatchupCanceled(data.id);
       }
     );
 
     return () => {
-      gamesContestCreatedEmitter.remove();
-      sportsContestCreatedEmitter.remove();
+      gamesMatchupCreatedEmitter.remove();
+      sportsMatchupCreatedEmitter.remove();
       gamesContextAcceptedEmitter.remove();
-      sportContestAcceptedEmitter.remove();
+      sportMatchupAcceptedEmitter.remove();
+      gamesMatchupCanceledEmitter.remove();
+      sportsMatchupCanceledEmitter.remove();
     };
   },
   addListener: (type: 'user', cb: (data: any) => void) => {

@@ -3,11 +3,12 @@ extension LucraSwiftClient {
     case user
     case _deepLink
     case _creditConversion
-    case gamesContestCreated
-    case gamesContestAccepted
-    case sportsContestCreated
-    case sportsContestAccepted
-    case sportsContestCanceled
+    case gamesMatchupCreated
+    case gamesMatchupAccepted
+    case gamesMatchupCanceled
+    case sportsMatchupCreated
+    case sportsMatchupAccepted
+    case sportsMatchupCanceled
     case _availableRewards
     case _claimReward
   }

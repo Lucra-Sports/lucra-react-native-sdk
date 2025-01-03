@@ -715,18 +715,24 @@ You can also listen for the events when creating a games or sport contest.
 
 ```ts
 const unsubscribe = LucraSDK.addContestListener({
-  onGamesContestCreated: (contestId: string) => {
-    console.log('Games contest created:', contestId);
+  onGamesMatchupCreated: (id: string) => {
+    console.log('Games contest created:', id);
   },
-  onSportsContestCreated: (contestId: string) => {
-    console.log('Sports contest created:', contestId);
+  onSportsMatchupCreated: (id: string) => {
+    console.log('Sports contest created:', id);
   },
-  onGamesContestAccepted: (contestId: string) => {
-    console.log('Games contest accepted:', contestId);
+  onGamesMatchupAccepted: (id: string) => {
+    console.log('Games contest accepted:', id);
   },
-  onSportsContestAccepted: (contestId: string) => {
-    console.log('Sports contest accepted:', contestId);
+  onSportsMatchuptAccepted: (id: string) => {
+    console.log('Sports contest accepted:', id);
   },
+  onGamesMatchupCanceled: (id: string) => {
+    console.log('Games matchup canceled', id);
+  }
+  onSportsMatchupCanceled: (id: string) => {
+    console.log('Sports matchup canceled', id);
+  }
 });
 
 // Once you are done or on hot reload
