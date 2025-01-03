@@ -94,6 +94,20 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() =>
+            LucraSDK.present({
+              name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP,
+              gameId: 'pingpong',
+            })
+          }
+        >
+          <Text className="font-bold text-white">
+            Create Games Matchup with pingpong id
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+          onPress={() =>
             LucraSDK.present({ name: LucraSDK.FLOW.CREATE_SPORTS_MATCHUP })
           }
         >
