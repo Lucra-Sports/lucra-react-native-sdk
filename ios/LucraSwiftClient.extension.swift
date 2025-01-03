@@ -1,5 +1,4 @@
 extension LucraSwiftClient {
-
   enum Event: String, CaseIterable {
     case user
     case _deepLink
@@ -8,6 +7,7 @@ extension LucraSwiftClient {
     case gamesContestAccepted
     case sportsContestCreated
     case sportsContestAccepted
+    case sportsContestCanceled
     case _availableRewards
     case _claimReward
   }

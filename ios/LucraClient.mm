@@ -83,8 +83,12 @@ RCT_EXPORT_METHOD(createGamesMatchup
                     rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(present : (NSString *)flow) {
-  [swiftClient present:flow matchupId:nil teamInviteId:nil];
+RCT_EXPORT_METHOD(present : (NSDictionary *)params) {
+  NSString* flow = params[@"flow"];
+  NSString* matchupId = params[@"matchupId"];
+  NSString* teamInviteId = params[@"teamInviteId"];
+  NSString* gameId = params[@"gameId"];
+  [swiftClient present:flow matchupId:matchupId teamInviteId:teamInviteId gameId:gameId];
 }
 
 RCT_EXPORT_METHOD(emitDeepLink : (NSString *)deepLink) {

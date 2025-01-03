@@ -2,7 +2,7 @@ import { TurboModuleRegistry, type TurboModule } from 'react-native';
 
 interface Spec extends TurboModule {
   initialize(options: Object): Promise<void>;
-  present(flow: string): void;
+  present(params: Object): void;
   createGamesMatchup(
     gameTypeId: string,
     wagerAmount: number

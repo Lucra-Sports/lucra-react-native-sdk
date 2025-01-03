@@ -299,8 +299,13 @@ export const LucraSDK = {
   getUser: async (): Promise<LucraUser> => {
     return (await LucraClient.getUser()) as LucraUser;
   },
-  present: (flow: string) => {
-    LucraClient.present(flow);
+  present: (params: {
+    name: string;
+    matchupId?: string;
+    teamInviteId?: string;
+    gameId?: string;
+  }) => {
+    LucraClient.present(params);
   },
   // API calls
   createGamesMatchup: (

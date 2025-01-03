@@ -286,7 +286,7 @@ import LucraSDK
     }
   }
 
-  private func getLucraFlow(_ lucraFlow: String, matchupId: String?, teamInviteId: String?)
+  private func getLucraFlow(_ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?)
     -> LucraSDK.LucraFlow
   {
     switch lucraFlow {
@@ -299,7 +299,7 @@ import LucraSDK
     case "verifyIdentity":
       return .verifyIdentity
     case "createGamesMatchup":
-      return .createGamesMatchup
+      return .createGamesMatchup(gameId: gameId)
     case "createSportsMatchup":
       return .createSportsMatchup
     case "withdrawFunds":
@@ -316,11 +316,10 @@ import LucraSDK
     }
   }
 
-  @objc
-  public func present(_ lucraFlow: String, matchupId: String?, teamInviteId: String?) {
+  @objc public func present(_ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?) {
     DispatchQueue.main.async {
       let nativeFlow = self.getLucraFlow(
-        lucraFlow, matchupId: matchupId, teamInviteId: teamInviteId)
+        lucraFlow, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId)
       UIViewController.topViewController?.present(
         lucraFlow: nativeFlow,
         client: self.nativeClient,
@@ -485,7 +484,7 @@ import LucraSDK
   }
 
   @objc public func getFlowController(_ flow: String) -> UIViewController {
-    let nativeFlow = getLucraFlow(flow, matchupId: nil, teamInviteId: nil)
+    let nativeFlow = getLucraFlow(flow, matchupId: nil, teamInviteId: nil, gameId: nil)
     return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
   }
 
