@@ -18,10 +18,11 @@ class LucraUtils {
     }()
     return nativeEnvironment
   }
+    
   static public func stringToLucraFlow(
-    _ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?
+    _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?
   ) -> LucraSDK.LucraFlow {
-    switch lucraFlow {
+    switch flowName {
     case "profile":
       return .profile
     case "addFunds":
@@ -45,8 +46,7 @@ class LucraUtils {
     case "myMatchup":
       return .myMatchups
     default:
-      assertionFailure("Unimplemented lucra flow \(lucraFlow)")
-      return .profile
+      fatalError("Unimplemented lucra flow \(flowName)")
     }
   }
 }

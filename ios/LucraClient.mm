@@ -71,7 +71,7 @@ RCT_EXPORT_METHOD(createGamesMatchup : (NSString *)gameTypeId wagerAmount : (
 }
 
 RCT_EXPORT_METHOD(present : (NSDictionary *)params) {
-  NSString *flow = params[@"flow"];
+  NSString *flow = params[@"name"];
   NSString *matchupId = params[@"matchupId"];
   NSString *teamInviteId = params[@"teamInviteId"];
   NSString *gameId = params[@"gameId"];

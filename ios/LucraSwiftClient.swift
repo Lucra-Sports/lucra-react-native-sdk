@@ -276,13 +276,14 @@ import LucraSDK
   }
 
   @objc public func present(
-    _ lucraFlow: String, matchupId: String?, teamInviteId: String?, gameId: String?
+    _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?
   ) {
+    assert(flowName.isEmpty == false)
     DispatchQueue.main.async {
-      let nativeFlow = LucraUtils.stringToLucraFlow(
-        lucraFlow, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId)
+      let flow = LucraUtils.stringToLucraFlow(
+        flowName, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId)
       UIViewController.topViewController?.present(
-        lucraFlow: nativeFlow,
+        lucraFlow: flow,
         client: self.nativeClient,
         animated: true
       )
