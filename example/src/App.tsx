@@ -16,7 +16,6 @@ LucraSDK.addListener('user', (user) => {
 
 export default function App() {
   const [isReady, setIsReady] = React.useState(false);
-  const [count, setCount] = React.useState<string>(0);
 
   useEffect(() => {
     // Lucra requires location permissions for compliance when creating a new match or game, so Android location permissions are requested as early as possible.
