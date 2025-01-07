@@ -27,16 +27,16 @@ runs:
           ${{ runner.os }}-yarn-
 
     - name: Install dependencies
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      # if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install --immutable
       shell: bash
 
     - name: Install dependencies example
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      # if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn --cwd example install --immutable
       shell: bash
 
     - name: Install dependencies example-expo
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      # if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn --cwd example-expo install --immutable
       shell: bash
