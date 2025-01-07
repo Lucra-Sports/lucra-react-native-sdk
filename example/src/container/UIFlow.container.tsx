@@ -96,12 +96,12 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
           onPress={() =>
             LucraSDK.present({
               name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP,
-              gameId: 'pingpong',
+              gameId: 'PING-PONG',
             })
           }
         >
           <Text className="font-bold text-white">
-            Create Games Matchup with pingpong id
+            Create Games Matchup with PING-PONG id
           </Text>
         </TouchableOpacity>
 
