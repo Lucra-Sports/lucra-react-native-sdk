@@ -20,6 +20,7 @@ platform :android do
     update_version_and_build
     firebase_app_distribution(
       app: firebase_app_id,
+      groups: "stakeholders",
       release_notes: '-',
       service_credentials_file: firebase_service_credentials_file
     )
