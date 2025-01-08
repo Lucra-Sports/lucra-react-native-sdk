@@ -187,28 +187,54 @@ let availableRewardsSubscription: NativeEventSubscription;
 let rewardEmitter: (() => Promise<Array<LucraReward>>) | null = null;
 let claimRewardCallback: ((reward: LucraReward) => Promise<void>) | null = null;
 let claimRewardSubscription: NativeEventSubscription;
+let viewRewardsCallback: (() => void) | null = null;
+let viewRewardsSubscription: NativeEventSubscription;
 
 type LucraContestListener = {
-  onGamesContestCreated: (contestId: string) => void;
-  onSportsContestCreated: (contestId: string) => void;
-  onGamesContestAccepted: (contestId: string) => void;
-  onSportsContestAccepted: (contestId: string) => void;
+  onGamesMatchupCreated: (id: string) => void;
+  onSportsMatchupCreated: (id: string) => void;
+  onGamesMatchupAccepted: (id: string) => void;
+  onSportsMatchupAccepted: (id: string) => void;
+  onSportsMatchupCanceled: (id: string) => void;
+  onGamesMatchupCanceled: (id: string) => void;
 };
+
+const Flows = {
+  ONBOARDING: 'onboarding',
+  VERIFY_IDENTITY: 'verifyIdentity',
+  PROFILE: 'profile',
+  ADD_FUNDS: 'addFunds',
+  CREATE_GAMES_MATCHUP: 'createGamesMatchup',
+  CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
+  WITHDRAW_FUNDS: 'withdrawFunds',
+  PUBLIC_FEED: 'publicFeed',
+  MY_MATCHUP: 'myMatchup',
+  // GAME_CONTEST_DETAILS: 'gameContestDetails',
+  // SPORT_CONTEST_DETAILS: 'sportContestDetails',
+} as const;
+
+type FlowNames = (typeof Flows)[keyof typeof Flows];
+
+function present(params: { name: typeof Flows.ONBOARDING }): void;
+function present(params: { name: typeof Flows.VERIFY_IDENTITY }): void;
+function present(params: { name: typeof Flows.PROFILE }): void;
+function present(params: { name: typeof Flows.ADD_FUNDS }): void;
+function present(params: {
+  name: typeof Flows.CREATE_GAMES_MATCHUP;
+  gameId?: string;
+}): void;
+function present(params: { name: typeof Flows.CREATE_SPORTS_MATCHUP }): void;
+function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): void;
+function present(params: { name: typeof Flows.PUBLIC_FEED }): void;
+function present(params: { name: typeof Flows.MY_MATCHUP }): void;
+function present(params: { name: FlowNames; gameId?: string }) {
+  LucraClient.present(params);
+}
 
 export const LucraSDK = {
   ready: false,
   ENVIRONMENT: LucraEnvironment,
-  FLOW: {
-    ONBOARDING: 'onboarding',
-    VERIFY_IDENTITY: 'verifyIdentity',
-    PROFILE: 'profile',
-    ADD_FUNDS: 'addFunds',
-    CREATE_GAMES_MATCHUP: 'createGamesMatchup',
-    CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
-    WITHDRAW_FUNDS: 'withdrawFunds',
-    PUBLIC_FEED: 'publicFeed',
-    MY_MATCHUP: 'myMatchup',
-  },
+  FLOW: Flows,
   init: async (options: LucraSDKParams): Promise<void> => {
     await LucraClient.initialize(options);
     deepLinkSubscription?.remove();
@@ -250,41 +276,66 @@ export const LucraSDK = {
         }
       }
     );
+    viewRewardsSubscription?.remove();
+    viewRewardsSubscription = eventEmitter.addListener(
+      '_viewRewards',
+      async () => {
+        if (viewRewardsCallback) {
+          viewRewardsCallback();
+        }
+      }
+    );
   },
   addContestListener: (listener: LucraContestListener) => {
-    const gamesContestCreatedEmitter = eventEmitter.addListener(
-      'gamesContestCreated',
+    const gamesMatchupCreatedEmitter = eventEmitter.addListener(
+      'gamesMatchupCreated',
       (data) => {
-        listener.onGamesContestCreated(data.contestId);
+        listener.onGamesMatchupCreated(data.id);
       }
     );
 
-    const sportsContestCreatedEmitter = eventEmitter.addListener(
-      'sportsContestCreated',
+    const sportsMatchupCreatedEmitter = eventEmitter.addListener(
+      'sportsMatchupCreated',
       (data) => {
-        listener.onSportsContestCreated(data.contestId);
+        listener.onSportsMatchupCreated(data.id);
       }
     );
 
     const gamesContextAcceptedEmitter = eventEmitter.addListener(
-      'gamesContestAccepted',
+      'gamesMatchupAccepted',
       (data) => {
-        listener.onGamesContestAccepted(data.contestId);
+        listener.onGamesMatchupAccepted(data.id);
       }
     );
 
-    const sportContestAcceptedEmitter = eventEmitter.addListener(
-      'sportsContestAccepted',
+    const sportMatchupAcceptedEmitter = eventEmitter.addListener(
+      'sportsMatchupAccepted',
       (data) => {
-        listener.onSportsContestAccepted(data.contestId);
+        listener.onSportsMatchupAccepted(data.id);
+      }
+    );
+
+    const gamesMatchupCanceledEmitter = eventEmitter.addListener(
+      'gamesMatchupCanceled',
+      (data) => {
+        listener.onGamesMatchupCanceled(data.id);
+      }
+    );
+
+    const sportsMatchupCanceledEmitter = eventEmitter.addListener(
+      'sportsMatchupCanceled',
+      (data) => {
+        listener.onSportsMatchupCanceled(data.id);
       }
     );
 
     return () => {
-      gamesContestCreatedEmitter.remove();
-      sportsContestCreatedEmitter.remove();
+      gamesMatchupCreatedEmitter.remove();
+      sportsMatchupCreatedEmitter.remove();
       gamesContextAcceptedEmitter.remove();
-      sportContestAcceptedEmitter.remove();
+      sportMatchupAcceptedEmitter.remove();
+      gamesMatchupCanceledEmitter.remove();
+      sportsMatchupCanceledEmitter.remove();
     };
   },
   addListener: (type: 'user', cb: (data: any) => void) => {
@@ -299,10 +350,7 @@ export const LucraSDK = {
   getUser: async (): Promise<LucraUser> => {
     return (await LucraClient.getUser()) as LucraUser;
   },
-  present: (flow: string) => {
-    LucraClient.present(flow);
-  },
-  // API calls
+  present: present,
   createGamesMatchup: (
     gameTypeId: string,
     wagerAmount: number
@@ -348,11 +396,13 @@ export const LucraSDK = {
   },
   registerRewardProvider: (
     getAvailableRewards: () => Promise<Array<LucraReward>>,
-    claimReward: (reward: LucraReward) => Promise<void>
+    claimReward: (reward: LucraReward) => Promise<void>,
+    viewRewards: () => void
   ) => {
     NativeLucraClient.registerRewardProvider();
     rewardEmitter = getAvailableRewards;
     claimRewardCallback = claimReward;
+    viewRewardsCallback = viewRewards;
   },
 };
 

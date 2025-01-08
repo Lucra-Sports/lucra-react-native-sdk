@@ -19,7 +19,7 @@ class LucraUtils {
       }
     }
 
-    fun getLucraFlow(flow: String): LucraUiProvider.LucraFlow {
+    fun getLucraFlow(flow: String, matchupId: String?, teaminviteId: String?, gameTypeId: String?): LucraUiProvider.LucraFlow {
       return when (flow) {
         // TODO ios uses onboarding, Android uses Login
         "onboarding" -> LucraUiProvider.LucraFlow.Login
@@ -27,11 +27,20 @@ class LucraUtils {
         "profile" -> LucraUiProvider.LucraFlow.Profile
         "addFunds" -> LucraUiProvider.LucraFlow.AddFunds
         "verifyIdentity" -> LucraUiProvider.LucraFlow.VerifyIdentity
-        "createGamesMatchup" -> LucraUiProvider.LucraFlow.CreateGamesMatchup
+        "createGamesMatchup" -> {
+          if(gameTypeId != null) {
+            return LucraUiProvider.LucraFlow.CreateGamesMatchupById(gameTypeId)
+          } else {
+            return LucraUiProvider.LucraFlow.CreateGamesMatchup
+          }
+        }
         "createSportsMatchup" -> LucraUiProvider.LucraFlow.CreateSportsMatchup
         "withdrawFunds" -> LucraUiProvider.LucraFlow.WithdrawFunds
         "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
         "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
+        // TODO it seems the following two flows are missing from the Android SDK
+//        "gameContestDetails" -> LucraUiProvider.LucraFlow.GameContestDetails
+//        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails
         else -> throw IllegalArgumentException("Invalid flow: $flow")
       }
     }

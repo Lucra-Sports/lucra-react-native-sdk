@@ -74,35 +74,53 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
               ...events,
               { type: 'Reward selected', id: JSON.stringify(reward) },
             ]);
+          },
+          () => {
+            console.warn('You should show the rewards to the user');
           }
         );
+
         LucraSDK.addContestListener({
-          onGamesContestCreated: (contestId: string) => {
-            console.log('Games contest created:', contestId);
+          onGamesMatchupCreated: (id: string) => {
+            console.log('Games contest created:', id);
             setEvents((events) => [
               ...events,
-              { type: 'Games contest created', id: contestId },
+              { type: 'Games contest created', id: id },
             ]);
           },
-          onSportsContestCreated: (contestId: string) => {
-            console.log('Sports contest created:', contestId);
+          onSportsMatchupCreated: (id: string) => {
+            console.log('Sports contest created:', id);
             setEvents((events) => [
               ...events,
-              { type: 'Sports contest created', id: contestId },
+              { type: 'Sports contest created', id: id },
             ]);
           },
-          onGamesContestAccepted: (contestId: string) => {
-            console.log('Games contest accepted:', contestId);
+          onGamesMatchupAccepted: (id: string) => {
+            console.log('Games contest accepted:', id);
             setEvents((events) => [
               ...events,
-              { type: 'Games contest accepted', id: contestId },
+              { type: 'Games contest accepted', id: id },
             ]);
           },
-          onSportsContestAccepted: (contestId: string) => {
-            console.log('Sports contest accepted:', contestId);
+          onSportsMatchupAccepted: (id: string) => {
+            console.log('Sports contest accepted:', id);
             setEvents((events) => [
               ...events,
-              { type: 'Sports contest accepted', id: contestId },
+              { type: 'Sports contest accepted', id: id },
+            ]);
+          },
+          onGamesMatchupCanceled: (id: string) => {
+            console.log('Games matchup canceled:', id);
+            setEvents((events) => [
+              ...events,
+              { type: 'Games matchup canceled', id: id },
+            ]);
+          },
+          onSportsMatchupCanceled: (id: string) => {
+            console.log('Sports matchup canceled:', id);
+            setEvents((events) => [
+              ...events,
+              { type: 'Sports matchup canceled', id: id },
             ]);
           },
         });

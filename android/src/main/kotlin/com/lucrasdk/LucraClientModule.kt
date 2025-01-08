@@ -145,28 +145,28 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                 is LucraEvent.GamesContest.Created -> {
                                     sendEvent(
                                         context,
-                                        "gamesContestCreated",
+                                        "gamesMatchupCreated",
                                         Arguments.makeNativeMap(
-                                            bundleOf("contestId" to event.contestId)
+                                            bundleOf("id" to event.contestId)
                                         )
                                     )
                                 }
                                 is LucraEvent.SportsContest.Created -> {
                                     sendEvent(
                                         context,
-                                        "sportsContestCreated",
+                                        "sportsMatchupCreated",
                                         Arguments.makeNativeMap(
-                                            bundleOf("contestId" to event.contestId)
+                                            bundleOf("id" to event.contestId)
                                         )
                                     )
                                 }
                                 is LucraEvent.GamesContest.Accepted ->
                                     sendEvent(
                                         context,
-                                        "gamesContestAccepted",
+                                        "gamesMatchupAccepted",
                                         Arguments.makeNativeMap(
                                             bundleOf(
-                                                "contestId" to
+                                                "id" to
                                                         event.contestId
                                             )
                                         )
@@ -174,11 +174,33 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                 is LucraEvent.SportsContest.Accepted ->
                                     sendEvent(
                                         context,
-                                        "sportsContestAccepted",
+                                        "sportsMatchupAccepted",
                                         Arguments.makeNativeMap(
                                             bundleOf(
-                                                "contestId" to
+                                                "id" to
                                                         event.contestId
+                                            )
+                                        )
+                                    )
+                                is LucraEvent.GamesContest.Canceled ->
+                                    sendEvent(
+                                        context,
+                                        "gamesMatchupCancelled",
+                                        Arguments.makeNativeMap(
+                                            bundleOf(
+                                                "id" to
+                                                        event.matchupId
+                                            )
+                                        )
+                                    )
+                                is LucraEvent.SportsContest.Canceled ->
+                                    sendEvent(
+                                        context,
+                                        "sportsMatchupCancelled",
+                                        Arguments.makeNativeMap(
+                                            bundleOf(
+                                                "id" to
+                                                        event.matchupId
                                             )
                                         )
                                     )
@@ -274,14 +296,19 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun present(flow: String) {
-        val lucraFlow = LucraUtils.getLucraFlow(flow)
+    fun present(args: ReadableMap) {
+        val flowName = args.getString("name")!!
+        val matchupId = args.getString("matchupId")
+        val teaminviteId = args.getString("teaminviteId")
+        val gameTypeId = args.getString("gameId")
 
-        fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(lucraFlow)
+        val flow = LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId)
+
+        fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(flow)
 
         fullAppFlowDialogFragment?.show(
             (context.currentActivity as FragmentActivity).supportFragmentManager,
-            lucraFlow.toString() // this tag will be used to dismiss in
+            flow.toString() // this tag will be used to dismiss in
             // onFlowDismissRequested(flow)
         )
     }
@@ -412,6 +439,10 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         map.putMap("metadata",convertStringMapToWritableMap(reward.metadata))
                         sendEvent(context, "_claimReward", map)
                     }
+
+                    override fun viewRewards() {
+                        sendEvent(context, "_viewRewards", null)
+                    }
                 }
             )
     }
@@ -423,7 +454,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 object : LucraConvertToCreditProvider {
                     override suspend fun getCreditAmount(
                         cashAmount: Double
-                    ): LucraConvertToCreditWithdrawMethod? {
+                    ): LucraConvertToCreditWithdrawMethod {
                         val linkMap = Arguments.createMap()
                         linkMap.putDouble("amount", cashAmount)
                         sendEvent(context, "_creditConversion", linkMap)

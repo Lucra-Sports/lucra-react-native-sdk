@@ -23,7 +23,7 @@ export default function App() {
         onTertiary: '#FFFFFF',
       },
     }).then(() => {
-      LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS);
+      LucraSDK.present({ name: LucraSDK.FLOW.ADD_FUNDS });
     });
   }, []);
 
