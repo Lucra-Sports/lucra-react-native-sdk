@@ -70,8 +70,10 @@ import LucraSDK
       let onPrimary = theme["onPrimary"] as? String
       let onSecondary = theme["onSecondary"] as? String
       let onTertiary = theme["onTertiary"] as? String
+      let fontFamilyName = theme["fontFamily"] as? String
 
       clientTheme = ClientTheme(
+        universalTheme: DynamicColorSet(
         background: background,
         surface: surface,
         primary: primary,
@@ -81,7 +83,9 @@ import LucraSDK
         onSurface: onSurface,
         onPrimary: onPrimary,
         onSecondary: onSecondary,
-        onTertiary: onTertiary)
+        onTertiary: onTertiary),
+        fontFamilyName: fontFamilyName
+      )
     }
 
     let nativeEnvironment = LucraUtils.stringToEnvironment(environment)
