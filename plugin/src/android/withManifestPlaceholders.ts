@@ -3,6 +3,15 @@ import { withAppBuildGradle } from '@expo/config-plugins';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { appendContents } from '../util/appendContents';
 
+const desugaringConfig = `
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+            coreLibraryDesugaringEnabled true
+        }`;
+
+const desugaringDependency = `    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'`;
+
 const manifestPlaceholders = `
       manifestPlaceholders = [
           'auth0Domain': 'LUCRA_SDK',
@@ -29,8 +38,28 @@ export function withManifestPlaceholders(config: ExpoConfig): ExpoConfig {
       src: newConfig.modResults.contents,
       newSrc: manifestPlaceholders,
       comment: '//',
-      anchor: /versionName.*$/,
-      offset: 2,
+      anchor: /^\s*versionName\s+["'].*?["']\s*$/,
+      offset: 1,
+    }).contents;
+
+    // Add desugaring configuration in android block
+    newConfig.modResults.contents = mergeContents({
+      tag: 'lucra-sdk-desugaring',
+      src: newConfig.modResults.contents,
+      newSrc: desugaringConfig,
+      comment: '//',
+      anchor: /android\s*{/,
+      offset: 1,
+    }).contents;
+
+    // Add desugaring dependency
+    newConfig.modResults.contents = mergeContents({
+      tag: 'lucra-sdk-desugaring-dep',
+      src: newConfig.modResults.contents,
+      newSrc: desugaringDependency,
+      comment: '//',
+      anchor: /dependencies\s*{/,
+      offset: 1,
     }).contents;
 
     return newConfig;

@@ -1,7 +1,6 @@
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 export default function App() {
@@ -21,6 +20,15 @@ export default function App() {
         onPrimary: '#001448',
         onSecondary: '#FFFFFF',
         onTertiary: '#FFFFFF',
+        fontFamily:
+          Platform.OS === 'ios'
+            ? 'Rawson'
+            : {
+                normal: 'fonts/RawsonRegular.otf',
+                bold: 'fonts/RawsonBold.otf',
+                semibold: 'fonts/RawsonSemiBold.otf',
+                medium: 'fonts/RawsonRegular.otf',
+              },
       },
     }).then(() => {
       LucraSDK.present({ name: LucraSDK.FLOW.ADD_FUNDS });
