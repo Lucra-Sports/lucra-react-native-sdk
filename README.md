@@ -73,6 +73,15 @@ Update your `app.config.js` file with the following configuration to set the iOS
     ],
 ```
 
+### Using Custom Fonts
+
+Follow the guidelines on installing expo-font plugin and configure it to load the fonts. This will make the fonts available on android and iOS.
+
+For android just pass the path of each font relative to "fonts/"
+
+For iOS pass the font's familiy name
+Note: The current iOS implementation will use the font's family name and search for Bold, Regular and SemiBold variations, please make sure to provide all of them to properly replace the font for each UI element.
+
 ### Using Expo Dev Client
 
 When working with expo-dev-client, it's essential to disable the EX_DEV_CLIENT_NETWORK_INSPECTOR variable, The SDK uses third-party libraries that block network inspection.

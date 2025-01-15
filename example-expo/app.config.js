@@ -27,6 +27,16 @@ export default {
     },
     plugins: [
       [
+        'expo-font',
+        {
+          fonts: [
+            'assets/fonts/RawsonBold.otf',
+            'assets/fonts/RawsonRegular.otf',
+            'assets/fonts/RawsonSemiBold.otf',
+          ],
+        },
+      ],
+      [
         'expo-build-properties',
         {
           ios: {
