@@ -153,6 +153,11 @@ RCT_EXPORT_METHOD(tournamentsMatchup : (NSString *)idString resolve : (
   [swiftClient tournamentsMatchup:idString resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(joinTournament : (NSString *)idString resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient joinTournament:idString resolve:resolve reject:reject];
+}
+
 #if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params {

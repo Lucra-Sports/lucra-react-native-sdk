@@ -905,6 +905,56 @@ You then need to modify your `AppDelegate.mm`:
 }
 ```
 
+# Pool Tournaments
+
+The Pool Tournament feature allows end users to join pre-created tournaments and earn rewards based on their ranking at the end of the matchup.
+
+Retrieve a list of recommended tournaments:
+
+```ts
+try {
+  let tournaments = await LucraSDK.getRecomendedTournaments({
+    includeClosed: true,
+    limit: 50,
+  });
+  console.log(tournaments);
+} catch (e) {
+  console.error(e);
+}
+```
+
+Retrieve a tournament matchup by its id:
+
+```ts
+try {
+  let tournament = await LucraSDK.tournamentsMatchup('id');
+  console.log(tournament);
+} catch (e) {
+  console.error(e);
+}
+```
+
+Join tournament:
+
+```ts
+try {
+  await LucraSDK.joinTournament('id');
+} catch (e) {
+  if ((e.code = 'INSUFFICIENT_FUNDS')) {
+    console.error('User has insufficient funds to join tournament');
+  } else {
+    console.error(e);
+  }
+}
+```
+
+Throws an error if:
+
+- The user is not in a valid state to join.
+- Location services fail to provide coordinates.
+- Compliance validation fails.
+- Insufficient funds prevent the user from joining.
+
 # For Maintainers
 
 ## Publishing

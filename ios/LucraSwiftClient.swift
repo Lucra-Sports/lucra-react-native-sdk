@@ -512,7 +512,7 @@ import LucraSDK
   ) {
     let includeClosed: Bool = params["includeClosed"] as? Bool ?? true
     let limit: Int = params["limit"] as? Int ?? 50
-    
+
     Task { @MainActor in
       do {
         let tournaments = try await self.nativeClient.api.getRecommendedTournaments(
@@ -524,8 +524,10 @@ import LucraSDK
       }
     }
   }
-  
-  @objc public func tournamentsMatchup(_ id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock){
+
+  @objc public func tournamentsMatchup(
+    _ id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock
+  ) {
     Task { @MainActor in
       do {
         if let tournament = try await self.nativeClient.api.tournamentsMatchup(
@@ -538,7 +540,22 @@ import LucraSDK
       } catch {
         reject("\(error)", error.localizedDescription, nil)
       }
-      
+
+    }
+  }
+
+  @objc public func joinTournament(
+    _ id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      do {
+        try await self.nativeClient.api.self.joinTournament(id: id)
+        resolve(nil)
+      } catch UserStateError.insufficientFunds {
+        reject("INSUFFICIENT_FUNDS", "You do not have enough funds to join this tournament.", nil)
+      } catch {
+        reject("\(error)", error.localizedDescription, nil)
+      }
     }
   }
 }

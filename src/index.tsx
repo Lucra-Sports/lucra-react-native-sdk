@@ -426,6 +426,9 @@ export const LucraSDK = {
   tournamentMatchup: async (tournamentId: string) => {
     return await LucraClient.tournamentMatchup(tournamentId);
   },
+  joinTournament: async (tournamentId: string) => {
+    return await LucraClient.joinTournament(tournamentId);
+  },
 };
 
 export type LucraSDKError = {
