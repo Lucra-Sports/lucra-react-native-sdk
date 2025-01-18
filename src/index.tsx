@@ -190,13 +190,13 @@ let claimRewardSubscription: NativeEventSubscription;
 let viewRewardsCallback: (() => void) | null = null;
 let viewRewardsSubscription: NativeEventSubscription;
 
-type LucraContestListener = {
-  onGamesMatchupCreated: (id: string) => void;
-  onSportsMatchupCreated: (id: string) => void;
-  onGamesMatchupAccepted: (id: string) => void;
-  onSportsMatchupAccepted: (id: string) => void;
-  onSportsMatchupCanceled: (id: string) => void;
-  onGamesMatchupCanceled: (id: string) => void;
+type LucraContestListeners = {
+  onGamesMatchupCreated?: (id: string) => void;
+  onSportsMatchupCreated?: (id: string) => void;
+  onGamesMatchupAccepted?: (id: string) => void;
+  onSportsMatchupAccepted?: (id: string) => void;
+  onSportsMatchupCanceled?: (id: string) => void;
+  onGamesMatchupCanceled?: (id: string) => void;
 };
 
 const Flows = {
@@ -286,46 +286,46 @@ export const LucraSDK = {
       }
     );
   },
-  addContestListener: (listener: LucraContestListener) => {
+  addContestListener: (listenerMap: LucraContestListeners) => {
     const gamesMatchupCreatedEmitter = eventEmitter.addListener(
       'gamesMatchupCreated',
       (data) => {
-        listener.onGamesMatchupCreated(data.id);
+        listenerMap.onGamesMatchupCreated?.(data.id);
       }
     );
 
     const sportsMatchupCreatedEmitter = eventEmitter.addListener(
       'sportsMatchupCreated',
       (data) => {
-        listener.onSportsMatchupCreated(data.id);
+        listenerMap.onSportsMatchupCreated?.(data.id);
       }
     );
 
     const gamesContextAcceptedEmitter = eventEmitter.addListener(
       'gamesMatchupAccepted',
       (data) => {
-        listener.onGamesMatchupAccepted(data.id);
+        listenerMap.onGamesMatchupAccepted?.(data.id);
       }
     );
 
     const sportMatchupAcceptedEmitter = eventEmitter.addListener(
       'sportsMatchupAccepted',
       (data) => {
-        listener.onSportsMatchupAccepted(data.id);
+        listenerMap.onSportsMatchupAccepted?.(data.id);
       }
     );
 
     const gamesMatchupCanceledEmitter = eventEmitter.addListener(
       'gamesMatchupCanceled',
       (data) => {
-        listener.onGamesMatchupCanceled(data.id);
+        listenerMap.onGamesMatchupCanceled?.(data.id);
       }
     );
 
     const sportsMatchupCanceledEmitter = eventEmitter.addListener(
       'sportsMatchupCanceled',
       (data) => {
-        listener.onSportsMatchupCanceled(data.id);
+        listenerMap.onSportsMatchupCanceled?.(data.id);
       }
     );
 
