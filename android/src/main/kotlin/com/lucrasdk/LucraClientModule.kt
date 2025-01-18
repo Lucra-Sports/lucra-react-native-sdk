@@ -19,6 +19,7 @@ import com.lucrasdk.LucraUtils.Companion.convertReadableMapToStringMap
 import com.lucrasdk.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
+import com.lucrasports.sdk.core.contest.PoolTournament
 import com.lucrasports.sdk.core.contest.SportsMatchup
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditProvider
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
@@ -151,6 +152,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                         )
                                     )
                                 }
+
                                 is LucraEvent.SportsContest.Created -> {
                                     sendEvent(
                                         context,
@@ -160,6 +162,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                         )
                                     )
                                 }
+
                                 is LucraEvent.GamesContest.Accepted ->
                                     sendEvent(
                                         context,
@@ -171,6 +174,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                             )
                                         )
                                     )
+
                                 is LucraEvent.SportsContest.Accepted ->
                                     sendEvent(
                                         context,
@@ -182,6 +186,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                             )
                                         )
                                     )
+
                                 is LucraEvent.GamesContest.Canceled ->
                                     sendEvent(
                                         context,
@@ -193,6 +198,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                             )
                                         )
                                     )
+
                                 is LucraEvent.SportsContest.Canceled ->
                                     sendEvent(
                                         context,
@@ -216,17 +222,21 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         res.putString("error", user.error.toString())
                         sendEvent(context, "user", res)
                     }
+
                     SDKUserResult.InvalidUsername -> {
                         // intentionally left blank
                     }
+
                     SDKUserResult.Loading -> {
                         // intentionally left blank
                     }
+
                     SDKUserResult.NotLoggedIn -> {
                         val res = Arguments.createMap()
                         res.putNull("user")
                         sendEvent(context, "user", res)
                     }
+
                     is SDKUserResult.Success -> {
                         val userMap = Arguments.createMap()
                         userMap.putString("username", user.sdkUser.username)
@@ -248,6 +258,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
                         sendEvent(context, "user", res)
                     }
+
                     SDKUserResult.WaitingForLogin -> {
                         // intentionally left blank
                     }
@@ -323,9 +334,11 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is GamesMatchup.FailedCreateGamesMatchup.LocationError -> "locationError"
                 GamesMatchup.FailedCreateGamesMatchup.UserStateError.InsufficientFunds ->
                     "insufficientFunds"
+
                 GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotAllowed -> "notAllowed"
                 GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotInitialized ->
                     "notInitialized"
+
                 GamesMatchup.FailedCreateGamesMatchup.UserStateError.Unverified -> "unverified"
                 else -> {
                     "unknownError"
@@ -341,6 +354,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is GamesMatchup.CreateGamesMatchupResult.Failure -> {
                     throwLucraJSError(promise, it.failure)
                 }
+
                 is GamesMatchup.CreateGamesMatchupResult.GYPCreatedMatchupOutput -> {
                     val map = Arguments.createMap()
 
@@ -360,6 +374,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             when (it) {
                 is GamesMatchup.MatchupActionResult.Failure ->
                     throwLucraJSError(promise, it.failure)
+
                 GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
             }
         }
@@ -371,6 +386,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             when (it) {
                 is GamesMatchup.MatchupActionResult.Failure ->
                     throwLucraJSError(promise, it.failure)
+
                 GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
             }
         }
@@ -382,6 +398,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             when (result) {
                 is GamesMatchup.RetrieveGamesMatchupResult.Failure ->
                     promise.reject(result.failure.toString(), result.failure.toString())
+
                 is GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput -> {
                     val res = LucraMapper.gamesMatchupToMap(result)
 
@@ -436,7 +453,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         map.putString("iconUrl", reward.iconUrl)
                         map.putString("bannerIconUrl", reward.bannerIconUrl)
                         map.putString("disclaimer", reward.disclaimer)
-                        map.putMap("metadata",convertStringMapToWritableMap(reward.metadata))
+                        map.putMap("metadata", convertStringMapToWritableMap(reward.metadata))
                         sendEvent(context, "_claimReward", map)
                     }
 
@@ -543,11 +560,13 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is SDKUserResult.Success -> promise.resolve(null)
                 is SDKUserResult.InvalidUsername ->
                     promise.reject("invalid_username", "username is not valid")
+
                 is SDKUserResult.NotLoggedIn -> promise.reject("not_logged_in", "not logged in")
                 is SDKUserResult.Error -> promise.reject("unknown_error", it.toString())
                 SDKUserResult.Loading -> {
                     // Should not happen in this context
                 }
+
                 SDKUserResult.WaitingForLogin -> {
                     // Intentionally left blank
                 }
@@ -562,6 +581,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is SDKUserResult.Error -> promise.resolve(null)
                 SDKUserResult.InvalidUsername ->
                     promise.reject("invalid_username", "username is not valid")
+
                 SDKUserResult.NotLoggedIn -> promise.reject("not_logged_in", "not logged in")
                 is SDKUserResult.Success -> {
                     val user = Arguments.createMap()
@@ -582,6 +602,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
                     promise.resolve(user)
                 }
+
                 SDKUserResult.Loading -> promise.reject("loading", "User is still loading")
                 SDKUserResult.WaitingForLogin -> {
                     // intentionally blank
@@ -599,8 +620,67 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
                     promise.reject("could_not_resolve_sports_matchup", result.toString())
                 }
+
                 is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
                     promise.resolve(LucraMapper.sportsMatchupToMap(result.sportsMatchup))
+                }
+            }
+        }
+    }
+
+    @ReactMethod
+    fun getRecommendedTournaments(params: ReadableMap, promise: Promise) {
+        val includeClosed = params.getBoolean("includeClosed")
+        val limit = params.getInt("limit")
+        LucraClient().queryRecommendedTournaments(
+            limit = limit,
+            offset = 0,
+            includeCompletedTournaments = includeClosed
+        ) { result ->
+            when (result) {
+                is PoolTournament.QueryRecommendedTournamentsResult.Failure -> {
+                    promise.reject("Could_not_get_recommended_tournaments", result.toString())
+                }
+
+                is PoolTournament.QueryRecommendedTournamentsResult.RecommendedTournamentsOutput -> {
+                    val writableArray = Arguments.createArray()
+                    result.recommendedTournaments.forEach {
+                        writableArray.pushMap(
+                            LucraMapper.tournamentsMatchupToMap(
+                                it
+                            )
+                        )
+                    }
+                    promise.resolve(writableArray)
+                }
+            }
+        }
+    }
+
+    @ReactMethod
+    fun tournamentsMatchup(id: String, promise: Promise) {
+        LucraClient().retrieveTournament(tournamentId = id) { result ->
+            when (result) {
+                is PoolTournament.RetrieveTournamentResult.Failure -> {
+                    promise.reject("Could_not_get_tournament", result.toString())
+                }
+                is PoolTournament.RetrieveTournamentResult.RetrieveTournamentOutput -> {
+                    promise.resolve(LucraMapper.tournamentsMatchupToMap(result.tournament))
+                }
+
+            }
+        }
+    }
+
+    @ReactMethod
+    fun joinTournament(id: String, promise: Promise) {
+        LucraClient().joinTournament(tournamentId = id) { result ->
+            when (result) {
+                is PoolTournament.JoinTournamentResult.Failure -> {
+                    promise.reject("Could_not_join_tournament", result.toString())
+                }
+                is PoolTournament.JoinTournamentResult.JoinTournamentOutput -> {
+                    promise.resolve(null)
                 }
             }
         }

@@ -9,6 +9,9 @@ import com.lucrasports.matchup.SportsMatchupType
 import com.lucrasports.matchup.sports_impl.SportsInterval
 import com.lucrasports.sdk.core.contest.GYPGame
 import com.lucrasports.sdk.core.contest.GamesMatchup
+import com.lucrasports.sdk.core.contest.Participant
+import com.lucrasports.sdk.core.contest.PoolTournament
+import com.lucrasports.sdk.core.contest.Tournament
 import com.lucrasports.sports_contests.LucraLeague
 import com.lucrasports.sports_contests.LucraMetric
 import com.lucrasports.sports_contests.LucraPlayer
@@ -143,7 +146,7 @@ object LucraMapper {
         map.putString("awayScore", schedule.awayScore)
         map.putMap("sport", sportToMap(schedule.sport))
         schedule.projectionsPending?.let { map.putBoolean("projectionsPending", it) }
-                ?: map.putNull("projectionsPending")
+            ?: map.putNull("projectionsPending")
         return map
     }
 
@@ -214,20 +217,20 @@ object LucraMapper {
         return map
     }
 
-   fun GYPGameToMap(game: GYPGame): WritableMap {
-       val map = Arguments.createMap()
-       map.putString("id", game.id)
-       map.putString("name", game.name)
-       map.putString("description", game.description)
-       map.putString("iconUrl", game.iconUrl)
-       map.putString("imageUrl", game.imageUrl)
-       val categoriesArray = Arguments.createArray()
-       game.categoryIds.forEach { category ->
-           categoriesArray.pushString(category)
-       }
-       map.putArray("categoriesIds", categoriesArray)
-       return map
-   }
+    fun GYPGameToMap(game: GYPGame): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", game.id)
+        map.putString("name", game.name)
+        map.putString("description", game.description)
+        map.putString("iconUrl", game.iconUrl)
+        map.putString("imageUrl", game.imageUrl)
+        val categoriesArray = Arguments.createArray()
+        game.categoryIds.forEach { category ->
+            categoriesArray.pushString(category)
+        }
+        map.putArray("categoriesIds", categoriesArray)
+        return map
+    }
 
     fun gamesMatchupToMap(match: GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput): WritableMap {
         val map = Arguments.createMap()
@@ -258,6 +261,40 @@ object LucraMapper {
         }
 
         map.putArray("teams", teamArray)
+        return map
+    }
+
+    fun tournamentsParticipantToMap(participant: Participant): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", participant.userId)
+        map.putString("username", participant.username)
+        participant.place?.let { map.putInt("place", it ) }
+        participant.rewardValue?.let { map.putDouble("rewardValue", it)}
+        return map
+    }
+
+
+    fun tournamentsMatchupToMap(matchup: Tournament): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", matchup.tournamentId)
+        map.putString("title", matchup.title)
+        map.putString("type", matchup.type)
+        map.putDouble("buyInAmount", matchup.buyInAmount)
+//        map.putString("createdAt", matchup.createdAt)
+//        map.putString("updatedAt", matchup.updatedAt)
+        map.putString("expiresAt", matchup.expiresAt.toString())
+        map.putString("description", matchup.description)
+
+        val participants = Arguments.createArray()
+        matchup.participants.forEach {
+            participants.pushMap(tournamentsParticipantToMap(it))
+        }
+        map.putArray("participants", participants)
+
+        map.putString("status", matchup.status)
+        map.putDouble("fee", matchup.fee)
+        map.putDouble("pot", matchup.poolTotalAmount)
+
         return map
     }
 }
