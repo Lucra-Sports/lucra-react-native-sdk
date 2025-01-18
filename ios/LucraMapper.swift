@@ -248,7 +248,9 @@ public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [
     "leaderboards": tournament.leaderboards.map(tournamentLeaderboardToMap),
     "metadata": tournament.metadata as Any,
     "iconUrl": tournament.iconUrl as Any,
-    "isClosed": tournament.isClosed
+    "isClosed": tournament.isClosed,
+    "pot": tournament.potTotal(),
+    "date": tournament.date()
   ]
   
 }
