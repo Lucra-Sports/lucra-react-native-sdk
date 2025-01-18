@@ -28,7 +28,10 @@ function handleLucraSDKError(e: LucraSDKError) {
 
     case 'unverified':
       console.warn('User not verified', e);
-      LucraSDK.present({ name: LucraSDK.FLOW.VERIFY_IDENTITY });
+      LucraSDK.present({
+        name: LucraSDK.FLOW.VERIFY_IDENTITY,
+        verificationProcedure: 'ageAssuranceVerification',
+      });
       break;
 
     case 'notAllowed':
@@ -143,6 +146,46 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           }}
         >
           <Text className="text-white">Cancel Matchup</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              let tournaments = await LucraSDK.getRecomendedTournaments({});
+              console.warn('Recommended Tournaments', tournaments);
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+        >
+          <Text className="text-white">Get Recommended Tournaments</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={() => {
+            try {
+              let tournament = LucraSDK.tournamentMatchup(currentMatchupId);
+              console.warn('Recommended Tournaments', tournament);
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+        >
+          <Text className="text-white">Get Current Tournament</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              await LucraSDK.joinTournament(currentMatchupId);
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+        >
+          <Text className="text-white">Join Current Tournament</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
