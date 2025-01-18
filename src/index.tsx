@@ -215,20 +215,25 @@ const Flows = {
 
 type FlowNames = (typeof Flows)[keyof typeof Flows];
 
-function present(params: { name: typeof Flows.ONBOARDING }): void;
-function present(params: { name: typeof Flows.VERIFY_IDENTITY }): void;
-function present(params: { name: typeof Flows.PROFILE }): void;
-function present(params: { name: typeof Flows.ADD_FUNDS }): void;
+function present(params: { name: typeof Flows.ONBOARDING }): Promise<void>;
+function present(params: {
+  name: typeof Flows.VERIFY_IDENTITY;
+  verificationProcedure: 'fullKYCVerification' | 'ageAssuranceVerification';
+}): Promise<void>;
+function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
+function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
 function present(params: {
   name: typeof Flows.CREATE_GAMES_MATCHUP;
   gameId?: string;
-}): void;
-function present(params: { name: typeof Flows.CREATE_SPORTS_MATCHUP }): void;
-function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): void;
-function present(params: { name: typeof Flows.PUBLIC_FEED }): void;
-function present(params: { name: typeof Flows.MY_MATCHUP }): void;
+}): Promise<void>;
+function present(params: {
+  name: typeof Flows.CREATE_SPORTS_MATCHUP;
+}): Promise<void>;
+function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): Promise<void>;
+function present(params: { name: typeof Flows.PUBLIC_FEED }): Promise<void>;
+function present(params: { name: typeof Flows.MY_MATCHUP }): Promise<void>;
 function present(params: { name: FlowNames; gameId?: string }) {
-  LucraClient.present(params);
+  return LucraClient.present(params);
 }
 
 export const LucraSDK = {
@@ -403,6 +408,20 @@ export const LucraSDK = {
     rewardEmitter = getAvailableRewards;
     claimRewardCallback = claimReward;
     viewRewardsCallback = viewRewards;
+  },
+  // Pool tournaments
+  // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
+  getRecomendedTournaments: async ({
+    includeClosed = true,
+    limit = 50,
+  }: {
+    includeClosed?: boolean;
+    limit?: number;
+  }) => {
+    return await LucraClient.getRecommendedTournaments({
+      includeClosed,
+      limit,
+    });
   },
 };
 

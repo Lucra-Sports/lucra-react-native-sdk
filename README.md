@@ -410,26 +410,27 @@ export default function App() {
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
 
 ```ts
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Button
-        title="Show Profile"
-        onPress={() => LucraSDK.present({name: LucraSDK.FLOW.PROFILE})}
-      />
-      <Button
-        title="Show Add Funds"
-        onPress={() => LucraSDK.present({name: LucraSDK.FLOW.ADD_FUNDS})}
-      />
-      <Button
-        title="Create game matchup"
-        // Some of the flows take parameters
-        onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP, gameId: 'pingpong'})}
-        // Some of the other flows that take parameters
-        // onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP})}
-      />
-    </View>
-  );
+try {
+  await LucraSDK.present({ name: LucraSDK.FLOW.PROFILE });
+} catch (e) {
+  // if the flow could not be presented you can check out the error
+  console.error(e);
+}
+
+// Some flows take extra parameters, the TypeScript definition should help you know which params are required
+try {
+  await LucraSDK.present({
+    name: LucraSDK.FLOW.CREATE_GAMES_MATCH_UP,
+    gameid: 'PING_PONG',
+  });
+  // or
+  await LucraSDK.present({
+    name: LucraSDK.FLOW.VERIFY_IDENTITY,
+    verificationProcedure: 'ageAssuranceVerification',
+  });
+} catch (e) {
+  // if the flow could not be presented you can check out the error
+  console.error(e);
 }
 ```
 

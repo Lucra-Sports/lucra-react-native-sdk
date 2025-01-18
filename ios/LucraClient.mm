@@ -70,15 +70,20 @@ RCT_EXPORT_METHOD(createGamesMatchup : (NSString *)gameTypeId wagerAmount : (
                          rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(present : (NSDictionary *)params) {
+RCT_EXPORT_METHOD(present : (NSDictionary *)params resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   NSString *flow = params[@"name"];
   NSString *matchupId = params[@"matchupId"];
   NSString *teamInviteId = params[@"teamInviteId"];
   NSString *gameId = params[@"gameId"];
+  NSString *verificationProcedure = params[@"verificationProcedure"];
   [swiftClient present:flow
-             matchupId:matchupId
-          teamInviteId:teamInviteId
-                gameId:gameId];
+                  matchupId:matchupId
+               teamInviteId:teamInviteId
+                     gameId:gameId
+      verificationProcedure:verificationProcedure
+                    resolve:resolve
+                     reject:reject];
 }
 
 RCT_EXPORT_METHOD(emitDeepLink : (NSString *)deepLink) {
@@ -135,6 +140,12 @@ RCT_EXPORT_METHOD(registerDeviceTokenBase64 : (NSString *)
 RCT_EXPORT_METHOD(getSportsMatchup : (NSString *)matchupId resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient getSportsMatchup:matchupId resolve:resolve reject:reject];
+}
+
+// Pool tournamets
+RCT_EXPORT_METHOD(getRecommendedTournaments : (NSDictionary *)params resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getRecommendedTournaments:params resolve:resolve reject:reject];
 }
 
 #if RCT_NEW_ARCH_ENABLED

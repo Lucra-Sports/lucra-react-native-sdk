@@ -74,16 +74,16 @@ import LucraSDK
 
       clientTheme = ClientTheme(
         universalTheme: DynamicColorSet(
-        background: background,
-        surface: surface,
-        primary: primary,
-        secondary: secondary,
-        tertiary: tertiary,
-        onBackground: onBackground,
-        onSurface: onSurface,
-        onPrimary: onPrimary,
-        onSecondary: onSecondary,
-        onTertiary: onTertiary),
+          background: background,
+          surface: surface,
+          primary: primary,
+          secondary: secondary,
+          tertiary: tertiary,
+          onBackground: onBackground,
+          onSurface: onSurface,
+          onPrimary: onPrimary,
+          onSecondary: onSecondary,
+          onTertiary: onTertiary),
         fontFamilyName: fontFamilyName
       )
     }
@@ -280,17 +280,31 @@ import LucraSDK
   }
 
   @objc public func present(
-    _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?
+    _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?,
+    verificationProcedure: String?,
+    resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock
   ) {
     assert(flowName.isEmpty == false)
-    DispatchQueue.main.async {
-      let flow = LucraUtils.stringToLucraFlow(
-        flowName, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId)
-      UIViewController.topViewController?.present(
-        lucraFlow: flow,
-        client: self.nativeClient,
-        animated: true
-      )
+    if flowName == "verifyIdentity" {
+      assert(verificationProcedure != nil)
+    }
+
+    do {
+      let flow = try LucraUtils.stringToLucraFlow(
+        flowName, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId,
+        verificationProcedure: verificationProcedure)
+
+      DispatchQueue.main.async {
+        UIViewController.topViewController?.present(
+          lucraFlow: flow,
+          client: self.nativeClient,
+          animated: true
+        )
+        // Resolves when the view has been presented
+        resolve(nil)
+      }
+    } catch {
+      reject("Present_flow_error", error.localizedDescription, nil)
     }
   }
 
@@ -450,9 +464,14 @@ import LucraSDK
   }
 
   @objc public func getFlowController(_ flow: String) -> UIViewController {
-    let nativeFlow = LucraUtils.stringToLucraFlow(
-      flow, matchupId: nil, teamInviteId: nil, gameId: nil)
-    return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
+    do {
+      let nativeFlow = try LucraUtils.stringToLucraFlow(
+        flow, matchupId: nil, teamInviteId: nil, gameId: nil, verificationProcedure: nil)
+      return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
+    } catch {
+      print("There was an error getting the native flow \(error)")
+      return self.nativeClient.ui.flow(.profile, hideCloseButton: true)
+    }
   }
 
   @objc public func getProfilePill() -> UIView {
@@ -485,5 +504,25 @@ import LucraSDK
 
   @MainActor @objc public func handleVenmoUrl(url: URL) -> Bool {
     return self.nativeClient.handlePaypalVenmoCallback(url: url)
+  }
+
+  @objc public func getRecommendedTournaments(
+    _ params: [String: Any], resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      do {
+        let match = try await self.nativeClient.api.getRecommendedTournaments()
+        //        DispatchQueue.main.async {
+        //          if let match {
+        //            resolve(gamesMatchupToMap(match: match))
+        //          } else {
+        //            resolve(nil)
+        //          }
+        //        }
+      } catch {
+        reject("\(error)", error.localizedDescription, nil)
+      }
+    }
   }
 }
