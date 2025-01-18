@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -51,6 +52,8 @@ function handleLucraSDKError(e: LucraSDKError) {
 }
 
 export const ApiContainer: React.FC<Props> = ({ navigation }) => {
+  const [tournamentId, setTournamentId] = React.useState('');
+
   return (
     <SafeAreaView className="flex-1 bg-indigo-900">
       <View className="pt-4 px-4 flex-1 gap-2 bg-transparent">
@@ -148,6 +151,13 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <Text className="text-white">Cancel Matchup</Text>
         </TouchableOpacity>
 
+        <TextInput
+          value={tournamentId}
+          onChangeText={setTournamentId}
+          placeholder="Tournament Id"
+          placeholderTextColor={'#CCC'}
+          className="border border-indigo-400 p-4 rounded-lg text-white"
+        />
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
@@ -166,7 +176,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => {
             try {
-              let tournament = LucraSDK.tournamentMatchup(currentMatchupId);
+              let tournament = LucraSDK.tournamentMatchup(tournamentId);
               console.warn('Recommended Tournaments', tournament);
             } catch (e) {
               console.error(e);
@@ -179,7 +189,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
             try {
-              await LucraSDK.joinTournament(currentMatchupId);
+              await LucraSDK.joinTournament(tournamentId);
             } catch (e) {
               console.error(e);
             }
