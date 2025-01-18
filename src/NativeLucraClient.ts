@@ -32,6 +32,7 @@ interface Spec extends TurboModule {
   // Pool tournaments
   // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
   getRecommendedTournaments: (params: Object) => Promise<Object[]>;
+  tournamentMatchup: (tournamentId: string) => Promise<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');

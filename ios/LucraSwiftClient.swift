@@ -510,19 +510,35 @@ import LucraSDK
     _ params: [String: Any], resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    let includeClosed: Bool = params["includeClosed"] as? Bool ?? true
+    let limit: Int = params["limit"] as? Int ?? 50
+    
     Task { @MainActor in
       do {
-        let match = try await self.nativeClient.api.getRecommendedTournaments()
-        //        DispatchQueue.main.async {
-        //          if let match {
-        //            resolve(gamesMatchupToMap(match: match))
-        //          } else {
-        //            resolve(nil)
-        //          }
-        //        }
+        let tournaments = try await self.nativeClient.api.getRecommendedTournaments(
+          includeClosed: includeClosed, limit: limit
+        )
+        resolve(tournaments.map(tournametsMatchupToMap))
       } catch {
         reject("\(error)", error.localizedDescription, nil)
       }
+    }
+  }
+  
+  @objc public func tournamentsMatchup(_ id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock){
+    Task { @MainActor in
+      do {
+        if let tournament = try await self.nativeClient.api.tournamentsMatchup(
+          for: id
+        ) {
+          resolve(tournametsMatchupToMap(tournament: tournament))
+        } else {
+          resolve(nil)
+        }
+      } catch {
+        reject("\(error)", error.localizedDescription, nil)
+      }
+      
     }
   }
 }

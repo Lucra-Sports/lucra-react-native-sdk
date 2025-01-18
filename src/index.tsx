@@ -423,6 +423,9 @@ export const LucraSDK = {
       limit,
     });
   },
+  tournamentMatchup: async (tournamentId: string) => {
+    return await LucraClient.tournamentMatchup(tournamentId);
+  },
 };
 
 export type LucraSDKError = {
