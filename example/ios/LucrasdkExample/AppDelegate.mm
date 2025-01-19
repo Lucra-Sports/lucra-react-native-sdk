@@ -25,7 +25,6 @@
             options:
                 (NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   // Handle the incoming URL
-  NSLog(@"Received URL: %@", url.absoluteString);
   if ([[url host] isEqualToString:@"venmo.com"]) {
     return [[LucraClient sharedInstance] handleVenmoUrl:url];
   }
