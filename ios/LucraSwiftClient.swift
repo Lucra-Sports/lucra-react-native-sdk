@@ -21,7 +21,7 @@ import LucraSDK
 
   static public var shared = LucraSwiftClient()
 
-  @objc static public func getShared() -> LfucraSwiftClient {
+  @objc static public func getShared() -> LucraSwiftClient {
     return shared
   }
 
