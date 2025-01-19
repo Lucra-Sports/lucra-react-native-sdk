@@ -20,6 +20,8 @@ import com.lucrasdk.LucraMapper.readableMapToFontFamily
 import com.lucrasdk.LucraMapper.rewardToMap
 import com.lucrasdk.LucraMapper.sdkUserToMap
 import com.lucrasdk.LucraMapper.userToMap
+import com.lucrasdk.LucraMapper.writableNativeMapToLucraConvertToCreditWithdrawMethod
+import com.lucrasdk.LucraMapper.writableNativeMapToLucraReward
 import com.lucrasdk.LucraUtils.Companion.convertReadableMapToStringMap
 import com.lucrasdk.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.sdk.core.LucraClient
@@ -73,7 +75,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     fun initialize(options: ReadableMap, promise: Promise) {
         val apiURL =
             options.getString("apiURL")
-                ?: throw Exception("LucraSDK no afpi passed to constructor")
+                ?: throw Exception("LucraSDK no api URL passed to constructor")
         val apiKey =
             options.getString("apiKey")
                 ?: throw Exception("LucraSDK no apiKey passed to constructor")
@@ -226,7 +228,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                     }
                 }
             }
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             promise.reject(e.toString(), e.toString())
         }
 
@@ -286,7 +288,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         )
     }
 
-    private fun throwLucraJSError(
+    private fun throwMatchUpError(
         promise: Promise,
         failure: GamesMatchup.FailedCreateGamesMatchup
     ) {
@@ -314,7 +316,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().createContest(gameTypeId, atStake) {
             when (it) {
                 is GamesMatchup.CreateGamesMatchupResult.Failure -> {
-                    throwLucraJSError(promise, it.failure)
+                    throwMatchUpError(promise, it.failure)
                 }
 
                 is GamesMatchup.CreateGamesMatchupResult.GYPCreatedMatchupOutput -> {
@@ -335,7 +337,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
             when (it) {
                 is GamesMatchup.MatchupActionResult.Failure ->
-                    throwLucraJSError(promise, it.failure)
+                    throwMatchUpError(promise, it.failure)
 
                 GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
             }
@@ -347,7 +349,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().cancelGamesYouPlayContest(matchupId) {
             when (it) {
                 is GamesMatchup.MatchupActionResult.Failure ->
-                    throwLucraJSError(promise, it.failure)
+                    throwMatchUpError(promise, it.failure)
 
                 GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
             }
@@ -394,16 +396,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         sendEvent(context, "_availableRewards", null)
                         val rewards = _availableRewardsEmitterState.first { it != null }!!
                         return rewards.toArrayList().map {
-                            val rewardMap = Arguments.makeNativeMap(it as Map<String, Any>)
-                            LucraReward(
-                                rewardId = rewardMap.getString("rewardId")!!,
-                                title = rewardMap.getString("title")!!,
-                                descriptor = rewardMap.getString("descriptor")!!,
-                                iconUrl = rewardMap.getString("iconUrl")!!,
-                                bannerIconUrl = rewardMap.getString("bannerIconUrl")!!,
-                                disclaimer = rewardMap.getString("disclaimer")!!,
-                                metadata = convertReadableMapToStringMap(rewardMap.getMap("metadata"))
-                            )
+                            @Suppress("UNCHECKED_CAST") val rewardMap =
+                                Arguments.makeNativeMap(it as Map<String, Any>)
+                            writableNativeMapToLucraReward(rewardMap)
                         }
                     }
 
@@ -431,44 +426,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         sendEvent(context, "_creditConversion", linkMap)
                         val responseMap =
                             _creditConversionEmitterState.first { it != null }!!
-
-                        return LucraConvertToCreditWithdrawMethod(
-                            id = responseMap.getString("id")!!,
-                            title = responseMap.getString("title")!!,
-                            conversionTerms =
-                            responseMap.getString("conversionTerms")!!,
-                            amount = cashAmount,
-                            convertedAmount = responseMap.getDouble("convertedAmount"),
-                            iconUrl = responseMap.getString("iconUrl"),
-                            convertedAmountDisplay =
-                            responseMap.getString("convertedAmountDisplay")!!,
-                            shortDescription =
-                            responseMap.getString("shortDescription")!!,
-                            longDescription =
-                            responseMap.getString("longDescription")!!,
-                            metaData =
-                            responseMap.getMap("metaData")?.let {
-                                convertReadableMapToStringMap(it)
-                            },
-                            theme =
-                            LucraWithdrawCardTheme(
-                                cardColor =
-                                responseMap.getString(
-                                    "cardColor"
-                                )!!,
-                                cardTextColor =
-                                responseMap.getString(
-                                    "cardTextColor"
-                                )!!,
-                                pillColor =
-                                responseMap.getString(
-                                    "pillColor"
-                                )!!,
-                                pillTextColor =
-                                responseMap.getString(
-                                    "pillTextColor"
-                                )!!,
-                            )
+                        return writableNativeMapToLucraConvertToCreditWithdrawMethod(
+                            responseMap,
+                            cashAmount
                         )
                     }
                 }
@@ -602,6 +562,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is PoolTournament.RetrieveTournamentResult.Failure -> {
                     promise.reject("Could_not_get_tournament", result.toString())
                 }
+
                 is PoolTournament.RetrieveTournamentResult.RetrieveTournamentOutput -> {
                     promise.resolve(LucraMapper.tournamentsMatchupToMap(result.tournament))
                 }
@@ -617,6 +578,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is PoolTournament.JoinTournamentResult.Failure -> {
                     promise.reject("Could_not_join_tournament", result.toString())
                 }
+
                 is PoolTournament.JoinTournamentResult.JoinTournamentOutput -> {
                     promise.resolve(null)
                 }

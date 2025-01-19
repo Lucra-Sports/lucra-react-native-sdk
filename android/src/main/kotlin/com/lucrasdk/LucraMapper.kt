@@ -3,6 +3,8 @@ package com.lucrasdk
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.WritableNativeMap
+import com.lucrasdk.LucraUtils.Companion.convertReadableMapToStringMap
 import com.lucrasdk.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
 import com.lucrasports.matchup.MatchupType
@@ -13,6 +15,8 @@ import com.lucrasports.sdk.core.contest.GYPGame
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.contest.Participant
 import com.lucrasports.sdk.core.contest.Tournament
+import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
+import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.reward.LucraReward
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
@@ -58,12 +62,12 @@ object LucraMapper {
             )
         }
 
-        return    FontFamily(
-                Font(params.getString("medium")!!),
-                Font(params.getString("normal")!!),
-                Font(params.getString("semibold")!!),
-                Font(params.getString("bold")!!)
-            )
+        return FontFamily(
+            Font(params.getString("medium")!!),
+            Font(params.getString("normal")!!),
+            Font(params.getString("semibold")!!),
+            Font(params.getString("bold")!!)
+        )
     }
 
     fun sdkUserToMap(user: SDKUser): WritableMap {
@@ -340,8 +344,8 @@ object LucraMapper {
         val map = Arguments.createMap()
         map.putString("id", participant.userId)
         map.putString("username", participant.username)
-        participant.place?.let { map.putInt("place", it ) }
-        participant.rewardValue?.let { map.putDouble("rewardValue", it)}
+        participant.place?.let { map.putInt("place", it) }
+        participant.rewardValue?.let { map.putDouble("rewardValue", it) }
         return map
     }
 
@@ -368,5 +372,61 @@ object LucraMapper {
         map.putDouble("pot", matchup.poolTotalAmount)
 
         return map
+    }
+
+    fun writableNativeMapToLucraReward(map: WritableNativeMap): LucraReward {
+        return LucraReward(
+            rewardId = map.getString("rewardId")!!,
+            title = map.getString("title")!!,
+            descriptor = map.getString("descriptor")!!,
+            iconUrl = map.getString("iconUrl")!!,
+            bannerIconUrl = map.getString("bannerIconUrl")!!,
+            disclaimer = map.getString("disclaimer")!!,
+            metadata = convertReadableMapToStringMap(map.getMap("metadata"))
+        )
+    }
+
+    fun writableNativeMapToLucraConvertToCreditWithdrawMethod(
+        map: ReadableMap,
+        cashAmount: Double
+    ): LucraConvertToCreditWithdrawMethod {
+        return LucraConvertToCreditWithdrawMethod(
+            id = map.getString("id")!!,
+            title = map.getString("title")!!,
+            conversionTerms =
+            map.getString("conversionTerms")!!,
+            amount = cashAmount,
+            convertedAmount = map.getDouble("convertedAmount"),
+            iconUrl = map.getString("iconUrl"),
+            convertedAmountDisplay =
+            map.getString("convertedAmountDisplay")!!,
+            shortDescription =
+            map.getString("shortDescription")!!,
+            longDescription =
+            map.getString("longDescription")!!,
+            metaData =
+            map.getMap("metaData")?.let {
+                convertReadableMapToStringMap(it)
+            },
+            theme =
+            LucraWithdrawCardTheme(
+                cardColor =
+                map.getString(
+                    "cardColor"
+                )!!,
+                cardTextColor =
+                map.getString(
+                    "cardTextColor"
+                )!!,
+                pillColor =
+                map.getString(
+                    "pillColor"
+                )!!,
+                pillTextColor =
+                map.getString(
+                    "pillTextColor"
+                )!!,
+            )
+        )
     }
 }
