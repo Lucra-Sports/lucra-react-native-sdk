@@ -1,7 +1,9 @@
 package com.lucrasdk
 
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.lucrasdk.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
 import com.lucrasports.matchup.MatchupType
 import com.lucrasports.matchup.SportsMatchupTeam
@@ -10,8 +12,12 @@ import com.lucrasports.matchup.sports_impl.SportsInterval
 import com.lucrasports.sdk.core.contest.GYPGame
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.contest.Participant
-import com.lucrasports.sdk.core.contest.PoolTournament
 import com.lucrasports.sdk.core.contest.Tournament
+import com.lucrasports.sdk.core.reward.LucraReward
+import com.lucrasports.sdk.core.style_guide.ColorStyle
+import com.lucrasports.sdk.core.style_guide.Font
+import com.lucrasports.sdk.core.style_guide.FontFamily
+import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sports_contests.LucraLeague
 import com.lucrasports.sports_contests.LucraMetric
 import com.lucrasports.sports_contests.LucraPlayer
@@ -25,6 +31,72 @@ import java.util.Locale
 object LucraMapper {
 
     val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US)
+
+    fun readableMapToColorStyle(params: ReadableMap): ColorStyle {
+        return ColorStyle(
+            params.getString("background"),
+            params.getString("surface"),
+            params.getString("primary"),
+            params.getString("secondary"),
+            params.getString("tertiary"),
+            params.getString("onBackground"),
+            params.getString("onSurface"),
+            params.getString("onPrimary"),
+            params.getString("onSecondary"),
+            params.getString("onTertiary"),
+        )
+    }
+
+    fun readableMapToFontFamily(params: ReadableMap): FontFamily {
+        if (!params.hasKey("medium") ||
+            !params.hasKey("normal") ||
+            !params.hasKey("semibold") ||
+            !params.hasKey("bold")
+        ) {
+            throw Exception(
+                "LucraSDK all keys are required when setting a font: medium, normal, semibold and bold"
+            )
+        }
+
+        return    FontFamily(
+                Font(params.getString("medium")!!),
+                Font(params.getString("normal")!!),
+                Font(params.getString("semibold")!!),
+                Font(params.getString("bold")!!)
+            )
+    }
+
+    fun sdkUserToMap(user: SDKUser): WritableMap {
+        val userMap = Arguments.createMap()
+        userMap.putString("username", user.username)
+        userMap.putString("email", user.email)
+        userMap.putString("firstName", user.firstName)
+        userMap.putString("lastName", user.lastName)
+        userMap.putString("phoneNumber", user.phoneNumber)
+
+        val address = Arguments.createMap()
+        address.putString("address", user.address)
+        address.putString("addressCont", user.addressCont)
+        address.putString("city", user.city)
+        address.putString("state", user.state)
+        address.putString("zip", user.zip)
+
+        userMap.putMap("address", address)
+
+        return userMap
+    }
+
+    fun rewardToMap(reward: LucraReward): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("rewardId", reward.rewardId)
+        map.putString("title", reward.title)
+        map.putString("descriptor", reward.descriptor)
+        map.putString("iconUrl", reward.iconUrl)
+        map.putString("bannerIconUrl", reward.bannerIconUrl)
+        map.putString("disclaimer", reward.disclaimer)
+        map.putMap("metadata", convertStringMapToWritableMap(reward.metadata))
+        return map
+    }
 
     fun sportIntervalsToMap(interval: SportsInterval): WritableMap {
 
