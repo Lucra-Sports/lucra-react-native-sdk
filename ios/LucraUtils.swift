@@ -1,7 +1,7 @@
 import LucraSDK
 
 class LucraUtils {
-  static public func stringToEnvironment(_ environment: String) -> LucraSDK.LucraEnvironment {
+  static public func stringToEnvironment(_ environment: String?) -> LucraSDK.LucraEnvironment {
     let nativeEnvironment: LucraSDK.LucraEnvironment = {
       switch environment {
       case "develop":

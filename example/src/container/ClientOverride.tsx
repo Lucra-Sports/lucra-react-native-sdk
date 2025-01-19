@@ -26,7 +26,7 @@ const ClientOption: FC<ClientOptionProps> = ({
 }) => {
   return (
     <View
-      className={`flex-row items-center justify-between bg-indigo-700 px-4 py-1 ${className}`}
+      className={`flex-row items-center justify-between bg-indigo-700 p-4 ${className}`}
       style={style}
     >
       <Text className="text-white">{name}</Text>

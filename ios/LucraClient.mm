@@ -24,7 +24,7 @@ static LucraClient *_sharedInstance = nil;
 RCT_EXPORT_METHOD(initialize : (NSDictionary *)options resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   swiftClient = [LucraSwiftClient getShared];
-  [swiftClient initialize:options resolver:resolve rejecter:reject];
+  [swiftClient initialize:options resolve:resolve reject:reject];
   [swiftClient setDelegate:self];
   [LucraClient setSharedInstance:self];
 }
@@ -42,13 +42,13 @@ RCT_EXPORT_METHOD(acceptGamesMatchup : (NSString *)matchupId teamId : (
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient acceptGamesMatchup:matchupId
                            teamId:teamId
-                         resolver:resolve
-                         rejecter:reject];
+                         resolve:resolve
+                         reject:reject];
 }
 
 RCT_EXPORT_METHOD(cancelGamesMatchup : (NSString *)matchupId resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient cancelGamesMatchup:matchupId resolver:resolve rejecter:reject];
+  [swiftClient cancelGamesMatchup:matchupId resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(getGamesMatchup : (NSString *)matchupId resolve : (
@@ -66,8 +66,8 @@ RCT_EXPORT_METHOD(createGamesMatchup : (NSString *)gameTypeId wagerAmount : (
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient createGamesMatchup:gameTypeId
                       wagerAmount:wagerAmount
-                         resolver:resolve
-                         rejecter:reject];
+                         resolve:resolve
+                         reject:reject];
 }
 
 RCT_EXPORT_METHOD(present : (NSDictionary *)params resolve : (
