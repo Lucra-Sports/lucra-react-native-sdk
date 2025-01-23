@@ -59,7 +59,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   >([]);
 
   return (
-    <SafeAreaView className="flex-1 bg-indigo-900">
+    <SafeAreaView className="h-full bg-indigo-900">
       <View className="flex-row items-center g-2 p-4">
         <TouchableOpacity
           onPress={() => {
@@ -204,7 +204,8 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         {recommendTournamets.length === 0 && (
           <Text className="text-indigo-400">
             No recommended tournaments, tap "Get Recommended Tournaments" button
-            to fetch
+            to fetch. The press any item on the list to set "Current Tournament
+            Id"
           </Text>
         )}
         {recommendTournamets.map((tournament) => (
