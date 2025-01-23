@@ -3,6 +3,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Image,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -14,6 +15,7 @@ import type { RootStackParamList } from '../Routes';
 import {
   LucraSDK,
   type LucraSDKError,
+  type PoolTournament,
 } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'APIFlow'>;
@@ -31,7 +33,6 @@ function handleLucraSDKError(e: LucraSDKError) {
       console.warn('User not verified', e);
       LucraSDK.present({
         name: LucraSDK.FLOW.VERIFY_IDENTITY,
-        verificationProcedure: 'ageAssuranceVerification',
       });
       break;
 
@@ -53,24 +54,26 @@ function handleLucraSDKError(e: LucraSDKError) {
 
 export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   const [tournamentId, setTournamentId] = React.useState('');
+  const [recommendTournamets, setRecommendedTournaments] = React.useState<
+    PoolTournament[]
+  >([]);
 
   return (
     <SafeAreaView className="flex-1 bg-indigo-900">
-      <View className="pt-4 px-4 flex-1 gap-2 bg-transparent">
-        <View className="flex-row items-center g-2">
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-          >
-            <Image
-              source={Assets.ChevronLeft}
-              style={Styles.chevron}
-              className="h-8 w-8"
-            />
-          </TouchableOpacity>
-        </View>
-
+      <View className="flex-row items-center g-2 p-4">
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <Image
+            source={Assets.ChevronLeft}
+            style={Styles.chevron}
+            className="h-8 w-8"
+          />
+        </TouchableOpacity>
+      </View>
+      <ScrollView className="flex-1" contentContainerClassName="p-4 gap-2">
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => navigation.navigate('SportsYouWatch')}
@@ -151,19 +154,13 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <Text className="text-white">Cancel Matchup</Text>
         </TouchableOpacity>
 
-        <TextInput
-          value={tournamentId}
-          onChangeText={setTournamentId}
-          placeholder="Tournament Id"
-          placeholderTextColor={'#CCC'}
-          className="border border-indigo-400 p-4 rounded-lg text-white"
-        />
+        <View className="h-1 w-full border-t border-indigo-400" />
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
             try {
               let tournaments = await LucraSDK.getRecomendedTournaments({});
-              console.warn('Recommended Tournaments', tournaments);
+              setRecommendedTournaments(tournaments);
             } catch (e) {
               console.error(e);
             }
@@ -197,7 +194,31 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         >
           <Text className="text-white">Join Current Tournament</Text>
         </TouchableOpacity>
-      </View>
+        <TextInput
+          value={tournamentId}
+          onChangeText={setTournamentId}
+          placeholder="Current Tournament Id"
+          placeholderTextColor={'#CCC'}
+          className="border border-indigo-400 p-4 rounded-lg text-white"
+        />
+        {recommendTournamets.length === 0 && (
+          <Text className="text-indigo-400">
+            No recommended tournaments, tap "Get Recommended Tournaments" button
+            to fetch
+          </Text>
+        )}
+        {recommendTournamets.map((tournament) => (
+          <TouchableOpacity
+            key={tournament.id}
+            className="p-4 border border-indigo-400"
+            onPress={() => {
+              setTournamentId(tournament.id);
+            }}
+          >
+            <Text className="text-white">{tournament.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };

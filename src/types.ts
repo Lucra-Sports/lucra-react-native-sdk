@@ -125,3 +125,25 @@ export type LucraReward = {
   disclaimer: string;
   metadata: string | null;
 };
+
+type PoolTournamentParticipant = {
+  id: string;
+  username: string;
+  place?: number;
+  rewardValue?: number;
+};
+
+export type PoolTournament = {
+  id: string;
+  title: string;
+  type: string;
+  fee: number;
+  buyInAmount: number;
+  description?: string;
+  participants: PoolTournamentParticipant[];
+  status: string;
+  metadata?: string;
+  iconUrl?: string;
+  expiresAt?: string;
+  potTotal: number;
+};

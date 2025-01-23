@@ -237,7 +237,7 @@ public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [
     "metadata": tournament.metadata as Any,
     "iconUrl": tournament.iconUrl as Any,
     "expiresAt": tournament.expiresAt.toString(),
-    "pot": tournament.potTotal,
+    "potTotal": tournament.potTotal,
   ]
 
 }

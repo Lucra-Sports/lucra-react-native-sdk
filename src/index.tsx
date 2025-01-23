@@ -13,9 +13,13 @@ import {
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedNativeComponent';
 export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupNativeComponent';
 export { default as LucraContestCard } from './LucraContestCardNativeComponent';
-import { type SportsMatchupType, type LucraReward } from './types';
+import {
+  type SportsMatchupType,
+  type LucraReward,
+  type PoolTournament,
+} from './types';
 import NativeLucraClient from './NativeLucraClient';
-export { type LucraReward } from './types';
+export { type LucraReward, type PoolTournament } from './types';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
 
@@ -414,11 +418,11 @@ export const LucraSDK = {
   }: {
     includeClosed?: boolean;
     limit?: number;
-  }) => {
-    return await LucraClient.getRecommendedTournaments({
+  }): Promise<PoolTournament[]> => {
+    return (await LucraClient.getRecommendedTournaments({
       includeClosed,
       limit,
-    });
+    })) as PoolTournament[];
   },
   tournamentMatchup: async (tournamentId: string) => {
     return await LucraClient.tournamentMatchup(tournamentId);

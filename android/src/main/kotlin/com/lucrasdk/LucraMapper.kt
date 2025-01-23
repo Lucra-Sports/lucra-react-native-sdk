@@ -266,7 +266,7 @@ object LucraMapper {
 
     fun tournamentsParticipantToMap(participant: Participant): WritableMap {
         val map = Arguments.createMap()
-        map.putString("id", participant.userId)
+        map.putString("id", participant.id)
         map.putString("username", participant.username)
         participant.place?.let { map.putInt("place", it ) }
         participant.rewardValue?.let { map.putDouble("rewardValue", it)}
@@ -276,24 +276,22 @@ object LucraMapper {
 
     fun tournamentsMatchupToMap(matchup: Tournament): WritableMap {
         val map = Arguments.createMap()
-        map.putString("id", matchup.tournamentId)
+        map.putString("id", matchup.id)
         map.putString("title", matchup.title)
         map.putString("type", matchup.type)
+        map.putDouble("fee", matchup.fee)
         map.putDouble("buyInAmount", matchup.buyInAmount)
-//        map.putString("createdAt", matchup.createdAt)
-//        map.putString("updatedAt", matchup.updatedAt)
-        map.putString("expiresAt", matchup.expiresAt.toString())
-        map.putString("description", matchup.description)
-
+        matchup.description?.let { map.putString("description", it) }
         val participants = Arguments.createArray()
         matchup.participants.forEach {
             participants.pushMap(tournamentsParticipantToMap(it))
         }
         map.putArray("participants", participants)
-
         map.putString("status", matchup.status)
-        map.putDouble("fee", matchup.fee)
-        map.putDouble("pot", matchup.poolTotalAmount)
+        matchup.metadata?.let { map.putString("metadata", it) }
+        matchup.iconUrl?.let { map.putString("iconUrl", it) }
+        matchup.expiresAt?.let { map.putString("expiresAt", it.toString()) }
+        map.putDouble("potTotal", matchup.potTotal)
 
         return map
     }
