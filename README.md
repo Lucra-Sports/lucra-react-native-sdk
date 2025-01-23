@@ -122,6 +122,10 @@ flipper_config = FlipperConfiguration.disabled
 
 Flipper has been removed in the latest React-Native versions, so this might not apply to your app.
 
+### New Arch
+
+The package is compatible with the new arch. There is however one problem with embedded views on Android. They don't work because they are made with Android Compose, [which is not supported by react-navigation/react-native-screens](https://github.com/software-mansion/react-native-screens/issues/2098#issuecomment-2042117108). If you need embedded components for now you will have to stick to the old arch.
+
 ### Add Lucra private pod repo
 
 Run the following command to add the native SDK dependency locally that you added previously as a source in the Podfile
