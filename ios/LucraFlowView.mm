@@ -1,9 +1,9 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import "LucraFlowView.h"
 #import "RCTBridge.h"
+#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 #import "RCTFabricComponentsPlugins.h"
 #import "Utils.h"
-#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 #import <react/renderer/components/LucraClientSpec/ComponentDescriptors.h>
 #import <react/renderer/components/LucraClientSpec/EventEmitters.h>
 #import <react/renderer/components/LucraClientSpec/Props.h>

@@ -1,6 +1,7 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import "LucraContestCard.h"
-
+#import "RCTBridge.h"
+#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 #import <react/renderer/components/LucraClientSpec/ComponentDescriptors.h>
 #import <react/renderer/components/LucraClientSpec/EventEmitters.h>
 #import <react/renderer/components/LucraClientSpec/Props.h>
@@ -41,22 +42,27 @@ using namespace facebook::react;
 - (void)updateProps:(Props::Shared const &)props
            oldProps:(Props::Shared const &)oldProps {
   const auto &newViewProps =
-      *std::static_pointer_cast<LucraFlowViewProps const>(props);
-  NSString *flow =
-      [[NSString alloc] initWithUTF8String:newViewProps.flow.c_str()];
+      *std::static_pointer_cast<LucraContestCardProps const>(props);
+  NSString *contestId =
+      [[NSString alloc] initWithUTF8String:newViewProps.contestId.c_str()];
   LucraSwiftClient *client = [LucraSwiftClient getShared];
-  UIViewController *viewController = [client getFlowController:flow];
-  [self.contentView addSubview:viewController.view];
 
-  viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView *feedView = [client getContestCard:contestId
+                              onSizeChanged:^(CGSize newSize) {
+//                                self.contentView.frame =
+//                                    CGRectMake(self.contentView.frame.origin.x,
+//                                               self.contentView.frame.origin.y,
+//                                               newSize.width, newSize.height);
+//                                [self.contentView setNeedsLayout];
+                              }];
+  [self.contentView addSubview:feedView];
+  
+  feedView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
-    [viewController.view.topAnchor constraintEqualToAnchor:_view.topAnchor],
-    [viewController.view.leadingAnchor
-        constraintEqualToAnchor:_view.leadingAnchor],
-    [viewController.view.trailingAnchor
-        constraintEqualToAnchor:_view.trailingAnchor],
-    [viewController.view.bottomAnchor
-        constraintEqualToAnchor:_view.bottomAnchor]
+    [feedView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
+    [feedView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor],
+    [feedView.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor],
+    [feedView.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor]
   ]];
 
   [super updateProps:props oldProps:oldProps];
