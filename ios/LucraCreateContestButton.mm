@@ -40,16 +40,24 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props
            oldProps:(Props::Shared const &)oldProps {
-  const auto &oldViewProps =
-      *std::static_pointer_cast<LucraCreateContestButtonProps const>(_props);
   const auto &newViewProps =
-      *std::static_pointer_cast<LucraCreateContestButtonProps const>(props);
+      *std::static_pointer_cast<LucraFlowViewProps const>(props);
+  NSString *flow =
+      [[NSString alloc] initWithUTF8String:newViewProps.flow.c_str()];
+  LucraSwiftClient *client = [LucraSwiftClient getShared];
+  UIViewController *viewController = [client getFlowController:flow];
+  [self.contentView addSubview:viewController.view];
 
-//  if (oldViewProps.color != newViewProps.color) {
-//    NSString *colorToConvert =
-//        [[NSString alloc] initWithUTF8String:newViewProps.color.c_str()];
-//    [_view setBackgroundColor:[Utils hexStringToColor:colorToConvert]];
-//  }
+  viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [viewController.view.topAnchor constraintEqualToAnchor:_view.topAnchor],
+    [viewController.view.leadingAnchor
+        constraintEqualToAnchor:_view.leadingAnchor],
+    [viewController.view.trailingAnchor
+        constraintEqualToAnchor:_view.trailingAnchor],
+    [viewController.view.bottomAnchor
+        constraintEqualToAnchor:_view.bottomAnchor]
+  ]];
 
   [super updateProps:props oldProps:oldProps];
 }

@@ -65,6 +65,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
                 className="h-8 w-8"
               />
             </TouchableOpacity>
+            <Text>UI Components</Text>
             <View style={Styles.spacer} />
           </View>
 

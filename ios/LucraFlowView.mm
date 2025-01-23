@@ -1,13 +1,13 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import "LucraFlowView.h"
-
+#import "RCTBridge.h"
+#import "RCTFabricComponentsPlugins.h"
+#import "Utils.h"
+#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 #import <react/renderer/components/LucraClientSpec/ComponentDescriptors.h>
 #import <react/renderer/components/LucraClientSpec/EventEmitters.h>
 #import <react/renderer/components/LucraClientSpec/Props.h>
 #import <react/renderer/components/LucraClientSpec/RCTComponentViewHelpers.h>
-
-#import "RCTFabricComponentsPlugins.h"
-#import "Utils.h"
 
 using namespace facebook::react;
 
@@ -40,16 +40,24 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props
            oldProps:(Props::Shared const &)oldProps {
-  const auto &oldViewProps =
-      *std::static_pointer_cast<LucraFlowViewProps const>(_props);
   const auto &newViewProps =
       *std::static_pointer_cast<LucraFlowViewProps const>(props);
-  //
-  //    if (oldViewProps.color != newViewProps.color) {
-  //        NSString * colorToConvert = [[NSString alloc] initWithUTF8String:
-  //        newViewProps.color.c_str()];
-  //        [_view setBackgroundColor: [Utils hexStringToColor:colorToConvert]];
-  //    }
+  NSString *flow =
+      [[NSString alloc] initWithUTF8String:newViewProps.flow.c_str()];
+  LucraSwiftClient *client = [LucraSwiftClient getShared];
+  UIViewController *viewController = [client getFlowController:flow];
+  [self.contentView addSubview:viewController.view];
+
+  viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [viewController.view.topAnchor constraintEqualToAnchor:_view.topAnchor],
+    [viewController.view.leadingAnchor
+        constraintEqualToAnchor:_view.leadingAnchor],
+    [viewController.view.trailingAnchor
+        constraintEqualToAnchor:_view.trailingAnchor],
+    [viewController.view.bottomAnchor
+        constraintEqualToAnchor:_view.bottomAnchor]
+  ]];
 
   [super updateProps:props oldProps:oldProps];
 }

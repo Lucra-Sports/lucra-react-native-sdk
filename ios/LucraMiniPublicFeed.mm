@@ -16,18 +16,18 @@ using namespace facebook::react;
 @end
 
 @implementation LucraMiniPublicFeed {
-    UIView * _view;
+  UIView *_view;
 }
 
-+ (ComponentDescriptorProvider)componentDescriptorProvider
-{
-    return concreteComponentDescriptorProvider<LucraMiniPublicFeedComponentDescriptor>();
++ (ComponentDescriptorProvider)componentDescriptorProvider {
+  return concreteComponentDescriptorProvider<
+      LucraMiniPublicFeedComponentDescriptor>();
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
+- (instancetype)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const LucraMiniPublicFeedProps>();
+    static const auto defaultProps =
+        std::make_shared<const LucraMiniPublicFeedProps>();
     _props = defaultProps;
 
     _view = [[UIView alloc] init];
@@ -38,24 +38,33 @@ using namespace facebook::react;
   return self;
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
-{
-    const auto &oldViewProps = *std::static_pointer_cast<LucraMiniPublicFeedProps const>(_props);
-    const auto &newViewProps = *std::static_pointer_cast<LucraMiniPublicFeedProps const>(props);
+- (void)updateProps:(Props::Shared const &)props
+           oldProps:(Props::Shared const &)oldProps {
+  const auto &newViewProps =
+      *std::static_pointer_cast<LucraFlowViewProps const>(props);
+  NSString *flow =
+      [[NSString alloc] initWithUTF8String:newViewProps.flow.c_str()];
+  LucraSwiftClient *client = [LucraSwiftClient getShared];
+  UIViewController *viewController = [client getFlowController:flow];
+  [self.contentView addSubview:viewController.view];
 
-//    if (oldViewProps.color != newViewProps.color) {
-//        NSString * colorToConvert = [[NSString alloc] initWithUTF8String: newViewProps.color.c_str()];
-//        [_view setBackgroundColor: [Utils hexStringToColor:colorToConvert]];
-//    }
+  viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [viewController.view.topAnchor constraintEqualToAnchor:_view.topAnchor],
+    [viewController.view.leadingAnchor
+        constraintEqualToAnchor:_view.leadingAnchor],
+    [viewController.view.trailingAnchor
+        constraintEqualToAnchor:_view.trailingAnchor],
+    [viewController.view.bottomAnchor
+        constraintEqualToAnchor:_view.bottomAnchor]
+  ]];
 
-    [super updateProps:props oldProps:oldProps];
+  [super updateProps:props oldProps:oldProps];
 }
 
-Class<RCTComponentViewProtocol> LucraMiniPublicFeedCls(void)
-{
-    return LucraMiniPublicFeed.class;
+Class<RCTComponentViewProtocol> LucraMiniPublicFeedCls(void) {
+  return LucraMiniPublicFeed.class;
 }
 
 @end
 #endif
-
