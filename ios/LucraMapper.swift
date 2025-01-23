@@ -208,27 +208,16 @@ public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.
   return [
     "id": participant.id,
     "username": participant.username,
-    "iconUrl": participant.iconUrl as Any,
-  ]
-}
-
-public func tournamentPaymentStructureToMap(paymentStructure: LucraSDK.TournamentsMatchup.PaymentStructure) -> [String: Any] {
-  return [
-    "id": paymentStructure.id,
-    "position": paymentStructure.position,
-    "value": paymentStructure.value
+    "place": participant.place as Any,
+    "rewardValue": participant.rewardValue as Any,
   ]
 }
 
 public func tournamentLeaderboardToMap(leaderboard: LucraSDK.TournamentsMatchup.Leaderboard) -> [String: Any] {
   return [
     "id": leaderboard.id,
-    "title": leaderboard.title as Any,
+    "username": leaderboard.username as Any,
     "rewardValue": leaderboard.rewardValue as Any,
-    "rewardTierValue": leaderboard.rewardTierValue as Any,
-    "place": leaderboard.place,
-    "participantGroupId": leaderboard.participantGroupId,
-    "username": leaderboard.username
   ]
 }
 
@@ -239,18 +228,14 @@ public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [
     "type": tournament.type,
     "fee": tournament.fee,
     "buyInAmount": tournament.buyInAmount,
-    "createdAt": tournament.createdAt.toString(),
-    "updatedAt": tournament.updatedAt.toString(),
-    "expiresAt": tournament.expiresAt.toString(),
     "description": tournament.description as Any,
     "participants": tournament.participants.map(tournamentParticipantToMap),
-    "paymentStructure": tournament.paymentStructure.map(tournamentPaymentStructureToMap),
     "leaderboards": tournament.leaderboards.map(tournamentLeaderboardToMap),
+    "status": tournament.status,
     "metadata": tournament.metadata as Any,
     "iconUrl": tournament.iconUrl as Any,
-    "isClosed": tournament.isClosed,
-    "pot": tournament.potTotal(),
-    "date": tournament.date()
+    "expiresAt": tournament.expiresAt.toString(),
+    "pot": tournament.potTotal,
   ]
   
 }
