@@ -216,10 +216,7 @@ const Flows = {
 type FlowNames = (typeof Flows)[keyof typeof Flows];
 
 function present(params: { name: typeof Flows.ONBOARDING }): Promise<void>;
-function present(params: {
-  name: typeof Flows.VERIFY_IDENTITY;
-  verificationProcedure: 'fullKYCVerification' | 'ageAssuranceVerification';
-}): Promise<void>;
+function present(params: { name: typeof Flows.VERIFY_IDENTITY }): Promise<void>;
 function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
 function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
 function present(params: {

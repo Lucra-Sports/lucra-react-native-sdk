@@ -426,7 +426,6 @@ try {
   // or
   await LucraSDK.present({
     name: LucraSDK.FLOW.VERIFY_IDENTITY,
-    verificationProcedure: 'ageAssuranceVerification',
   });
 } catch (e) {
   // if the flow could not be presented you can check out the error

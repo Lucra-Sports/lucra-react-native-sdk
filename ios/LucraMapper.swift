@@ -165,46 +165,46 @@ public func sportMatchupToMap(match: LucraSDK.SportsMatchup) -> [String: Any] {
 }
 
 public func gamesMatchupTeamToMap(team: LucraSDK.GamesMatchupTeam) -> [String: Any] {
-    return [
-      "id": team.id,
-      "outcome": team.outcome?.rawValue as Any,
-      "users": team.users.map { user in
-        return [
-          "id": user.id,
-          "username": user.user.username,
-        ]
-      },
-    ]
+  return [
+    "id": team.id,
+    "outcome": team.outcome?.rawValue as Any,
+    "users": team.users.map { user in
+      return [
+        "id": user.id,
+        "username": user.user.username,
+      ]
+    },
+  ]
 }
-        
+
 public func GYPGameToMap(game: LucraSDK.GYPGame) -> [String: Any] {
-    return [
-        "id": game.id,
-        "name": game.name,
-        "description": game.description as Any,
-        "iconUrl": game.iconUrl as Any,
-        "imageUrl": game.imageUrl as Any,
-        "categoryIds": game.categoryIds,
-    ]
+  return [
+    "id": game.id,
+    "name": game.name,
+    "description": game.description as Any,
+    "iconUrl": game.iconUrl as Any,
+    "imageUrl": game.imageUrl as Any,
+    "categoryIds": game.categoryIds,
+  ]
 }
-        
-        
 
 public func gamesMatchupToMap(match: LucraSDK.GamesMatchup) -> [String: Any] {
-    return [
-        "id": match.id,
-        "createdAt": match.createdAt.toString(),
-        "updatedAt": match.updatedAt.toString(),
-        "status": match.status.rawValue,
-        "isArchive": match.isArchive,
-        // All the values inside the teams will always be the same, so map to the first available value
-        "wagerOpponentTeamIdAmount": match.teams[0].wagerAmount,
-        "game": GYPGameToMap(game: match.game),
-        "teams": match.teams.map(gamesMatchupTeamToMap),
-    ]
+  return [
+    "id": match.id,
+    "createdAt": match.createdAt.toString(),
+    "updatedAt": match.updatedAt.toString(),
+    "status": match.status.rawValue,
+    "isArchive": match.isArchive,
+    // All the values inside the teams will always be the same, so map to the first available value
+    "wagerOpponentTeamIdAmount": match.teams[0].wagerAmount,
+    "game": GYPGameToMap(game: match.game),
+    "teams": match.teams.map(gamesMatchupTeamToMap),
+  ]
 }
 
-public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.Participant) -> [String: Any] {
+public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.Participant)
+  -> [String: Any]
+{
   return [
     "id": participant.id,
     "username": participant.username,
@@ -213,7 +213,9 @@ public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.
   ]
 }
 
-public func tournamentLeaderboardToMap(leaderboard: LucraSDK.TournamentsMatchup.Leaderboard) -> [String: Any] {
+public func tournamentLeaderboardToMap(leaderboard: LucraSDK.TournamentsMatchup.Leaderboard)
+  -> [String: Any]
+{
   return [
     "id": leaderboard.id,
     "username": leaderboard.username as Any,
@@ -237,5 +239,5 @@ public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [
     "expiresAt": tournament.expiresAt.toString(),
     "pot": tournament.potTotal,
   ]
-  
+
 }

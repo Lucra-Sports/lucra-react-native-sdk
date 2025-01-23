@@ -76,14 +76,12 @@ RCT_EXPORT_METHOD(present : (NSDictionary *)params resolve : (
   NSString *matchupId = params[@"matchupId"];
   NSString *teamInviteId = params[@"teamInviteId"];
   NSString *gameId = params[@"gameId"];
-  NSString *verificationProcedure = params[@"verificationProcedure"];
   [swiftClient present:flow
-                  matchupId:matchupId
-               teamInviteId:teamInviteId
-                     gameId:gameId
-      verificationProcedure:verificationProcedure
-                    resolve:resolve
-                     reject:reject];
+             matchupId:matchupId
+          teamInviteId:teamInviteId
+                gameId:gameId
+               resolve:resolve
+                reject:reject];
 }
 
 RCT_EXPORT_METHOD(emitDeepLink : (NSString *)deepLink) {

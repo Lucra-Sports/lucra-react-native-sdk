@@ -281,18 +281,13 @@ import LucraSDK
 
   @objc public func present(
     _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?,
-    verificationProcedure: String?,
     resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock
   ) {
     assert(flowName.isEmpty == false)
-    if flowName == "verifyIdentity" {
-      assert(verificationProcedure != nil)
-    }
 
     do {
       let flow = try LucraUtils.stringToLucraFlow(
-        flowName, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId,
-        verificationProcedure: verificationProcedure)
+        flowName, matchupId: matchupId, teamInviteId: teamInviteId, gameId: gameId)
 
       DispatchQueue.main.async {
         UIViewController.topViewController?.present(
@@ -466,7 +461,7 @@ import LucraSDK
   @objc public func getFlowController(_ flow: String) -> UIViewController {
     do {
       let nativeFlow = try LucraUtils.stringToLucraFlow(
-        flow, matchupId: nil, teamInviteId: nil, gameId: nil, verificationProcedure: nil)
+        flow, matchupId: nil, teamInviteId: nil, gameId: nil)
       return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
     } catch {
       print("There was an error getting the native flow \(error)")
