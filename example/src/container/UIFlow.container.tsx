@@ -62,7 +62,6 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
           onPress={() =>
             LucraSDK.present({
               name: LucraSDK.FLOW.VERIFY_IDENTITY,
-              verificationProcedure: 'ageAssuranceVerification',
             })
           }
         >
