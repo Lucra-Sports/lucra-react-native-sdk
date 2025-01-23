@@ -1,6 +1,7 @@
 import React from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
+  Alert,
   Image,
   SafeAreaView,
   ScrollView,
@@ -174,7 +175,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           onPress={() => {
             try {
               let tournament = LucraSDK.tournamentMatchup(tournamentId);
-              console.warn('Recommended Tournaments', tournament);
+              Alert.alert('Tournament', JSON.stringify(tournament, null, 2));
             } catch (e) {
               console.error(e);
             }
@@ -187,6 +188,10 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           onPress={async () => {
             try {
               await LucraSDK.joinTournament(tournamentId);
+              Alert.alert(
+                'Success',
+                'Joined tournament with id: ' + tournamentId
+              );
             } catch (e) {
               console.error(e);
             }
