@@ -658,7 +658,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun tournamentsMatchup(id: String, promise: Promise) {
+    fun tournamentMatchup(id: String, promise: Promise) {
         LucraClient().retrieveTournament(tournamentId = id) { result ->
             when (result) {
                 is PoolTournament.RetrieveTournamentResult.Failure -> {
