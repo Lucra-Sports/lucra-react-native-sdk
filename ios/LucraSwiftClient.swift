@@ -239,7 +239,7 @@ import LucraSDK
 
         resolve(gypCreatedMatchupOutputTopMap(output: result))
       } catch {
-        ErrorMapper.reject(rejecter, error: error)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -259,7 +259,7 @@ import LucraSDK
         )
         resolve(nil)
       } catch {
-        ErrorMapper.reject(rejecter, error: error)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -276,7 +276,7 @@ import LucraSDK
           .cancelGamesMatchup(matchupId: gameId as String)
         resolve(nil)
       } catch {
-        ErrorMapper.reject(rejecter, error: error)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
