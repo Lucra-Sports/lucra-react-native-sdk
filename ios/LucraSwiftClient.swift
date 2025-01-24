@@ -546,8 +546,6 @@ import LucraSDK
       do {
         try await self.nativeClient.api.self.joinTournament(id: id)
         resolve(nil)
-      } catch UserStateError.insufficientFunds {
-        reject("INSUFFICIENT_FUNDS", "You do not have enough funds to join this tournament.", nil)
       } catch {
         ErrorMapper.reject(reject, error: error)
       }
