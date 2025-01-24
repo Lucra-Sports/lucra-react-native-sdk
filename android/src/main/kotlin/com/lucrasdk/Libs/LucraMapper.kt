@@ -1,7 +1,11 @@
-package com.lucrasdk
+package com.lucrasdk.Libs
 
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.WritableNativeMap
+import com.lucrasdk.Libs.LucraUtils.Companion.convertReadableMapToStringMap
+import com.lucrasdk.Libs.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
 import com.lucrasports.matchup.MatchupType
 import com.lucrasports.matchup.SportsMatchupTeam
@@ -9,6 +13,15 @@ import com.lucrasports.matchup.SportsMatchupType
 import com.lucrasports.matchup.sports_impl.SportsInterval
 import com.lucrasports.sdk.core.contest.GYPGame
 import com.lucrasports.sdk.core.contest.GamesMatchup
+import com.lucrasports.sdk.core.contest.Participant
+import com.lucrasports.sdk.core.contest.Tournament
+import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
+import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
+import com.lucrasports.sdk.core.reward.LucraReward
+import com.lucrasports.sdk.core.style_guide.ColorStyle
+import com.lucrasports.sdk.core.style_guide.Font
+import com.lucrasports.sdk.core.style_guide.FontFamily
+import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sports_contests.LucraLeague
 import com.lucrasports.sports_contests.LucraMetric
 import com.lucrasports.sports_contests.LucraPlayer
@@ -23,6 +36,72 @@ object LucraMapper {
 
     val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US)
 
+    fun readableMapToColorStyle(params: ReadableMap): ColorStyle {
+        return ColorStyle(
+            params.getString("background"),
+            params.getString("surface"),
+            params.getString("primary"),
+            params.getString("secondary"),
+            params.getString("tertiary"),
+            params.getString("onBackground"),
+            params.getString("onSurface"),
+            params.getString("onPrimary"),
+            params.getString("onSecondary"),
+            params.getString("onTertiary")
+        )
+    }
+
+    fun readableMapToFontFamily(params: ReadableMap): FontFamily {
+        if (!params.hasKey("medium") ||
+            !params.hasKey("normal") ||
+            !params.hasKey("semibold") ||
+            !params.hasKey("bold")
+        ) {
+            throw Exception(
+                "LucraSDK all keys are required when setting a font: medium, normal, semibold and bold"
+            )
+        }
+
+        return FontFamily(
+            Font(params.getString("medium")!!),
+            Font(params.getString("normal")!!),
+            Font(params.getString("semibold")!!),
+            Font(params.getString("bold")!!)
+        )
+    }
+
+    fun sdkUserToMap(user: SDKUser): WritableMap {
+        val userMap = Arguments.createMap()
+        userMap.putString("username", user.username)
+        userMap.putString("email", user.email)
+        userMap.putString("firstName", user.firstName)
+        userMap.putString("lastName", user.lastName)
+        userMap.putString("phoneNumber", user.phoneNumber)
+
+        val address = Arguments.createMap()
+        address.putString("address", user.address)
+        address.putString("addressCont", user.addressCont)
+        address.putString("city", user.city)
+        address.putString("state", user.state)
+        address.putString("zip", user.zip)
+
+        userMap.putMap("address", address)
+
+        return userMap
+    }
+
+    fun rewardToMap(reward: LucraReward): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("rewardId", reward.rewardId)
+        map.putString("title", reward.title)
+        map.putString("descriptor", reward.descriptor)
+        map.putString("iconUrl", reward.iconUrl)
+        map.putString("bannerIconUrl", reward.bannerIconUrl)
+        map.putString("disclaimer", reward.disclaimer)
+        map.putMap("metadata", convertStringMapToWritableMap(reward.metadata))
+        return map
+    }
+
     fun sportIntervalsToMap(interval: SportsInterval): WritableMap {
 
         val map = Arguments.createMap()
@@ -35,8 +114,8 @@ object LucraMapper {
         val map = Arguments.createMap()
         val leagues = Arguments.createArray()
         val intervals = Arguments.createArray()
-        sport.leagues.map(::leagueToMap).forEach { leagues.pushMap(it) }
-        sport.intervals.map(::sportIntervalsToMap).forEach { intervals.pushMap(it) }
+        sport.leagues.map(LucraMapper::leagueToMap).forEach { leagues.pushMap(it) }
+        sport.intervals.map(LucraMapper::sportIntervalsToMap).forEach { intervals.pushMap(it) }
         map.putString("id", sport.id)
         map.putString("name", sport.name)
         map.putString("iconUrl", sport.iconUrl)
@@ -51,7 +130,7 @@ object LucraMapper {
             return null
         }
         val schedules = Arguments.createArray()
-        league.schedules?.map(::scheduleToMap)?.forEach { schedules.pushMap(it) }
+        league.schedules?.map(LucraMapper::scheduleToMap)?.forEach { schedules.pushMap(it) }
 
         val map = Arguments.createMap()
         map.putString("id", league.id)
@@ -76,13 +155,17 @@ object LucraMapper {
     fun playerToMap(player: LucraPlayer): WritableMap {
         val map = Arguments.createMap()
         val positionMetrics = Arguments.createArray()
-        player.positionMetrics?.map(::metricToMap)?.forEach { positionMetrics.pushMap(it) }
+        player.positionMetrics?.map(LucraMapper::metricToMap)
+            ?.forEach { positionMetrics.pushMap(it) }
         val projectedStats = Arguments.createArray()
-        player.projectedStats?.map(::playerStatToMap)?.forEach { projectedStats.pushMap(it) }
+        player.projectedStats?.map(LucraMapper::playerStatToMap)
+            ?.forEach { projectedStats.pushMap(it) }
         val seasonAvgStats = Arguments.createArray()
-        player.seasonAvgStats?.map(::playerStatToMap)?.forEach { seasonAvgStats.pushMap(it) }
+        player.seasonAvgStats?.map(LucraMapper::playerStatToMap)
+            ?.forEach { seasonAvgStats.pushMap(it) }
         val liveGameStats = Arguments.createArray()
-        player.liveGameStats?.map(::playerStatToMap)?.forEach { liveGameStats.pushMap(it) }
+        player.liveGameStats?.map(LucraMapper::playerStatToMap)
+            ?.forEach { liveGameStats.pushMap(it) }
 
         map.putString("id", player.id.toString())
         map.putString("firstName", player.firstName)
@@ -126,7 +209,7 @@ object LucraMapper {
         }
 
         val players = Arguments.createArray()
-        schedule.players?.map(::playerToMap)?.forEach { players.pushMap(it) }
+        schedule.players?.map(LucraMapper::playerToMap)?.forEach { players.pushMap(it) }
 
         val map = Arguments.createMap()
         map.putString("id", schedule.id)
@@ -143,7 +226,7 @@ object LucraMapper {
         map.putString("awayScore", schedule.awayScore)
         map.putMap("sport", sportToMap(schedule.sport))
         schedule.projectionsPending?.let { map.putBoolean("projectionsPending", it) }
-                ?: map.putNull("projectionsPending")
+            ?: map.putNull("projectionsPending")
         return map
     }
 
@@ -185,7 +268,7 @@ object LucraMapper {
     fun sportMatchupTeamToMap(team: SportsMatchupTeam): WritableMap {
         val map = Arguments.createMap()
         val usersArray = Arguments.createArray()
-        team.users.map(::matchupTeamUserToMap).forEach { usersArray.pushMap(it) }
+        team.users.map(LucraMapper::matchupTeamUserToMap).forEach { usersArray.pushMap(it) }
 
         map.putString("id", team.id)
         map.putArray("users", usersArray)
@@ -203,7 +286,8 @@ object LucraMapper {
         val map = Arguments.createMap()
 
         val teamsArray = Arguments.createArray()
-        matchup.sportsMatchupTeams.map(::sportMatchupTeamToMap).forEach { teamsArray.pushMap(it) }
+        matchup.sportsMatchupTeams.map(LucraMapper::sportMatchupTeamToMap)
+            .forEach { teamsArray.pushMap(it) }
 
         map.putString("id", matchup.id)
         map.putString("createdAt", matchup.createdAt)
@@ -214,20 +298,20 @@ object LucraMapper {
         return map
     }
 
-   fun GYPGameToMap(game: GYPGame): WritableMap {
-       val map = Arguments.createMap()
-       map.putString("id", game.id)
-       map.putString("name", game.name)
-       map.putString("description", game.description)
-       map.putString("iconUrl", game.iconUrl)
-       map.putString("imageUrl", game.imageUrl)
-       val categoriesArray = Arguments.createArray()
-       game.categoryIds.forEach { category ->
-           categoriesArray.pushString(category)
-       }
-       map.putArray("categoriesIds", categoriesArray)
-       return map
-   }
+    fun GYPGameToMap(game: GYPGame): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", game.id)
+        map.putString("name", game.name)
+        map.putString("description", game.description)
+        map.putString("iconUrl", game.iconUrl)
+        map.putString("imageUrl", game.imageUrl)
+        val categoriesArray = Arguments.createArray()
+        game.categoryIds.forEach { category ->
+            categoriesArray.pushString(category)
+        }
+        map.putArray("categoriesIds", categoriesArray)
+        return map
+    }
 
     fun gamesMatchupToMap(match: GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput): WritableMap {
         val map = Arguments.createMap()
@@ -259,5 +343,93 @@ object LucraMapper {
 
         map.putArray("teams", teamArray)
         return map
+    }
+
+    fun tournamentsParticipantToMap(participant: Participant): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", participant.id)
+        map.putString("username", participant.username)
+        participant.place?.let { map.putInt("place", it) }
+        participant.rewardValue?.let { map.putDouble("rewardValue", it) }
+        return map
+    }
+
+
+    fun tournamentsMatchupToMap(matchup: Tournament): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", matchup.id)
+        map.putString("title", matchup.title)
+        map.putString("type", matchup.type)
+        map.putDouble("fee", matchup.fee)
+        map.putDouble("buyInAmount", matchup.buyInAmount)
+        matchup.description?.let { map.putString("description", it) }
+        val participants = Arguments.createArray()
+        matchup.participants.forEach {
+            participants.pushMap(tournamentsParticipantToMap(it))
+        }
+        map.putArray("participants", participants)
+        map.putString("status", matchup.status)
+        matchup.metadata?.let { map.putString("metadata", it) }
+        matchup.iconUrl?.let { map.putString("iconUrl", it) }
+        matchup.expiresAt?.let { map.putString("expiresAt", it.toString()) }
+        map.putDouble("potTotal", matchup.potTotal)
+
+        return map
+    }
+
+    fun writableNativeMapToLucraReward(map: WritableNativeMap): LucraReward {
+        return LucraReward(
+            rewardId = map.getString("rewardId")!!,
+            title = map.getString("title")!!,
+            descriptor = map.getString("descriptor")!!,
+            iconUrl = map.getString("iconUrl")!!,
+            bannerIconUrl = map.getString("bannerIconUrl")!!,
+            disclaimer = map.getString("disclaimer")!!,
+            metadata = convertReadableMapToStringMap(map.getMap("metadata"))
+        )
+    }
+
+    fun writableNativeMapToLucraConvertToCreditWithdrawMethod(
+        map: ReadableMap,
+        cashAmount: Double
+    ): LucraConvertToCreditWithdrawMethod {
+        return LucraConvertToCreditWithdrawMethod(
+            id = map.getString("id")!!,
+            title = map.getString("title")!!,
+            conversionTerms =
+            map.getString("conversionTerms")!!,
+            amount = cashAmount,
+            convertedAmount = map.getDouble("convertedAmount"),
+            iconUrl = map.getString("iconUrl"),
+            convertedAmountDisplay =
+            map.getString("convertedAmountDisplay")!!,
+            shortDescription =
+            map.getString("shortDescription")!!,
+            longDescription =
+            map.getString("longDescription")!!,
+            metaData =
+            map.getMap("metaData")?.let {
+                convertReadableMapToStringMap(it)
+            },
+            theme =
+            LucraWithdrawCardTheme(
+                cardColor =
+                map.getString(
+                    "cardColor"
+                )!!,
+                cardTextColor =
+                map.getString(
+                    "cardTextColor"
+                )!!,
+                pillColor =
+                map.getString(
+                    "pillColor"
+                )!!,
+                pillTextColor =
+                map.getString(
+                    "pillTextColor"
+                )!!,
+            )
+        )
     }
 }

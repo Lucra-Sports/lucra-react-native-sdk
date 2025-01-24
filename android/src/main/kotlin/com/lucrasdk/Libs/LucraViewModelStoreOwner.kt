@@ -1,4 +1,4 @@
-package com.lucrasdk
+package com.lucrasdk.Libs
 
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner

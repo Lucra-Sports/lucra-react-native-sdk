@@ -165,41 +165,169 @@ public func sportMatchupToMap(match: LucraSDK.SportsMatchup) -> [String: Any] {
 }
 
 public func gamesMatchupTeamToMap(team: LucraSDK.GamesMatchupTeam) -> [String: Any] {
-    return [
-      "id": team.id,
-      "outcome": team.outcome?.rawValue as Any,
-      "users": team.users.map { user in
-        return [
-          "id": user.id,
-          "username": user.user.username,
-        ]
-      },
-    ]
+  return [
+    "id": team.id,
+    "outcome": team.outcome?.rawValue as Any,
+    "users": team.users.map { user in
+      return [
+        "id": user.id,
+        "username": user.user.username,
+      ]
+    },
+  ]
 }
-        
+
 public func GYPGameToMap(game: LucraSDK.GYPGame) -> [String: Any] {
-    return [
-        "id": game.id,
-        "name": game.name,
-        "description": game.description as Any,
-        "iconUrl": game.iconUrl as Any,
-        "imageUrl": game.imageUrl as Any,
-        "categoryIds": game.categoryIds,
-    ]
+  return [
+    "id": game.id,
+    "name": game.name,
+    "description": game.description as Any,
+    "iconUrl": game.iconUrl as Any,
+    "imageUrl": game.imageUrl as Any,
+    "categoryIds": game.categoryIds,
+  ]
 }
-        
-        
 
 public func gamesMatchupToMap(match: LucraSDK.GamesMatchup) -> [String: Any] {
-    return [
-        "id": match.id,
-        "createdAt": match.createdAt.toString(),
-        "updatedAt": match.updatedAt.toString(),
-        "status": match.status.rawValue,
-        "isArchive": match.isArchive,
-        // All the values inside the teams will always be the same, so map to the first available value
-        "wagerOpponentTeamIdAmount": match.teams[0].wagerAmount,
-        "game": GYPGameToMap(game: match.game),
-        "teams": match.teams.map(gamesMatchupTeamToMap),
+  return [
+    "id": match.id,
+    "createdAt": match.createdAt.ISO8601Format(),
+    "updatedAt": match.updatedAt.ISO8601Format(),
+    "status": match.status.rawValue,
+    "isArchive": match.isArchive,
+    // All the values inside the teams will always be the same, so map to the first available value
+    "wagerOpponentTeamIdAmount": match.teams[0].wagerAmount,
+    "game": GYPGameToMap(game: match.game),
+    "teams": match.teams.map(gamesMatchupTeamToMap),
+  ]
+}
+
+public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.Participant)
+  -> [String: Any]
+{
+  return [
+    "id": participant.id,
+    "username": participant.username,
+    "place": participant.place as Any,
+    "rewardValue": participant.rewardValue as Any,
+  ]
+}
+
+public func tournamentLeaderboardToMap(leaderboard: LucraSDK.TournamentsMatchup.Leaderboard)
+  -> [String: Any]
+{
+  return [
+    "id": leaderboard.id,
+    "username": leaderboard.username as Any,
+    "rewardValue": leaderboard.rewardValue as Any,
+  ]
+}
+
+public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [String: Any] {
+  return [
+    "id": tournament.id,
+    "title": tournament.title,
+    "type": tournament.type,
+    "fee": tournament.fee,
+    "buyInAmount": tournament.buyInAmount,
+    "description": tournament.description as Any,
+    "participants": tournament.participants.map(tournamentParticipantToMap),
+    "leaderboards": tournament.leaderboards.map(tournamentLeaderboardToMap),
+    "status": tournament.status,
+    "metadata": tournament.metadata as Any,
+    "iconUrl": tournament.iconUrl as Any,
+    "expiresAt": tournament.expiresAt?.ISO8601Format(),
+    "potTotal": tournament.potTotal,
+  ]
+}
+
+public func sdkUserToMap(user: LucraSDK.SDKUser) -> [String: Any] {
+  var addressMap: [String: String?]? = nil
+  if let address = user.address {
+    addressMap = [
+      "address": address.address,
+      "addressCont": address.addressCont,
+      "city": address.city,
+      "state": address.state,
+      "zip": address.zip,
     ]
+  }
+
+  let userMap = [
+    "user": [
+      "id": user.id as Any,
+      "username": user.username as Any,
+      "avatarURL": user.avatarURL as Any,
+      "phoneNumber": user.phoneNumber as Any,
+      "email": user.email as Any,
+      "firstName": user.firstName as Any,
+      "lastName": user.lastName as Any,
+      "address": addressMap as Any,
+      "balance": user.balance,
+      "accountStatus": user.accountStatus.rawValue,
+      "dateOfBirth": user.dateOfBirth as Any,
+    ]
+  ]
+
+  return userMap
+}
+
+public func mapToClientTheme(theme: [String: Any]) -> LucraSDK.ClientTheme {
+  let background = theme["background"] as? String
+  let surface = theme["surface"] as? String
+  let primary = theme["primary"] as? String
+  let secondary = theme["secondary"] as? String
+  let tertiary = theme["tertiary"] as? String
+  let onBackground = theme["onBackground"] as? String
+  let onSurface = theme["onSurface"] as? String
+  let onPrimary = theme["onPrimary"] as? String
+  let onSecondary = theme["onSecondary"] as? String
+  let onTertiary = theme["onTertiary"] as? String
+  let fontFamilyName = theme["fontFamily"] as? String
+
+  return ClientTheme(
+    universalTheme: DynamicColorSet(
+      background: background,
+      surface: surface,
+      primary: primary,
+      secondary: secondary,
+      tertiary: tertiary,
+      onBackground: onBackground,
+      onSurface: onSurface,
+      onPrimary: onPrimary,
+      onSecondary: onSecondary,
+      onTertiary: onTertiary),
+    fontFamilyName: fontFamilyName
+  )
+}
+
+public func mapToSDKUser(user: [String: Any]) -> LucraSDK.SDKUser {
+  var sdkAddress: LucraSDK.Address?
+  if let address = user["address"] as? [String: Any] {
+    sdkAddress = LucraSDK.Address(
+      address: address["address"] as? String,
+      addressCont: address["addressCont"] as? String,
+      city: address["city"] as? String,
+      state: address["state"] as? String,
+      zip: address["zip"] as? String
+    )
+  }
+  return SDKUser(
+    username: user["username"] as? String,
+    avatarURL: user["avatarURL"] as? String,
+    phoneNumber: user["phoneNumber"] as? String,
+    email: user["email"] as? String,
+    firstName: user["firstName"] as? String,
+    lastName: user["lastName"] as? String,
+    address: sdkAddress,
+    dateOfBirth: user["dateOfBirth"] as? Date
+  )
+}
+
+public func gypCreatedMatchupOutputTopMap(output: GYPCreatedMatchupOutput) -> [String: Any] {
+  return [
+    "matchupId": output.matchupId,
+    "ownerTeamId": output.ownerTeamId,
+    "opponentTeamId": output.opponentTeamId,
+  ]
 }

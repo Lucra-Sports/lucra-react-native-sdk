@@ -3,6 +3,7 @@ import {
   Image,
   SafeAreaView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -31,7 +32,7 @@ export const UIEmbeddedPublicFeed: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-1 gap-2 bg-transparent">
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row items-center gap-2 p-4">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -44,7 +45,7 @@ export const UIEmbeddedPublicFeed: React.FC<Props> = ({ navigation }) => {
               className="h-8 w-8"
             />
           </TouchableOpacity>
-          <View style={Styles.spacer} />
+          <Text className="text-white">Embedded Public Feed</Text>
         </View>
 
         <LucraFlowView

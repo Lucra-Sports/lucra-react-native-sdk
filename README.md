@@ -122,6 +122,10 @@ flipper_config = FlipperConfiguration.disabled
 
 Flipper has been removed in the latest React-Native versions, so this might not apply to your app.
 
+### New Arch
+
+The package is compatible with the new arch. There is however one problem with embedded views on Android. They don't work because they are made with Android Compose, [which is not supported by react-navigation/react-native-screens](https://github.com/software-mansion/react-native-screens/issues/2098#issuecomment-2042117108). If you need embedded components for now you will have to stick to the old arch.
+
 ### Add Lucra private pod repo
 
 Run the following command to add the native SDK dependency locally that you added previously as a source in the Podfile
@@ -410,26 +414,26 @@ export default function App() {
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
 
 ```ts
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Button
-        title="Show Profile"
-        onPress={() => LucraSDK.present({name: LucraSDK.FLOW.PROFILE})}
-      />
-      <Button
-        title="Show Add Funds"
-        onPress={() => LucraSDK.present({name: LucraSDK.FLOW.ADD_FUNDS})}
-      />
-      <Button
-        title="Create game matchup"
-        // Some of the flows take parameters
-        onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP, gameId: 'pingpong'})}
-        // Some of the other flows that take parameters
-        // onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP})}
-      />
-    </View>
-  );
+try {
+  await LucraSDK.present({ name: LucraSDK.FLOW.PROFILE });
+} catch (e) {
+  // if the flow could not be presented you can check out the error
+  console.error(e);
+}
+
+// Some flows take extra parameters, the TypeScript definition should help you know which params are required
+try {
+  await LucraSDK.present({
+    name: LucraSDK.FLOW.CREATE_GAMES_MATCH_UP,
+    gameid: 'PING_PONG',
+  });
+  // or
+  await LucraSDK.present({
+    name: LucraSDK.FLOW.VERIFY_IDENTITY,
+  });
+} catch (e) {
+  // if the flow could not be presented you can check out the error
+  console.error(e);
 }
 ```
 
@@ -440,7 +444,7 @@ export default function App() {
 
 ## Api calls
 
-To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information:
+To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information. Certain errors like `notInitialized` mean the user is not logged in or the SDK has not received the user information yet, you should wait until the user callback is fired before trying again.
 
 ```ts
 import {
@@ -451,7 +455,7 @@ import {
 function handleLucraSDKError(e: LucraSDKError) {
   switch (e.code) {
     case 'notInitialized':
-      console.warn('SDK not initialized', e);
+      console.warn('User not initialized', e);
       LucraSDK.present({name: LucraSDK.FLOW.ONBOARDING});
       break;
 
@@ -903,6 +907,56 @@ You then need to modify your `AppDelegate.mm`:
     return [[LucraClient sharedInstance] handleVenmoUrl:url];
 }
 ```
+
+# Pool Tournaments
+
+The Pool Tournament feature allows end users to join pre-created tournaments and earn rewards based on their ranking at the end of the matchup.
+
+Retrieve a list of recommended tournaments:
+
+```ts
+try {
+  let tournaments = await LucraSDK.getRecomendedTournaments({
+    includeClosed: true,
+    limit: 50,
+  });
+  console.log(tournaments);
+} catch (e) {
+  console.error(e);
+}
+```
+
+Retrieve a tournament matchup by its id:
+
+```ts
+try {
+  let tournament = await LucraSDK.tournamentsMatchup('id');
+  console.log(tournament);
+} catch (e) {
+  console.error(e);
+}
+```
+
+Join tournament:
+
+```ts
+try {
+  await LucraSDK.joinTournament('id');
+} catch (e) {
+  if ((e.code = 'INSUFFICIENT_FUNDS')) {
+    console.error('User has insufficient funds to join tournament');
+  } else {
+    console.error(e);
+  }
+}
+```
+
+Throws an error if:
+
+- The user is not in a valid state to join.
+- Location services fail to provide coordinates.
+- Compliance validation fails.
+- Insufficient funds prevent the user from joining.
 
 # For Maintainers
 

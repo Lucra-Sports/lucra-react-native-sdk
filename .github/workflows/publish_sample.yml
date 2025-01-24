@@ -1,4 +1,4 @@
-name: CI
+name: Publish Sample
 on:
   push:
     branches:
@@ -81,7 +81,7 @@ jobs:
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: |
-          yarn turbo run release:android --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          yarn turbo run release:android --env-mode=loose --cache-dir="${{ env.TURBO_CACHE_DIR }}" --force
 
   release-ios:
     runs-on: self-hosted

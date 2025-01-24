@@ -1,6 +1,7 @@
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "LucraContestCard.h"
-
+#import "LucraCreateContestButton.h"
+#import "RCTBridge.h"
+#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 #import <react/renderer/components/LucraClientSpec/ComponentDescriptors.h>
 #import <react/renderer/components/LucraClientSpec/EventEmitters.h>
 #import <react/renderer/components/LucraClientSpec/Props.h>
@@ -11,28 +12,30 @@
 
 using namespace facebook::react;
 
-@interface LucraContestCard () <RCTLucraContestCardViewProtocol>
+@interface LucraCreateContestButton () <RCTLucraCreateContestButtonViewProtocol>
 
 @end
 
-@implementation LucraContestCard {
+@implementation LucraCreateContestButton {
   UIView *_view;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider {
   return concreteComponentDescriptorProvider<
-      LucraContestCardComponentDescriptor>();
+      LucraCreateContestButtonComponentDescriptor>();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps =
-        std::make_shared<const LucraContestCardProps>();
+        std::make_shared<const LucraCreateContestButtonProps>();
     _props = defaultProps;
 
-    _view = [[UIView alloc] init];
-
-    self.contentView = _view;
+    LucraSwiftClient *client = [LucraSwiftClient getShared];
+    UIView *view = [client getCreateContestButton];
+    
+    
+    self.contentView = view;
   }
 
   return self;
@@ -40,22 +43,11 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props
            oldProps:(Props::Shared const &)oldProps {
-  const auto &oldViewProps =
-      *std::static_pointer_cast<LucraContestCardProps const>(_props);
-  const auto &newViewProps =
-      *std::static_pointer_cast<LucraContestCardProps const>(props);
-  //
-  //    if (oldViewProps.color != newViewProps.color) {
-  //        NSString * colorToConvert = [[NSString alloc] initWithUTF8String:
-  //        newViewProps.color.c_str()];
-  //        [_view setBackgroundColor: [Utils hexStringToColor:colorToConvert]];
-  //    }
-
   [super updateProps:props oldProps:oldProps];
 }
 
-Class<RCTComponentViewProtocol> LucraContestCardCls(void) {
-  return LucraContestCard.class;
+Class<RCTComponentViewProtocol> LucraCreateContestButtonCls(void) {
+  return LucraCreateContestButton.class;
 }
 
 @end

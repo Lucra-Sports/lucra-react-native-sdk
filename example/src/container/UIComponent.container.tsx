@@ -49,7 +49,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-indigo-900">
+    <SafeAreaView className="h-full bg-indigo-900">
       <ScrollView className="flex-1">
         <View className="pt-4 px-4 flex-1 gap-2 bg-transparent">
           <View className="flex-row items-center gap-2 pb-5">
@@ -65,6 +65,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
                 className="h-8 w-8"
               />
             </TouchableOpacity>
+            <Text className="text-white">UI Components</Text>
             <View style={Styles.spacer} />
           </View>
 
@@ -91,7 +92,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
           </View>
 
           <Text className="text-white mt-2"> Recommended Matchups</Text>
-          <LucraRecommendedMatchup />
+          <LucraRecommendedMatchup className="h-96" />
 
           <Text className="text-white my-2">Mini feed</Text>
           <View className="flex-row items-center gap-2 pb-5">
@@ -149,6 +150,7 @@ const Styles = StyleSheet.create({
   },
   contestCard: {
     alignSelf: 'stretch',
+    height: 250,
   },
   header: {
     flexDirection: 'row',

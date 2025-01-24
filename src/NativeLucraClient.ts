@@ -2,7 +2,7 @@ import { TurboModuleRegistry, type TurboModule } from 'react-native';
 
 interface Spec extends TurboModule {
   initialize(options: Object): Promise<void>;
-  present(params: Object): void;
+  present(params: Object): Promise<void>;
   createGamesMatchup(
     gameTypeId: string,
     wagerAmount: number
@@ -29,6 +29,11 @@ interface Spec extends TurboModule {
   registerConvertToCreditProvider: () => void;
   registerRewardProvider: () => void;
   emitAvailableRewards: (rewards: Object[]) => void;
+  // Pool tournaments
+  // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
+  getRecommendedTournaments: (params: Object) => Promise<Object[]>;
+  tournamentMatchup: (tournamentId: string) => Promise<Object>;
+  joinTournament: (tournamentId: string) => Promise<void>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');

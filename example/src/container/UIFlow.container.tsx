@@ -60,7 +60,9 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
           onPress={() =>
-            LucraSDK.present({ name: LucraSDK.FLOW.VERIFY_IDENTITY })
+            LucraSDK.present({
+              name: LucraSDK.FLOW.VERIFY_IDENTITY,
+            })
           }
         >
           <Text className="font-bold text-white">Verify Identity</Text>

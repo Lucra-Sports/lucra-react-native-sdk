@@ -1,6 +1,7 @@
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "LucraRecommendedMatchup.h"
-
+#import "LucraProfilePill.h"
+#import "RCTBridge.h"
+#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 #import <react/renderer/components/LucraClientSpec/ComponentDescriptors.h>
 #import <react/renderer/components/LucraClientSpec/EventEmitters.h>
 #import <react/renderer/components/LucraClientSpec/Props.h>
@@ -11,26 +12,28 @@
 
 using namespace facebook::react;
 
-@interface LucraRecommendedMatchup () <RCTLucraRecommendedMatchupViewProtocol>
+@interface LucraProfilePill () <RCTLucraProfilePillViewProtocol>
 
 @end
 
-@implementation LucraRecommendedMatchup {
+@implementation LucraProfilePill {
   UIView *_view;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider {
   return concreteComponentDescriptorProvider<
-      LucraRecommendedMatchupComponentDescriptor>();
+      LucraProfilePillComponentDescriptor>();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps =
-        std::make_shared<const LucraRecommendedMatchupProps>();
+        std::make_shared<const LucraProfilePillProps>();
     _props = defaultProps;
+    LucraSwiftClient *client = [LucraSwiftClient getShared];
+    UIView *pillView = [client getProfilePill];
 
-    _view = [[UIView alloc] init];
+    _view = pillView;
 
     self.contentView = _view;
   }
@@ -40,22 +43,11 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props
            oldProps:(Props::Shared const &)oldProps {
-  const auto &oldViewProps =
-      *std::static_pointer_cast<LucraRecommendedMatchupProps const>(_props);
-  const auto &newViewProps =
-      *std::static_pointer_cast<LucraRecommendedMatchupProps const>(props);
-  //
-  //    if (oldViewProps.color != newViewProps.color) {
-  //        NSString * colorToConvert = [[NSString alloc] initWithUTF8String:
-  //        newViewProps.color.c_str()];
-  //        [_view setBackgroundColor: [Utils hexStringToColor:colorToConvert]];
-  //    }
-
   [super updateProps:props oldProps:oldProps];
 }
 
-Class<RCTComponentViewProtocol> LucraRecommendedMatchupCls(void) {
-  return LucraRecommendedMatchup.class;
+Class<RCTComponentViewProtocol> LucraProfilePillCls(void) {
+  return LucraProfilePill.class;
 }
 
 @end
