@@ -47,7 +47,7 @@ object LucraMapper {
             params.getString("onSurface"),
             params.getString("onPrimary"),
             params.getString("onSecondary"),
-            params.getString("onTertiary"),
+            params.getString("onTertiary")
         )
     }
 
@@ -155,13 +155,17 @@ object LucraMapper {
     fun playerToMap(player: LucraPlayer): WritableMap {
         val map = Arguments.createMap()
         val positionMetrics = Arguments.createArray()
-        player.positionMetrics?.map(LucraMapper::metricToMap)?.forEach { positionMetrics.pushMap(it) }
+        player.positionMetrics?.map(LucraMapper::metricToMap)
+            ?.forEach { positionMetrics.pushMap(it) }
         val projectedStats = Arguments.createArray()
-        player.projectedStats?.map(LucraMapper::playerStatToMap)?.forEach { projectedStats.pushMap(it) }
+        player.projectedStats?.map(LucraMapper::playerStatToMap)
+            ?.forEach { projectedStats.pushMap(it) }
         val seasonAvgStats = Arguments.createArray()
-        player.seasonAvgStats?.map(LucraMapper::playerStatToMap)?.forEach { seasonAvgStats.pushMap(it) }
+        player.seasonAvgStats?.map(LucraMapper::playerStatToMap)
+            ?.forEach { seasonAvgStats.pushMap(it) }
         val liveGameStats = Arguments.createArray()
-        player.liveGameStats?.map(LucraMapper::playerStatToMap)?.forEach { liveGameStats.pushMap(it) }
+        player.liveGameStats?.map(LucraMapper::playerStatToMap)
+            ?.forEach { liveGameStats.pushMap(it) }
 
         map.putString("id", player.id.toString())
         map.putString("firstName", player.firstName)
@@ -282,7 +286,8 @@ object LucraMapper {
         val map = Arguments.createMap()
 
         val teamsArray = Arguments.createArray()
-        matchup.sportsMatchupTeams.map(LucraMapper::sportMatchupTeamToMap).forEach { teamsArray.pushMap(it) }
+        matchup.sportsMatchupTeams.map(LucraMapper::sportMatchupTeamToMap)
+            .forEach { teamsArray.pushMap(it) }
 
         map.putString("id", matchup.id)
         map.putString("createdAt", matchup.createdAt)

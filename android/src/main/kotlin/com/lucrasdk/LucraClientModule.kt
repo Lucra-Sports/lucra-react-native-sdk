@@ -528,7 +528,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     @ReactMethod
     fun getRecommendedTournaments(params: ReadableMap, promise: Promise) {
         val includeClosed = params.getBoolean("includeClosed")
-        val limit = params.getInt("limit")
+        val limit = params.getInt(
+            "limit"
+        )
         LucraClient().queryRecommendedTournaments(
             limit = limit,
             offset = 0,
