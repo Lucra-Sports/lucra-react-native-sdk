@@ -156,6 +156,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
 
         <View className="h-1 w-full border-t border-indigo-400" />
+
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
@@ -172,9 +173,9 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
-          onPress={() => {
+          onPress={async () => {
             try {
-              let tournament = LucraSDK.tournamentMatchup(tournamentId);
+              let tournament = await LucraSDK.tournamentMatchup(tournamentId);
               Alert.alert('Tournament', JSON.stringify(tournament, null, 2));
             } catch (e) {
               console.error(e);
