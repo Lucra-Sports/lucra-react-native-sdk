@@ -7,35 +7,23 @@ object ErrorMapper {
         error: PoolTournament.JoinTournamentResult.Failure
     ) {
         when (error.failure) {
-            is PoolTournament.FailedTournamentCall.APIError -> promise.reject(
-                "APIError",
-                error.toString()
-            )
+            is PoolTournament.FailedTournamentCall.APIError ->
+                promise.reject("APIError", error.toString())
 
-            is PoolTournament.FailedTournamentCall.LocationError -> promise.reject(
-                "LocationError",
-                error.toString()
-            )
+            is PoolTournament.FailedTournamentCall.LocationError ->
+                promise.reject("LocationError", error.toString())
 
-            PoolTournament.FailedTournamentCall.UserStateError.InsufficientFunds -> promise.reject(
-                "insufficientFunds",
-                "User has insufficient funds"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.InsufficientFunds ->
+                promise.reject("insufficientFunds", "User has insufficient funds")
 
-            PoolTournament.FailedTournamentCall.UserStateError.NotAllowed -> promise.reject(
-                "notAllowed",
-                "User not allowed to perform operation"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.NotAllowed ->
+                promise.reject("notAllowed", "User not allowed to perform operation")
 
-            PoolTournament.FailedTournamentCall.UserStateError.NotInitialized -> promise.reject(
-                "notInitialized",
-                "User has not been initialized"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.NotInitialized ->
+                promise.reject("notInitialized", "User has not been initialized")
 
-            PoolTournament.FailedTournamentCall.UserStateError.Unverified -> promise.reject(
-                "unverified",
-                "User is not verified"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.Unverified ->
+                promise.reject("unverified", "User is not verified")
         }
     }
 
@@ -44,35 +32,23 @@ object ErrorMapper {
         error: PoolTournament.RetrieveTournamentResult.Failure
     ) {
         when (error.failure) {
-            is PoolTournament.FailedTournamentCall.APIError -> promise.reject(
-                "APIError",
-                error.toString()
-            )
+            is PoolTournament.FailedTournamentCall.APIError ->
+                promise.reject("APIError", error.toString())
 
-            is PoolTournament.FailedTournamentCall.LocationError -> promise.reject(
-                "LocationError",
-                error.toString()
-            )
+            is PoolTournament.FailedTournamentCall.LocationError ->
+                promise.reject("LocationError", error.toString())
 
-            PoolTournament.FailedTournamentCall.UserStateError.InsufficientFunds -> promise.reject(
-                "insufficientFunds",
-                "User has insufficient funds"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.InsufficientFunds ->
+                promise.reject("insufficientFunds", "User has insufficient funds")
 
-            PoolTournament.FailedTournamentCall.UserStateError.NotAllowed -> promise.reject(
-                "notAllowed",
-                "User not allowed to perform operation"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.NotAllowed ->
+                promise.reject("notAllowed", "User not allowed to perform operation")
 
-            PoolTournament.FailedTournamentCall.UserStateError.NotInitialized -> promise.reject(
-                "notInitialized",
-                "User has not been initialized"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.NotInitialized ->
+                promise.reject("notInitialized", "User has not been initialized")
 
-            PoolTournament.FailedTournamentCall.UserStateError.Unverified -> promise.reject(
-                "unverified",
-                "User is not verified"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.Unverified ->
+                promise.reject("unverified", "User is not verified")
         }
     }
 
@@ -81,35 +57,23 @@ object ErrorMapper {
         error: PoolTournament.QueryRecommendedTournamentsResult.Failure
     ) {
         when (error.failure) {
-            is PoolTournament.FailedTournamentCall.APIError -> promise.reject(
-                "APIError",
-                error.toString()
-            )
+            is PoolTournament.FailedTournamentCall.APIError ->
+                promise.reject("APIError", error.toString())
 
-            is PoolTournament.FailedTournamentCall.LocationError -> promise.reject(
-                "LocationError",
-                error.toString()
-            )
+            is PoolTournament.FailedTournamentCall.LocationError ->
+                promise.reject("LocationError", error.toString())
 
-            PoolTournament.FailedTournamentCall.UserStateError.InsufficientFunds -> promise.reject(
-                "insufficientFunds",
-                "User has insufficient funds"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.InsufficientFunds ->
+                promise.reject("insufficientFunds", "User has insufficient funds")
 
-            PoolTournament.FailedTournamentCall.UserStateError.NotAllowed -> promise.reject(
-                "notAllowed",
-                "User not allowed to perform operation"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.NotAllowed ->
+                promise.reject("notAllowed", "User not allowed to perform operation")
 
-            PoolTournament.FailedTournamentCall.UserStateError.NotInitialized -> promise.reject(
-                "notInitialized",
-                "User has not been initialized"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.NotInitialized ->
+                promise.reject("notInitialized", "User has not been initialized")
 
-            PoolTournament.FailedTournamentCall.UserStateError.Unverified -> promise.reject(
-                "unverified",
-                "User is not verified"
-            )
+            PoolTournament.FailedTournamentCall.UserStateError.Unverified ->
+                promise.reject("unverified", "User is not verified")
         }
     }
 }
