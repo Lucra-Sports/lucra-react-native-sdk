@@ -1,5 +1,8 @@
 package com.lucrasdk
 
+import ErrorMapper.rejectJoinTournamentError
+import ErrorMapper.rejectRecommendedTournamentsError
+import ErrorMapper.rejectRetrieveTournamentError
 import android.app.Application
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -15,29 +18,25 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.lucrasdk.LucraMapper.readableMapToColorStyle
-import com.lucrasdk.LucraMapper.readableMapToFontFamily
-import com.lucrasdk.LucraMapper.rewardToMap
-import com.lucrasdk.LucraMapper.sdkUserToMap
-import com.lucrasdk.LucraMapper.userToMap
-import com.lucrasdk.LucraMapper.writableNativeMapToLucraConvertToCreditWithdrawMethod
-import com.lucrasdk.LucraMapper.writableNativeMapToLucraReward
-import com.lucrasdk.LucraUtils.Companion.convertReadableMapToStringMap
-import com.lucrasdk.LucraUtils.Companion.convertStringMapToWritableMap
+import com.lucrasdk.Libs.LucraMapper
+import com.lucrasdk.Libs.LucraMapper.readableMapToColorStyle
+import com.lucrasdk.Libs.LucraMapper.readableMapToFontFamily
+import com.lucrasdk.Libs.LucraMapper.rewardToMap
+import com.lucrasdk.Libs.LucraMapper.sdkUserToMap
+import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraConvertToCreditWithdrawMethod
+import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraReward
+import com.lucrasdk.Libs.LucraUtils
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.contest.PoolTournament
 import com.lucrasports.sdk.core.contest.SportsMatchup
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditProvider
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
-import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.events.LucraEvent
 import com.lucrasports.sdk.core.events.LucraEventListener
 import com.lucrasports.sdk.core.reward.LucraReward
 import com.lucrasports.sdk.core.reward.LucraRewardProvider
 import com.lucrasports.sdk.core.style_guide.ClientTheme
-import com.lucrasports.sdk.core.style_guide.ColorStyle
-import com.lucrasports.sdk.core.style_guide.Font
 import com.lucrasports.sdk.core.style_guide.FontFamily
 import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
@@ -537,7 +536,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         ) { result ->
             when (result) {
                 is PoolTournament.QueryRecommendedTournamentsResult.Failure -> {
-                    promise.reject("Could_not_get_recommended_tournaments", result.toString())
+                    rejectRecommendedTournamentsError(promise, result)
                 }
 
                 is PoolTournament.QueryRecommendedTournamentsResult.RecommendedTournamentsOutput -> {
@@ -560,7 +559,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().retrieveTournament(tournamentId = id) { result ->
             when (result) {
                 is PoolTournament.RetrieveTournamentResult.Failure -> {
-                    promise.reject("Could_not_get_tournament", result.toString())
+                    rejectRetrieveTournamentError(promise, result)
                 }
 
                 is PoolTournament.RetrieveTournamentResult.RetrieveTournamentOutput -> {
@@ -576,7 +575,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().joinTournament(tournamentId = id) { result ->
             when (result) {
                 is PoolTournament.JoinTournamentResult.Failure -> {
-                    promise.reject("Could_not_join_tournament", result.toString())
+                    rejectJoinTournamentError(promise, result)
                 }
 
                 is PoolTournament.JoinTournamentResult.JoinTournamentOutput -> {

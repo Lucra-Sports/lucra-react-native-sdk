@@ -1,7 +1,7 @@
 import LucraSDK
 
 class ErrorMapper {
-  static func rejectUserStateErrorv(_ reject: @escaping RCTPromiseRejectBlock, error: LucraSDK.UserStateError) {
+  static func rejectUserStateError(_ reject: @escaping RCTPromiseRejectBlock, error: LucraSDK.UserStateError) {
     switch error {
     case .insufficientFunds:
         reject("insufficientFunds", "User has insufficient funds", nil);

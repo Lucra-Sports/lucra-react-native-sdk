@@ -444,7 +444,7 @@ try {
 
 ## Api calls
 
-To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information:
+To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information. Certain errors like `notInitialized` mean the user is not logged in or the SDK has not received the user information yet, you should wait until the user callback is fired before trying again.
 
 ```ts
 import {
@@ -455,7 +455,7 @@ import {
 function handleLucraSDKError(e: LucraSDKError) {
   switch (e.code) {
     case 'notInitialized':
-      console.warn('SDK not initialized', e);
+      console.warn('User not initialized', e);
       LucraSDK.present({name: LucraSDK.FLOW.ONBOARDING});
       break;
 

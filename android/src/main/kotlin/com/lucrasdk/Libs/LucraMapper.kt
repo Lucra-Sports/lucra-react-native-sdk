@@ -1,11 +1,11 @@
-package com.lucrasdk
+package com.lucrasdk.Libs
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import com.lucrasdk.LucraUtils.Companion.convertReadableMapToStringMap
-import com.lucrasdk.LucraUtils.Companion.convertStringMapToWritableMap
+import com.lucrasdk.Libs.LucraUtils.Companion.convertReadableMapToStringMap
+import com.lucrasdk.Libs.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
 import com.lucrasports.matchup.MatchupType
 import com.lucrasports.matchup.SportsMatchupTeam
@@ -114,8 +114,8 @@ object LucraMapper {
         val map = Arguments.createMap()
         val leagues = Arguments.createArray()
         val intervals = Arguments.createArray()
-        sport.leagues.map(::leagueToMap).forEach { leagues.pushMap(it) }
-        sport.intervals.map(::sportIntervalsToMap).forEach { intervals.pushMap(it) }
+        sport.leagues.map(LucraMapper::leagueToMap).forEach { leagues.pushMap(it) }
+        sport.intervals.map(LucraMapper::sportIntervalsToMap).forEach { intervals.pushMap(it) }
         map.putString("id", sport.id)
         map.putString("name", sport.name)
         map.putString("iconUrl", sport.iconUrl)
@@ -130,7 +130,7 @@ object LucraMapper {
             return null
         }
         val schedules = Arguments.createArray()
-        league.schedules?.map(::scheduleToMap)?.forEach { schedules.pushMap(it) }
+        league.schedules?.map(LucraMapper::scheduleToMap)?.forEach { schedules.pushMap(it) }
 
         val map = Arguments.createMap()
         map.putString("id", league.id)
@@ -155,13 +155,13 @@ object LucraMapper {
     fun playerToMap(player: LucraPlayer): WritableMap {
         val map = Arguments.createMap()
         val positionMetrics = Arguments.createArray()
-        player.positionMetrics?.map(::metricToMap)?.forEach { positionMetrics.pushMap(it) }
+        player.positionMetrics?.map(LucraMapper::metricToMap)?.forEach { positionMetrics.pushMap(it) }
         val projectedStats = Arguments.createArray()
-        player.projectedStats?.map(::playerStatToMap)?.forEach { projectedStats.pushMap(it) }
+        player.projectedStats?.map(LucraMapper::playerStatToMap)?.forEach { projectedStats.pushMap(it) }
         val seasonAvgStats = Arguments.createArray()
-        player.seasonAvgStats?.map(::playerStatToMap)?.forEach { seasonAvgStats.pushMap(it) }
+        player.seasonAvgStats?.map(LucraMapper::playerStatToMap)?.forEach { seasonAvgStats.pushMap(it) }
         val liveGameStats = Arguments.createArray()
-        player.liveGameStats?.map(::playerStatToMap)?.forEach { liveGameStats.pushMap(it) }
+        player.liveGameStats?.map(LucraMapper::playerStatToMap)?.forEach { liveGameStats.pushMap(it) }
 
         map.putString("id", player.id.toString())
         map.putString("firstName", player.firstName)
@@ -205,7 +205,7 @@ object LucraMapper {
         }
 
         val players = Arguments.createArray()
-        schedule.players?.map(::playerToMap)?.forEach { players.pushMap(it) }
+        schedule.players?.map(LucraMapper::playerToMap)?.forEach { players.pushMap(it) }
 
         val map = Arguments.createMap()
         map.putString("id", schedule.id)
@@ -264,7 +264,7 @@ object LucraMapper {
     fun sportMatchupTeamToMap(team: SportsMatchupTeam): WritableMap {
         val map = Arguments.createMap()
         val usersArray = Arguments.createArray()
-        team.users.map(::matchupTeamUserToMap).forEach { usersArray.pushMap(it) }
+        team.users.map(LucraMapper::matchupTeamUserToMap).forEach { usersArray.pushMap(it) }
 
         map.putString("id", team.id)
         map.putArray("users", usersArray)
@@ -282,7 +282,7 @@ object LucraMapper {
         val map = Arguments.createMap()
 
         val teamsArray = Arguments.createArray()
-        matchup.sportsMatchupTeams.map(::sportMatchupTeamToMap).forEach { teamsArray.pushMap(it) }
+        matchup.sportsMatchupTeams.map(LucraMapper::sportMatchupTeamToMap).forEach { teamsArray.pushMap(it) }
 
         map.putString("id", matchup.id)
         map.putString("createdAt", matchup.createdAt)

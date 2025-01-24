@@ -425,6 +425,9 @@ export const LucraSDK = {
     })) as PoolTournament[];
   },
   tournamentMatchup: async (tournamentId: string) => {
+    if (!tournamentId) {
+      throw new Error('tournamentId is required');
+    }
     return await LucraClient.tournamentMatchup(tournamentId);
   },
   joinTournament: async (tournamentId: string) => {
