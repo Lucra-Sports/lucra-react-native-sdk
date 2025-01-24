@@ -191,8 +191,8 @@ public func GYPGameToMap(game: LucraSDK.GYPGame) -> [String: Any] {
 public func gamesMatchupToMap(match: LucraSDK.GamesMatchup) -> [String: Any] {
   return [
     "id": match.id,
-    "createdAt": match.createdAt.toString(),
-    "updatedAt": match.updatedAt.toString(),
+    "createdAt": match.createdAt.ISO8601Format(),
+    "updatedAt": match.updatedAt.ISO8601Format(),
     "status": match.status.rawValue,
     "isArchive": match.isArchive,
     // All the values inside the teams will always be the same, so map to the first available value
@@ -236,7 +236,7 @@ public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [
     "status": tournament.status,
     "metadata": tournament.metadata as Any,
     "iconUrl": tournament.iconUrl as Any,
-    "expiresAt": tournament.expiresAt.toString(),
+    "expiresAt": tournament.expiresAt?.ISO8601Format(),
     "potTotal": tournament.potTotal,
   ]
 }
