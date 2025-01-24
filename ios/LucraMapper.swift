@@ -239,5 +239,95 @@ public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [
     "expiresAt": tournament.expiresAt.toString(),
     "potTotal": tournament.potTotal,
   ]
+}
 
+public func sdkUserToMap(user: LucraSDK.SDKUser) -> [String: Any] {
+  var addressMap: [String: String?]? = nil
+  if let address = user.address {
+    addressMap = [
+      "address": address.address,
+      "addressCont": address.addressCont,
+      "city": address.city,
+      "state": address.state,
+      "zip": address.zip,
+    ]
+  }
+
+  let userMap = [
+    "user": [
+      "id": user.id as Any,
+      "username": user.username as Any,
+      "avatarURL": user.avatarURL as Any,
+      "phoneNumber": user.phoneNumber as Any,
+      "email": user.email as Any,
+      "firstName": user.firstName as Any,
+      "lastName": user.lastName as Any,
+      "address": addressMap as Any,
+      "balance": user.balance,
+      "accountStatus": user.accountStatus.rawValue,
+      "dateOfBirth": user.dateOfBirth as Any,
+    ]
+  ]
+
+  return userMap
+}
+
+public func mapToClientTheme(theme: [String: Any]) -> LucraSDK.ClientTheme {
+  let background = theme["background"] as? String
+  let surface = theme["surface"] as? String
+  let primary = theme["primary"] as? String
+  let secondary = theme["secondary"] as? String
+  let tertiary = theme["tertiary"] as? String
+  let onBackground = theme["onBackground"] as? String
+  let onSurface = theme["onSurface"] as? String
+  let onPrimary = theme["onPrimary"] as? String
+  let onSecondary = theme["onSecondary"] as? String
+  let onTertiary = theme["onTertiary"] as? String
+  let fontFamilyName = theme["fontFamily"] as? String
+
+  return ClientTheme(
+    universalTheme: DynamicColorSet(
+      background: background,
+      surface: surface,
+      primary: primary,
+      secondary: secondary,
+      tertiary: tertiary,
+      onBackground: onBackground,
+      onSurface: onSurface,
+      onPrimary: onPrimary,
+      onSecondary: onSecondary,
+      onTertiary: onTertiary),
+    fontFamilyName: fontFamilyName
+  )
+}
+
+public func mapToSDKUser(user: [String: Any]) -> LucraSDK.SDKUser {
+  var sdkAddress: LucraSDK.Address?
+  if let address = user["address"] as? [String: Any] {
+    sdkAddress = LucraSDK.Address(
+      address: address["address"] as? String,
+      addressCont: address["addressCont"] as? String,
+      city: address["city"] as? String,
+      state: address["state"] as? String,
+      zip: address["zip"] as? String
+    )
+  }
+  return SDKUser(
+    username: user["username"] as? String,
+    avatarURL: user["avatarURL"] as? String,
+    phoneNumber: user["phoneNumber"] as? String,
+    email: user["email"] as? String,
+    firstName: user["firstName"] as? String,
+    lastName: user["lastName"] as? String,
+    address: sdkAddress,
+    dateOfBirth: user["dateOfBirth"] as? Date
+  )
+}
+
+public func gypCreatedMatchupOutputTopMap(output: GYPCreatedMatchupOutput) -> [String: Any] {
+  return [
+    "matchupId": output.matchupId,
+    "ownerTeamId": output.ownerTeamId,
+    "opponentTeamId": output.opponentTeamId,
+  ]
 }

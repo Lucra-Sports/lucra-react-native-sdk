@@ -1,7 +1,11 @@
 package com.lucrasdk
 
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.WritableNativeMap
+import com.lucrasdk.LucraUtils.Companion.convertReadableMapToStringMap
+import com.lucrasdk.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
 import com.lucrasports.matchup.MatchupType
 import com.lucrasports.matchup.SportsMatchupTeam
@@ -10,8 +14,14 @@ import com.lucrasports.matchup.sports_impl.SportsInterval
 import com.lucrasports.sdk.core.contest.GYPGame
 import com.lucrasports.sdk.core.contest.GamesMatchup
 import com.lucrasports.sdk.core.contest.Participant
-import com.lucrasports.sdk.core.contest.PoolTournament
 import com.lucrasports.sdk.core.contest.Tournament
+import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
+import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
+import com.lucrasports.sdk.core.reward.LucraReward
+import com.lucrasports.sdk.core.style_guide.ColorStyle
+import com.lucrasports.sdk.core.style_guide.Font
+import com.lucrasports.sdk.core.style_guide.FontFamily
+import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sports_contests.LucraLeague
 import com.lucrasports.sports_contests.LucraMetric
 import com.lucrasports.sports_contests.LucraPlayer
@@ -25,6 +35,72 @@ import java.util.Locale
 object LucraMapper {
 
     val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US)
+
+    fun readableMapToColorStyle(params: ReadableMap): ColorStyle {
+        return ColorStyle(
+            params.getString("background"),
+            params.getString("surface"),
+            params.getString("primary"),
+            params.getString("secondary"),
+            params.getString("tertiary"),
+            params.getString("onBackground"),
+            params.getString("onSurface"),
+            params.getString("onPrimary"),
+            params.getString("onSecondary"),
+            params.getString("onTertiary"),
+        )
+    }
+
+    fun readableMapToFontFamily(params: ReadableMap): FontFamily {
+        if (!params.hasKey("medium") ||
+            !params.hasKey("normal") ||
+            !params.hasKey("semibold") ||
+            !params.hasKey("bold")
+        ) {
+            throw Exception(
+                "LucraSDK all keys are required when setting a font: medium, normal, semibold and bold"
+            )
+        }
+
+        return FontFamily(
+            Font(params.getString("medium")!!),
+            Font(params.getString("normal")!!),
+            Font(params.getString("semibold")!!),
+            Font(params.getString("bold")!!)
+        )
+    }
+
+    fun sdkUserToMap(user: SDKUser): WritableMap {
+        val userMap = Arguments.createMap()
+        userMap.putString("username", user.username)
+        userMap.putString("email", user.email)
+        userMap.putString("firstName", user.firstName)
+        userMap.putString("lastName", user.lastName)
+        userMap.putString("phoneNumber", user.phoneNumber)
+
+        val address = Arguments.createMap()
+        address.putString("address", user.address)
+        address.putString("addressCont", user.addressCont)
+        address.putString("city", user.city)
+        address.putString("state", user.state)
+        address.putString("zip", user.zip)
+
+        userMap.putMap("address", address)
+
+        return userMap
+    }
+
+    fun rewardToMap(reward: LucraReward): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("rewardId", reward.rewardId)
+        map.putString("title", reward.title)
+        map.putString("descriptor", reward.descriptor)
+        map.putString("iconUrl", reward.iconUrl)
+        map.putString("bannerIconUrl", reward.bannerIconUrl)
+        map.putString("disclaimer", reward.disclaimer)
+        map.putMap("metadata", convertStringMapToWritableMap(reward.metadata))
+        return map
+    }
 
     fun sportIntervalsToMap(interval: SportsInterval): WritableMap {
 
@@ -268,8 +344,8 @@ object LucraMapper {
         val map = Arguments.createMap()
         map.putString("id", participant.id)
         map.putString("username", participant.username)
-        participant.place?.let { map.putInt("place", it ) }
-        participant.rewardValue?.let { map.putDouble("rewardValue", it)}
+        participant.place?.let { map.putInt("place", it) }
+        participant.rewardValue?.let { map.putDouble("rewardValue", it) }
         return map
     }
 
@@ -294,5 +370,61 @@ object LucraMapper {
         map.putDouble("potTotal", matchup.potTotal)
 
         return map
+    }
+
+    fun writableNativeMapToLucraReward(map: WritableNativeMap): LucraReward {
+        return LucraReward(
+            rewardId = map.getString("rewardId")!!,
+            title = map.getString("title")!!,
+            descriptor = map.getString("descriptor")!!,
+            iconUrl = map.getString("iconUrl")!!,
+            bannerIconUrl = map.getString("bannerIconUrl")!!,
+            disclaimer = map.getString("disclaimer")!!,
+            metadata = convertReadableMapToStringMap(map.getMap("metadata"))
+        )
+    }
+
+    fun writableNativeMapToLucraConvertToCreditWithdrawMethod(
+        map: ReadableMap,
+        cashAmount: Double
+    ): LucraConvertToCreditWithdrawMethod {
+        return LucraConvertToCreditWithdrawMethod(
+            id = map.getString("id")!!,
+            title = map.getString("title")!!,
+            conversionTerms =
+            map.getString("conversionTerms")!!,
+            amount = cashAmount,
+            convertedAmount = map.getDouble("convertedAmount"),
+            iconUrl = map.getString("iconUrl"),
+            convertedAmountDisplay =
+            map.getString("convertedAmountDisplay")!!,
+            shortDescription =
+            map.getString("shortDescription")!!,
+            longDescription =
+            map.getString("longDescription")!!,
+            metaData =
+            map.getMap("metaData")?.let {
+                convertReadableMapToStringMap(it)
+            },
+            theme =
+            LucraWithdrawCardTheme(
+                cardColor =
+                map.getString(
+                    "cardColor"
+                )!!,
+                cardTextColor =
+                map.getString(
+                    "cardTextColor"
+                )!!,
+                pillColor =
+                map.getString(
+                    "pillColor"
+                )!!,
+                pillTextColor =
+                map.getString(
+                    "pillTextColor"
+                )!!,
+            )
+        )
     }
 }
