@@ -520,7 +520,7 @@ import LucraSDK
     }
   }
 
-  @objc public func tournamentsMatchup(
+  @objc public func tournamentMatchup(
     _ id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in

@@ -146,9 +146,9 @@ RCT_EXPORT_METHOD(getRecommendedTournaments : (NSDictionary *)params resolve : (
   [swiftClient getRecommendedTournaments:params resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(tournamentsMatchup : (NSString *)idString resolve : (
+RCT_EXPORT_METHOD(tournamentMatchup : (NSString *)idString resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient tournamentsMatchup:idString resolve:resolve reject:reject];
+  [swiftClient tournamentMatchup:idString resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(joinTournament : (NSString *)idString resolve : (
