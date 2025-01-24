@@ -210,7 +210,7 @@ import LucraSDK
         try await nativeClient.configure(user: sdkUser)
         resolve(nil)
       } catch {
-        reject("Lucra SDK Error", "\(error)", nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -240,7 +240,7 @@ import LucraSDK
 
         resolve(sportMatchupToMap(match: match))
       } catch {
-        reject("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -299,7 +299,7 @@ import LucraSDK
         resolve(nil)
       }
     } catch {
-      reject("Present_flow_error", error.localizedDescription, nil)
+      ErrorMapper.reject(reject, error: error)
     }
   }
 
@@ -322,7 +322,7 @@ import LucraSDK
           "opponentTeamId": result.opponentTeamId,
         ])
       } catch {
-        rejecter("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(rejecter, error: error)
       }
     }
   }
@@ -342,7 +342,7 @@ import LucraSDK
         )
         resolver(nil)
       } catch {
-        rejecter("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(rejecter, error: error)
       }
     }
   }
@@ -359,7 +359,7 @@ import LucraSDK
           .cancelGamesMatchup(matchupId: gameId as String)
         resolver(nil)
       } catch {
-        rejecter("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(rejecter, error: error)
       }
     }
   }
@@ -390,7 +390,7 @@ import LucraSDK
           }
         }
       } catch {
-        reject("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -515,7 +515,7 @@ import LucraSDK
         )
         resolve(tournaments.map(tournametsMatchupToMap))
       } catch {
-        reject("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -533,7 +533,7 @@ import LucraSDK
           resolve(nil)
         }
       } catch {
-        reject("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
 
     }
@@ -549,7 +549,7 @@ import LucraSDK
       } catch UserStateError.insufficientFunds {
         reject("INSUFFICIENT_FUNDS", "You do not have enough funds to join this tournament.", nil)
       } catch {
-        reject("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
