@@ -1,18 +1,18 @@
 import LucraSDK
 
 class ErrorMapper {
-  static func getErrorDescription(_ error: LucraSDK.UserStateError) -> String {
+  static func rejectUserStateErrorv(_ reject: @escaping RCTPromiseRejectBlock, error: LucraSDK.UserStateError) {
     switch error {
     case .insufficientFunds:
-      return "Insufficient Funds"
+        reject("insufficientFunds", "User has insufficient funds", nil);
     case .notAllowed:
-      return "User Not Allowed"
+        reject("notAllowed", "User is not allowed to perform such operation", nil);
     case .notInitialized:
-      return "SDK Not Initialized"
+        reject("notInitialized", "User has not been initialized", nil);
     case .unverified:
-      return "User Unverified"
+        reject("unverified", "User has not been verified", nil);
     @unknown default:
-      return "Unknown Error, contact support"
+        reject("unknown", "Uknown error", nil);
     }
   }
 
@@ -20,9 +20,9 @@ class ErrorMapper {
     _ reject: @escaping RCTPromiseRejectBlock, error: any Error
   ) {
     if let error = error as? LucraSDK.UserStateError {
-      reject("ERROR", getErrorDescription(error), nil)
+      rejectUserStateError(reject, error: error)
     } else {
-      reject("ERROR", error.localizedDescription, nil)
+      reject("\(error)", error.localizedDescription, nil)
     }
   }
 }
