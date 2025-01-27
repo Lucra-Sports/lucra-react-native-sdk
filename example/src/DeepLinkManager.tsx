@@ -28,7 +28,7 @@ export function DeepLinkManager() {
     const appStateListener = AppState.addEventListener(
       'change',
       async (newAppState) => {
-        if (newAppState === 'active' && savedDeepLink.current) {
+        if (newAppState === 'active' && savedDeepLink.current.length > 0) {
           const handled = await LucraSDK.handleLucraLink(savedDeepLink.current);
           savedDeepLink.current = '';
           if (handled) {
@@ -42,26 +42,31 @@ export function DeepLinkManager() {
 
     LucraSDK.registerDeepLinkProvider(async (lucraLink: string) => {
       const deepLink = await buildLink(lucraLink);
+      console.log('🟧 Deep link created!', deepLink);
       return deepLink;
     });
 
     const handleDeepLink = async ({ url }: { url: string }) => {
-      console.log('handle deep link called');
+      console.log(`handle deep link called with url: "${url}"`);
       if (AppState.currentState !== 'active') {
         savedDeepLink.current = url;
         return;
       }
 
       if (!url) {
-        return console.log('Lucra link not found');
+        console.log('🟥 No URL has been passed to handleDeepLink');
+        return;
       }
+
       const handled = await LucraSDK.handleLucraLink(url);
-      console.log(`Link handled by Lucrasdk ${handled}`);
+
+      savedDeepLink.current = '';
+      console.log(`🟩 Link handled by Lucrasdk ${handled}`);
     };
 
     if (Platform.OS === 'ios') {
       Linking.getInitialURL().then((res) => {
-        console.log('Resolved with Linking', res);
+        console.log('Get initial URL resolved with', res);
         dynamicLinks()
           .resolveLink(res || '')
           .then((link) => {
@@ -73,13 +78,14 @@ export function DeepLinkManager() {
     dynamicLinks()
       .getInitialLink()
       .then((link) => {
-        console.log('getInitialLink called');
+        console.log('🔵 getInitialLink called', link);
         handleDeepLink({ url: link?.url || '' });
       });
 
     const unsubscribe = dynamicLinks().onLink(handleDeepLink);
 
     return () => {
+      savedDeepLink.current = '';
       unsubscribe();
       appStateListener.remove();
     };
