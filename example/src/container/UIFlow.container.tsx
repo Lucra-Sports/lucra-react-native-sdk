@@ -158,6 +158,19 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
         >
           <Text className="font-bold text-white">My Matchups</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-red-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+          onPress={() =>
+            setTimeout(() => {
+              LucraSDK.closeFullScreenLucraFlows();
+            }, 10000)
+          }
+        >
+          <Text className="font-bold text-white">
+            🔧 Close All Flows (in 10 seconds)
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

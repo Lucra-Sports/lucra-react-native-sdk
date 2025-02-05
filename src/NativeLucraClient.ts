@@ -17,6 +17,7 @@ interface Spec extends TurboModule {
   configureUser(user: Object): Promise<void>;
   logout: () => Promise<void>;
   getUser: () => Promise<Object>;
+  closeFullScreenLucraFlows: () => Promise<void>;
   // event emitter
   addListener: (eventType: string) => void;
   removeListeners: (count: number) => void;

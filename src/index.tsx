@@ -362,6 +362,9 @@ export const LucraSDK = {
   getUser: async (): Promise<LucraUser> => {
     return (await LucraClient.getUser()) as LucraUser;
   },
+  closeFullScreenLucraFlows: (): Promise<void> => {
+    return LucraClient.closeFullScreenLucraFlows();
+  },
   present: present,
   createGamesMatchup: (
     gameTypeId: string,

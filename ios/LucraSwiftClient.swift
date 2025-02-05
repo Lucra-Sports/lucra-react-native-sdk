@@ -312,6 +312,13 @@ import LucraSDK
     }
   }
 
+  @objc public func closeFullScreenLucraFlows(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock) {
+        self.nativeClient.closeFullScreenLucraFlows()
+        return resolve(nil)
+  }
+    
   @objc public func logout(
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock

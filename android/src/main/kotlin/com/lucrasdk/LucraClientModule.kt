@@ -600,6 +600,19 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun closeFullScreenLucraFlows(promise: Promise?) {
+        require(context.currentActivity is FragmentActivity) {
+            "Current activity is not a FragmentActivity"
+        }
+        try {
+            LucraClient().closeFullScreenLucraFlows((context.currentActivity as FragmentActivity).supportFragmentManager)
+            promise?.resolve(null)
+        } catch(e: Exception){
+            promise?.reject(e.toString(), e.toString())
+        }
+    }
+
+    @ReactMethod
     fun addListener(eventName: String) {
         // intentionally left blank
     }

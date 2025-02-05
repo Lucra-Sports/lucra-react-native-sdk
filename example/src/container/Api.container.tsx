@@ -23,8 +23,6 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'APIFlow'>;
 
-let currentMatchupId: string;
-
 function handleLucraSDKError(e: LucraSDKError) {
   switch (e.code) {
     case 'notInitialized':
