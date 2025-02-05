@@ -80,6 +80,10 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
           }
         );
 
+        LucraSDK.addLucraFlowDismissedListener((lucraFlow) => {
+          console.log('Lucra Flow Dismissed: ', lucraFlow);
+        });
+
         LucraSDK.addContestListener({
           onGamesMatchupCreated: (id: string) => {
             console.log('Games contest created:', id);

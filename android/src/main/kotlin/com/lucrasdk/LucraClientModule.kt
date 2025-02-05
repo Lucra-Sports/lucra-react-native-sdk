@@ -256,6 +256,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 override fun onFlowDismissRequested(
                     entryLucraFlow: LucraUiProvider.LucraFlow
                 ) {
+                    sendEvent(context, "lucraFlowDismissed", Arguments.createMap().apply {
+                        putString("lucraFlow", entryLucraFlow.toString())
+                    })
                     (context.currentActivity as FragmentActivity)
                         .supportFragmentManager.findFragmentByTag(
                             entryLucraFlow.toString()
@@ -607,7 +610,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         try {
             LucraClient().closeFullScreenLucraFlows((context.currentActivity as FragmentActivity).supportFragmentManager)
             promise?.resolve(null)
-        } catch(e: Exception){
+        } catch (e: Exception) {
             promise?.reject(e.toString(), e.toString())
         }
     }

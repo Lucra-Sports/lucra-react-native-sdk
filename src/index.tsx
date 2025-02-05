@@ -193,6 +193,8 @@ let claimRewardCallback: ((reward: LucraReward) => Promise<void>) | null = null;
 let claimRewardSubscription: NativeEventSubscription;
 let viewRewardsCallback: (() => void) | null = null;
 let viewRewardsSubscription: NativeEventSubscription;
+let lucraFlowDismissedSubscription: NativeEventSubscription;
+let lucraFlowDismissedCallback: ((flow: string) => void) | null = null;
 
 type LucraContestListeners = {
   onGamesMatchupCreated?: (id: string) => void;
@@ -294,6 +296,15 @@ export const LucraSDK = {
       async () => {
         if (viewRewardsCallback) {
           viewRewardsCallback();
+        }
+      }
+    );
+    lucraFlowDismissedSubscription?.remove();
+    lucraFlowDismissedSubscription = eventEmitter.addListener(
+      'lucraFlowDismissed',
+      (data) => {
+        if (lucraFlowDismissedCallback) {
+          lucraFlowDismissedCallback(data.lucraFlow);
         }
       }
     );
@@ -408,6 +419,9 @@ export const LucraSDK = {
   },
   getSportsMatchup: async (contestId: string): Promise<SportsMatchupType> => {
     return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
+  },
+  addLucraFlowDismissedListener: (listener: (flow: string) => void) => {
+    lucraFlowDismissedCallback = listener;
   },
   registerRewardProvider: (
     getAvailableRewards: () => Promise<Array<LucraReward>>,

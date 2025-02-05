@@ -5,7 +5,7 @@ import LucraSDK
   func sendEvent(name: String, result: [String: Any])
 }
 
-@objc public class LucraSwiftClient: NSObject {
+@objc public class LucraSwiftClient: NSObject, LucraFlowListener {
   @objc weak public var delegate: LucraClientDelegate? = nil
   private var nativeClient: LucraSDK.LucraClient!
   private var userCallback: RCTResponseSenderBlock?
@@ -107,6 +107,8 @@ import LucraSDK
       }
     }
 
+    nativeClient.lucraFlowListener = self
+      
     userSinkCancellable = nativeClient.$user.sink { user in
       guard let user = user else {
         self.delegate?.sendEvent(name: "user", result: ["user": nil])
@@ -136,6 +138,13 @@ import LucraSDK
     resolve(nil)
   }
 
+   public func flowDismissed(onFlowDismissRequested: LucraFlow) {
+        
+        self.delegate?.sendEvent(name: "lucraFlowDismissed", result: [
+            "lucraFlow" : onFlowDismissRequested.displayName
+        ])
+    }
+    
   @objc public func configureUser(
     _ user: [String: Any], resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
