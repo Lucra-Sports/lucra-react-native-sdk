@@ -101,7 +101,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <TextInput
             value={matchupId}
             onChangeText={setMatchupId}
-            placeholder="Current Matchup Id"
+            placeholder="Matchup Id"
             placeholderTextColor={'#CCC'}
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
           />
@@ -124,7 +124,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <TextInput
             value={ownerTeamId}
             onChangeText={setOwnerTeamId}
-            placeholder="Current Matchup Owner Team Id"
+            placeholder="Owner Team Id"
             placeholderTextColor={'#CCC'}
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
           />
@@ -147,7 +147,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <TextInput
             value={opponentTeamId}
             onChangeText={setOpponentTeamId}
-            placeholder="Current Matchup Opponent Team Id"
+            placeholder="Opponent Team Id"
             placeholderTextColor={'#CCC'}
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
           />

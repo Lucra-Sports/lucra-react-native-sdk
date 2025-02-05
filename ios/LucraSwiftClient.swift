@@ -171,7 +171,7 @@ import LucraSDK
     Task { @MainActor in
       do {
         guard
-          let match = try await self.nativeClient.api.sportsMatchup(
+          let match = try await self.nativeClient.api.matchup(
             for: matchupId)
         else {
           resolve(nil)

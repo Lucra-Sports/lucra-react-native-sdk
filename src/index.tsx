@@ -213,7 +213,7 @@ const Flows = {
   WITHDRAW_FUNDS: 'withdrawFunds',
   PUBLIC_FEED: 'publicFeed',
   MY_MATCHUP: 'myMatchup',
-  // GAME_CONTEST_DETAILS: 'gameContestDetails',
+  GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -223,6 +223,12 @@ function present(params: { name: typeof Flows.ONBOARDING }): Promise<void>;
 function present(params: { name: typeof Flows.VERIFY_IDENTITY }): Promise<void>;
 function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
 function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
+
+function present(params: {
+  name: typeof Flows.GAMES_CONTEST_DETAILS;
+  matchupId: string;
+}): Promise<void>;
+
 function present(params: {
   name: typeof Flows.CREATE_GAMES_MATCHUP;
   gameId?: string;

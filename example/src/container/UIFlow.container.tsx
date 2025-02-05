@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
@@ -22,6 +23,8 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
   const [profilePillKey, setProfilePillKey] = useState(
     Math.random().toString()
   );
+
+  const [matchupId, setMatchupId] = React.useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -106,6 +109,25 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
             Create Games Matchup with PING-PONG id
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={() => {
+            LucraSDK.present({
+              name: LucraSDK.FLOW.GAMES_CONTEST_DETAILS,
+              matchupId: matchupId,
+            });
+          }}
+        >
+          <Text className="text-white">Show Games Matchup Details by ID</Text>
+        </TouchableOpacity>
+        <TextInput
+          value={matchupId}
+          onChangeText={setMatchupId}
+          placeholder="Set Matchup ID"
+          placeholderTextColor={'#CCC'}
+          className="border border-indigo-400 p-4 rounded-lg text-white"
+        />
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
