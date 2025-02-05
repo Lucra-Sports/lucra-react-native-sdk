@@ -435,12 +435,26 @@ try {
   // if the flow could not be presented you can check out the error
   console.error(e);
 }
+
+// Show game contenst details in full scree
+try {
+  await LucraSDK.present({
+    name: LUCRASDK.FLOW.GAMES_CONTEST_DETAILS,
+    matchupId: matchupId,
+  });
+} catch (e) {
+  console.error(e);
+}
 ```
 
-<!-- this two are not ready
-        // LucraSDK.present({name LucraSDK.FLOW.GAME_CONTEST_DETAILS, matchupId: 'id', teamInviteId: 'id'})
-        // LucraSDK.present({name LucraSDK.FLOW.SPORT_CONTEST_DETAILS, matchupId: 'id'})
--->
+Once a full screen flow is presented, you can programmatically dismiss this full screen flows from your JS code:
+
+```ts
+// Just as an example with a timeout
+setTimeout(() => {
+  LucraSDK.closeFullScreenLucraFlows();
+}, 10000);
+```
 
 ## Api calls
 
@@ -733,6 +747,16 @@ export function DeepLinkManager() {
 ```
 
 # Listeners
+
+## Full Screen Flow Dismissed Listener
+
+Whenever a full-screen flow is dismissed you can get trigger a callback
+
+```ts
+const unsubcribe = LucraSDK.addLucraFlowDismissedListener((flow) => {
+  console.log('flow dismissed', flow);
+});
+```
 
 ## Games Contest Listener
 
