@@ -46,9 +46,7 @@ class LucraUtils {
     case "onboarding":
       return .onboarding
     case "verifyIdentity":
-      return .verifyIdentity(
-        procedure: .fullKYCVerification
-      )
+        return .verifyIdentity
     case "createGamesMatchup":
       return .createGamesMatchup(gameId: gameId)
     case "createSportsMatchup":
@@ -57,8 +55,8 @@ class LucraUtils {
       return .withdrawFunds
     case "publicFeed":
       return .publicFeed
-    case "gameContestDetails":
-      return .gamesContestDetails(matchupId: matchupId!, teamInviteId: teamInviteId!)
+    case "gamesMatchupDetails":
+      return .gamesMatchupDetails(matchupId: matchupId!, teamInviteId: teamInviteId)
     case "sportContestDetails":
       return .sportsContestDetails(matchupId: matchupId!)
     case "myMatchup":

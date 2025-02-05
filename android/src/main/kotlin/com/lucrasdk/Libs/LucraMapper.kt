@@ -7,9 +7,9 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertReadableMapToStringMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
-import com.lucrasports.matchup.MatchupType
-import com.lucrasports.matchup.SportsMatchupTeam
-import com.lucrasports.matchup.SportsMatchupType
+import com.lucrasports.matchup.ParticipantGroup
+import com.lucrasports.matchup.ParticipantGroupOutcome
+import com.lucrasports.matchup.TopLevelMatchupType
 import com.lucrasports.matchup.sports_impl.SportsInterval
 import com.lucrasports.sdk.core.contest.GYPGame
 import com.lucrasports.sdk.core.contest.GamesMatchup
@@ -18,6 +18,7 @@ import com.lucrasports.sdk.core.contest.Tournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
 import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.reward.LucraReward
+import com.lucrasports.sdk.core.reward.toLucraReward
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
 import com.lucrasports.sdk.core.style_guide.FontFamily
@@ -253,49 +254,74 @@ object LucraMapper {
         map.putString("socialConnectionId", user.socialConnectionId)
         map.putString("username", user.username)
         map.putString("avatarUrl", user.avatarUrl)
-        map.putInt("loyaltyPoints", user.loyaltyPoints as Int)
+        map.putInt("loyaltyPoints", user.loyaltyPoints as? Int ?: 0)
         return map
     }
 
-    fun matchupTeamUserToMap(user: MatchupType.MatchupTeamUser): WritableMap {
+    fun topLevelMatchupToMap(matchup: TopLevelMatchupType): WritableMap {
         val map = Arguments.createMap()
-        map.putString("id", user.user.idString)
-        map.putMap("user", userToMap(user.user))
-        map.putDouble("wagerPercentage", user.wagerPercentage)
-        return map
-    }
-
-    fun sportMatchupTeamToMap(team: SportsMatchupTeam): WritableMap {
-        val map = Arguments.createMap()
-        val usersArray = Arguments.createArray()
-        team.users.map(LucraMapper::matchupTeamUserToMap).forEach { usersArray.pushMap(it) }
-
-        map.putString("id", team.id)
-        map.putArray("users", usersArray)
-        map.putString("outcome", team.outcome.toString())
-        map.putMap("player", playerToMap(team.player))
-        map.putMap("schedule", scheduleToMap(team.schedule))
-        map.putMap("metric", metricToMap(team.metric))
-        team.metricValue?.let { map.putDouble("metricValue", it) } ?: map.putNull("metricValue")
-        map.putDouble("spread", team.spread)
-        map.putDouble("wagerAmount", team.wagerAmount)
-        return map
-    }
-
-    fun sportsMatchupToMap(matchup: SportsMatchupType): WritableMap {
-        val map = Arguments.createMap()
-
-        val teamsArray = Arguments.createArray()
-        matchup.sportsMatchupTeams.map(LucraMapper::sportMatchupTeamToMap)
-            .forEach { teamsArray.pushMap(it) }
-
         map.putString("id", matchup.id)
-        map.putString("createdAt", matchup.createdAt)
-        map.putString("updatedAt", matchup.updatedAt)
-        map.putBoolean("isPublic", matchup.isPublic)
         map.putString("status", matchup.status.rawValue)
-        map.putArray("teams", teamsArray)
+        map.putString("subType", matchup.subtype.name)
+        map.putArray(
+            "participantGroups", participantGroupsToArray(matchup)
+        )
         return map
+    }
+
+    private fun participantGroupsToArray(matchup: TopLevelMatchupType) =
+        Arguments.createArray().apply {
+            matchup.participantGroups.forEach { group ->
+                pushMap(
+                    participantGroupToMap(group)
+                )
+            }
+        }
+
+    private fun participantGroupToMap(group: ParticipantGroup) = Arguments.createMap().apply {
+        putString("id", group.id)
+        putString(
+            "outcome", when (group.outcome) {
+                ParticipantGroupOutcome.Loss -> "LOSS"
+                ParticipantGroupOutcome.Tie -> "TIE"
+                ParticipantGroupOutcome.Unknown -> "UNKNOWN"
+                ParticipantGroupOutcome.Win -> "WIN"
+                null -> ""
+            }
+        )
+        group.professionalTeamStatDetails?.let { teamStats ->
+            putMap("professionalTeamStateDetails", Arguments.createMap().apply {
+                putMap("metric", metricToMap(teamStats.metric))
+                putDouble("metricValue", teamStats.metricValue)
+                putDouble("spread", teamStats.spread)
+                putMap("team", teamToMap(teamStats.team))
+                putMap("schedule", scheduleToMap(teamStats.schedule))
+            })
+        }
+        group.professionalPlayerStatDetails?.let { playerStats ->
+            putMap("professionalPlayerStatDetails", Arguments.createMap().apply {
+                putMap("metric", metricToMap(playerStats.metric))
+                putDouble("metricValue", playerStats.metricValue)
+                putDouble("spread", playerStats.spread)
+                putMap("player", playerToMap(playerStats.player))
+                putMap("schedule", scheduleToMap(playerStats.schedule))
+            })
+        }
+        putArray(
+            "participants",
+            participantsToArray(group)
+        )
+    }
+
+
+    private fun participantsToArray(group: ParticipantGroup) = Arguments.createArray().apply {
+        group.participants.forEach { participant ->
+            pushMap(Arguments.createMap().apply {
+                putMap("user", userToMap(participant.user))
+                participant.reward?.toLucraReward()?.let(::rewardToMap)
+                    ?.let { putMap("reward", it) }
+            })
+        }
     }
 
     fun GYPGameToMap(game: GYPGame): WritableMap {

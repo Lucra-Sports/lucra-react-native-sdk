@@ -79,7 +79,7 @@ public func sportToMap(_ sport: LucraSDK.Sport) -> [String: Any] {
   ]
 }
 
-public func metricToMap(_ metric: LucraSDK.Metric?) -> [String: Any]? {
+public func metricToMap(_ metric: LucraSDK.Metric?) -> [String: Any?]? {
   guard let metric = metric else {
     return nil
   }
@@ -138,30 +138,95 @@ public func matchupTeamUserToMap(teamUser: LucraSDK.MatchupTeamUser) -> [String:
   ]
 }
 
-public func sportMatchupTeamToMap(team: LucraSDK.SportsMatchupTeam) -> [String: Any] {
-  return [
-    "id": team.id,
-    "users": team.users.map(matchupTeamUserToMap),
-    "outcome": team.outcome?.rawValue as Any,
-    "player": playerToMap(team.player),
-    "schedule": scheduleToMap(team.schedule) as Any,
-    "metric": metricToMap(team.metric) as Any,
-    "metricValue": team.metricValue as Any,
-    "spread": team.spread,
-    "wagerAmount": team.wagerAmount,
-  ]
-
+public func sportMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
+    return [
+        "id": match.id,
+        "createdAt": match.createdAt.ISO8601Format(),
+        "updatedAt": match.updatedAt.ISO8601Format(),
+        "status": match.status.rawValue,
+        "subType": match.subtype.rawValue,
+        "participantGroups": match.participantGroups.map { participantGroupToMap(group: $0) }
+    ]
 }
 
-public func sportMatchupToMap(match: LucraSDK.SportsMatchup) -> [String: Any] {
-  return [
-    "id": match.id,
-    "createdAt": match.createdAt.ISO8601Format(),
-    "updatedAt": match.updatedAt.ISO8601Format(),
-    "isPublic": match.isPublic,
-    "status": match.status.rawValue,
-    "teams": match.teams.map(sportMatchupTeamToMap),
-  ]
+private func participantGroupToMap(group: LucraSDK.LucraMatchupGroup) -> [String: Any?] {
+    var map: [String: Any?] = [
+        "id": group.id,
+        "outcome": {
+            switch group.outcome {
+            case .loss: return "LOSS"
+            case .tie: return "TIE"
+            case .win: return "WIN"
+            case .none: return ""
+            case .some(_):
+                fatalError("Unimplemented outcome case")
+            }
+        }()
+    ]
+
+    if let teamStats = group.professionalTeamDetails {
+        let teamDetails: [String: Any?] = [
+            "metric": metricToMap(teamStats.metric),
+            "metricValue": Double(truncating: teamStats.stats.value as NSNumber),
+            "spread": Double(truncating: teamStats.spread as NSNumber),
+            "team": teamToMap(teamStats.team),
+            "schedule": scheduleToMap(teamStats.schedule)
+        ]
+        map["professionalTeamStateDetails"] = teamDetails
+    }
+
+    if let playerStats = group.professionalPlayerDetails {
+        let playerDetails: [String: Any?] = [
+            "metric": metricToMap(playerStats.metric),
+            "metricValue": Double(truncating: playerStats.stats.value as NSNumber),
+            "spread": Double(truncating: playerStats.spread as NSNumber),
+            "player": playerToMap(playerStats.player),
+            "schedule": ["scheduleId": playerStats.stats.scheduleId] // Assuming schedule mapping is not detailed in stats
+        ]
+        
+        map["professionalPlayerStatDetails"] = playerDetails
+        
+    }
+
+    if let recreationalGameDetails = group.recreationalGameDetails {
+        map["recreationalGameDetails"] = [
+            "id": recreationalGameDetails.id,
+            "createdAt": recreationalGameDetails.createdAt.ISO8601Format(),
+            "game": GYPGameToMap(recreationalGameDetails.game),
+            "score": recreationalGameDetails.score
+        ]
+    }
+
+    map["participants"] = group.participants.map { participantToMap(participant: $0) }
+
+    return map
+}
+
+private func participantToMap(participant: LucraSDK.LucraMatchupParticipant) -> [String: Any] {
+    var map: [String: Any] = [
+        "user": userToMap(participant.user)
+    ]
+
+    if let reward = participant.tenantReward {
+        map["reward"] = rewardToMap(reward: reward)
+    }
+
+    return map
+}
+
+
+private func rewardToMap(reward: LucraSDK.LucraReward) -> [String: Any?] {
+    let map: [String: Any?] = [
+        "rewardId": reward.rewardId,
+        "title": reward.title,
+        "descriptor": reward.descriptor,
+        "iconUrl": reward.iconUrl,
+        "bannerIconUrl": reward.bannerIconUrl,
+        "disclaimer": reward.disclaimer,
+        "metadata": reward.metadata
+    ]
+    
+    return map
 }
 
 public func gamesMatchupTeamToMap(team: LucraSDK.GamesMatchupTeam) -> [String: Any] {
@@ -177,7 +242,7 @@ public func gamesMatchupTeamToMap(team: LucraSDK.GamesMatchupTeam) -> [String: A
   ]
 }
 
-public func GYPGameToMap(game: LucraSDK.GYPGame) -> [String: Any] {
+public func GYPGameToMap(_ game: LucraSDK.GYPGame) -> [String: Any] {
   return [
     "id": game.id,
     "name": game.name,
@@ -197,7 +262,7 @@ public func gamesMatchupToMap(match: LucraSDK.GamesMatchup) -> [String: Any] {
     "isArchive": match.isArchive,
     // All the values inside the teams will always be the same, so map to the first available value
     "wagerOpponentTeamIdAmount": match.teams[0].wagerAmount,
-    "game": GYPGameToMap(game: match.game),
+    "game": GYPGameToMap(match.game),
     "teams": match.teams.map(gamesMatchupTeamToMap),
   ]
 }
@@ -223,7 +288,7 @@ public func tournamentLeaderboardToMap(leaderboard: LucraSDK.TournamentsMatchup.
   ]
 }
 
-public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [String: Any] {
+public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [String: Any?] {
   return [
     "id": tournament.id,
     "title": tournament.title,

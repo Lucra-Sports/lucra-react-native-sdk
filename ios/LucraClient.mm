@@ -96,6 +96,11 @@ RCT_EXPORT_METHOD(emitAvailableRewards : (NSArray *)rewards) {
   [swiftClient emitAvailableRewards:rewards];
 }
 
+RCT_EXPORT_METHOD(closeFullScreenLucraFlows : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient closeFullScreenLucraFlowsWithResolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(registerConvertToCreditProvider) {
   [swiftClient registerConvertToCreditProvider];
 }

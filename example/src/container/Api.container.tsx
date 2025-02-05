@@ -23,8 +23,6 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'APIFlow'>;
 
-let currentMatchupId: string;
-
 function handleLucraSDKError(e: LucraSDKError) {
   switch (e.code) {
     case 'notInitialized':
@@ -101,7 +99,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <TextInput
             value={matchupId}
             onChangeText={setMatchupId}
-            placeholder="Current Matchup Id"
+            placeholder="Matchup Id"
             placeholderTextColor={'#CCC'}
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
           />
@@ -124,7 +122,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <TextInput
             value={ownerTeamId}
             onChangeText={setOwnerTeamId}
-            placeholder="Current Matchup Owner Team Id"
+            placeholder="Owner Team Id"
             placeholderTextColor={'#CCC'}
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
           />
@@ -147,7 +145,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <TextInput
             value={opponentTeamId}
             onChangeText={setOpponentTeamId}
-            placeholder="Current Matchup Opponent Team Id"
+            placeholder="Opponent Team Id"
             placeholderTextColor={'#CCC'}
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
           />
@@ -170,7 +168,6 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           onPress={() => {
             LucraSDK.createGamesMatchup('DARTS', 1.0)
               .then((res) => {
-                currentMatchupId = res.matchupId;
                 setMatchupId(res.matchupId);
                 setOwnerTeamId(res.ownerTeamId);
                 setOpponentTeamId(res.opponentTeamId);
@@ -222,7 +219,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
             try {
-              const info = await LucraSDK.getSportsMatchup(currentMatchupId);
+              const info = await LucraSDK.getSportsMatchup(matchupId);
               console.warn(
                 `getSportsMatchup Response: ${JSON.stringify(info, null, 2)}`
               );
@@ -237,7 +234,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => {
-            LucraSDK.cancelGamesMatchup(currentMatchupId)
+            LucraSDK.cancelGamesMatchup(matchupId)
               .then(() => {
                 console.warn('Cancelled game match up');
               })

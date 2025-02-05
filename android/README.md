@@ -28,9 +28,9 @@ In `app/build.gradle`
 
 ```gradle
 // All surface level APIs to interact with Lucra
-implementation("com.lucrasports.sdk:sdk-core:2.0.0-beta") //TODO reference latest github release #
+implementation("com.lucrasports.sdk:sdk-core:3.12.0") //TODO reference latest github release #
 // Optional for UI functionality
-implementation("com.lucrasports.sdk:sdk-ui:2.0.0-beta") //TODO reference latest github release #
+implementation("com.lucrasports.sdk:sdk-ui:3.12.0") //TODO reference latest github release #
 ```
 
 #### Auth0 compliance (if not already using Auth0)

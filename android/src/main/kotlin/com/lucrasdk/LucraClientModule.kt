@@ -256,6 +256,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 override fun onFlowDismissRequested(
                     entryLucraFlow: LucraUiProvider.LucraFlow
                 ) {
+                    sendEvent(context, "lucraFlowDismissed", Arguments.createMap().apply {
+                        putString("lucraFlow", entryLucraFlow.toString())
+                    })
                     (context.currentActivity as FragmentActivity)
                         .supportFragmentManager.findFragmentByTag(
                             entryLucraFlow.toString()
@@ -515,11 +518,17 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         ) { result ->
             when (result) {
                 is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
-                    promise.reject("could_not_resolve_sports_matchup", result.toString())
+                    when (val failure = result.failure) {
+                        is SportsMatchup.FailedRetrieveSportsMatchup.APIError ->
+                            promise.reject("could_not_resolve_sports_matchup", failure.message)
+
+                        is SportsMatchup.FailedRetrieveSportsMatchup.LocationError ->
+                            promise.reject("could_not_resolve_sports_matchup", failure.message)
+                    }
                 }
 
-                is SportsMatchup.RetrieveSportsMatchupResult.SportsMatchupDetailsOutput -> {
-                    promise.resolve(LucraMapper.sportsMatchupToMap(result.sportsMatchup))
+                is SportsMatchup.RetrieveSportsMatchupResult.MatchupDetailsOutput -> {
+                    promise.resolve(LucraMapper.topLevelMatchupToMap(result.topLevelMatchupType))
                 }
             }
         }
@@ -591,6 +600,19 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     fun logout(promise: Promise?) {
         LucraClient().logout(this.context)
         promise?.resolve(null)
+    }
+
+    @ReactMethod
+    fun closeFullScreenLucraFlows(promise: Promise?) {
+        require(context.currentActivity is FragmentActivity) {
+            "Current activity is not a FragmentActivity"
+        }
+        try {
+            LucraClient().closeFullScreenLucraFlows((context.currentActivity as FragmentActivity).supportFragmentManager)
+            promise?.resolve(null)
+        } catch (e: Exception) {
+            promise?.reject(e.toString(), e.toString())
+        }
     }
 
     @ReactMethod

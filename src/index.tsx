@@ -193,6 +193,8 @@ let claimRewardCallback: ((reward: LucraReward) => Promise<void>) | null = null;
 let claimRewardSubscription: NativeEventSubscription;
 let viewRewardsCallback: (() => void) | null = null;
 let viewRewardsSubscription: NativeEventSubscription;
+let lucraFlowDismissedSubscription: NativeEventSubscription;
+let lucraFlowDismissedCallback: ((flow: string) => void) | null = null;
 
 type LucraContestListeners = {
   onGamesMatchupCreated?: (id: string) => void;
@@ -213,7 +215,7 @@ const Flows = {
   WITHDRAW_FUNDS: 'withdrawFunds',
   PUBLIC_FEED: 'publicFeed',
   MY_MATCHUP: 'myMatchup',
-  // GAME_CONTEST_DETAILS: 'gameContestDetails',
+  GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -223,6 +225,12 @@ function present(params: { name: typeof Flows.ONBOARDING }): Promise<void>;
 function present(params: { name: typeof Flows.VERIFY_IDENTITY }): Promise<void>;
 function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
 function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
+
+function present(params: {
+  name: typeof Flows.GAMES_CONTEST_DETAILS;
+  matchupId: string;
+}): Promise<void>;
+
 function present(params: {
   name: typeof Flows.CREATE_GAMES_MATCHUP;
   gameId?: string;
@@ -291,6 +299,15 @@ export const LucraSDK = {
         }
       }
     );
+    lucraFlowDismissedSubscription?.remove();
+    lucraFlowDismissedSubscription = eventEmitter.addListener(
+      'lucraFlowDismissed',
+      (data) => {
+        if (lucraFlowDismissedCallback) {
+          lucraFlowDismissedCallback(data.lucraFlow);
+        }
+      }
+    );
   },
   addContestListener: (listenerMap: LucraContestListeners) => {
     const gamesMatchupCreatedEmitter = eventEmitter.addListener(
@@ -356,6 +373,9 @@ export const LucraSDK = {
   getUser: async (): Promise<LucraUser> => {
     return (await LucraClient.getUser()) as LucraUser;
   },
+  closeFullScreenLucraFlows: (): Promise<void> => {
+    return LucraClient.closeFullScreenLucraFlows();
+  },
   present: present,
   createGamesMatchup: (
     gameTypeId: string,
@@ -399,6 +419,9 @@ export const LucraSDK = {
   },
   getSportsMatchup: async (contestId: string): Promise<SportsMatchupType> => {
     return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
+  },
+  addLucraFlowDismissedListener: (listener: (flow: string) => void) => {
+    lucraFlowDismissedCallback = listener;
   },
   registerRewardProvider: (
     getAvailableRewards: () => Promise<Array<LucraReward>>,

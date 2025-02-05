@@ -44,8 +44,8 @@ class LucraUtils {
                 "withdrawFunds" -> LucraUiProvider.LucraFlow.WithdrawFunds
                 "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
                 "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
-                // TODO it seems the following two flows are missing from the Android SDK
-//        "gameContestDetails" -> LucraUiProvider.LucraFlow.GameContestDetails
+                "gamesMatchupDetails" -> LucraUiProvider.LucraFlow.GamesMatchupDetails(matchupId!!)
+                // TODO not yet publicly available within Android SDK
 //        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails
                 else -> throw IllegalArgumentException("Invalid flow: $flow")
             }

@@ -12,6 +12,7 @@ extension LucraSwiftClient {
     case _availableRewards
     case _claimReward
     case _viewRewards
+    case lucraFlowDismissed
   }
 
   @objc
