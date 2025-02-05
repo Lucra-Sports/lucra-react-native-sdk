@@ -324,23 +324,6 @@ object LucraMapper {
         }
     }
 
-
-//    fun sportsMatchupToMap(matchup: SportsMatchupType): WritableMap {
-//        val map = Arguments.createMap()
-//
-//        val teamsArray = Arguments.createArray()
-//        matchup.sportsMatchupTeams.map(LucraMapper::sportMatchupTeamToMap)
-//            .forEach { teamsArray.pushMap(it) }
-//
-//        map.putString("id", matchup.id)
-//        map.putString("createdAt", matchup.createdAt)
-//        map.putString("updatedAt", matchup.updatedAt)
-//        map.putBoolean("isPublic", matchup.isPublic)
-//        map.putString("status", matchup.status.rawValue)
-//        map.putArray("teams", teamsArray)
-//        return map
-//    }
-
     fun GYPGameToMap(game: GYPGame): WritableMap {
         val map = Arguments.createMap()
         map.putString("id", game.id)

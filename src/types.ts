@@ -89,31 +89,33 @@ type LucraUser = {
   loyaltyPoints: number;
 };
 
-type MatchupTeamUser = {
-  id: string;
-  user: LucraUser;
-  wagerPercentage: number;
-};
-
-type SportsMatchupTeam = {
-  id: string;
-  users: MatchupTeamUser[];
-  outcome: string;
-  player: LucraPlayer;
-  schedule?: LucraSchedule;
-  metric?: LucraMetric;
-  metricValue?: any;
+type ProfessionalTeamStatDetails = {
+  metric: LucraMetric;
+  metricValue: number;
   spread: number;
-  wagerAmount: number;
+  team: LucraTeam;
+  schedule: LucraSchedule;
 };
 
-export type SportsMatchupType = {
+type ProfessionalPlayerStatDetails = {
+  metric: LucraMetric;
+  metricValue: number;
+  spread: number;
+  player: LucraPlayer;
+  schedule: LucraSchedule;
+};
+
+type Participant = {
+  user: LucraUser;
+  reward?: LucraReward;
+};
+
+type ParticipantGroup = {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-  isPublic: boolean;
-  status: string;
-  teams: SportsMatchupTeam[];
+  outcome: string;
+  professionalTeamStatDetails?: ProfessionalTeamStatDetails;
+  professionalPlayerStatDetails?: ProfessionalPlayerStatDetails;
+  participants: Participant[];
 };
 
 export type LucraReward = {
@@ -146,4 +148,11 @@ export type PoolTournament = {
   iconUrl?: string;
   expiresAt?: string;
   potTotal: number;
+};
+
+export type SportsMatchupType = {
+  id: string;
+  status: string;
+  subType: string;
+  participantGroups: ParticipantGroup[];
 };
