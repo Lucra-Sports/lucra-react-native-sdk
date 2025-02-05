@@ -103,7 +103,7 @@ PODS:
     - DoubleConversion
     - glog
     - hermes-engine
-    - LucraSDK (= 2.4.0)
+    - LucraSDK (= 2.4.1)
     - RCT-Folly (= 2024.01.01.00)
     - RCTRequired
     - RCTTypeSafety
@@ -121,7 +121,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - LucraSDK (2.4.0):
+  - LucraSDK (2.4.1):
     - Auth0
     - ZendeskSupportSDK
   - nanopb (3.30910.0):
@@ -2272,8 +2272,8 @@ SPEC CHECKSUMS:
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   hermes-engine: 1949ca944b195a8bde7cbf6316b9068e19cf53c6
   JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
-  lucra-react-native-sdk: f4d8a47aa512fc0c84f7e501323021a6b93308ae
-  LucraSDK: a52e9c78bc90adbecbd8a7c3c5f950e091aa4c39
+  lucra-react-native-sdk: eabb73ea3b12191c8de68307a9c7982bd324c053
+  LucraSDK: 62e7ef55411e9128225b97c0f06a5cf302a42e1f
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 84578c8756030547307e4572ab1947de1685c599
