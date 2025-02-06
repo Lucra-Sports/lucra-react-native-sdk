@@ -72,24 +72,35 @@ object LucraMapper {
     }
 
     fun sdkUserToMap(user: SDKUser): WritableMap {
+        val addressMap = Arguments.createMap()
+
+        // Will assume all is null if address is null to keep an empty map like ios
+        if (user.address != null) {
+            addressMap.putString("address", user.address)
+            addressMap.putString("addressCont", user.addressCont)
+            addressMap.putString("city", user.city)
+            addressMap.putString("state", user.state)
+            addressMap.putString("zip", user.zip)
+        }
+
         val userMap = Arguments.createMap()
+        userMap.putString("id", user.userId)
         userMap.putString("username", user.username)
+        userMap.putString("avatarURL", user.avatarUrl)
+        userMap.putString("phoneNumber", user.phoneNumber)
         userMap.putString("email", user.email)
         userMap.putString("firstName", user.firstName)
         userMap.putString("lastName", user.lastName)
-        userMap.putString("phoneNumber", user.phoneNumber)
+        userMap.putMap("address", addressMap)
+        userMap.putDouble("balance", user.balance ?: 0.0)
+        userMap.putString("accountStatus", user.accountStatus)
 
-        val address = Arguments.createMap()
-        address.putString("address", user.address)
-        address.putString("addressCont", user.addressCont)
-        address.putString("city", user.city)
-        address.putString("state", user.state)
-        address.putString("zip", user.zip)
+        val resultMap = Arguments.createMap()
+        resultMap.putMap("user", userMap)
 
-        userMap.putMap("address", address)
-
-        return userMap
+        return resultMap
     }
+
 
     fun rewardToMap(reward: LucraReward): WritableMap {
         val map = Arguments.createMap()

@@ -215,11 +215,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                     }
 
                     is SDKUserResult.Success -> {
-                        val res = Arguments.createMap()
-                        val userMap = sdkUserToMap(user.sdkUser)
-                        res.putMap("user", userMap)
-
-                        sendEvent(context, "user", res)
+                        sendEvent(context, "user", sdkUserToMap(user.sdkUser))
                     }
 
                     SDKUserResult.WaitingForLogin -> {
@@ -478,7 +474,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                     promise.reject("invalid_username", "username is not valid")
 
                 is SDKUserResult.NotLoggedIn -> promise.reject("not_logged_in", "not logged in")
-                is SDKUserResult.Error -> promise.reject("unknown_error", it.toString())
+                is SDKUserResult.Error -> promise.reject("unknown_error", it.error)
                 SDKUserResult.Loading -> {
                     // Should not happen in this context
                 }
@@ -494,7 +490,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     fun getUser(promise: Promise) {
         LucraClient().getSDKUser {
             when (it) {
-                is SDKUserResult.Error -> promise.resolve(null)
+                is SDKUserResult.Error -> promise.reject("not_logged_in", it.error)
                 SDKUserResult.InvalidUsername ->
                     promise.reject("invalid_username", "username is not valid")
 
