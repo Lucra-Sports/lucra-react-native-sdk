@@ -202,7 +202,7 @@ import LucraSDK
     case .some(let user):
       resolve(sdkUserToMap(user: user))
     case .none:
-      resolve(nil)
+      reject("USER_NOT_FOUND", "User not found", nil)
     }
   }
 
