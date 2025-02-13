@@ -33,6 +33,60 @@ npm i -s @lucra-sports/lucra-react-native-sdk
 
 Usually you don't want to commit this file into the git repo history. So it's better to add it to your gitignore and each user on your organization has their own file and CI as well.
 
+# Integrating with an Expo React Native App
+
+This section provides instructions on how to integrate Lucra SDK into your Expo React Native application. The steps cover both iOS and Android platforms, focusing on projects that use `expo prebuild` or have been ejected, resulting in their own `ios` and `android` directories.
+
+**Note:** This integration does not work with **Expo Go**, as Expo Go does not support custom native modules. You will need to build a standalone app using Expo's build services or build it locally.
+
+## Expo Setup
+
+To install the SDK in your Expo app, you have two main options:
+
+1. **Use Prebuild or Eject Your App**: If your app uses `expo prebuild` or has been ejected, you can follow the platform-specific installation steps for each platform as detailed below.
+
+2. **Use lucra-react-native-sdk expo plugin**: To avoid manual customization of the native directories, you can adjust your `app.config.js` file and utilize the provided Expo plugins to handle the necessary configurations.
+
+### Using the Expo Build Properties Plugin
+
+The [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/) plugin allows you to modify native build properties directly from your `app.config.js`. This is useful for setting deployment targets and specifying frameworks without touching the native code.
+
+Update your `app.config.js` file with the following configuration to set the iOS deployment target and android minSDKVersion:
+
+```javascript
+    plugins: [
+      [
+        'expo-build-properties',
+        {
+          ios: {
+            deploymentTarget: '15.1',
+            // The lucra SDK uses third-party services that require network inspection to be kept off.
+            networkInspector: false,
+          },
+          android: {
+            minSdkVersion: 24,
+            networkInspector: false,
+          },
+        },
+      ],
+      '@lucra-sports/lucra-react-native-sdk',
+    ],
+```
+
+### Using Custom Fonts
+
+Follow the guidelines on installing expo-font plugin and configure it to load the fonts. This will make the fonts available on android and iOS.
+
+For android just pass the path of each font relative to "fonts/"
+
+For iOS pass the font's familiy name
+Note: The current iOS implementation will use the font's family name and search for Bold, Regular and SemiBold variations, please make sure to provide all of them to properly replace the font for each UI element.
+
+### Using Expo Dev Client
+
+When working with expo-dev-client, it's essential to disable the EX_DEV_CLIENT_NETWORK_INSPECTOR variable, The SDK uses third-party libraries that block network inspection.
+To ensure that EX_DEV_CLIENT_NETWORK_INSPECTOR is turned off make sure networkInspector is false when using expo-build-properties.
+
 ## iOS
 
 The minimum target version is iOS 15.1, so you will also have to update this on your project (You can do it in the XCode general tab) and in your podfile:
@@ -67,6 +121,10 @@ flipper_config = FlipperConfiguration.disabled
 ```
 
 Flipper has been removed in the latest React-Native versions, so this might not apply to your app.
+
+### New Arch
+
+The package is compatible with the new arch. There is however one problem with embedded views on Android. They don't work because they are made with Android Compose, [which is not supported by react-navigation/react-native-screens](https://github.com/software-mansion/react-native-screens/issues/2098#issuecomment-2042117108). If you need embedded components for now you will have to stick to the old arch.
 
 ### Add Lucra private pod repo
 
@@ -356,25 +414,51 @@ export default function App() {
 To utilize the UI layer use the `.present` function and pass in the flow you want to show:
 
 ```ts
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Button
-        title="Show Profile"
-        onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
-      />
-      <Button
-        title="Show Add Funds"
-        onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
-      />
-    </View>
-  );
+try {
+  await LucraSDK.present({ name: LucraSDK.FLOW.PROFILE });
+} catch (e) {
+  // if the flow could not be presented you can check out the error
+  console.error(e);
 }
+
+// Some flows take extra parameters, the TypeScript definition should help you know which params are required
+try {
+  await LucraSDK.present({
+    name: LucraSDK.FLOW.CREATE_GAMES_MATCH_UP,
+    gameid: 'PING_PONG',
+  });
+  // or
+  await LucraSDK.present({
+    name: LucraSDK.FLOW.VERIFY_IDENTITY,
+  });
+} catch (e) {
+  // if the flow could not be presented you can check out the error
+  console.error(e);
+}
+
+// Show game contenst details in full scree
+try {
+  await LucraSDK.present({
+    name: LUCRASDK.FLOW.GAMES_CONTEST_DETAILS,
+    matchupId: matchupId,
+  });
+} catch (e) {
+  console.error(e);
+}
+```
+
+Once a full screen flow is presented, you can programmatically dismiss this full screen flows from your JS code:
+
+```ts
+// Just as an example with a timeout
+setTimeout(() => {
+  LucraSDK.closeFullScreenLucraFlows();
+}, 10000);
 ```
 
 ## Api calls
 
-To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information:
+To utilize the API layer will require both using the Frontend SDK (shown below) as well as integrating several API calls on your Backend to set/fetch data to/from the Lucra system at appropriate times. View the [APIIntegration](APIIntegration.pdf) document in this repo for more information. Certain errors like `notInitialized` mean the user is not logged in or the SDK has not received the user information yet, you should wait until the user callback is fired before trying again.
 
 ```ts
 import {
@@ -385,13 +469,13 @@ import {
 function handleLucraSDKError(e: LucraSDKError) {
   switch (e.code) {
     case 'notInitialized':
-      console.warn('SDK not initialized', e);
-      LucraSDK.present(LucraSDK.FLOW.ONBOARDING);
+      console.warn('User not initialized', e);
+      LucraSDK.present({name: LucraSDK.FLOW.ONBOARDING});
       break;
 
     case 'unverified':
       console.warn('User not verified', e);
-      LucraSDK.present(LucraSDK.FLOW.VERIFY_IDENTITY);
+      LucraSDK.present({name: LucraSDK.FLOW.VERIFY_IDENTITY});
       break;
 
     case 'notAllowed':
@@ -400,7 +484,7 @@ function handleLucraSDKError(e: LucraSDKError) {
 
     case 'insufficientFunds':
       console.warn('Insufficient funds', e);
-      LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS);
+      LucraSDK.present({name: LucraSDK.FLOW.ADD_FUNDS});
       break;
 
     case 'unknown':
@@ -664,24 +748,40 @@ export function DeepLinkManager() {
 
 # Listeners
 
+## Full Screen Flow Dismissed Listener
+
+Whenever a full-screen flow is dismissed you can get trigger a callback
+
+```ts
+const unsubcribe = LucraSDK.addLucraFlowDismissedListener((flow) => {
+  console.log('flow dismissed', flow);
+});
+```
+
 ## Games Contest Listener
 
 You can also listen for the events when creating a games or sport contest.
 
 ```ts
 const unsubscribe = LucraSDK.addContestListener({
-  onGamesContestCreated: (contestId: string) => {
-    console.log('Games contest created:', contestId);
+  onGamesMatchupCreated: (id: string) => {
+    console.log('Games contest created:', id);
   },
-  onSportsContestCreated: (contestId: string) => {
-    console.log('Sports contest created:', contestId);
+  onSportsMatchupCreated: (id: string) => {
+    console.log('Sports contest created:', id);
   },
-  onGamesContestAccepted: (contestId: string) => {
-    console.log('Games contest accepted:', contestId);
+  onGamesMatchupAccepted: (id: string) => {
+    console.log('Games contest accepted:', id);
   },
-  onSportsContestAccepted: (contestId: string) => {
-    console.log('Sports contest accepted:', contestId);
+  onSportsMatchuptAccepted: (id: string) => {
+    console.log('Sports contest accepted:', id);
   },
+  onGamesMatchupCanceled: (id: string) => {
+    console.log('Games matchup canceled', id);
+  }
+  onSportsMatchupCanceled: (id: string) => {
+    console.log('Sports matchup canceled', id);
+  }
 });
 
 // Once you are done or on hot reload
@@ -775,6 +875,46 @@ registerCreditConversionProvider(async (cashAmount: number) => {
 });
 ```
 
+# Reward Provider
+
+A reward provider is meant to allow users to see and claim rewards once their matchup has finished. It has three parts:
+
+- A callback that returns which rewards are available and will be displayed to the user
+- A claim callback, which will be called once the user is ready to claim their reward after a matchup
+- A viewRewards callback which will be triggered by the SDK for you to show the rewards to the user
+
+```ts
+import {
+  registerRewardProvider,
+  type LucraReward,
+} from '@lucra-sports/lucra-react-native-sdk';
+
+async function getAvailableRewards(): LucraReward[] {
+  // your logic to fetch user available rewards comes here
+  return [
+    {
+      rewardId: 'Reward123',
+      title: 'My awesome reward',
+      descriptor: 'descriptor',
+      iconUrl: 'http://url.com/blah.jpg',
+      bannerIconUrl: 'another jpg url',
+      disclaimer: 'disclaimer',
+      metadata: JSON.stringify({ otherData: 'you want' }),
+    },
+  ];
+}
+
+async function claimReward(reward: LucraReward) {
+  // Assign the user their reward
+}
+
+function viewRewards() {
+  // Show the users the match rewards
+}
+
+registerRewardProvider(getAvailableRewards, claimReward, viewRewards);
+```
+
 # Venmo iOS
 
 The Lucra iOS SDK offers Venmo as a payment option. This guide covers implementation steps.
@@ -791,6 +931,56 @@ You then need to modify your `AppDelegate.mm`:
     return [[LucraClient sharedInstance] handleVenmoUrl:url];
 }
 ```
+
+# Pool Tournaments
+
+The Pool Tournament feature allows end users to join pre-created tournaments and earn rewards based on their ranking at the end of the matchup.
+
+Retrieve a list of recommended tournaments:
+
+```ts
+try {
+  let tournaments = await LucraSDK.getRecomendedTournaments({
+    includeClosed: true,
+    limit: 50,
+  });
+  console.log(tournaments);
+} catch (e) {
+  console.error(e);
+}
+```
+
+Retrieve a tournament matchup by its id:
+
+```ts
+try {
+  let tournament = await LucraSDK.tournamentsMatchup('id');
+  console.log(tournament);
+} catch (e) {
+  console.error(e);
+}
+```
+
+Join tournament:
+
+```ts
+try {
+  await LucraSDK.joinTournament('id');
+} catch (e) {
+  if ((e.code = 'INSUFFICIENT_FUNDS')) {
+    console.error('User has insufficient funds to join tournament');
+  } else {
+    console.error(e);
+  }
+}
+```
+
+Throws an error if:
+
+- The user is not in a valid state to join.
+- Location services fail to provide coordinates.
+- Compliance validation fails.
+- Insufficient funds prevent the user from joining.
 
 # For Maintainers
 

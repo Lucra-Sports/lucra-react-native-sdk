@@ -28,6 +28,7 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
       setMatchup(matchupInfo);
       setInfo(JSON.stringify(matchupInfo));
     } catch (error) {
+      console.error(error);
       setInfo(String(error));
     }
   };
@@ -37,14 +38,13 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
       return;
     }
     try {
-      console.log('trying to get', matchup.matchupId);
       const fullMatchup = await LucraSDK.getGamesMatchup(matchup?.matchupId);
       setFullMatchupInfo(JSON.stringify(fullMatchup));
     } catch (error) {
       setInfo(String(error));
-      console.error(error);
     }
   };
+
   const cancelMatchup = async () => {
     if (!matchup) {
       return;
@@ -58,6 +58,7 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
       setInfo(String(error));
     }
   };
+
   return (
     <SafeAreaView className="flex-1 bg-indigo-900">
       <ScrollView className="flex-1" contentContainerClassName="p-4 gap-2">

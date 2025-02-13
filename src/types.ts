@@ -48,7 +48,6 @@ type LucraPlayer = {
 
 type LucraTeam = {
   id: string;
-  logoUrl?: string;
   fullName: string;
   name: string;
   sport: LucraSport;
@@ -90,29 +89,70 @@ type LucraUser = {
   loyaltyPoints: number;
 };
 
-type MatchupTeamUser = {
-  id: string;
-  user: LucraUser;
-  wagerPercentage: number;
+type ProfessionalTeamStatDetails = {
+  metric: LucraMetric;
+  metricValue: number;
+  spread: number;
+  team: LucraTeam;
+  schedule: LucraSchedule;
 };
 
-type SportsMatchupTeam = {
-  id: string;
-  users: MatchupTeamUser[];
-  outcome: string;
-  player: LucraPlayer;
-  schedule?: LucraSchedule;
-  metric?: LucraMetric;
-  metricValue?: any;
+type ProfessionalPlayerStatDetails = {
+  metric: LucraMetric;
+  metricValue: number;
   spread: number;
-  wagerAmount: number;
+  player: LucraPlayer;
+  schedule: LucraSchedule;
+};
+
+type Participant = {
+  user: LucraUser;
+  reward?: LucraReward;
+};
+
+type ParticipantGroup = {
+  id: string;
+  outcome: string;
+  professionalTeamStatDetails?: ProfessionalTeamStatDetails;
+  professionalPlayerStatDetails?: ProfessionalPlayerStatDetails;
+  participants: Participant[];
+};
+
+export type LucraReward = {
+  rewardId: string;
+  title: string;
+  descriptor: string;
+  iconUrl: string;
+  bannerIconUrl: string;
+  disclaimer: string;
+  metadata: string | null;
+};
+
+type PoolTournamentParticipant = {
+  id: string;
+  username: string;
+  place?: number;
+  rewardValue?: number;
+};
+
+export type PoolTournament = {
+  id: string;
+  title: string;
+  type: string;
+  fee: number;
+  buyInAmount: number;
+  description?: string;
+  participants: PoolTournamentParticipant[];
+  status: string;
+  metadata?: string;
+  iconUrl?: string;
+  expiresAt?: string;
+  potTotal: number;
 };
 
 export type SportsMatchupType = {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-  isPublic: boolean;
   status: string;
-  teams: SportsMatchupTeam[];
+  subType: string;
+  participantGroups: ParticipantGroup[];
 };

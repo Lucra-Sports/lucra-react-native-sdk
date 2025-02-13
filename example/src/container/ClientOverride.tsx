@@ -26,7 +26,7 @@ const ClientOption: FC<ClientOptionProps> = ({
 }) => {
   return (
     <View
-      className={`flex-row justify-between bg-indigo-700 p-4 ${className}`}
+      className={`flex-row items-center justify-between bg-indigo-700 p-4 ${className}`}
       style={style}
     >
       <Text className="text-white">{name}</Text>
@@ -35,7 +35,7 @@ const ClientOption: FC<ClientOptionProps> = ({
         placeholder={placeholder}
         placeholderTextColor={'#A0AEC0'}
         onChangeText={onChange}
-        className="text-white"
+        className="text-white py-0"
       >
         {value}
       </TextInput>

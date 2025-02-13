@@ -125,10 +125,9 @@ repositories {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation("com.lucrasports.sdk:sdk-core:3.9.2")
-  implementation("com.lucrasports.sdk:sdk-ui:3.9.2")
+  implementation("com.lucrasports.sdk:sdk-core:3.12.1-SNAPSHOT-2025-02-10-1739231605")
+  implementation("com.lucrasports.sdk:sdk-ui:3.12.1-SNAPSHOT-2025-02-10-1739231605")
   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-
   implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
   // For < 0.71, this will be from the local maven repo

@@ -13,7 +13,13 @@ import {
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedNativeComponent';
 export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupNativeComponent';
 export { default as LucraContestCard } from './LucraContestCardNativeComponent';
-import { type SportsMatchupType } from './types';
+import {
+  type SportsMatchupType,
+  type LucraReward,
+  type PoolTournament,
+} from './types';
+import NativeLucraClient from './NativeLucraClient';
+export { type LucraReward, type PoolTournament } from './types';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
 
@@ -181,27 +187,68 @@ let creditConversionEmitter:
   | ((cashAmount: number) => Promise<LucraConvertCreditResponse>)
   | null = null;
 
-type LucraContestListener = {
-  onGamesContestCreated: (contestId: string) => void;
-  onSportsContestCreated: (contestId: string) => void;
-  onGamesContestAccepted: (contestId: string) => void;
-  onSportsContestAccepted: (contestId: string) => void;
+let availableRewardsSubscription: NativeEventSubscription;
+let rewardEmitter: (() => Promise<Array<LucraReward>>) | null = null;
+let claimRewardCallback: ((reward: LucraReward) => Promise<void>) | null = null;
+let claimRewardSubscription: NativeEventSubscription;
+let viewRewardsCallback: (() => void) | null = null;
+let viewRewardsSubscription: NativeEventSubscription;
+let lucraFlowDismissedSubscription: NativeEventSubscription;
+let lucraFlowDismissedCallback: ((flow: string) => void) | null = null;
+
+type LucraContestListeners = {
+  onGamesMatchupCreated?: (id: string) => void;
+  onSportsMatchupCreated?: (id: string) => void;
+  onGamesMatchupAccepted?: (id: string) => void;
+  onSportsMatchupAccepted?: (id: string) => void;
+  onSportsMatchupCanceled?: (id: string) => void;
+  onGamesMatchupCanceled?: (id: string) => void;
 };
+
+const Flows = {
+  ONBOARDING: 'onboarding',
+  VERIFY_IDENTITY: 'verifyIdentity',
+  PROFILE: 'profile',
+  ADD_FUNDS: 'addFunds',
+  CREATE_GAMES_MATCHUP: 'createGamesMatchup',
+  CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
+  WITHDRAW_FUNDS: 'withdrawFunds',
+  PUBLIC_FEED: 'publicFeed',
+  MY_MATCHUP: 'myMatchup',
+  GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
+  // SPORT_CONTEST_DETAILS: 'sportContestDetails',
+} as const;
+
+type FlowNames = (typeof Flows)[keyof typeof Flows];
+
+function present(params: { name: typeof Flows.ONBOARDING }): Promise<void>;
+function present(params: { name: typeof Flows.VERIFY_IDENTITY }): Promise<void>;
+function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
+function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
+
+function present(params: {
+  name: typeof Flows.GAMES_CONTEST_DETAILS;
+  matchupId: string;
+}): Promise<void>;
+
+function present(params: {
+  name: typeof Flows.CREATE_GAMES_MATCHUP;
+  gameId?: string;
+}): Promise<void>;
+function present(params: {
+  name: typeof Flows.CREATE_SPORTS_MATCHUP;
+}): Promise<void>;
+function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): Promise<void>;
+function present(params: { name: typeof Flows.PUBLIC_FEED }): Promise<void>;
+function present(params: { name: typeof Flows.MY_MATCHUP }): Promise<void>;
+function present(params: { name: FlowNames; gameId?: string }): Promise<void> {
+  return LucraClient.present(params);
+}
 
 export const LucraSDK = {
   ready: false,
   ENVIRONMENT: LucraEnvironment,
-  FLOW: {
-    ONBOARDING: 'onboarding',
-    VERIFY_IDENTITY: 'verifyIdentity',
-    PROFILE: 'profile',
-    ADD_FUNDS: 'addFunds',
-    CREATE_GAMES_MATCHUP: 'createGamesMatchup',
-    CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
-    WITHDRAW_FUNDS: 'withdrawFunds',
-    PUBLIC_FEED: 'publicFeed',
-    MY_MATCHUP: 'myMatchup',
-  },
+  FLOW: Flows,
   init: async (options: LucraSDKParams): Promise<void> => {
     await LucraClient.initialize(options);
     deepLinkSubscription?.remove();
@@ -224,41 +271,94 @@ export const LucraSDK = {
         }
       }
     );
-  },
-  addContestListener: (listener: LucraContestListener) => {
-    const gamesContestCreatedEmitter = eventEmitter.addListener(
-      'gamesContestCreated',
+    availableRewardsSubscription?.remove();
+    availableRewardsSubscription = eventEmitter.addListener(
+      '_availableRewards',
+      async () => {
+        if (rewardEmitter) {
+          let rewards = await rewardEmitter();
+          LucraClient.emitAvailableRewards(rewards);
+        }
+      }
+    );
+    claimRewardSubscription?.remove();
+    claimRewardSubscription = eventEmitter.addListener(
+      '_claimReward',
+      async (data) => {
+        if (claimRewardCallback) {
+          await claimRewardCallback(data.reward);
+        }
+      }
+    );
+    viewRewardsSubscription?.remove();
+    viewRewardsSubscription = eventEmitter.addListener(
+      '_viewRewards',
+      async () => {
+        if (viewRewardsCallback) {
+          viewRewardsCallback();
+        }
+      }
+    );
+    lucraFlowDismissedSubscription?.remove();
+    lucraFlowDismissedSubscription = eventEmitter.addListener(
+      'lucraFlowDismissed',
       (data) => {
-        listener.onGamesContestCreated(data.contestId);
+        if (lucraFlowDismissedCallback) {
+          lucraFlowDismissedCallback(data.lucraFlow);
+        }
+      }
+    );
+  },
+  addContestListener: (listenerMap: LucraContestListeners) => {
+    const gamesMatchupCreatedEmitter = eventEmitter.addListener(
+      'gamesMatchupCreated',
+      (data) => {
+        listenerMap.onGamesMatchupCreated?.(data.id);
       }
     );
 
-    const sportsContestCreatedEmitter = eventEmitter.addListener(
-      'sportsContestCreated',
+    const sportsMatchupCreatedEmitter = eventEmitter.addListener(
+      'sportsMatchupCreated',
       (data) => {
-        listener.onSportsContestCreated(data.contestId);
+        listenerMap.onSportsMatchupCreated?.(data.id);
       }
     );
 
     const gamesContextAcceptedEmitter = eventEmitter.addListener(
-      'gamesContestAccepted',
+      'gamesMatchupAccepted',
       (data) => {
-        listener.onGamesContestAccepted(data.contestId);
+        listenerMap.onGamesMatchupAccepted?.(data.id);
       }
     );
 
-    const sportContestAcceptedEmitter = eventEmitter.addListener(
-      'sportsContestAccepted',
+    const sportMatchupAcceptedEmitter = eventEmitter.addListener(
+      'sportsMatchupAccepted',
       (data) => {
-        listener.onSportsContestAccepted(data.contestId);
+        listenerMap.onSportsMatchupAccepted?.(data.id);
+      }
+    );
+
+    const gamesMatchupCanceledEmitter = eventEmitter.addListener(
+      'gamesMatchupCanceled',
+      (data) => {
+        listenerMap.onGamesMatchupCanceled?.(data.id);
+      }
+    );
+
+    const sportsMatchupCanceledEmitter = eventEmitter.addListener(
+      'sportsMatchupCanceled',
+      (data) => {
+        listenerMap.onSportsMatchupCanceled?.(data.id);
       }
     );
 
     return () => {
-      gamesContestCreatedEmitter.remove();
-      sportsContestCreatedEmitter.remove();
+      gamesMatchupCreatedEmitter.remove();
+      sportsMatchupCreatedEmitter.remove();
       gamesContextAcceptedEmitter.remove();
-      sportContestAcceptedEmitter.remove();
+      sportMatchupAcceptedEmitter.remove();
+      gamesMatchupCanceledEmitter.remove();
+      sportsMatchupCanceledEmitter.remove();
     };
   },
   addListener: (type: 'user', cb: (data: any) => void) => {
@@ -273,10 +373,10 @@ export const LucraSDK = {
   getUser: async (): Promise<LucraUser> => {
     return (await LucraClient.getUser()) as LucraUser;
   },
-  present: (flow: string) => {
-    LucraClient.present(flow);
+  closeFullScreenLucraFlows: (): Promise<void> => {
+    return LucraClient.closeFullScreenLucraFlows();
   },
-  // API calls
+  present: present,
   createGamesMatchup: (
     gameTypeId: string,
     wagerAmount: number
@@ -320,7 +420,44 @@ export const LucraSDK = {
   getSportsMatchup: async (contestId: string): Promise<SportsMatchupType> => {
     return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
   },
+  addLucraFlowDismissedListener: (listener: (flow: string) => void) => {
+    lucraFlowDismissedCallback = listener;
+  },
+  registerRewardProvider: (
+    getAvailableRewards: () => Promise<Array<LucraReward>>,
+    claimReward: (reward: LucraReward) => Promise<void>,
+    viewRewards: () => void
+  ) => {
+    NativeLucraClient.registerRewardProvider();
+    rewardEmitter = getAvailableRewards;
+    claimRewardCallback = claimReward;
+    viewRewardsCallback = viewRewards;
+  },
+  // Pool tournaments
+  // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
+  getRecomendedTournaments: async ({
+    includeClosed = true,
+    limit = 50,
+  }: {
+    includeClosed?: boolean;
+    limit?: number;
+  }): Promise<PoolTournament[]> => {
+    return (await LucraClient.getRecommendedTournaments({
+      includeClosed,
+      limit,
+    })) as PoolTournament[];
+  },
+  tournamentMatchup: async (tournamentId: string) => {
+    if (!tournamentId) {
+      throw new Error('tournamentId is required');
+    }
+    return await LucraClient.tournamentMatchup(tournamentId);
+  },
+  joinTournament: async (tournamentId: string) => {
+    return await LucraClient.joinTournament(tournamentId);
+  },
 };
+
 export type LucraSDKError = {
   code:
     | 'notInitialized'

@@ -5,83 +5,19 @@ import LucraSDK
   func sendEvent(name: String, result: [String: Any])
 }
 
-@objc
-public class LucraSwiftClient: NSObject {
-  class MyConvertToCreditProvider: ConvertToCreditProvider {
-
-    var outer: LucraSwiftClient
-    init(outer: LucraSwiftClient) {
-      self.outer = outer
-    }
-
-    func withdrawMethod(for amount: Decimal) async -> LucraSDK.CreditWithdrawal {
-      var cancellable: AnyCancellable?
-      let jsMap = await withCheckedContinuation { [weak outer] continuation in
-        guard let outer else { return }
-
-        cancellable = outer.creditConversionEmitter.sink { value in
-          continuation.resume(returning: value)
-          cancellable?.cancel()
-          cancellable = nil
-        }
-
-        self.outer.delegate?.sendEvent(name: "_creditConversion", result: ["amount": amount])
-
-      }
-
-      let id = jsMap["id"] as! String
-      let title = jsMap["title"] as! String
-      let icon = jsMap["iconUrl"] as? String
-      let conversionTerms = jsMap["conversionTerms"] as! String
-      let convertedAmount = jsMap["convertedAmount"] as! Double
-      let convertedDisplayAmount = jsMap["convertedAmountDisplay"] as! String
-      let shortDescription = jsMap["shortDescription"] as! String
-      let longDescription = jsMap["longDescription"] as! String
-
-      let cardColorString = jsMap["cardColor"] as! String
-      let cardColorTextString = jsMap["cardColorText"] as! String
-      let pillColorString = jsMap["pillColor"] as! String
-      let pillTextColorString = jsMap["pillColorText"] as! String
-      //      let outlineColorString = jsMap["outlineColor"] as! String
-      //      let glowColorString = jsMap["glowColor"] as! String
-      //      let textColorString = jsMap["textColor"] as! String
-
-      let theme = CreditWithdrawal.Theme(
-        cardColor: cardColorString.color!, cardTextColor: cardColorTextString.color!,
-        pillColor: pillColorString.color!, pillTextColor: pillTextColorString.color!
-          //        outlineColor: outlineColorString.color!, glowColor: glowColorString.color!,
-          //        textColor: textColorString.color!
-      )
-
-      let metadata = jsMap["metaData"]
-      //
-      //      let metadataJSON = try? JSONSerialization.data(withJSONObject: metadata!, options: [])
-      //      let metadataString = String(data: metadataJSON ?? Data(), encoding: .utf8)
-
-      let result = CreditWithdrawal(
-        id: id,
-        title: title,
-        iconUrl: icon,
-        theme: theme,
-        conversionTerms: conversionTerms,
-        convertedAmount: Decimal(convertedAmount),
-        convertedDisplayAmount: convertedDisplayAmount,
-        shortDescription: shortDescription,
-        longDescription: longDescription,
-        //        TODO: Test this, in theory metadata is a [String:Any] map
-        metaData: metadata as? [String: String])
-
-      return result
-    }
-  }
-
+@objc public class LucraSwiftClient: NSObject, LucraFlowListener {
   @objc weak public var delegate: LucraClientDelegate? = nil
   private var nativeClient: LucraSDK.LucraClient!
   private var userCallback: RCTResponseSenderBlock?
   private var userSinkCancellable: AnyCancellable?
   private var eventSinkCancellable: AnyCancellable?
   private let deepLinkEmitter = PassthroughSubject<String, Never>()
-  private let creditConversionEmitter = PassthroughSubject<[String: Any], Never>()
+  public let creditConversionEmitter = PassthroughSubject<
+    [String: Any], Never
+  >()
+  public let rewardEmitter = PassthroughSubject<[[String: Any]], Never>()
+  private var rewardProvider: RewardProvider!
+  private var conversionProvider: ConversionProvider!
 
   static public var shared = LucraSwiftClient()
 
@@ -89,21 +25,21 @@ public class LucraSwiftClient: NSObject {
     return shared
   }
 
-  @objc
-  public func initialize(
+  @objc public func initialize(
     _ options: [String: Any],
-    resolver: @escaping RCTPromiseResolveBlock,
-    rejecter: @escaping RCTPromiseRejectBlock
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
   ) {
+    // Client has already been initialized
     guard nativeClient == nil else {
-      resolver(nil)
+      resolve(nil)
       return
     }
 
     guard let apiURL = options["apiURL"] as? String
     else {
-      rejecter(
-        "Lucra SDK Error",
+      reject(
+        "PARAM_ERROR",
         "no apiURL passed to LucraSDK constructor",
         nil
       )
@@ -111,66 +47,32 @@ public class LucraSwiftClient: NSObject {
     }
     guard let apiKey = options["apiKey"] as? String
     else {
-      rejecter(
-        "Lucra SDK Error",
+      reject(
+        "PARAM_ERROR",
         "no apiKey passed to LucraSDK constructor",
         nil
       )
       return
     }
 
-    let environment = options["environment"] as? String ?? "develop"
     let merchantID = options["merchantID"] as? String
     let urlScheme = options["urlScheme"] as? String ?? ""
 
     var clientTheme = ClientTheme()
 
     if let theme = options["theme"] as? [String: Any] {
-      let background = theme["background"] as? String
-      let surface = theme["surface"] as? String
-      let primary = theme["primary"] as? String
-      let secondary = theme["secondary"] as? String
-      let tertiary = theme["tertiary"] as? String
-      let onBackground = theme["onBackground"] as? String
-      let onSurface = theme["onSurface"] as? String
-      let onPrimary = theme["onPrimary"] as? String
-      let onSecondary = theme["onSecondary"] as? String
-      let onTertiary = theme["onTertiary"] as? String
-
-      clientTheme = ClientTheme(
-        background: background,
-        surface: surface,
-        primary: primary,
-        secondary: secondary,
-        tertiary: tertiary,
-        onBackground: onBackground,
-        onSurface: onSurface,
-        onPrimary: onPrimary,
-        onSecondary: onSecondary,
-        onTertiary: onTertiary)
+      clientTheme = mapToClientTheme(theme: theme)
     }
 
-    let nativeEnvironment: LucraSDK.LucraEnvironment = {
-      switch environment {
-      case "develop":
-        return .develop
-      case "staging":
-        return .staging
-      case "sandbox":
-        return .sandbox
-      case "production":
-        return .production
-      default:
-        return .unknown
-      }
-    }()
+    let environment = LucraUtils.stringToEnvironment(
+      options["environment"] as? String)
 
     nativeClient = LucraSDK.LucraClient(
       config: .init(
         environment: .init(
           apiURL: apiURL,
           apiKey: apiKey,
-          environment: nativeEnvironment,
+          environment: environment,
           urlScheme: urlScheme,
           merchantID: merchantID
         ),
@@ -183,52 +85,37 @@ public class LucraSwiftClient: NSObject {
 
       switch event {
       case .gamesMatchupCreated(let id):
-        self.delegate?.sendEvent(name: "gamesContestCreated", result: ["contestId": id])
+        self.delegate?.sendEvent(
+          name: "gamesMatchupCreated", result: ["id": id])
       case .gamesMatchupAccepted(let id):
-        self.delegate?.sendEvent(name: "gamesContestAccepted", result: ["contestId": id])
+        self.delegate?.sendEvent(
+          name: "gamesMatchupAccepted", result: ["id": id])
+      case .gamesMatchupCanceled(let id):
+        self.delegate?.sendEvent(
+          name: "gamesMatchupCanceled", result: ["id": id])
       case .sportsMatchupCreated(let id):
-        self.delegate?.sendEvent(name: "sportsContestCreated", result: ["contestId": id])
+        self.delegate?.sendEvent(
+          name: "sportsMatchupCreated", result: ["id": id])
       case .sportsMatchupAccepted(let id):
-        self.delegate?.sendEvent(name: "sportsContestAccepted", result: ["contestId": id])
+        self.delegate?.sendEvent(
+          name: "sportsMatchupAccepted", result: ["id": id])
+      case .sportsMatchupCanceled(let id):
+        self.delegate?.sendEvent(
+          name: "sportsMatchupCanceled", result: ["id": id])
       @unknown default:
         fatalError()
       }
     }
 
+    nativeClient.lucraFlowListener = self
+      
     userSinkCancellable = nativeClient.$user.sink { user in
       guard let user = user else {
         self.delegate?.sendEvent(name: "user", result: ["user": nil])
         return
       }
 
-      var addressMap: [String: String?]? = nil
-      if let address = user.address {
-        addressMap = [
-          "address": address.address,
-          "addressCont": address.addressCont,
-          "city": address.city,
-          "state": address.state,
-          "zip": address.zip,
-        ]
-      }
-
-      let userMap = [
-        "user": [
-          "id": user.id as Any,
-          "username": user.username as Any,
-          "avatarURL": user.avatarURL as Any,
-          "phoneNumber": user.phoneNumber as Any,
-          "email": user.email as Any,
-          "firstName": user.firstName as Any,
-          "lastName": user.lastName as Any,
-          "address": addressMap as Any,
-          "balance": user.balance,
-          "accountStatus": user.accountStatus.rawValue,
-          "dateOfBirth": user.dateOfBirth as Any,
-        ]
-      ]
-
-      self.delegate?.sendEvent(name: "user", result: userMap)
+      self.delegate?.sendEvent(name: "user", result: sdkUserToMap(user: user))
     }
 
     nativeClient.registerDeeplinkProvider { lucraDeepLink in
@@ -241,47 +128,35 @@ public class LucraSwiftClient: NSObject {
           cancellable?.cancel()
           cancellable = nil
         }
-        self.delegate?.sendEvent(name: "_deepLink", result: ["link": lucraDeepLink])
+        self.delegate?.sendEvent(
+          name: "_deepLink", result: ["link": lucraDeepLink])
 
       }
       return deeplink
     }
 
-    resolver(nil)
+    resolve(nil)
   }
 
-  @objc
-  public func configureUser(
+   public func flowDismissed(onFlowDismissRequested: LucraFlow) {
+        
+        self.delegate?.sendEvent(name: "lucraFlowDismissed", result: [
+            "lucraFlow" : onFlowDismissRequested.displayName
+        ])
+    }
+    
+  @objc public func configureUser(
     _ user: [String: Any], resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-    var sdkAddress: LucraSDK.Address?
-    if let address = user["address"] as? [String: Any] {
-      sdkAddress = LucraSDK.Address(
-        address: address["address"] as? String,
-        addressCont: address["addressCont"] as? String,
-        city: address["city"] as? String,
-        state: address["state"] as? String,
-        zip: address["zip"] as? String
-      )
-    }
-    let sdkUser = SDKUser(
-      username: user["username"] as? String,
-      avatarURL: user["avatarURL"] as? String,
-      phoneNumber: user["phoneNumber"] as? String,
-      email: user["email"] as? String,
-      firstName: user["firstName"] as? String,
-      lastName: user["lastName"] as? String,
-      address: sdkAddress,
-      dateOfBirth: user["dateOfBirth"] as? Date
-    )
+    let sdkUser: SDKUser = mapToSDKUser(user: user)
 
     Task {
       do {
         try await nativeClient.configure(user: sdkUser)
         resolve(nil)
       } catch {
-        reject("Lucra SDK Error", "\(error)", nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -294,109 +169,75 @@ public class LucraSwiftClient: NSObject {
     creditConversionEmitter.send(conversion)
   }
 
+  @objc public func emitAvailableRewards(_ rewards: [[String: Any]]) {
+    rewardEmitter.send(rewards)
+  }
+
   @objc public func getSportsMatchup(
-    _ contestId: String, resolve: @escaping RCTPromiseResolveBlock,
+    _ matchupId: String, resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
       do {
-        guard let match = try await self.nativeClient.api.sportsMatchup(for: contestId) else {
+        guard
+          let match = try await self.nativeClient.api.matchup(
+            for: matchupId)
+        else {
           resolve(nil)
           return
         }
 
         resolve(sportMatchupToMap(match: match))
       } catch {
-        reject("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
-
   }
 
-  @objc
-  public func getUser(
+  @objc public func getUser(
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     switch nativeClient.user {
     case .some(let user):
-      var userJS: [String: Any] = [
-        "username": user.username ?? NSNull(),
-        "avatarURL": user.avatarURL ?? NSNull(),
-        "phoneNumber": user.phoneNumber ?? NSNull(),
-        "email": user.email ?? NSNull(),
-        "firstName": user.firstName ?? NSNull(),
-        "lastName": user.lastName ?? NSNull(),
-        "dateOfBirth": user.dateOfBirth ?? NSNull(),
-      ]
-
-      switch user.address {
-      case .some(let address):
-        userJS["address"] = [
-          "address": address.address,
-          "addressCont": address.addressCont,
-          "city": address.city,
-          "state": address.state,
-          "zip": address.zip,
-        ]
-      default: break
-      }
-
-      resolve(userJS)
+      resolve(sdkUserToMap(user: user))
     case .none:
-      resolve(nil)
+      reject("USER_NOT_FOUND", "User not found", nil)
     }
   }
 
-  private func getLucraFlow(_ lucraFlow: String, matchupId: String?, teamInviteId: String?)
-    -> LucraSDK.LucraFlow
-  {
-    switch lucraFlow {
-    case "profile":
-      return .profile
-    case "addFunds":
-      return .addFunds
-    case "onboarding":
-      return .onboarding
-    case "verifyIdentity":
-      return .verifyIdentity
-    case "createGamesMatchup":
-      return .createGamesMatchup
-    case "createSportsMatchup":
-      return .createSportsMatchup
-    case "withdrawFunds":
-      return .withdrawFunds
-    case "publicFeed":
-      return .publicFeed
-    case "gameContestDetails":
-      return .gamesContestDetails(matchupId: matchupId!, teamInviteId: teamInviteId!)
-    case "sportContestDetails":
-      return .sportsContestDetails(matchupId: matchupId!)
-    default:
-      assertionFailure("Unimplemented lucra flow \(lucraFlow)")
-      return .profile
+  @objc public func present(
+    _ flowName: String, matchupId: String?, teamInviteId: String?,
+    gameId: String?,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    assert(flowName.isEmpty == false)
+
+    do {
+      let flow = try LucraUtils.stringToLucraFlow(
+        flowName, matchupId: matchupId, teamInviteId: teamInviteId,
+        gameId: gameId)
+
+      DispatchQueue.main.async {
+        UIViewController.topViewController?.present(
+          lucraFlow: flow,
+          client: self.nativeClient,
+          animated: true
+        )
+        // Resolves when the view has been presented
+        resolve(nil)
+      }
+    } catch {
+      ErrorMapper.reject(reject, error: error)
     }
   }
 
-  @objc
-  public func present(_ lucraFlow: String, matchupId: String?, teamInviteId: String?) {
-    DispatchQueue.main.async {
-      let nativeFlow = self.getLucraFlow(
-        lucraFlow, matchupId: matchupId, teamInviteId: teamInviteId)
-      UIViewController.topViewController?.present(
-        lucraFlow: nativeFlow,
-        client: self.nativeClient,
-        animated: true
-      )
-    }
-  }
-
-  @objc
-  public func createGamesMatchup(
+  @objc public func createGamesMatchup(
     _ gameId: String,
     wagerAmount: Double,
-    resolver: @escaping RCTPromiseResolveBlock,
-    rejecter: @escaping RCTPromiseRejectBlock
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
       do {
@@ -405,13 +246,9 @@ public class LucraSwiftClient: NSObject {
           atStake: Decimal(floatLiteral: wagerAmount)
         )
 
-        resolver([
-          "matchupId": result.matchupId,
-          "ownerTeamId": result.ownerTeamId,
-          "opponentTeamId": result.opponentTeamId,
-        ])
+        resolve(gypCreatedMatchupOutputTopMap(output: result))
       } catch {
-        rejecter("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -420,8 +257,8 @@ public class LucraSwiftClient: NSObject {
   public func acceptGamesMatchup(
     _ matchupId: String,
     teamId: String,
-    resolver: @escaping RCTPromiseResolveBlock,
-    rejecter: @escaping RCTPromiseRejectBlock
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
       do {
@@ -429,9 +266,9 @@ public class LucraSwiftClient: NSObject {
           matchupId: matchupId,
           teamId: teamId
         )
-        resolver(nil)
+        resolve(nil)
       } catch {
-        rejecter("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
@@ -439,71 +276,59 @@ public class LucraSwiftClient: NSObject {
   @objc
   public func cancelGamesMatchup(
     _ gameId: String,
-    resolver: @escaping RCTPromiseResolveBlock,
-    rejecter: @escaping RCTPromiseRejectBlock
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
       do {
         try await self.nativeClient.api
           .cancelGamesMatchup(matchupId: gameId as String)
-        resolver(nil)
+        resolve(nil)
       } catch {
-        rejecter("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
     }
   }
 
   @objc public func registerConvertToCreditProvider() {
-    let convertToCreditProvider = MyConvertToCreditProvider(outer: self)
-    self.nativeClient.registerConvertToCreditProvider(convertToCreditProvider)
+    self.conversionProvider = ConversionProvider(outer: self)
+    self.nativeClient.registerConvertToCreditProvider(self.conversionProvider)
   }
 
-  @objc
-  public func getGamesMatchup(
+  @objc public func registerRewardProvider() {
+    self.rewardProvider = RewardProvider(outer: self)
+    self.nativeClient.registerRewardProvider(self.rewardProvider)
+  }
+
+  @objc public func getGamesMatchup(
     _ gameId: String,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-    Task {
+    Task { @MainActor in
       do {
         let match = try await self.nativeClient.api.gamesMatchup(for: gameId)
-        // All the values inside the teams will always be the same, so map to the first available value
-        let wagerAmount = match?.teams[0].wagerAmount ?? 0
-
-        if let match {
-          resolve([
-            "id": match.id,
-            "createdAt": match.createdAt.toString(),
-            "updatedAt": match.updatedAt.toString(),
-            "status": match.status.rawValue,
-            "isArchive": match.isArchive,
-            "wagerOpponentTeamIdAmount": wagerAmount,
-            "teams": match.teams.map { team in
-              return [
-                "id": team.id,
-                "outcome": team.outcome?.rawValue as Any,
-                "users": team.users.map { user in
-                  return [
-                    "id": user.id,
-                    "username": user.user.username,
-                  ]
-                },
-              ]
-            },
-          ])
-        } else {
-          resolve(nil)
+        DispatchQueue.main.async {
+          if let match {
+            resolve(gamesMatchupToMap(match: match))
+          } else {
+            resolve(nil)
+          }
         }
       } catch {
-        reject("\(error)", error.localizedDescription, nil)
+        ErrorMapper.reject(reject, error: error)
       }
-
     }
-
   }
 
-  @objc
-  public func logout(
+  @objc public func closeFullScreenLucraFlows(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock) {
+        self.nativeClient.closeFullScreenLucraFlows()
+        return resolve(nil)
+  }
+    
+  @objc public func logout(
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -513,8 +338,7 @@ public class LucraSwiftClient: NSObject {
     }
   }
 
-  @MainActor @objc
-  public func handleLucraLink(
+  @MainActor @objc public func handleLucraLink(
     _ link: String,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
@@ -537,8 +361,7 @@ public class LucraSwiftClient: NSObject {
 
   }
 
-  @objc
-  public func registerDeviceTokenHex(
+  @objc public func registerDeviceTokenHex(
     _ token: String,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
@@ -551,14 +374,14 @@ public class LucraSwiftClient: NSObject {
     resolve(nil)
   }
 
-  @objc
-  public func registerDeviceTokenBase64(
+  @objc public func registerDeviceTokenBase64(
     _ token: String,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     guard let data = Data(base64Encoded: token) else {
-      reject("Invalid Base64 String", "The provided base64 string is not valid", nil)
+      reject(
+        "Invalid Base64 String", "The provided base64 string is not valid", nil)
       return
     }
     self.nativeClient.registerForPushNotifications(deviceToken: data)
@@ -566,19 +389,28 @@ public class LucraSwiftClient: NSObject {
   }
 
   @objc public func getFlowController(_ flow: String) -> UIViewController {
-    let nativeFlow = getLucraFlow(flow, matchupId: nil, teamInviteId: nil)
-    return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
+    do {
+      let nativeFlow = try LucraUtils.stringToLucraFlow(
+        flow, matchupId: nil, teamInviteId: nil, gameId: nil)
+      return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
+    } catch {
+      print("There was an error getting the native flow \(error)")
+      return self.nativeClient.ui.flow(.profile, hideCloseButton: true)
+    }
   }
 
   @objc public func getProfilePill() -> UIView {
     return self.nativeClient.ui.component(.userProfilePill)
   }
 
-  @objc public func getMiniFeed(_ userIDs: [String]?, onSizeChanged: @escaping (CGSize) -> Void)
+  @objc public func getMiniFeed(
+    _ userIDs: [String]?, onSizeChanged: @escaping (CGSize) -> Void
+  )
     -> UIView
   {
     return self.nativeClient.ui.component(
-      .miniPublicFeed(playerIDs: userIDs), parentUIViewController: UIViewController(),
+      .miniPublicFeed(playerIDs: userIDs),
+      parentUIViewController: UIViewController(),
       onSizeChanged: onSizeChanged)
   }
 
@@ -590,15 +422,71 @@ public class LucraSwiftClient: NSObject {
     return self.nativeClient.ui.component(.recommendedMatchup)
   }
 
-  @objc public func getContestCard(_ contestId: String?, onSizeChanged: @escaping (CGSize) -> Void)
+  @objc public func getContestCard(
+    _ contestId: String?, onSizeChanged: @escaping (CGSize) -> Void
+  )
     -> UIView
   {
     return self.nativeClient.ui.component(
-      .contestCard(contestId: contestId!), parentUIViewController: UIViewController(),
+      .contestCard(contestId: contestId!),
+      parentUIViewController: UIViewController(),
       onSizeChanged: onSizeChanged)
   }
 
   @MainActor @objc public func handleVenmoUrl(url: URL) -> Bool {
     return self.nativeClient.handlePaypalVenmoCallback(url: url)
+  }
+
+  @objc public func getRecommendedTournaments(
+    _ params: [String: Any], resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    let includeClosed: Bool = params["includeClosed"] as? Bool ?? true
+    let limit: Int = params["limit"] as? Int ?? 50
+
+    Task { @MainActor in
+      do {
+        let tournaments = try await self.nativeClient.api
+          .getRecommendedTournaments(
+            includeClosed: includeClosed, limit: limit
+          )
+        resolve(tournaments.map(tournametsMatchupToMap))
+      } catch {
+        ErrorMapper.reject(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func tournamentMatchup(
+    _ id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      do {
+        if let tournament = try await self.nativeClient.api.tournamentsMatchup(
+          for: id
+        ) {
+          resolve(tournametsMatchupToMap(tournament: tournament))
+        } else {
+          resolve(nil)
+        }
+      } catch {
+        ErrorMapper.reject(reject, error: error)
+      }
+
+    }
+  }
+
+  @objc public func joinTournament(
+    _ id: String, resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      do {
+        try await self.nativeClient.api.self.joinTournament(id: id)
+        resolve(nil)
+      } catch {
+        ErrorMapper.reject(reject, error: error)
+      }
+    }
   }
 }

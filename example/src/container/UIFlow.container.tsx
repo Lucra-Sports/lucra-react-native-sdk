@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import {
   Image,
-  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from 'react-native';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
@@ -23,6 +23,8 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
   const [profilePillKey, setProfilePillKey] = useState(
     Math.random().toString()
   );
+
+  const [matchupId, setMatchupId] = React.useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -53,69 +55,122 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.ONBOARDING)}
+          onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.ONBOARDING })}
         >
           <Text className="font-bold text-white">Onboarding</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.VERIFY_IDENTITY)}
+          onPress={() =>
+            LucraSDK.present({
+              name: LucraSDK.FLOW.VERIFY_IDENTITY,
+            })
+          }
         >
           <Text className="font-bold text-white">Verify Identity</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.ADD_FUNDS)}
+          onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.ADD_FUNDS })}
         >
           <Text className="font-bold text-white">Add Funds</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.WITHDRAW_FUNDS)}
+          onPress={() =>
+            LucraSDK.present({ name: LucraSDK.FLOW.WITHDRAW_FUNDS })
+          }
         >
           <Text className="font-bold text-white">Withdraw Funds</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.CREATE_GAMES_MATCHUP)}
+          onPress={() =>
+            LucraSDK.present({ name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP })
+          }
         >
           <Text className="font-bold text-white">Create Games Matchup</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.CREATE_SPORTS_MATCHUP)}
+          onPress={() =>
+            LucraSDK.present({
+              name: LucraSDK.FLOW.CREATE_GAMES_MATCHUP,
+              gameId: 'PING-PONG',
+            })
+          }
+        >
+          <Text className="font-bold text-white">
+            Create Games Matchup with PING-PONG id
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={() => {
+            LucraSDK.present({
+              name: LucraSDK.FLOW.GAMES_CONTEST_DETAILS,
+              matchupId: matchupId,
+            });
+          }}
+        >
+          <Text className="text-white">Show Games Matchup Details by ID</Text>
+        </TouchableOpacity>
+        <TextInput
+          value={matchupId}
+          onChangeText={setMatchupId}
+          placeholder="Set Matchup ID"
+          placeholderTextColor={'#CCC'}
+          className="border border-indigo-400 p-4 rounded-lg text-white"
+        />
+
+        <TouchableOpacity
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+          onPress={() =>
+            LucraSDK.present({ name: LucraSDK.FLOW.CREATE_SPORTS_MATCHUP })
+          }
         >
           <Text className="font-bold text-white">Create Sports Matchup</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.PROFILE)}
+          onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.PROFILE })}
         >
           <Text className="font-bold text-white">Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-          onPress={() => LucraSDK.present(LucraSDK.FLOW.PUBLIC_FEED)}
+          onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.PUBLIC_FEED })}
         >
           <Text className="font-bold text-white">Public Feed</Text>
         </TouchableOpacity>
 
-        {/* TODO review if iOS has a way to display myMatchups flow */}
-        {Platform.OS === 'android' ? (
-          <TouchableOpacity
-            className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-            onPress={() => LucraSDK.present(LucraSDK.FLOW.MY_MATCHUP)}
-          >
-            <Text className="font-bold text-white">My Matchups</Text>
-          </TouchableOpacity>
-        ) : null}
+        <TouchableOpacity
+          className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+          onPress={() => LucraSDK.present({ name: LucraSDK.FLOW.MY_MATCHUP })}
+        >
+          <Text className="font-bold text-white">My Matchups</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-red-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+          onPress={() =>
+            setTimeout(() => {
+              LucraSDK.closeFullScreenLucraFlows();
+            }, 10000)
+          }
+        >
+          <Text className="font-bold text-white">
+            🔧 Close All Flows (in 10 seconds)
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
