@@ -13,6 +13,14 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
+  packagingOptions {
+      pickFirst '**/libc++_shared.so'
+      pickFirst '**/libfbjni.so'
+      pickFirst '**/libjsc.so'
+      pickFirst '**/libreactnativejni.so'
+      pickFirst '**/libhermes.so'
+      pickFirst '**/libreactnative.so'
+  }
   ndkVersion rootProject.ext.ndkVersion
 
   buildToolsVersion rootProject.ext.buildToolsVersion
@@ -25,7 +33,8 @@ android {
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
     versionName "1.0"
-
+    testBuildType System.getProperty('testBuildType', 'debug')
+    testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     manifestPlaceholders = [
         'auth0Domain': 'LUCRA_SDK',
         'auth0Scheme': 'LUCRA_SDK'
@@ -45,6 +54,7 @@ android {
   buildTypes {
     debug {
       signingConfig signingConfigs.debug
+      testCoverageEnabled true
     }
     release {
       // Caution! In production, you need to generate your own keystore file.
@@ -52,8 +62,10 @@ android {
       signingConfig signingConfigs.debug
       minifyEnabled enableProguardInReleaseBuilds
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+      proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
     }
   }
+    
 }
 
 dependencies {
@@ -66,5 +78,9 @@ dependencies {
   } else {
     implementation jscFlavor
   }
+  // Detox dependencies
+  androidTestImplementation('com.wix:detox:+') 
+  implementation 'androidx.appcompat:appcompat:1.1.0'
+
 }
 

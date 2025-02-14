@@ -36,7 +36,7 @@ const pressCheckbox = async (label) => {
   });
 };
 
-describe('Lucra RN SDK', () => {
+describe(':ios:Lucra RN SDK', () => {
   beforeAll(async () => {
     await device.launchApp({
       permissions: { location: 'always' },

@@ -15,7 +15,9 @@
     "release:android": "cd android && bundle exec fastlane distribute",
     "release:ios": "cd ios && bundle exec fastlane distribute",
     "detox:build-ios": "detox build --configuration ios.sim.debug",
-    "detox:run-ios": "detox test --configuration ios.sim.debug"
+    "detox:run-ios": "detox test --configuration ios.sim.debug",
+    "detox:build-android": "detox build --configuration android.emu.debug",
+    "detox:run-android": "detox test --configuration android.emu.debug"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.0.0",
@@ -50,7 +52,7 @@
     "@types/react": "^18.3.3",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
-    "detox": "^20.28.0",
+    "detox": "^20.33.0",
     "jest": "^29",
     "tailwindcss": "^3.4.14"
   },
