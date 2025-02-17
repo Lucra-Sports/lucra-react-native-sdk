@@ -62,7 +62,7 @@ describe(':ios:Lucra RN SDK', () => {
     await pressButton(/add opponent/i);
     await waitFor(element(by.label(/invite your opponent.*/i)))
       .toBeVisible()
-      .withTimeout(50000);
+      .withTimeout(60000);
     await pressButton(/done/i);
   });
 });

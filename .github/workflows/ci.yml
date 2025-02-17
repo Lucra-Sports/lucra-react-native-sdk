@@ -56,7 +56,7 @@ jobs:
       - name: Build package
         run: yarn prepare
 
-  build-android:
+  test-android:
     runs-on: ubuntu-latest
     env:
       GPR_USER: LucraReactNativeCi
@@ -103,14 +103,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build example for Android
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Detox Build
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         env:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
-        run: |
-          yarn run build:android
+        run: cd example | yarn e2e:build-android
 
-  build-ios:
+      - name: Build and run e2e
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: default
+          arch: x86_64
+          avd-name: Medium_Phone_API_34
+          script: bash ${{ github.workspace }}/scripts/run-e2e-android.sh
+
+  test-ios:
     runs-on: self-hosted
     env:
       GPR_KEY: ${{ secrets.GPR_KEY }}
@@ -161,7 +176,16 @@ jobs:
           pod install --repo-update
         working-directory: example/ios
 
+      - name: Install Detox Dependencies
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
+
       - name: Build example for iOS
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         run: |
-          yarn run build:ios
+          yarn e2e:build-ios
+
+      - name: Run e2e for iOS
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        run: bash ${{ github.workspace }}/scripts/run-e2e-ios.sh

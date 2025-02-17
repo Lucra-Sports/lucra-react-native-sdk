@@ -1,7 +1,7 @@
 /** @type {Detox.DetoxConfig} */
 module.exports = {
   logger: {
-    level: 'trace',
+    level: 'error',
   },
   artifacts: {
     plugins: {
@@ -10,10 +10,7 @@ module.exports = {
         keepOnlyFailedTestsArtifacts: false,
         shouldTakeAutomaticSnapshots: true,
         takeWhen: {
-          testDone: true,
           testFailure: true,
-          testStart: false,
-          appNotReady: true,
         },
       },
     },
