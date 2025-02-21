@@ -43,26 +43,34 @@ import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sdk.core.user.SDKUserResult
 import com.lucrasports.sdk.ui.LucraUi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 
 @ReactModule(name = LucraClientModule.NAME)
 class LucraClientModule(private val context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
 
     private var fullAppFlowDialogFragment: DialogFragment? = null
-    private var _deepLinkEmitter = MutableStateFlow<String>("")
-    private var _deepLinkState: SharedFlow<String> = _deepLinkEmitter.asSharedFlow()
 
-    private var _creditConversionEmitter = MutableStateFlow<ReadableMap?>(null)
-    private var _creditConversionEmitterState: SharedFlow<ReadableMap?> =
-        _creditConversionEmitter.asSharedFlow()
+    // FIFO queue to store deep links since many can be requested at once,
+    // need a way to emit as they come in
+    private val deepLinkQueue =
+        Channel<String>(
+            capacity = Channel.UNLIMITED,
+            onBufferOverflow = BufferOverflow.DROP_LATEST
+        )
 
-    private var _availableRewardsEmitter = MutableStateFlow<ReadableArray?>(null)
-    private var _availableRewardsEmitterState: SharedFlow<ReadableArray?> =
-        _availableRewardsEmitter.asSharedFlow()
+    private val creditConversionQueue =
+        Channel<ReadableMap>(
+            capacity = Channel.UNLIMITED,
+            onBufferOverflow = BufferOverflow.DROP_LATEST
+        )
+
+    private val availableRewardsQueue =
+        Channel<ReadableArray>(
+            capacity = Channel.UNLIMITED,
+            onBufferOverflow = BufferOverflow.DROP_LATEST
+        )
 
     private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
         reactContext
@@ -111,8 +119,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 val linkMap = Arguments.createMap()
                 linkMap.putString("link", lucraLink)
                 sendEvent(context, "_deepLink", linkMap)
-                val transformedLink = _deepLinkState.first { it != "" }
-                transformedLink
+                val transformedLinkFromReact = deepLinkQueue.receive()
+                return@setDeeplinkTransformer transformedLinkFromReact
             }
 
             LucraClient()
@@ -372,17 +380,24 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     @ReactMethod
     fun emitDeepLink(link: String) {
-        _deepLinkEmitter.tryEmit(link)
+        // Check null because React can't guarantee non null
+        link.takeIf { !it.isNullOrEmpty() }?.let {
+            deepLinkQueue.trySend(it)
+        }
     }
 
     @ReactMethod
     fun emitAvailableRewards(args: ReadableArray) {
-        _availableRewardsEmitter.tryEmit(args)
+        args.takeIf { it != null }?.let {
+            availableRewardsQueue.trySend(it)
+        }
     }
 
     @ReactMethod
     fun emitCreditConversion(args: ReadableMap) {
-        _creditConversionEmitter.tryEmit(args)
+        args.takeIf { it != null }?.let {
+            creditConversionQueue.trySend(it)
+        }
     }
 
     @ReactMethod
@@ -392,7 +407,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 object : LucraRewardProvider {
                     override suspend fun availableRewards(): List<LucraReward> {
                         sendEvent(context, "_availableRewards", null)
-                        val rewards = _availableRewardsEmitterState.first { it != null }!!
+                        val rewards = availableRewardsQueue.receive()
                         return rewards.toArrayList().map {
                             @Suppress("UNCHECKED_CAST") val rewardMap =
                                 Arguments.makeNativeMap(it as Map<String, Any>)
@@ -422,8 +437,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         val linkMap = Arguments.createMap()
                         linkMap.putDouble("amount", cashAmount)
                         sendEvent(context, "_creditConversion", linkMap)
-                        val responseMap =
-                            _creditConversionEmitterState.first { it != null }!!
+                        val responseMap = creditConversionQueue.receive()
                         return writableNativeMapToLucraConvertToCreditWithdrawMethod(
                             responseMap,
                             cashAmount
