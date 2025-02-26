@@ -55,8 +55,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "workspaces": [
-    "example",
-    "example-expo"
+    "example"
   ],
   "dependencies": {
     "react": "18.3.1",
