@@ -3,8 +3,8 @@
  * As a workaround we get the button location and then call a global device.tap at the correct coordinates.
  *  */
 
-const SANDBOX_PHONE = '5555550103';
-const SANDBOX_CODE = '123456';
+const SANDBOX_PHONE = process.env.DETOX_SANDBOX_PHONE;
+const SANDBOX_CODE = process.env.DETOX_SANDBOX_CODE;
 
 const pressButton = async (label) => {
   const el = element(by.label(label)).atIndex(0);

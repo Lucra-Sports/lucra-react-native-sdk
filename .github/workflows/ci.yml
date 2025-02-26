@@ -121,7 +121,7 @@ jobs:
         with:
           api-level: 34
           target: default
-          arch: x86_64
+          emulator-options: -no-window -no-boot-anim -no-audio -no-snapshot-load
           avd-name: Medium_Phone_API_34
           script: bash ${{ github.workspace }}/scripts/run-e2e-android.sh
 
@@ -129,6 +129,8 @@ jobs:
     runs-on: self-hosted
     env:
       GPR_KEY: ${{ secrets.GPR_KEY }}
+      DETOX_SANDBOX_PHONE: ${{ secrets.DETOX_SANDBOX_PHONE }}
+      DETOX_SANDBOX_CODE: ${{ secrets.DETOX_SANDBOX_CODE }}
       APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
       APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
       APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
