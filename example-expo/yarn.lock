@@ -1833,16 +1833,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lucra-sports/lucra-react-native-sdk@npm:*":
-  version: 2.1.2
-  resolution: "@lucra-sports/lucra-react-native-sdk@npm:2.1.2::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40lucra-sports%2Flucra-react-native-sdk%2F2.1.2%2F1de603000edde6f40e82c5598d6de87ba1206143"
+"@lucra-sports/lucra-react-native-sdk@npm:2.4.3":
+  version: 2.4.3
+  resolution: "@lucra-sports/lucra-react-native-sdk@npm:2.4.3::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40lucra-sports%2Flucra-react-native-sdk%2F2.4.3%2F3716e1cc0009af21cbaa27850f06696605144e62"
   dependencies:
     react: "npm:18.3.1"
     react-native: "npm:0.76.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/409bb23e97ec63ca487d037f77f6bed73cb2a4d0edc2b119713561b83918ca2b46140f9a4288bbd8626d5d3091562c9ee485e420ff877e2a4289739856ca7e7c
+  checksum: 10c0/6207ba68c7879f29378ecee316b16a0637da803388816f80028a92ab2d79f2ae89e12d2b5d41caa02248989a0dca93c88f2f70b2f52e59097de25e51fc59243d
   languageName: node
   linkType: hard
 
@@ -3818,7 +3818,7 @@ __metadata:
   resolution: "example-expo@workspace:."
   dependencies:
     "@babel/core": "npm:^7.20.0"
-    "@lucra-sports/lucra-react-native-sdk": "npm:*"
+    "@lucra-sports/lucra-react-native-sdk": "npm:2.4.3"
     "@types/react": "npm:~18.3.12"
     expo: "npm:52.0.25"
     expo-build-properties: "npm:~0.13.2"

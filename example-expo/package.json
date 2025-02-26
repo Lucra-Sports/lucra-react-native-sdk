@@ -9,7 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@lucra-sports/lucra-react-native-sdk": "..",
+    "@lucra-sports/lucra-react-native-sdk": "2.4.3",
     "expo": "52.0.25",
     "expo-build-properties": "~0.13.2",
     "expo-dev-client": "~5.0.9",

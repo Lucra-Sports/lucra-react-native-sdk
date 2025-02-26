@@ -49,6 +49,7 @@ export default {
           },
         },
       ],
+      // ['@lucra-sports/lucra-react-native-sdk'],
       ['../app.plugin.js'],
     ],
   },
