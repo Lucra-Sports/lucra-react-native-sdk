@@ -8,3 +8,4 @@
 - Follow the instructios on the main readme to create a github classic token and create the .npmrc
 - `yarn`
 - `npx expo prebuild --clean`
+- `npx expo run:ios`
