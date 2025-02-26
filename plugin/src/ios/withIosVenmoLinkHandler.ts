@@ -18,13 +18,15 @@ export const withIosVenmoLinkHandler: ConfigPlugin = (config) => {
         existingMethodRegex,
         (match, methodBody) => {
           if (
-            methodBody.includes('[[url host] isEqualToString:@"venmo.com"]')
+            methodBody.includes(
+              '[[LucraClient sharedInstance] handleVenmoUrl:url];'
+            )
           ) {
             return match; // The snippet is already present
           }
           return match.replace(
             methodBody,
-            `\n  if ([[url host] isEqualToString:@"venmo.com"]) {\n    return [[LucraClient sharedInstance] handleVenmoUrl:url];\n  }\n${methodBody}`
+            `\n  [[LucraClient sharedInstance] handleVenmoUrl:url];\n${methodBody}`
           );
         }
       );
@@ -32,9 +34,7 @@ export const withIosVenmoLinkHandler: ConfigPlugin = (config) => {
       // Add the entire method if it doesn't exist
       config.modResults.contents += `
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    if ([[url host] isEqualToString:@"venmo.com"]) {
-        return [[LucraClient sharedInstance] handleVenmoUrl:url];
-    }
+    [[LucraClient sharedInstance] handleVenmoUrl:url];
     return [RCTLinkingManager application:application openURL:url options:options];
 }
 `;

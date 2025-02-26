@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { nullthrows } from './nullthrows';
+import * as Linking from 'expo-linking';
 
 let apiUrl = process.env.EXPO_PUBLIC_LUCRASDK_API_URL!;
 let apiKey = process.env.EXPO_PUBLIC_LUCRASDK_API_KEY!;
@@ -37,11 +38,25 @@ export default function App() {
     },
   }).then(() => {
     console.warn('LucraSDK initialized');
-    // LucraSDK.present({ name: LucraSDK.FLOW.ADD_FUNDS });
+    LucraSDK.present({ name: LucraSDK.FLOW.ADD_FUNDS });
   });
   useEffect(() => {
     console.warn(apiKey);
     console.warn(apiUrl);
+  }, []);
+
+  useEffect(() => {
+    const subscription = Linking.addEventListener('url', ({ url }) => {
+      console.log('url from listener', url);
+    });
+    const getInitialLink = async () => {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        console.log('Initial url is: ', initialUrl);
+      }
+    };
+    getInitialLink();
+    return () => subscription.remove();
   }, []);
 
   return (
