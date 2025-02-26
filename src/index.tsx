@@ -371,7 +371,8 @@ export const LucraSDK = {
     await LucraClient.configureUser(user);
   },
   getUser: async (): Promise<LucraUser> => {
-    return (await LucraClient.getUser()) as LucraUser;
+    let object = (await LucraClient.getUser()) as any;
+    return object.user as LucraUser;
   },
   closeFullScreenLucraFlows: (): Promise<void> => {
     return LucraClient.closeFullScreenLucraFlows();
