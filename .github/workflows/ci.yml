@@ -83,6 +83,16 @@ jobs:
           EOF
           set -x # Re-enable logging
 
+      - name: Free up disk space
+        run: |
+          echo "Cleaning up unnecessary directories to free disk space..."
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          echo "Cleanup complete"
+          df -h
+
       - name: Install JDK
         uses: actions/setup-java@v4
         with:
