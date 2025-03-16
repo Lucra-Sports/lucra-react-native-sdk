@@ -87,6 +87,22 @@ Note: The current iOS implementation will use the font's family name and search 
 When working with expo-dev-client, it's essential to disable the EX_DEV_CLIENT_NETWORK_INSPECTOR variable, The SDK uses third-party libraries that block network inspection.
 To ensure that EX_DEV_CLIENT_NETWORK_INSPECTOR is turned off make sure networkInspector is false when using expo-build-properties.
 
+### Setup Venmo deeplinks with Expo
+
+Make sure to add the required Info.plist changes to the iOS section in order to support Venmo callback urls and deeplinks:
+
+```javascript
+      infoPlist: {
+        CFBundleURLTypes: [
+          {
+            CFBundleURLSchemes: ['YOUR_APP_BUNDLE_IDENTIFIER.venmo'],
+            CFBundleURLName: 'Venmo URL Scheme',
+          },
+        ],
+        LSApplicationQueriesSchemes: ['venmo', 'com.venmo.touch.v2'],
+      },
+```
+
 ## iOS
 
 The minimum target version is iOS 15.1, so you will also have to update this on your project (You can do it in the XCode general tab) and in your podfile:
@@ -649,9 +665,7 @@ Note that in case you need to natively handle other incoming urls you can condit
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   // Handle the incoming URL
   NSLog(@"Received URL: %@", url.absoluteString);
-  if ([[url host] isEqualToString:@"venmo.com"]) {
-    return [[LucraClient sharedInstance] handleVenmoUrl:url];
-  }
+  [[LucraClient sharedInstance] handleVenmoUrl:url];
   return [RCTLinkingManager application:application openURL:url options:options];
 }
 ```

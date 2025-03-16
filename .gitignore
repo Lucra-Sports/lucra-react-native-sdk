@@ -96,3 +96,6 @@ example/ios/fastlane/report.xml
 !.yarn/versions
 
 .npmrc
+
+# Created by the example-expo project
+package-lock.json

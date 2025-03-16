@@ -4,8 +4,11 @@ import {
   withAndroidManifest,
   withGradleProperties,
 } from '@expo/config-plugins';
-
-import { withIosBuildProperties, withIosInfoPlist } from './ios';
+import {
+  withIosBuildProperties,
+  withIosInfoPlist,
+  withIosVenmoLinkHandler,
+} from './ios';
 import {
   withAndroidBuildProperties,
   withAndroidPermissions,
@@ -23,6 +26,7 @@ export const withLucraSDKConfig: ConfigPlugin<
   // iOS
   config = withIosBuildProperties(config);
   config = withIosInfoPlist(config, pluginConfig);
+  config = withIosVenmoLinkHandler(config);
 
   // Android
   config = withAndroidBuildProperties(config);

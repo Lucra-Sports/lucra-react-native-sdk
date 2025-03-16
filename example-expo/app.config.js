@@ -14,6 +14,15 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.lucrasports.mobile-rnsample',
+      infoPlist: {
+        CFBundleURLTypes: [
+          {
+            CFBundleURLSchemes: ['com.lucrasports.mobile-rnsample.venmo'],
+            CFBundleURLName: 'Venmo URL Scheme',
+          },
+        ],
+        LSApplicationQueriesSchemes: ['venmo', 'com.venmo.touch.v2'],
+      },
     },
     android: {
       package: 'com.lucrasports.mobile.rnsample',
@@ -49,6 +58,7 @@ export default {
           },
         },
       ],
+      // ['@lucra-sports/lucra-react-native-sdk'],
       ['../app.plugin.js'],
     ],
   },
