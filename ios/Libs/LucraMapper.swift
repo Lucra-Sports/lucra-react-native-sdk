@@ -278,17 +278,7 @@ public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.
   ]
 }
 
-public func tournamentLeaderboardToMap(leaderboard: LucraSDK.TournamentsMatchup.Leaderboard)
-  -> [String: Any]
-{
-  return [
-    "id": leaderboard.id,
-    "username": leaderboard.username as Any,
-    "rewardValue": leaderboard.rewardValue as Any,
-  ]
-}
-
-public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [String: Any?] {
+public func tournamentMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [String: Any?] {
   return [
     "id": tournament.id,
     "title": tournament.title,
@@ -297,7 +287,6 @@ public func tournametsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [
     "buyInAmount": tournament.buyInAmount,
     "description": tournament.description as Any,
     "participants": tournament.participants.map(tournamentParticipantToMap),
-    "leaderboards": tournament.leaderboards.map(tournamentLeaderboardToMap),
     "status": tournament.status,
     "metadata": tournament.metadata as Any,
     "iconUrl": tournament.iconUrl as Any,
