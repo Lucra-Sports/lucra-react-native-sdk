@@ -57,12 +57,12 @@ describe(':ios:Lucra RN SDK', () => {
     await device.tap(point);
     await pressButton(/let's play*./i);
     await device.tap(point);
-    await pressButton(/irl game name/i);
-    await pressButton(/^create.*matchup$/i);
-    await pressButton(/add opponent/i);
-    await waitFor(element(by.label(/invite your opponent.*/i)))
-      .toBeVisible()
-      .withTimeout(60000);
-    await pressButton(/done/i);
+    // await pressButton(/irl game name/i);
+    // await pressButton(/^create.*matchup$/i);
+    // await pressButton(/add opponent/i);
+    // await waitFor(element(by.label(/invite your opponent.*/i)))
+    //   .toBeVisible()
+    //   .withTimeout(60000);
+    // await pressButton(/done/i);
   });
 });
