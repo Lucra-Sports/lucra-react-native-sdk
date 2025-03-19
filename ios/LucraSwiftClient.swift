@@ -450,7 +450,7 @@ import LucraSDK
           .getRecommendedTournaments(
             includeClosed: includeClosed, limit: limit
           )
-        resolve(tournaments.map(tournametsMatchupToMap))
+        resolve(tournaments.map(tournamentMatchupToMap))
       } catch {
         ErrorMapper.reject(reject, error: error)
       }
@@ -465,7 +465,7 @@ import LucraSDK
         if let tournament = try await self.nativeClient.api.tournamentsMatchup(
           for: id
         ) {
-          resolve(tournametsMatchupToMap(tournament: tournament))
+          resolve(tournamentMatchupToMap(tournament: tournament))
         } else {
           resolve(nil)
         }
