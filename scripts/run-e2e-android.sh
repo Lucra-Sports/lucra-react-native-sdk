@@ -6,6 +6,8 @@ yarn start &
 
 METRO_BUNDLER_PID=$!
 
+yarn e2e:build-android
+
 yarn e2e:run-android --headless
 
 DETOX_EXIT_CODE=$?
