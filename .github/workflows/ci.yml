@@ -63,10 +63,10 @@ jobs:
       JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       GRADLE_OPTS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
     steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          android: false
+      # - name: Free Disk Space (Ubuntu)
+      #   uses: jlumbroso/free-disk-space@main
+      #   with:
+      #     android: false
 
       - name: Checkout
         uses: actions/checkout@v4
