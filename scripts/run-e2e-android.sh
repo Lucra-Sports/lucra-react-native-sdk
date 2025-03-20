@@ -3,6 +3,8 @@ set -e
 
 cd example
 
+yarn e2e:build-android
+
 yarn start > metro.log 2>&1 &
 METRO_BUNDLER_PID=$!
 
