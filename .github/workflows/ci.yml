@@ -65,17 +65,18 @@ jobs:
         uses: jlumbroso/free-disk-space@main
         with:
           android: false
+
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Set up Fastlane
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-          working-directory: example
+      # - name: Set up Fastlane
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     bundler-cache: true
+      #     working-directory: example
 
       - name: Set up Firebase authentication
         run: |
@@ -87,34 +88,25 @@ jobs:
           EOF
           set -x # Re-enable logging
 
-      - name: Free up disk space
-        run: |
-          echo "Cleaning up unnecessary directories to free disk space..."
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          echo "Cleanup complete"
-          df -h
-
       - name: Install JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Finalize Android SDK
-        run: |
-          /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
+      # - name: Finalize Android SDK
+      #   run: |
+      #     /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
 
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/wrapper
-            ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      # - name: Cache Gradle
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.gradle/wrapper
+      #       ~/.gradle/caches
+      #     key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-gradle-
 
       - name: Enable KVM group perms
         run: |
@@ -123,7 +115,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Build and run e2e
-        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        # if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
