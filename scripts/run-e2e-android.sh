@@ -5,7 +5,13 @@ cd example
 
 cd android
 
-./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
+./gradlew assembleDebug
+
+echo "🟦 Assemble debug done!"
+
+./gradlew assembleAndroidTest -DtestBuildType=debug
+
+echo "🟦 Assemble android test done!"
 
 yarn start > metro.log 2>&1 &
 METRO_BUNDLER_PID=$!
