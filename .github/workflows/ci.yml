@@ -57,7 +57,7 @@ jobs:
   #       run: yarn prepare
 
   test-android:
-    runs-on: self-hosted
+    runs-on: [self-hosted, android]
     env:
       GPR_USER: LucraReactNativeCi
       JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
