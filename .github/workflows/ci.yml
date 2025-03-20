@@ -124,11 +124,8 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # - name: Run Detox Build
-      #   if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-      #   env:
-      #     JAVA_OPTS: '-XX:MaxHeapSize=6g'
-      #   run: cd example | yarn e2e:build-android
+      - name: Run Detox Build
+        run: cd example | yarn e2e:build-android
 
       - name: Build and run e2e
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
