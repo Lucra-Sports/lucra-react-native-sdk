@@ -82,11 +82,11 @@ jobs:
         run: |
           FIREBASE_SERVICE_CREDENTIALS_FILE="${{ runner.temp }}/firebase-service-account.json"
           echo "FIREBASE_SERVICE_CREDENTIALS_FILE=$FIREBASE_SERVICE_CREDENTIALS_FILE" >> $GITHUB_ENV
-          set +x # Disable logging secrets
+          # set +x # Disable logging secrets
           cat <<EOF > "$FIREBASE_SERVICE_CREDENTIALS_FILE"
           ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           EOF
-          set -x # Re-enable logging
+          # set -x # Re-enable logging
 
       - name: Install JDK
         uses: actions/setup-java@v4
