@@ -108,6 +108,8 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-gradle-
       - name: build debug app
+        env:
+          JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: |
           ./scripts/build-android-debug.sh
 
