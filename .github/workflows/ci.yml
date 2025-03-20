@@ -145,19 +145,21 @@ jobs:
       #     sudo udevadm control --reload-rules
       #     sudo udevadm trigger --name-match=kvm
 
-      - name: Build and run e2e
-        # if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          # target: google_apis
-          # arch: x86_64
-          emulator-options: -no-window -no-boot-anim -no-audio -no-snapshot-load
-          avd-name: Medium_Phone_API_29
-          script: |
-            adb wait-for-device
-            adb shell input keyevent 82
-            ./scripts/run-e2e-android.sh
+      # - name: Build and run e2e
+      #   # if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   with:
+      #     api-level: 29
+      #     # target: google_apis
+      #     # arch: x86_64
+      #     emulator-options: -no-window -no-boot-anim -no-audio -no-snapshot-load
+      #     avd-name: Medium_Phone_API_29
+      #     script: |
+      #       adb wait-for-device
+      #       adb shell input keyevent 82
+      #       ./scripts/run-e2e-android.sh
+      - name: Run e2e for Android
+        run: ./scripts/run-e2e-android.sh
 
   # test-ios:
   #   runs-on: self-hosted
