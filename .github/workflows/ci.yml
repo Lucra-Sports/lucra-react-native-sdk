@@ -96,12 +96,33 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # - name: Check memory usage before build
-      #   run: free -m
+      - name: Set up Android SDK
+        run: |
+          echo "Installing Android SDK tools..."
+          CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-mac-9477386_latest.zip"
+          ANDROID_HOME=$HOME/Library/Android/sdk
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
 
-      # - name: Finalize Android SDK
-      #   run: |
-      #     /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
+          mkdir -p "$ANDROID_HOME/cmdline-tools"
+          curl -o cmdline-tools.zip $CMDLINE_TOOLS_URL
+          unzip -q cmdline-tools.zip -d "$ANDROID_HOME/cmdline-tools"
+          mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+          rm cmdline-tools.zip
+
+          # Install required Android SDK components
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install \
+          "platform-tools" \
+          "platforms;android-33" \
+          "build-tools;33.0.0" \
+          "system-images;android-29;default;x86_64" \
+          "emulator"
+
+      - name: Finalize Android SDK
+        run: |
+          /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
 
       # - name: Cache Gradle
       #   uses: actions/cache@v4
