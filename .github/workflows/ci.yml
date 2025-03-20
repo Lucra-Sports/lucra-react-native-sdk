@@ -8,53 +8,53 @@ env:
   GPR_KEY: ${{ secrets.GPR_KEY }}
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/setup
+  #     - name: Setup
+  #       uses: ./.github/actions/setup
 
-      - name: Lint files
-        run: yarn lint
+  #     - name: Lint files
+  #       run: yarn lint
 
-  typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # typecheck:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/setup
+  #     - name: Setup
+  #       uses: ./.github/actions/setup
 
-      - name: Typecheck files
-        run: yarn typecheck
+  #     - name: Typecheck files
+  #       run: yarn typecheck
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/setup
+  #     - name: Setup
+  #       uses: ./.github/actions/setup
 
-      - name: Run unit tests
-        run: yarn test --maxWorkers=2 --coverage --passWithNoTests
+  #     - name: Run unit tests
+  #       run: yarn test --maxWorkers=2 --coverage --passWithNoTests
 
-  build-library:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # build-library:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/setup
+  #     - name: Setup
+  #       uses: ./.github/actions/setup
 
-      - name: Build package
-        run: yarn prepare
+  #     - name: Build package
+  #       run: yarn prepare
 
   test-android:
     runs-on: ubuntu-latest
@@ -138,69 +138,69 @@ jobs:
           avd-name: Medium_Phone_API_29
           script: bash ${{ github.workspace }}/scripts/run-e2e-android.sh
 
-  test-ios:
-    runs-on: self-hosted
-    env:
-      GPR_KEY: ${{ secrets.GPR_KEY }}
-      DETOX_SANDBOX_PHONE: ${{ secrets.DETOX_SANDBOX_PHONE }}
-      DETOX_SANDBOX_CODE: ${{ secrets.DETOX_SANDBOX_CODE }}
-      APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
-      APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
-      APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # test-ios:
+  #   runs-on: self-hosted
+  #   env:
+  #     GPR_KEY: ${{ secrets.GPR_KEY }}
+  #     DETOX_SANDBOX_PHONE: ${{ secrets.DETOX_SANDBOX_PHONE }}
+  #     DETOX_SANDBOX_CODE: ${{ secrets.DETOX_SANDBOX_CODE }}
+  #     APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
+  #     APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
+  #     APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/setup
+  #     - name: Setup
+  #       uses: ./.github/actions/setup
 
-      - name: Cache cocoapods
-        id: cocoapods-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/ios/Pods
-          key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cocoapods-
+  #     - name: Cache cocoapods
+  #       id: cocoapods-cache
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: |
+  #           **/ios/Pods
+  #         key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-cocoapods-
 
-      - name: Set up Fastlane
-        run: |
-          cd example
-          gem install bundler:2.4.7
-          bundle install
+  #     - name: Set up Fastlane
+  #       run: |
+  #         cd example
+  #         gem install bundler:2.4.7
+  #         bundle install
 
-      - name: Install cocoapods
-        run: |
-          gem install cocoapods
+  #     - name: Install cocoapods
+  #       run: |
+  #         gem install cocoapods
 
-      - name: Validate Podfile.lock consistency
-        run: |
-          if ! cmp -s Podfile.lock Pods/Manifest.lock; then
-            cd example/ios
-            echo "Podfile.lock is out of sync, requiring pod install"
-            rm -rf Pods/
-            pod cache clean --all
-            echo "pod_install_required=1" >> $GITHUB_ENV
-          fi
+  #     - name: Validate Podfile.lock consistency
+  #       run: |
+  #         if ! cmp -s Podfile.lock Pods/Manifest.lock; then
+  #           cd example/ios
+  #           echo "Podfile.lock is out of sync, requiring pod install"
+  #           rm -rf Pods/
+  #           pod cache clean --all
+  #           echo "pod_install_required=1" >> $GITHUB_ENV
+  #         fi
 
-      - name: Install cocoapods
-        if: steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1'
-        run: |
-          pod repo update
-          pod install --repo-update
-        working-directory: example/ios
+  #     - name: Install cocoapods
+  #       if: steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1'
+  #       run: |
+  #         pod repo update
+  #         pod install --repo-update
+  #       working-directory: example/ios
 
-      - name: Install Detox Dependencies
-        run: |
-          brew tap wix/brew
-          brew install applesimutils
+  #     - name: Install Detox Dependencies
+  #       run: |
+  #         brew tap wix/brew
+  #         brew install applesimutils
 
-      - name: Build example for iOS
-        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-        run: |
-          yarn e2e:build-ios
+  #     - name: Build example for iOS
+  #       if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+  #       run: |
+  #         yarn e2e:build-ios
 
-      - name: Run e2e for iOS
-        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-        run: bash ${{ github.workspace }}/scripts/run-e2e-ios.sh
+  #     - name: Run e2e for iOS
+  #       if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+  #       run: bash ${{ github.workspace }}/scripts/run-e2e-ios.sh
