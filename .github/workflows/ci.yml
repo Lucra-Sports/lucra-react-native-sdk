@@ -125,6 +125,13 @@ jobs:
           avd-name: Medium_Phone_API_29
           script: bash ${{ github.workspace }}/scripts/run-e2e-android.sh
 
+      - name: Gradlew stack trace on failure
+        if: failure()
+        run: |
+          echo "Gradlew stack trace"
+          cat ${{ github.workspace }}/example/android/gradlew.log
+          cat ${{ github.workspace }}/example/android/gradlew --stacktrace
+
   # test-ios:
   #   runs-on: self-hosted
   #   env:
