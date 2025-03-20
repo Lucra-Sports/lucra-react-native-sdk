@@ -124,9 +124,6 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run Detox Build
-        run: cd example | yarn e2e:build-android
-
       - name: Build and run e2e
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         uses: reactivecircus/android-emulator-runner@v2
