@@ -1,4 +1,4 @@
-# ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 
 source 'https://github.com/Lucra-Sports/lucra-ios-sdk.git'
 source 'https://cdn.cocoapods.org/'
