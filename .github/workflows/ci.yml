@@ -96,8 +96,8 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Check memory usage before build
-        run: free -m
+      # - name: Check memory usage before build
+      #   run: free -m
 
       # - name: Finalize Android SDK
       #   run: |
@@ -137,13 +137,6 @@ jobs:
             adb wait-for-device
             adb shell input keyevent 82
             ./scripts/run-e2e-android.sh
-
-      - name: Gradlew stack trace on failure
-        if: failure()
-        run: |
-          echo "Gradlew stack trace"
-          cat ${{ github.workspace }}/example/android/gradlew.log
-          cat ${{ github.workspace }}/example/android/gradlew --stacktrace
 
   # test-ios:
   #   runs-on: self-hosted
