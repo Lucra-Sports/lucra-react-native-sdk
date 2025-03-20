@@ -123,7 +123,10 @@ jobs:
           arch: x86_64
           emulator-options: -no-window -no-boot-anim -no-audio -no-snapshot-load
           avd-name: Medium_Phone_API_29
-          script: bash ${{ github.workspace }}/scripts/run-e2e-android.sh
+          script: |
+            adb wait-for-device
+            adb shell input keyevent 82
+            ./scripts/run-e2e-android.sh
 
       - name: Gradlew stack trace on failure
         if: failure()
