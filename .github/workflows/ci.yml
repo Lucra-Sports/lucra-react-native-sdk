@@ -94,6 +94,9 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Check memory usage before build
+        run: free -m
+
       # - name: Finalize Android SDK
       #   run: |
       #     /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
@@ -109,7 +112,7 @@ jobs:
       #       ${{ runner.os }}-gradle-
       - name: build debug app
         env:
-          JAVA_OPTS: '-XX:MaxHeapSize=6g'
+          JAVA_TOOL_OPTIONS: '-Xmx6g -XX:MaxHeapSize=6g -XX:MaxMetaspaceSize=512m'
         run: |
           ./scripts/build-android-debug.sh
 
