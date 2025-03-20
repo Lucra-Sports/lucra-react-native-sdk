@@ -60,6 +60,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GPR_USER: LucraReactNativeCi
+      JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
+      GRADLE_OPTS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -111,8 +113,8 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-gradle-
       - name: build debug app
-        env:
-          JAVA_TOOL_OPTIONS: '-Xmx6g -XX:MaxHeapSize=6g -XX:MaxMetaspaceSize=512m'
+        # env:
+        #   JAVA_TOOL_OPTIONS: '-Xmx6g -XX:MaxHeapSize=6g -XX:MaxMetaspaceSize=512m'
         run: |
           ./scripts/build-android-debug.sh
 
