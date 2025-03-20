@@ -63,7 +63,6 @@ jobs:
       JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       GRADLE_OPTS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       ANDROID_HOME: /Users/lucra/Library/Android/sdk
-      PATH: /Users/lucra/Library/Android/sdk/platform-tools:/Users/lucra/Library/Android/sdk/tools:$PATH
 
     steps:
       # - name: Free Disk Space (Ubuntu)
