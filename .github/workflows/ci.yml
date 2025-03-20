@@ -61,11 +61,9 @@ jobs:
     env:
       GPR_USER: LucraReactNativeCi
     steps:
-      # Ubuntu runners only guarantee 14 GBs of space, which is very litte, we clean up a bit
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false
           android: false
       - name: Checkout
         uses: actions/checkout@v4
