@@ -3,6 +3,10 @@ set -e
 
 cd example
 
+cd android
+
+./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
+
 yarn start > metro.log 2>&1 &
 METRO_BUNDLER_PID=$!
 
