@@ -107,6 +107,9 @@ jobs:
       #     key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
       #     restore-keys: |
       #       ${{ runner.os }}-gradle-
+      - name: build debug app
+        run: |
+          ./scripts/build-android-debug.sh
 
       - name: Enable KVM group perms
         run: |
