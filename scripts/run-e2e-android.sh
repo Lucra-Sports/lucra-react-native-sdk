@@ -5,7 +5,13 @@ cd example
 
 cd android
 
-./gradlew assembleDebug
+# Run assembleDebug and capture logs
+if ! ./gradlew assembleDebug --stacktrace --info > assembleDebug.log 2>&1; then
+  echo "❌ Error: Failed to assemble debug build"
+  cat assembleDebug.log
+  exit 1
+fi
+
 
 echo "🟦 Assemble debug done!"
 
