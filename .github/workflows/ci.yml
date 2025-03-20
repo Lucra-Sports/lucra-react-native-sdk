@@ -134,9 +134,11 @@ jobs:
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34
+          api-level: 29
+          target: google_apis
+          arch: x86_64
           emulator-options: -no-window -no-boot-anim -no-audio -no-snapshot-load
-          avd-name: Medium_Phone_API_34
+          avd-name: Medium_Phone_API_29
           script: bash ${{ github.workspace }}/scripts/run-e2e-android.sh
 
   test-ios:
