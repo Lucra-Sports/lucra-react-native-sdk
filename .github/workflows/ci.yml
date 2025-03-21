@@ -8,53 +8,53 @@ env:
   GPR_KEY: ${{ secrets.GPR_KEY }}
 
 jobs:
-  # lint:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup
-  #       uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
 
-  #     - name: Lint files
-  #       run: yarn lint
+      - name: Lint files
+        run: yarn lint
 
-  # typecheck:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup
-  #       uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
 
-  #     - name: Typecheck files
-  #       run: yarn typecheck
+      - name: Typecheck files
+        run: yarn typecheck
 
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup
-  #       uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
 
-  #     - name: Run unit tests
-  #       run: yarn test --maxWorkers=2 --coverage --passWithNoTests
+      - name: Run unit tests
+        run: yarn test --maxWorkers=2 --coverage --passWithNoTests
 
-  # build-library:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  build-library:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup
-  #       uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
 
-  #     - name: Build package
-  #       run: yarn prepare
+      - name: Build package
+        run: yarn prepare
 
   test-android:
     runs-on: [self-hosted, android]
@@ -65,22 +65,11 @@ jobs:
       ANDROID_HOME: /Users/lucra/Library/Android/sdk
 
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     android: false
-
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/setup
-
-      # - name: Set up Fastlane
-      #   uses: ruby/setup-ruby@v1
-      #   with:
-      #     bundler-cache: true
-      #     working-directory: example
 
       - name: Set up Firebase authentication
         run: |
@@ -92,140 +81,76 @@ jobs:
           EOF
           # set -x # Re-enable logging
 
-      - name: Install JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      # - name: Set up Android SDK
-      #   run: |
-      #     echo "Installing Android SDK tools..."
-      #     CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-mac-9477386_latest.zip"
-      #     ANDROID_HOME=$HOME/Library/Android/sdk
-      #     echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-      #     echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
-      #     echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
-      #     echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
-
-      #     mkdir -p "$ANDROID_HOME/cmdline-tools"
-      #     curl -o cmdline-tools.zip $CMDLINE_TOOLS_URL
-      #     unzip -q cmdline-tools.zip -d "$ANDROID_HOME/cmdline-tools"
-      #     mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
-      #     rm cmdline-tools.zip
-
-      #     # Install required Android SDK components
-      #     yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install \
-      #     "platform-tools" \
-      #     "platforms;android-33" \
-      #     "build-tools;33.0.0" \
-      #     "system-images;android-29;default;x86_64" \
-      #     "emulator"
-
-      # - name: Finalize Android SDK
-      #   run: |
-      #     /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
-
-      # - name: Cache Gradle
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       ~/.gradle/wrapper
-      #       ~/.gradle/caches
-      #     key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-gradle-
       - name: build debug app
-        # env:
-        #   JAVA_TOOL_OPTIONS: '-Xmx6g -XX:MaxHeapSize=6g -XX:MaxMetaspaceSize=512m'
         run: |
           ./scripts/build-android-debug.sh
 
-      # - name: Enable KVM group perms
-      #   run: |
-      #     echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-      #     sudo udevadm control --reload-rules
-      #     sudo udevadm trigger --name-match=kvm
-
-      # - name: Build and run e2e
-      #   # if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-      #   uses: reactivecircus/android-emulator-runner@v2
-      #   with:
-      #     api-level: 29
-      #     # target: google_apis
-      #     # arch: x86_64
-      #     emulator-options: -no-window -no-boot-anim -no-audio -no-snapshot-load
-      #     avd-name: Medium_Phone_API_29
-      #     script: |
-      #       adb wait-for-device
-      #       adb shell input keyevent 82
-      #       ./scripts/run-e2e-android.sh
       - name: Run e2e for Android
         run: ./scripts/run-e2e-android.sh
 
-  # test-ios:
-  #   runs-on: self-hosted
-  #   env:
-  #     GPR_KEY: ${{ secrets.GPR_KEY }}
-  #     DETOX_SANDBOX_PHONE: ${{ secrets.DETOX_SANDBOX_PHONE }}
-  #     DETOX_SANDBOX_CODE: ${{ secrets.DETOX_SANDBOX_CODE }}
-  #     APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
-  #     APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
-  #     APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  test-ios:
+    runs-on: self-hosted
+    env:
+      GPR_KEY: ${{ secrets.GPR_KEY }}
+      DETOX_SANDBOX_PHONE: ${{ secrets.DETOX_SANDBOX_PHONE }}
+      DETOX_SANDBOX_CODE: ${{ secrets.DETOX_SANDBOX_CODE }}
+      APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
+      APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
+      APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup
-  #       uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
 
-  #     - name: Cache cocoapods
-  #       id: cocoapods-cache
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: |
-  #           **/ios/Pods
-  #         key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-cocoapods-
+      - name: Cache cocoapods
+        id: cocoapods-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/ios/Pods
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cocoapods-
 
-  #     - name: Set up Fastlane
-  #       run: |
-  #         cd example
-  #         gem install bundler:2.4.7
-  #         bundle install
+      - name: Set up Fastlane
+        run: |
+          cd example
+          gem install bundler:2.4.7
+          bundle install
 
-  #     - name: Install cocoapods
-  #       run: |
-  #         gem install cocoapods
+      - name: Install cocoapods
+        run: |
+          gem install cocoapods
 
-  #     - name: Validate Podfile.lock consistency
-  #       run: |
-  #         if ! cmp -s Podfile.lock Pods/Manifest.lock; then
-  #           cd example/ios
-  #           echo "Podfile.lock is out of sync, requiring pod install"
-  #           rm -rf Pods/
-  #           pod cache clean --all
-  #           echo "pod_install_required=1" >> $GITHUB_ENV
-  #         fi
+      - name: Validate Podfile.lock consistency
+        run: |
+          if ! cmp -s Podfile.lock Pods/Manifest.lock; then
+            cd example/ios
+            echo "Podfile.lock is out of sync, requiring pod install"
+            rm -rf Pods/
+            pod cache clean --all
+            echo "pod_install_required=1" >> $GITHUB_ENV
+          fi
 
-  #     - name: Install cocoapods
-  #       if: steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1'
-  #       run: |
-  #         pod repo update
-  #         pod install --repo-update
-  #       working-directory: example/ios
+      - name: Install cocoapods
+        if: steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1'
+        run: |
+          pod repo update
+          pod install --repo-update
+        working-directory: example/ios
 
-  #     - name: Install Detox Dependencies
-  #       run: |
-  #         brew tap wix/brew
-  #         brew install applesimutils
+      - name: Install Detox Dependencies
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
 
-  #     - name: Build example for iOS
-  #       if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-  #       run: |
-  #         yarn e2e:build-ios
+      - name: Build example for iOS
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        run: |
+          yarn e2e:build-ios
 
-  #     - name: Run e2e for iOS
-  #       if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-  #       run: bash ${{ github.workspace }}/scripts/run-e2e-ios.sh
+      - name: Run e2e for iOS
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        run: bash ${{ github.workspace }}/scripts/run-e2e-ios.sh
