@@ -1,12 +1,10 @@
 #!/bin/bash
-set -e
+set -x
 
 cd example
 
 yarn start > metro.log 2>&1 &
 METRO_BUNDLER_PID=$!
-
-adb wait-for-device
 
 yarn e2e:run-android --headless
 DETOX_EXIT_CODE=$?
