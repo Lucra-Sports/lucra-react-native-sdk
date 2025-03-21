@@ -56,10 +56,14 @@ jobs:
       - name: Build package
         run: yarn prepare
 
-  build-android:
-    runs-on: ubuntu-latest
+  test-android:
+    runs-on: [self-hosted, android]
     env:
       GPR_USER: LucraReactNativeCi
+      JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
+      GRADLE_OPTS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
+      ANDROID_HOME: /Users/lucra/Library/Android/sdk
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,53 +71,29 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Set up Fastlane
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-          working-directory: example
-
       - name: Set up Firebase authentication
         run: |
           FIREBASE_SERVICE_CREDENTIALS_FILE="${{ runner.temp }}/firebase-service-account.json"
           echo "FIREBASE_SERVICE_CREDENTIALS_FILE=$FIREBASE_SERVICE_CREDENTIALS_FILE" >> $GITHUB_ENV
-          set +x # Disable logging secrets
+          # set +x # Disable logging secrets
           cat <<EOF > "$FIREBASE_SERVICE_CREDENTIALS_FILE"
           ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           EOF
-          set -x # Re-enable logging
+          # set -x # Re-enable logging
 
-      - name: Install JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Finalize Android SDK
+      - name: build debug app
         run: |
-          /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
+          ./scripts/build-android-debug.sh
 
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/wrapper
-            ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Run e2e for Android
+        run: ./scripts/run-e2e-android.sh
 
-      - name: Build example for Android
-        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-        env:
-          JAVA_OPTS: '-XX:MaxHeapSize=6g'
-        run: |
-          yarn run build:android
-
-  build-ios:
+  test-ios:
     runs-on: self-hosted
     env:
       GPR_KEY: ${{ secrets.GPR_KEY }}
+      DETOX_SANDBOX_PHONE: ${{ secrets.DETOX_SANDBOX_PHONE }}
+      DETOX_SANDBOX_CODE: ${{ secrets.DETOX_SANDBOX_CODE }}
       APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
       APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
       APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
@@ -161,7 +141,16 @@ jobs:
           pod install --repo-update
         working-directory: example/ios
 
+      - name: Install Detox Dependencies
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
+
       - name: Build example for iOS
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         run: |
-          yarn run build:ios
+          yarn e2e:build-ios
+
+      - name: Run e2e for iOS
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        run: bash ${{ github.workspace }}/scripts/run-e2e-ios.sh

@@ -45,9 +45,48 @@ buildscript {
         }
       }
       maven {
+        url("$rootDir/../node_modules/detox/Detox-android")
+      }
+      maven {
         url "https://zendesk.jfrog.io/zendesk/repo"
       }
     }
+  }
+
+  subprojects {
+      afterEvaluate { subproject ->
+        if (project.hasProperty('android')) {
+              android {
+                  packagingOptions {
+                      pickFirst '**/libc++_shared.so'
+                      pickFirst '**/libfbjni.so'
+                      pickFirst '**/libjsc.so'
+                      pickFirst '**/libreactnativejni.so'
+                      pickFirst '**/libhermes.so'
+                      pickFirst '**/libreactnative.so'
+                  }
+              }
+          }
+            def String taskRequests = getGradle().getStartParameter().getTaskRequests().toString()
+            if (taskRequests.contains("assembleAndroidTest")) {
+                android {
+                    defaultConfig {
+                        manifestPlaceholders = [auth0Domain: "LUCRA_SDK", auth0Scheme: "LUCRA_SDK",
+                                   firebaseJsonAutoCollectionEnabled: 'true',
+            firebaseJsonCollectionDeactivated: 'false',
+            firebaseJsonAdidEnabled: 'true',
+            firebaseJsonSsaidEnabled: 'true',
+            firebaseJsonAutomaticScreenReportingEnabled: 'true',
+            firebaseJsonAnalyticsStorageEnabled: 'true',
+            firebaseJsonAdStorageEnabled: 'true',
+            firebaseJsonAdUserDataEnabled: 'true',
+            firebaseJsonPersonalizationEnabled: 'true',
+            firebaseJsonDataCollectionDefaultEnabled: 'true' 
+                        ]
+                    }
+                }
+            }
+      }
   }
 }
 
