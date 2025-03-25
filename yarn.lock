@@ -6234,9 +6234,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detox@npm:^20.33.0":
-  version: 20.35.0
-  resolution: "detox@npm:20.35.0"
+"detox@npm:^20.35.0":
+  version: 20.36.0
+  resolution: "detox@npm:20.36.0"
   dependencies:
     "@wix-pilot/core": "npm:^3.1.4"
     "@wix-pilot/detox": "npm:^1.0.8"
@@ -6282,7 +6282,7 @@ __metadata:
       optional: true
   bin:
     detox: local-cli/cli.js
-  checksum: 10c0/cd624f795cc62dae880c6554fb6d79a024512cd623a592c280ff9d7402057d3272d32ef33cf839ee6fecfe8f9e862a33d90778b6aff0db6d184ba0f695b4c553
+  checksum: 10c0/04a15054c8adef9fec6148ba5fa1b48e9d5d724501ba71c4b3f10e40e33e467f6a0725a7afaca5424841dfa76d0c95167d913bd64f740166bbd5fa41badf95f6
   languageName: node
   linkType: hard
 
@@ -7002,7 +7002,7 @@ __metadata:
     "@types/react": "npm:^18.3.3"
     babel-plugin-module-resolver: "npm:^5.0.0"
     babel-plugin-transform-typescript-metadata: "npm:^0.3.2"
-    detox: "npm:^20.33.0"
+    detox: "npm:^20.35.0"
     jest: "npm:^29"
     nativewind: "npm:^4.1.21"
     react: "npm:18.3.1"
