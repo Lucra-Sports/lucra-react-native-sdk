@@ -410,6 +410,7 @@ object LucraMapper {
         matchup.iconUrl?.let { map.putString("iconUrl", it) }
         matchup.expiresAt?.let { map.putString("expiresAt", it.toString()) }
         map.putDouble("potTotal", matchup.potTotal)
+        map.putDouble("potNetAmount", matchup.potNetAmount)
 
         return map
     }

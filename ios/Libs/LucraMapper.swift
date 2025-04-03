@@ -285,6 +285,7 @@ public func tournamentMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [
     "type": tournament.type,
     "fee": tournament.fee,
     "buyInAmount": tournament.buyInAmount,
+    "potNetAmount": tournament.potNetAmount,
     "description": tournament.description as Any,
     "participants": tournament.participants.map(tournamentParticipantToMap),
     "status": tournament.status,
