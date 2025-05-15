@@ -41,9 +41,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@babel/helpers": "^7.26.10",
     "@babel/preset-env": "^7.25.3",
-    "@babel/runtime": "^7.26.10",
+    "@babel/runtime": "^7.25.0",
     "@react-native-community/cli": "15.0.0-alpha.2",
     "@react-native-community/cli-platform-android": "15.0.0-alpha.2",
     "@react-native-community/cli-platform-ios": "15.0.0-alpha.2",
