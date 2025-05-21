@@ -71,6 +71,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Install CMake
+        run: |
+          echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "cmake;3.18.1"
+
       - name: Set up Firebase authentication
         run: |
           FIREBASE_SERVICE_CREDENTIALS_FILE="${{ runner.temp }}/firebase-service-account.json"
