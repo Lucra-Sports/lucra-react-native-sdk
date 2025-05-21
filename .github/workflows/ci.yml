@@ -81,13 +81,13 @@ jobs:
           EOF
           # set -x # Re-enable logging
 
-      - name: Nuke gradle caches
-        run: |
-          rm -rf ~/.gradle/caches/
-          rm -rf android/build
-          rm -rf android/example/build
-          cd android && ./gradlew clean && cd ..
-          cd example/android && ./gradlew clean
+      # - name: Nuke gradle caches
+      #   run: |
+      #     rm -rf ~/.gradle/caches/
+      #     rm -rf android/build
+      #     rm -rf android/example/build
+      #     cd android && ./gradlew clean && cd ..
+      #     cd example/android && ./gradlew clean
 
       - name: build debug app
         run: |
