@@ -83,7 +83,7 @@ jobs:
 
       - name: Nuke gradle caches
         run: |
-          rm -rf /Users/lucra/.gradle/caches/
+          rm -rf ~/.gradle/
           # rm -rf android/build
           # rm -rf android/example/build
           # cd android && ./gradlew clean && cd ..
