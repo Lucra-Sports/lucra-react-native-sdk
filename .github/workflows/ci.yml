@@ -67,10 +67,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Clean node_modules
-        run: |
-          rm -rf node_modules
-          rm -rf example/node_modules
+
       - name: Setup
         uses: ./.github/actions/setup
 
