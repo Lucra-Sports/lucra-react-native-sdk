@@ -84,7 +84,7 @@ jobs:
       - name: Stop any running gradle daemons
         run: |
           ./gradlew --stop
-        working_directory: example/android
+        working-directory: example/android
 
       - name: build debug app
         run: |
