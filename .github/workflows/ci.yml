@@ -86,8 +86,14 @@ jobs:
       #     rm -rf ~/.android/cache
       # working-directory: example/android
 
-      - name: List installed NDK
-        run: sdkmanager --list | grep ndk
+      # - name: List installed NDK
+      #   run: sdkmanager --list | grep ndk
+      - name: Install rosetta
+        run: |
+          if [ "$(uname -m)" = "arm64" ]; then
+            echo "Installing Rosetta 2"
+            softwareupdate --install-rosetta --agree-to-license
+          fi
 
       - name: Do a gradle clean
         run: ./gradlew clean
