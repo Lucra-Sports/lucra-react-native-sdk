@@ -39,9 +39,6 @@ android {
         'auth0Domain': 'LUCRA_SDK',
         'auth0Scheme': 'LUCRA_SDK'
     ]
-    ndk {
-      abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-    }
   }
   signingConfigs {
     debug {
