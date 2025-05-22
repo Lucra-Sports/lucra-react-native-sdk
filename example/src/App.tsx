@@ -1,4 +1,3 @@
-import '../global.css';
 import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
@@ -31,8 +30,9 @@ export default function App() {
   }, []);
 
   return (
-    <View className="h-full bg-indigo-900">
-      <AppContextProvider>
+    <View>
+      <Text>Test</Text>
+      {/* <AppContextProvider>
         <EventsContextProvider>
           <LucraSDKInit onStateChange={setIsReady} />
           <StatusBar barStyle="light-content" />
@@ -50,7 +50,7 @@ export default function App() {
             </>
           )}
         </EventsContextProvider>
-      </AppContextProvider>
+      </AppContextProvider> */}
     </View>
   );
 }
