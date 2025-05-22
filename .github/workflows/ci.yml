@@ -86,21 +86,25 @@ jobs:
       #     rm -rf ~/.android/cache
       # working-directory: example/android
 
-      - name: List installed NDK
-        run: sdkmanager --list | grep cmake
-      - name: Install rosetta
-        run: |
-          if [ "$(uname -m)" = "arm64" ]; then
-            echo "Installing Rosetta 2"
-            softwareupdate --install-rosetta --agree-to-license
-          fi
+      # - name: List installed NDK
+      #   run: sdkmanager --list | grep cmake
+      # - name: Install rosetta
+      #   run: |
+      #     if [ "$(uname -m)" = "arm64" ]; then
+      #       echo "Installing Rosetta 2"
+      #       softwareupdate --install-rosetta --agree-to-license
+      #     fi
 
-      - name: Do a gradle clean
-        run: ./gradlew clean
-        working-directory: example/android
+      # - name: Do a gradle clean
+      #   run: ./gradlew clean
+      #   working-directory: example/android
 
-      - name: build debug app
-        run: ./scripts/build-android-debug.sh
+      # - name: build debug app
+      #   run: ./scripts/build-android-debug.sh
+
+      - name: Build via yarn
+        run: yarn android
+        working-directory: example
 
       - name: Run e2e for Android
         run: ./scripts/run-e2e-android.sh
