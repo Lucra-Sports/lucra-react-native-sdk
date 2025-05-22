@@ -81,10 +81,10 @@ jobs:
           EOF
           # set -x # Re-enable logging
 
-      - name: Stop any running gradle daemons
+      - name: testing stuff
         run: |
-          ./gradlew --stop
-        working-directory: example/android
+          rm -rf ~/.android/cache
+        # working-directory: example/android
 
       - name: build debug app
         run: |
