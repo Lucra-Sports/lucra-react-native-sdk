@@ -1,7 +1,5 @@
 import { type FC } from 'react';
-import React from 'react';
 import { Switch, Text, TextInput, View } from 'react-native';
-
 import { useAppContext } from '../AppContext';
 import { defaultAppConfig } from '../AppConfig';
 
