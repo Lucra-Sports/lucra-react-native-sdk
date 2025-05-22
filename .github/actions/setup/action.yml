@@ -31,12 +31,13 @@ runs:
       run: yarn install --immutable
       shell: bash
 
-    - name: Install dependencies example
-      # if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn --cwd example install --immutable
-      shell: bash
+    # - name: Install dependencies example
+    #   # if: steps.yarn-cache.outputs.cache-hit != 'true'
+    #   run: yarn --cwd example install --immutable
+    #   shell: bash
 
     - name: Install dependencies example-expo
       # if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn --cwd example-expo install --immutable
+      run: yarn install --immutable
       shell: bash
+      working-directory: example-expo
