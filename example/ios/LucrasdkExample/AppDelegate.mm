@@ -3,12 +3,15 @@
 #import <Firebase.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   self.moduleName = @"LucrasdkExample";
+  self.dependencyProvider = [RCTAppDependencyProvider new];
+
   [FIRApp configure];
 
   return [super application:application

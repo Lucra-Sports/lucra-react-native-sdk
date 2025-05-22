@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 
-cd example
+cd example || exit
 
 yarn start > metro.log 2>&1 &
 METRO_BUNDLER_PID=$!
