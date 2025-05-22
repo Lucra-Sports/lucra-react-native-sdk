@@ -2,11 +2,16 @@
   "name": "@lucra-sports/lucra-react-native-sdk",
   "version": "0.0.0",
   "description": "Lucra React Native SDK",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
-  "types": "lib/typescript/src/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
+  "main": "lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.tsx",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "src",
     "lib",
@@ -111,7 +116,6 @@
     "source": "src",
     "output": "lib",
     "targets": [
-      "commonjs",
       [
         "module",
         {
