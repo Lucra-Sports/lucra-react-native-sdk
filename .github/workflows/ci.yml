@@ -86,9 +86,11 @@ jobs:
           rm -rf ~/.android/cache
         # working-directory: example/android
 
+      - name: List installed NDK
+        run: sdkmanager --list | grep ndk
+
       - name: build debug app
-        run: |
-          ./scripts/build-android-debug.sh
+        run: ./scripts/build-android-debug.sh
 
       - name: Run e2e for Android
         run: ./scripts/run-e2e-android.sh

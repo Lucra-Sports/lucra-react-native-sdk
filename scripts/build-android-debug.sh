@@ -1,9 +1,7 @@
 #!/bin/bash
 set -x
 
-cd example
-
-cd android
+cd example/android || exit
 
 # Run assembleDebug and capture logs
 if ! ./gradlew assembleDebug --max-workers=1 > assembleDebug.log 2>&1; then
