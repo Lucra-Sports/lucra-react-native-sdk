@@ -81,13 +81,17 @@ jobs:
           EOF
           # set -x # Re-enable logging
 
-      - name: testing stuff
-        run: |
-          rm -rf ~/.android/cache
-        # working-directory: example/android
+      # - name: testing stuff
+      #   run: |
+      #     rm -rf ~/.android/cache
+      # working-directory: example/android
 
       - name: List installed NDK
         run: sdkmanager --list | grep ndk
+
+      - name: Do a gradle clean
+        run: ./gradlew clean
+        working-directory: example/android
 
       - name: build debug app
         run: ./scripts/build-android-debug.sh
