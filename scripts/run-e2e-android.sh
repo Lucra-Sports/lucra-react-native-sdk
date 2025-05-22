@@ -3,7 +3,7 @@ set -x
 
 cd example || exit
 
-yarn start --port 8082 > metro.log 2>&1 &
+yarn start > metro.log 2>&1 &
 METRO_BUNDLER_PID=$!
 
 yarn e2e:run-android --headless
