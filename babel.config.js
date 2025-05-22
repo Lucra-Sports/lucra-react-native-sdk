@@ -1,4 +1,12 @@
 module.exports = {
-  presets: ['module:@react-native/babel-preset'],
-  plugins: ['babel-plugin-transform-typescript-metadata'],
+  overrides: [
+    {
+      exclude: /\/node_modules\//,
+      presets: ['module:react-native-builder-bob/babel-preset'],
+    },
+    {
+      include: /\/node_modules\//,
+      presets: ['module:@react-native/babel-preset'],
+    },
+  ],
 };
