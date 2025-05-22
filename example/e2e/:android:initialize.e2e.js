@@ -1,3 +1,5 @@
+jest.setTimeout(30000);
+
 describe(':android:Lucra RN SDK', () => {
   beforeAll(async () => {
     await device.launchApp({
