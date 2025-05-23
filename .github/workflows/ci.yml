@@ -114,6 +114,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cocoapods-
 
+      - name: Help cocoapods get unstuck
+        run: pod repo remove trunk && pod cache clean --all
+
       - name: Set up Fastlane
         run: |
           cd example
