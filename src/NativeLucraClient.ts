@@ -18,7 +18,7 @@ interface Spec extends TurboModule {
   // Games related
   createRecreationalGame(
     gameTypeId: string,
-    atStake: object,
+    atStake: Object,
     playStyle: string
   ): Promise<{
     matchupId: string;
