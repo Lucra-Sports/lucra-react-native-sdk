@@ -217,22 +217,6 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
-          onPress={async () => {
-            try {
-              const info = await LucraSDK.getSportsMatchup(matchupId);
-              console.warn(
-                `getSportsMatchup Response: ${JSON.stringify(info, null, 2)}`
-              );
-            } catch (e) {
-              console.error(e);
-            }
-          }}
-        >
-          <Text className="text-white">Get Sports Matchup info</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => {
             LucraSDK.cancelGamesMatchup(matchupId)
               .then(() => {

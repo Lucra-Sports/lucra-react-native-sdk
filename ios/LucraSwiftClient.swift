@@ -173,26 +173,27 @@ import LucraSDK
     rewardEmitter.send(rewards)
   }
 
-  @objc public func getSportsMatchup(
-    _ matchupId: String, resolve: @escaping RCTPromiseResolveBlock,
-    reject: @escaping RCTPromiseRejectBlock
-  ) {
-    Task { @MainActor in
-      do {
-        guard
-          let match = try await self.nativeClient.api.matchup(
-            for: matchupId)
-        else {
-          resolve(nil)
-          return
-        }
+  // TODO Remove reference entirely - all matchup fetching will come from the generic getMatchup headless call
+  // @objc public func getSportsMatchup(
+  //   _ matchupId: String, resolve: @escaping RCTPromiseResolveBlock,
+  //   reject: @escaping RCTPromiseRejectBlock
+  // ) {
+  //   Task { @MainActor in
+  //     do {
+  //       guard
+  //         let match = try await self.nativeClient.api.matchup(
+  //           for: matchupId)
+  //       else {
+  //         resolve(nil)
+  //         return
+  //       }
 
-        resolve(sportMatchupToMap(match: match))
-      } catch {
-        ErrorMapper.reject(reject, error: error)
-      }
-    }
-  }
+  //       resolve(sportMatchupToMap(match: match))
+  //     } catch {
+  //       ErrorMapper.reject(reject, error: error)
+  //     }
+  //   }
+  // }
 
   @objc public func getUser(
     resolve: @escaping RCTPromiseResolveBlock,

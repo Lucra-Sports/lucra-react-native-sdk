@@ -20,17 +20,17 @@ export const SportsYouWatch: React.FC<Props> = ({ navigation }) => {
   const [matchupID, setMatchupId] = useState('');
   const [info, setInfo] = useState('');
   const getMatchupInfo = async () => {
-    try {
-      setInfo('Searching...');
-      const matchupInfo = await LucraSDK.getSportsMatchup(matchupID);
-      if (!matchupInfo) {
-        setInfo('No matchup info');
-        return;
-      }
-      setInfo(JSON.stringify(matchupInfo));
-    } catch (error) {
-      setInfo(String(error));
-    }
+    // try {
+    //   setInfo('Searching...');
+    //   const matchupInfo = await LucraSDK.getSportsMatchup(matchupID);
+    //   if (!matchupInfo) {
+    //     setInfo('No matchup info');
+    //     return;
+    //   }
+    //   setInfo(JSON.stringify(matchupInfo));
+    // } catch (error) {
+    //   setInfo(String(error));
+    // }
   };
   return (
     <SafeAreaView className="flex-1 gap-4 bg-indigo-900">

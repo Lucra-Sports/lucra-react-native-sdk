@@ -1,5 +1,5 @@
 import com.facebook.react.bridge.Promise
-import com.lucrasports.sdk.core.contest.PoolTournament
+import com.lucrasports.sdk.core.contest.tournament.PoolTournament
 
 object ErrorMapper {
     fun rejectJoinTournamentError(

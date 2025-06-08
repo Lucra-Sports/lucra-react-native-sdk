@@ -140,11 +140,6 @@ RCT_EXPORT_METHOD(registerDeviceTokenBase64 : (NSString *)
                                   reject:reject];
 }
 
-RCT_EXPORT_METHOD(getSportsMatchup : (NSString *)matchupId resolve : (
-    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient getSportsMatchup:matchupId resolve:resolve reject:reject];
-}
-
 // Pool tournamets
 RCT_EXPORT_METHOD(getRecommendedTournaments : (NSDictionary *)params resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
