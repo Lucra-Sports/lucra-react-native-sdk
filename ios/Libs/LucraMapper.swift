@@ -171,8 +171,7 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
                 "user": userToMap(participant.user)
             ]
             
-            ///TODO Mapping??
-//            participantMap["tournamentLeaderboard"] = tournamentLeaderboardToMap(match.tournamentDetails, participant: participant)
+//            participantMap["tournamentLeaderboard"] = tournamentLeaderboardToMap(match.tournamentDetails, participant: participant) ///TODO: leaderboard???
 
             if let reward = participant.tenantReward {
                 participantMap["reward"] = rewardToMap(reward: reward)
@@ -229,7 +228,7 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
         var gameMap: [String: Any] = [
             "id": game.id,
             "name": game.name,
-//            "isFeatured": game.isFeatured ///Where is isFeatured Mapped?
+//            "isFeatured": game.isFeatured ///TODO: Where is isFeatured Mapped?
         ]
 
         if let description = game.description {
@@ -245,7 +244,7 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
             gameMap["imageBgUrl"] = imageBgUrl
         }
 //        if let groupTitle = game.groupTitle {
-//            gameMap["groupTitle"] = groupTitle
+//            gameMap["groupTitle"] = groupTitle ///TODO: groupTitle??
 //        }
 
         gameMap["categoryIds"] = game.categoryIds
