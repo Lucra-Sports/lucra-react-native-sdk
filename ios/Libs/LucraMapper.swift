@@ -138,77 +138,121 @@ public func matchupTeamUserToMap(teamUser: LucraSDK.MatchupTeamUser) -> [String:
   ]
 }
 
-public func sportMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
-    return [
+public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
+    var map: [String: Any] = [
         "id": match.id,
         "createdAt": match.createdAt.ISO8601Format(),
         "updatedAt": match.updatedAt.ISO8601Format(),
-        "status": match.status.rawValue,
-        "subType": match.subtype.rawValue,
-        "participantGroups": match.participantGroups.map { participantGroupToMap(group: $0) }
+        "creatorId": match.creatorId,
+        "status": match.status,
+        "subtype": match.subtype,
+        "type": match.type,
+        "isPublic": match.isPublic,
+        "creator": userToMap(match.creator)
     ]
-}
 
-private func participantGroupToMap(group: LucraSDK.LucraMatchupGroup) -> [String: Any?] {
-    var map: [String: Any?] = [
-        "id": group.id,
-        "outcome": {
-            switch group.outcome {
-            case .loss: return "LOSS"
-            case .tie: return "TIE"
-            case .win: return "WIN"
-            case .none: return ""
-            case .some(_):
-                fatalError("Unimplemented outcome case")
+    map["participantGroups"] = match.participantGroups.map { group in
+        var groupMap: [String: Any] = [
+            "id": group.id,
+            "createdAt": group.createdAt.ISO8601Format(),
+            "outcome": {
+                switch group.outcome {
+                case .loss: return "LOSS"
+                case .tie: return "TIE"
+                case .win: return "WIN"
+                default: return "UNKNOWN"
+                }
+            }()
+        ]
+
+        groupMap["participants"] = group.participants.map { participant in
+            var participantMap: [String: Any] = [
+                "wager": participant.wager ?? 0.0,
+                "user": userToMap(participant.user)
+            ]
+            
+            ///TODO Mapping??
+//            participantMap["tournamentLeaderboard"] = tournamentLeaderboardToMap(match.tournamentDetails, participant: participant)
+
+            if let reward = participant.tenantReward {
+                participantMap["reward"] = rewardToMap(reward: reward)
             }
-        }()
-    ]
 
-    if let teamStats = group.professionalTeamDetails {
-        let teamDetails: [String: Any?] = [
-            "metric": metricToMap(teamStats.metric),
-            "metricValue": Double(truncating: teamStats.stats.value as NSNumber),
-            "spread": Double(truncating: teamStats.spread as NSNumber),
-            "team": teamToMap(teamStats.team),
-            "schedule": scheduleToMap(teamStats.schedule)
-        ]
-        map["professionalTeamStateDetails"] = teamDetails
+            return participantMap
+        }
+
+        if let playerStats = group.professionalPlayerDetails {
+            groupMap["professionalPlayerStatDetails"] = [
+                "metric": metricToMap(playerStats.metric),
+                "metricValue": Double(truncating: playerStats.metric.maxValue as NSNumber),
+                "spread": Double(truncating: playerStats.spread as NSNumber),
+                "player": playerToMap(playerStats.player),
+                "schedule": scheduleToMap(group.professionalTeamDetails?.schedule) as Any
+            ]
+        }
+
+        if let teamStats = group.professionalTeamDetails {
+            groupMap["professionalTeamStatDetails"] = [
+                "metric": metricToMap(teamStats.metric),
+                "metricValue": Double(truncating: teamStats.metric.maxValue as NSNumber),
+                "spread": Double(truncating: teamStats.spread as NSNumber),
+                "team": teamToMap(teamStats.team) as Any,
+                "schedule": scheduleToMap(teamStats.schedule) as Any
+            ]
+        }
+
+        if let recGame = group.recreationalGameDetails {
+            var recMap: [String: Any] = [
+                "score": recGame.score,
+                "teamName": group.name
+            ]
+            if let handicap = recGame.handicap {
+                recMap["handicap"] = handicap
+            }
+            groupMap["recreationalGameStatDetails"] = recMap
+        }
+
+        return groupMap
     }
 
-    if let playerStats = group.professionalPlayerDetails {
-        let playerDetails: [String: Any?] = [
-            "metric": metricToMap(playerStats.metric),
-            "metricValue": Double(truncating: playerStats.stats.value as NSNumber),
-            "spread": Double(truncating: playerStats.spread as NSNumber),
-            "player": playerToMap(playerStats.player),
-            "schedule": ["scheduleId": playerStats.stats.scheduleId] // Assuming schedule mapping is not detailed in stats
-        ]
-        
-        map["professionalPlayerStatDetails"] = playerDetails
-        
+    if let winningGroup = match.winningGroup {
+        map["winningGroupId"] = winningGroup.id
     }
 
-    if let recreationalGameDetails = group.recreationalGameDetails {
-        map["recreationalGameDetails"] = [
-            "id": recreationalGameDetails.id,
-            "createdAt": recreationalGameDetails.createdAt.ISO8601Format(),
-            "game": GYPGameToMap(recreationalGameDetails.game),
-            "score": recreationalGameDetails.score
+    if let ext = match.recreationGameExtension {
+        var extMap: [String: Any] = [
+            "gameId": ext.gameId,
+            "buyInAmount": ext.buyInAmount
         ]
-    }
 
-    map["participants"] = group.participants.map { participantToMap(participant: $0) }
+        let game = ext.game
+        var gameMap: [String: Any] = [
+            "id": game.id,
+            "name": game.name,
+//            "isFeatured": game.isFeatured ///Where is isFeatured Mapped?
+        ]
 
-    return map
-}
+        if let description = game.description {
+            gameMap["description"] = description
+        }
+        if let iconUrl = game.iconUrl {
+            gameMap["iconUrl"] = iconUrl
+        }
+        if let imageUrl = game.imageUrl {
+            gameMap["imageUrl"] = imageUrl
+        }
+        if let imageBgUrl = game.imageBgUrl {
+            gameMap["imageBgUrl"] = imageBgUrl
+        }
+//        if let groupTitle = game.groupTitle {
+//            gameMap["groupTitle"] = groupTitle
+//        }
 
-private func participantToMap(participant: LucraSDK.LucraMatchupParticipant) -> [String: Any] {
-    var map: [String: Any] = [
-        "user": userToMap(participant.user)
-    ]
+        gameMap["categoryIds"] = game.categoryIds
 
-    if let reward = participant.tenantReward {
-        map["reward"] = rewardToMap(reward: reward)
+        extMap["game"] = gameMap
+
+        map["recreationGameExtension"] = extMap
     }
 
     return map
@@ -266,6 +310,23 @@ public func gamesMatchupToMap(match: LucraSDK.GamesMatchup) -> [String: Any] {
     "teams": match.teams.map(gamesMatchupTeamToMap),
   ]
 }
+
+//public func tournamentLeaderboardToMap(_ tournament: LucraSDK.TournamentsMatchup?, participant: LucraSDK.TournamentsMatchup.Participant) -> [String: Any] {
+//    var map: [String: Any] = [
+//        "isTieResult": leaderboard.isTieResult
+//    ]
+//
+//    if let title = leaderboard.title { map["title"] = title }
+//    if let userScore = leaderboard.userScore { map["userScore"] = userScore }
+//    if let place = leaderboard.place { map["place"] = place }
+//    if let override = leaderboard.placeOverride { map["placeOverride"] = override }
+//    if let rewardValue = leaderboard.rewardValue { map["rewardValue"] = rewardValue }
+//    if let rewardTierValue = leaderboard.rewardTierValue { map["rewardTierValue"] = rewardTierValue }
+//    if let participantGroupId = leaderboard.participantGroupId { map["participantGroupId"] = participantGroupId }
+//    if let username = leaderboard.username { map["username"] = username }
+//
+//    return map
+//}
 
 public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.Participant)
   -> [String: Any]
@@ -377,12 +438,4 @@ public func mapToSDKUser(user: [String: Any]) -> LucraSDK.SDKUser {
     address: sdkAddress,
     dateOfBirth: user["dateOfBirth"] as? Date
   )
-}
-
-public func gypCreatedMatchupOutputTopMap(output: GYPCreatedMatchupOutput) -> [String: Any] {
-  return [
-    "matchupId": output.matchupId,
-    "ownerTeamId": output.ownerTeamId,
-    "opponentTeamId": output.opponentTeamId,
-  ]
 }

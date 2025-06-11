@@ -36,7 +36,7 @@ class LucraUtils {
   }
 
   static public func stringToLucraFlow(
-    _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?
+    _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?, location: String?
   ) throws -> LucraSDK.LucraFlow {
     switch flowName {
     case "profile":
@@ -46,9 +46,9 @@ class LucraUtils {
     case "onboarding":
       return .onboarding
     case "verifyIdentity":
-        return .verifyIdentity
+      return .verifyIdentity
     case "createGamesMatchup":
-      return .createGamesMatchup(gameId: gameId)
+      return .createGamesMatchup(gameId: gameId, location: location)
     case "createSportsMatchup":
       return .createSportsMatchup
     case "withdrawFunds":
