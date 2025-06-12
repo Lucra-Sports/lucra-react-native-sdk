@@ -160,6 +160,16 @@ import LucraSDK
       }
     }
   }
+    
+    @objc public func registerConvertToCreditProvider() {
+                      self.conversionProvider = ConversionProvider(outer: self)
+                      self.nativeClient.registerConvertToCreditProvider(self.conversionProvider)
+                  }
+                  
+                  @objc public func registerRewardProvider() {
+                      self.rewardProvider = RewardProvider(outer: self)
+                      self.nativeClient.registerRewardProvider(self.rewardProvider)
+                  }
 
   @objc public func emitDeepLink(_ deepLink: String) {
     deepLinkEmitter.send(deepLink)
@@ -531,7 +541,7 @@ import LucraSDK
           .getRecommendedTournaments(
             includeClosed: includeClosed, limit: limit
           )
-        resolve(tournaments.map(tournamentMatchupToMap))
+          resolve(tournaments.map(tournamentsMatchupToMap))
       } catch {
         ErrorMapper.reject(reject, error: error)
       }
@@ -546,7 +556,7 @@ import LucraSDK
         if let tournament = try await self.nativeClient.api.tournamentsMatchup(
           for: id
         ) {
-          resolve(tournamentMatchupToMap(tournament: tournament))
+          resolve(tournamentsMatchupToMap(tournament: tournament))
         } else {
           resolve(nil)
         }
