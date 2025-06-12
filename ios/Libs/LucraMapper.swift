@@ -171,7 +171,7 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
                 "user": userToMap(participant.user)
             ]
             
-//            participantMap["tournamentLeaderboard"] = tournamentLeaderboardToMap(match.tournamentDetails, participant: participant) ///TODO: leaderboard???
+            participantMap["tournamentLeaderboard"] = tournamentLeaderboardToMap(match.tournamentDetails, participant: participant)
 
             if let reward = participant.tenantReward {
                 participantMap["reward"] = rewardToMap(reward: reward)
@@ -310,22 +310,25 @@ public func gamesMatchupToMap(match: LucraSDK.GamesMatchup) -> [String: Any] {
   ]
 }
 
-//public func tournamentLeaderboardToMap(_ tournament: LucraSDK.TournamentsMatchup?, participant: LucraSDK.TournamentsMatchup.Participant) -> [String: Any] {
-//    var map: [String: Any] = [
-//        "isTieResult": leaderboard.isTieResult
-//    ]
-//
-//    if let title = leaderboard.title { map["title"] = title }
-//    if let userScore = leaderboard.userScore { map["userScore"] = userScore }
-//    if let place = leaderboard.place { map["place"] = place }
-//    if let override = leaderboard.placeOverride { map["placeOverride"] = override }
-//    if let rewardValue = leaderboard.rewardValue { map["rewardValue"] = rewardValue }
-//    if let rewardTierValue = leaderboard.rewardTierValue { map["rewardTierValue"] = rewardTierValue }
-//    if let participantGroupId = leaderboard.participantGroupId { map["participantGroupId"] = participantGroupId }
-//    if let username = leaderboard.username { map["username"] = username }
-//
-//    return map
-//}
+public func tournamentLeaderboardToMap(_ tournament: LucraSDK.TournamentsMatchup?, participant: LucraSDK.LucraMatchupParticipant) -> [String: Any] {
+    var map: [String: Any] = [:]
+    
+    let tournamentParticipant = tournament?.participants.first(where: { $0.id == participant.user.id })
+    let place = tournamentParticipant?.place ?? 0
+    let isTied = (tournament?.participants.filter { $0.place == place }.count ?? 0) > 1
+    
+    map["title"] = tournament?.title
+    map["userScore"] = "" // Score is an internal only value
+    map["place"] = "\(tournamentParticipant?.place ?? 0)"
+    map["placeOverride"] = "\(tournamentParticipant?.place ?? 0)"
+    map["rewardValue"] = tournamentParticipant?.rewardValue ?? 0.0
+    map["rewardTierValue"] = tournament?.rewardStructure.first(where: { $0.position == Double(tournamentParticipant?.place ?? 0) })?.value ?? 0.0
+    map["participantGroupId"] = tournamentParticipant?.id
+    map["username"] = tournamentParticipant?.username
+    map["isTieResult"] = isTied
+
+    return map
+}
 
 public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.Participant)
   -> [String: Any]
