@@ -228,7 +228,6 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
         var gameMap: [String: Any] = [
             "id": game.id,
             "name": game.name,
-//            "isFeatured": game.isFeatured ///TODO: Where is isFeatured Mapped?
         ]
 
         if let description = game.description {
@@ -243,9 +242,6 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
         if let imageBgUrl = game.imageBgUrl {
             gameMap["imageBgUrl"] = imageBgUrl
         }
-//        if let groupTitle = game.groupTitle {
-//            gameMap["groupTitle"] = groupTitle ///TODO: groupTitle??
-//        }
 
         gameMap["categoryIds"] = game.categoryIds
 
