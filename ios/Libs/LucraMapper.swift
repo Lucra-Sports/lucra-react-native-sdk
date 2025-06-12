@@ -6,7 +6,7 @@ public func userToMap(_ user: LucraSDK.LucraUser) -> [String: Any] {
     "id": user.id,
     "socialConnectionId": user.id,
     "username": user.username,
-    "avataUrl": user.avatarURL as Any,
+    "avatarUrl": user.avatarURL as Any,
     "loyaltyPoints": user.loyaltyPoints,
   ]
 }
@@ -48,7 +48,7 @@ public func scheduleToMap(_ schedule: LucraSDK.Schedule?) -> [String: Any]? {
   ]
 }
 
-public func sportsIntervalToMap(interval: LucraSDK.SportsInterval) -> [String: Any] {
+public func sportIntervalsToMap(interval: LucraSDK.SportsInterval) -> [String: Any] {
   return [
     "interval": interval.interval,
     "displayName": interval.displayName,
@@ -75,7 +75,7 @@ public func sportToMap(_ sport: LucraSDK.Sport) -> [String: Any] {
     "iconUrl": sport.iconUrl,
     "priority": sport.priority,
     "leagues": sport.leagues?.map(leagueToMap) as Any,
-    "intervals": sport.intervals?.map(sportsIntervalToMap) as Any,
+    "intervals": sport.intervals?.map(sportIntervalsToMap) as Any,
   ]
 }
 
@@ -111,7 +111,7 @@ public func playerToMap(_ player: LucraSDK.Player) -> [String: Any] {
     "id": player.id,
     "firstName": player.firstName,
     "lastName": player.lastName,
-    "headhostUrl": player.headshotUrl as Any,
+    "headshotUrl": player.headshotUrl as Any,
     "lucraPosition": player.lucraPosition,
     "position": player.position,
     "positionAbbreviation": player.positionAbbreviation,
@@ -338,7 +338,7 @@ public func tournamentParticipantToMap(participant: LucraSDK.TournamentsMatchup.
   ]
 }
 
-public func tournamentMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [String: Any?] {
+public func tournamentsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> [String: Any?] {
   return [
     "id": tournament.id,
     "title": tournament.title,
@@ -438,3 +438,5 @@ public func mapToSDKUser(user: [String: Any]) -> LucraSDK.SDKUser {
     dateOfBirth: user["dateOfBirth"] as? Date
   )
 }
+
+
