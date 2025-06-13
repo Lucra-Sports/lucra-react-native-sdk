@@ -369,10 +369,6 @@ object LucraMapper {
                 val categoriesArray = Arguments.createArray()
                 game.categoryIds.forEach { categoriesArray.pushString(it) }
                 gameMap.putArray("categoryIds", categoriesArray)
-
-                game.groupTitle?.let { gameMap.putString("groupTitle", it) }
-                gameMap.putBoolean("isFeatured", game.isFeatured)
-
                 extMap.putMap("game", gameMap)
             }
 

@@ -33,7 +33,7 @@ export const SportsYouWatch: React.FC<Props> = ({ navigation }) => {
     // }
   };
   return (
-    <SafeAreaView className="flex-1 gap-4 bg-indigo-900">
+    <SafeAreaView className="flex-1 gap-4 bg-indigo-900 pt-12">
       <View className="flex-row items-center">
         <TouchableOpacity
           onPress={() => {
