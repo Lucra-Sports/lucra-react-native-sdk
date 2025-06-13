@@ -104,18 +104,22 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
               tintColor={'white'}
             />
           </TouchableOpacity>
-          <Text className="text-white text-2xl font-bold">
-            Games You Play
-          </Text>
+          <Text className="text-white text-2xl font-bold">Games You Play</Text>
         </View>
-      
+
         <Text className="text-white font-bold">Stake Type</Text>
         <View className="flex-row mb-2">
           <TouchableOpacity
             className={`flex-1 p-2 m-1 rounded ${stakeType === 'cash' ? 'bg-indigo-600' : 'bg-white'}`}
             onPress={() => setStakeType('cash')}
           >
-            <Text className={stakeType === 'cash' ? 'text-white font-bold text-center' : 'text-indigo-900 text-center'}>
+            <Text
+              className={
+                stakeType === 'cash'
+                  ? 'text-white font-bold text-center'
+                  : 'text-indigo-900 text-center'
+              }
+            >
               Cash
             </Text>
           </TouchableOpacity>
@@ -123,7 +127,13 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
             className={`flex-1 p-2 m-1 rounded ${stakeType === 'tenantreward' ? 'bg-indigo-600' : 'bg-white'}`}
             onPress={() => setStakeType('tenantreward')}
           >
-            <Text className={stakeType === 'tenantreward' ? 'text-white font-bold text-center' : 'text-indigo-900 text-center'}>
+            <Text
+              className={
+                stakeType === 'tenantreward'
+                  ? 'text-white font-bold text-center'
+                  : 'text-indigo-900 text-center'
+              }
+            >
               Reward
             </Text>
           </TouchableOpacity>
@@ -143,7 +153,11 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
               }
             }}
             onBlur={() => {
-              if (wager === '' || parseInt(wager, 10) < 1 || isNaN(parseInt(wager, 10))) {
+              if (
+                wager === '' ||
+                parseInt(wager, 10) < 1 ||
+                isNaN(parseInt(wager, 10))
+              ) {
                 setWager('1');
               }
             }}
@@ -165,7 +179,13 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
             className={`flex-1 p-2 m-1 rounded ${gameFormat === 'freeforall' ? 'bg-indigo-600' : 'bg-white'}`}
             onPress={() => setGameFormat('freeforall')}
           >
-            <Text className={gameFormat === 'freeforall' ? 'text-white font-bold text-center' : 'text-indigo-900 text-center'}>
+            <Text
+              className={
+                gameFormat === 'freeforall'
+                  ? 'text-white font-bold text-center'
+                  : 'text-indigo-900 text-center'
+              }
+            >
               Free For All
             </Text>
           </TouchableOpacity>
@@ -173,7 +193,13 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
             className={`flex-1 p-2 m-1 rounded ${gameFormat === 'groupvsgroup' ? 'bg-indigo-600' : 'bg-white'}`}
             onPress={() => setGameFormat('groupvsgroup')}
           >
-            <Text className={gameFormat === 'groupvsgroup' ? 'text-white font-bold text-center' : 'text-indigo-900 text-center'}>
+            <Text
+              className={
+                gameFormat === 'groupvsgroup'
+                  ? 'text-white font-bold text-center'
+                  : 'text-indigo-900 text-center'
+              }
+            >
               Versus
             </Text>
           </TouchableOpacity>
@@ -203,7 +229,9 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
         {fullMatchupInfo ? (
           <View className="w-full bg-gray-900 border border-indigo-400 rounded-lg mt-2 p-2">
             <View className="flex-row justify-between items-center mb-2">
-              <Text className="text-indigo-300 font-bold">Full Matchup JSON</Text>
+              <Text className="text-indigo-300 font-bold">
+                Full Matchup JSON
+              </Text>
               <TouchableOpacity
                 onPress={() => {
                   Clipboard.setString(fullMatchupInfo);
