@@ -56,14 +56,14 @@ function handleLucraSDKError(e: LucraSDKError) {
 export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   const [tournamentId, setTournamentId] = React.useState('');
   const [matchupId, setMatchupId] = React.useState('');
-  const [ownerTeamId, setOwnerTeamId] = React.useState('');
   const [opponentTeamId, setOpponentTeamId] = React.useState('');
   const [recommendTournamets, setRecommendedTournaments] = React.useState<
     PoolTournament[]
   >([]);
+  const [fullMatchupInfo, setFullMatchupInfo] = React.useState('');
 
   return (
-    <SafeAreaView className="h-full bg-indigo-900">
+    <SafeAreaView className="h-full bg-indigo-900  pt-8">
       <View className="flex-row items-center g-2 p-4">
         <TouchableOpacity
           onPress={() => {
@@ -89,25 +89,18 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => navigation.navigate('GamesYouPlay')}
         >
-          <Text className="text-white">Games You Play</Text>
+          <Text className="text-white">Create Recreational Games</Text>
         </TouchableOpacity>
 
         <View className="h-1 w-full border-t border-indigo-400" />
 
         <View className="flex-row items-center gap-2">
-          <Text className="text-white">Matchup ID</Text>
           <TextInput
             value={matchupId}
             onChangeText={setMatchupId}
             placeholder="Matchup Id"
             placeholderTextColor={'#CCC'}
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
-          />
-          <Button
-            title="Copy"
-            onPress={() => {
-              Clipboard.setString(matchupId);
-            }}
           />
           <Button
             title="Delete"
@@ -118,42 +111,12 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <View className="flex-row items-center gap-2">
-          <Text className="text-white">Matchup ID</Text>
-          <TextInput
-            value={ownerTeamId}
-            onChangeText={setOwnerTeamId}
-            placeholder="Owner Team Id"
-            placeholderTextColor={'#CCC'}
-            className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
-          />
-          <Button
-            title="Copy"
-            onPress={() => {
-              Clipboard.setString(ownerTeamId);
-            }}
-          />
-          <Button
-            title="Delete"
-            onPress={() => {
-              setOwnerTeamId('');
-            }}
-          />
-        </View>
-
-        <View className="flex-row items-center gap-2">
-          <Text className="text-white">Matchup ID</Text>
           <TextInput
             value={opponentTeamId}
             onChangeText={setOpponentTeamId}
-            placeholder="Opponent Team Id"
+            placeholder="Joining Team Id (Versus Matchup)"
             placeholderTextColor={'#CCC'}
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
-          />
-          <Button
-            title="Copy"
-            onPress={() => {
-              Clipboard.setString(opponentTeamId);
-            }}
           />
           <Button
             title="Delete"
@@ -165,30 +128,49 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
-          onPress={() => {
-            LucraSDK.createGamesMatchup('DARTS', 1.0)
-              .then((res) => {
-                setMatchupId(res.matchupId);
-                setOwnerTeamId(res.ownerTeamId);
-                setOpponentTeamId(res.opponentTeamId);
-                Alert.alert(
-                  'Success',
-                  'Created matchup with id: ' + res.matchupId
-                );
-              })
-              .catch((e) => {
-                console.error('Error when creating matchup');
-                handleLucraSDKError(e);
-              });
+          onPress={async () => {
+            if (!matchupId) {
+              Alert.alert('Error', 'Please enter a Matchup ID');
+              return;
+            }
+            try {
+              const fullMatchup = await LucraSDK.getMatchup(matchupId);
+              const prettyJson = JSON.stringify(fullMatchup, null, 2);
+              setFullMatchupInfo(prettyJson);
+            } catch (e) {
+              setFullMatchupInfo('');
+              Alert.alert('Error', String(e));
+            }
           }}
         >
-          <Text className="text-white">Create Games Matchup</Text>
+          <Text className="text-white">Get Matchup</Text>
         </TouchableOpacity>
+
+        {fullMatchupInfo ? (
+          <View className="w-full bg-gray-900 border border-indigo-400 rounded-lg mt-2 p-2">
+            <View className="flex-row justify-between items-center mb-2">
+              <Text className="text-indigo-300 font-bold">
+                Full Matchup JSON
+              </Text>
+              <TouchableOpacity
+                onPress={() => Clipboard.setString(fullMatchupInfo)}
+                className="px-2 py-1 bg-indigo-700 rounded"
+              >
+                <Text className="text-white text-xs">Copy</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView horizontal>
+              <Text selectable style={Styles.codeText}>
+                {fullMatchupInfo}
+              </Text>
+            </ScrollView>
+          </View>
+        ) : null}
 
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => {
-            LucraSDK.acceptGamesMatchup(matchupId, opponentTeamId)
+            LucraSDK.acceptFreeForAllRecreationalGame(matchupId)
               .then(() => {
                 Alert.alert(
                   'Success',
@@ -198,7 +180,23 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
               .catch(handleLucraSDKError);
           }}
         >
-          <Text className="text-white">Accept Games match up</Text>
+          <Text className="text-white">Join Free For All Matchup</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={() => {
+            LucraSDK.acceptVersusRecreationalGame(matchupId, opponentTeamId)
+              .then(() => {
+                Alert.alert(
+                  'Success',
+                  'Accepted game matchup with id: ' + matchupId
+                );
+              })
+              .catch(handleLucraSDKError);
+          }}
+        >
+          <Text className="text-white">Join Versus Matchup</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -213,22 +211,6 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           }}
         >
           <Text className="text-white">Log out</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
-          onPress={async () => {
-            try {
-              const info = await LucraSDK.getSportsMatchup(matchupId);
-              console.warn(
-                `getSportsMatchup Response: ${JSON.stringify(info, null, 2)}`
-              );
-            } catch (e) {
-              console.error(e);
-            }
-          }}
-        >
-          <Text className="text-white">Get Sports Matchup info</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -322,5 +304,10 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
 const Styles = StyleSheet.create({
   chevron: {
     tintColor: 'white',
+  },
+  codeText: {
+    fontFamily: 'Menlo',
+    color: '#fff',
+    fontSize: 12,
   },
 });

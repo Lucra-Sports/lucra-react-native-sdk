@@ -27,9 +27,13 @@ import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraConvertToCreditWith
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraReward
 import com.lucrasdk.Libs.LucraUtils
 import com.lucrasports.sdk.core.LucraClient
-import com.lucrasports.sdk.core.contest.GamesMatchup
-import com.lucrasports.sdk.core.contest.PoolTournament
-import com.lucrasports.sdk.core.contest.SportsMatchup
+import com.lucrasports.sdk.core.contest.APIError
+import com.lucrasports.sdk.core.contest.GameInteractions
+import com.lucrasports.sdk.core.contest.LocationError
+import com.lucrasports.sdk.core.contest.LucraError
+import com.lucrasports.sdk.core.contest.UserStateError
+import com.lucrasports.sdk.core.contest.recreational.RecreationalGameInteractions
+import com.lucrasports.sdk.core.contest.tournament.PoolTournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditProvider
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
 import com.lucrasports.sdk.core.events.LucraEvent
@@ -195,6 +199,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                             )
                                         )
                                     )
+
+                                is LucraEvent.Tournament.Joined -> TODO()
                             }
                         }
                     }
@@ -241,35 +247,35 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     private fun buildLucraUIInstance() =
         LucraUi(
             lucraFlowListener =
-            object : LucraFlowListener {
-                // Callback for entering Lucra permitted flow launch points.
-                override fun launchNewLucraFlowEntryPoint(
-                    entryLucraFlow: LucraUiProvider.LucraFlow
-                ): Boolean {
-                    LucraClient().getLucraDialogFragment(entryLucraFlow).also {
-                        it.show(
-                            (context.currentActivity as FragmentActivity)
-                                .supportFragmentManager,
-                            entryLucraFlow.toString()
-                        )
+                object : LucraFlowListener {
+                    // Callback for entering Lucra permitted flow launch points.
+                    override fun launchNewLucraFlowEntryPoint(
+                        entryLucraFlow: LucraUiProvider.LucraFlow
+                    ): Boolean {
+                        LucraClient().getLucraDialogFragment(entryLucraFlow).also {
+                            it.show(
+                                (context.currentActivity as FragmentActivity)
+                                    .supportFragmentManager,
+                                entryLucraFlow.toString()
+                            )
+                        }
+                        return true
                     }
-                    return true
-                }
 
-                // Callback for exiting all Lucra permitted flow launch points
-                override fun onFlowDismissRequested(
-                    entryLucraFlow: LucraUiProvider.LucraFlow
-                ) {
-                    sendEvent(context, "lucraFlowDismissed", Arguments.createMap().apply {
-                        putString("lucraFlow", entryLucraFlow.toString())
-                    })
-                    (context.currentActivity as FragmentActivity)
-                        .supportFragmentManager.findFragmentByTag(
-                            entryLucraFlow.toString()
-                        )
-                        ?.let { (it as DialogFragment).dismiss() }
+                    // Callback for exiting all Lucra permitted flow launch points
+                    override fun onFlowDismissRequested(
+                        entryLucraFlow: LucraUiProvider.LucraFlow
+                    ) {
+                        sendEvent(context, "lucraFlowDismissed", Arguments.createMap().apply {
+                            putString("lucraFlow", entryLucraFlow.toString())
+                        })
+                        (context.currentActivity as FragmentActivity)
+                            .supportFragmentManager.findFragmentByTag(
+                                entryLucraFlow.toString()
+                            )
+                            ?.let { (it as DialogFragment).dismiss() }
+                    }
                 }
-            }
         )
 
     override fun getName(): String {
@@ -294,44 +300,55 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         )
     }
 
-    private fun throwMatchUpError(
-        promise: Promise,
-        failure: GamesMatchup.FailedCreateGamesMatchup
+    @ReactMethod
+    fun createRecreationalGame(
+        gameTypeId: String,
+        atStake: ReadableMap,
+        playStyle: String,
+        promise: Promise
     ) {
-        val errorCode =
-            when (failure) {
-                is GamesMatchup.FailedCreateGamesMatchup.APIError -> "apiError"
-                is GamesMatchup.FailedCreateGamesMatchup.LocationError -> "locationError"
-                GamesMatchup.FailedCreateGamesMatchup.UserStateError.InsufficientFunds ->
-                    "insufficientFunds"
+        val parsedAtStake = try {
+            when (atStake.getString("type")?.lowercase()) {
+                "cash" -> RecreationalGameInteractions.RewardType.Cash(atStake.getDouble("amount"))
+                "tenantreward" -> RecreationalGameInteractions.RewardType.TenantReward(
+                    rewardId = atStake.getString("rewardId") ?: "",
+                    title = atStake.getString("title") ?: "",
+                    descriptor = atStake.getString("descriptor") ?: "",
+                    iconUrl = atStake.getString("iconUrl") ?: "",
+                    bannerIconUrl = atStake.getString("bannerIconUrl"),
+                    disclaimer = atStake.getString("disclaimer"),
+                    metadata = atStake.getMap("metadata")?.toHashMap()
+                        ?.mapValues { it.value.toString() }
+                )
 
-                GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotAllowed -> "notAllowed"
-                GamesMatchup.FailedCreateGamesMatchup.UserStateError.NotInitialized ->
-                    "notInitialized"
-
-                GamesMatchup.FailedCreateGamesMatchup.UserStateError.Unverified -> "unverified"
                 else -> {
-                    "unknownError"
+                    promise.reject(
+                        "invalidRewardType",
+                        "Invalid RewardType: ${atStake.getString("type")}"
+                    )
+                    return
                 }
             }
-        promise.reject(errorCode, failure.toString())
-    }
+        } catch (e: Exception) {
+            promise.reject("invalidAtStake", "Failed to parse atStake: ${e.message}")
+            return
+        }
 
-    @ReactMethod
-    fun createGamesMatchup(gameTypeId: String, atStake: Double, promise: Promise) {
-        LucraClient().createContest(gameTypeId, atStake) {
+        val parsedPlayStyle = when (playStyle.lowercase()) {
+            "groupvsgroup" -> RecreationalGameInteractions.PlayStyle.GroupVsGroup
+            "freeforall" -> RecreationalGameInteractions.PlayStyle.FreeForAll
+            else -> {
+                promise.reject("invalidPlayStyle", "Invalid PlayStyle: $playStyle")
+                return
+            }
+        }
+
+        LucraClient().createRecreationalGame(gameTypeId, parsedAtStake, parsedPlayStyle) {
             when (it) {
-                is GamesMatchup.CreateGamesMatchupResult.Failure -> {
-                    throwMatchUpError(promise, it.failure)
-                }
-
-                is GamesMatchup.CreateGamesMatchupResult.GYPCreatedMatchupOutput -> {
+                is RecreationalGameInteractions.CreateGamesMatchupResult.Failure -> rejectLucraError(promise, it.failure)
+                is RecreationalGameInteractions.CreateGamesMatchupResult.Success -> {
                     val map = Arguments.createMap()
-
                     map.putString("matchupId", it.matchupId)
-                    map.putString("ownerTeamId", it.ownerTeamId)
-                    map.putString("opponentTeamId", it.opponentTeamId)
-
                     promise.resolve(map)
                 }
             }
@@ -339,43 +356,65 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun acceptGamesMatchup(matchupId: String, teamId: String, promise: Promise) {
-        LucraClient().acceptGamesYouPlayContest(matchupId, teamId) {
+    fun acceptVersusRecreationalGame(matchupId: String, teamId: String, promise: Promise) {
+        LucraClient().acceptVersusRecreationalGame(matchupId, teamId) {
             when (it) {
-                is GamesMatchup.MatchupActionResult.Failure ->
-                    throwMatchUpError(promise, it.failure)
+                is RecreationalGameInteractions.AcceptRecreationalGameResult.Failure -> rejectLucraError(promise, it.failure)
+                is RecreationalGameInteractions.AcceptRecreationalGameResult.Success -> promise.resolve(null)
+            }
+        }
+    }
 
-                GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
+    @ReactMethod
+    fun acceptFreeForAllRecreationalGame(matchupId: String, promise: Promise) {
+        LucraClient().acceptFreeForAllRecreationalGame(matchupId) {
+            when (it) {
+                is RecreationalGameInteractions.AcceptRecreationalGameResult.Failure -> rejectLucraError(promise, it.failure)
+                is RecreationalGameInteractions.AcceptRecreationalGameResult.Success -> promise.resolve(null)
             }
         }
     }
 
     @ReactMethod
     fun cancelGamesMatchup(matchupId: String, promise: Promise) {
-        LucraClient().cancelGamesYouPlayContest(matchupId) {
+        LucraClient().cancelRecreationalGame(matchupId) {
             when (it) {
-                is GamesMatchup.MatchupActionResult.Failure ->
-                    throwMatchUpError(promise, it.failure)
-
-                GamesMatchup.MatchupActionResult.Success -> promise.resolve(null)
+                is RecreationalGameInteractions.CancelGamesMatchupResult.Failure -> rejectLucraError(promise, it.failure)
+                is RecreationalGameInteractions.CancelGamesMatchupResult.Success -> promise.resolve(null)
             }
         }
     }
 
     @ReactMethod
-    fun getGamesMatchup(matchupId: String, promise: Promise) {
-        LucraClient().getGamesMatchup(matchupId) { result ->
+    fun getMatchup(matchupId: String, promise: Promise) {
+        LucraClient().getMatchup(matchupId) { result ->
             when (result) {
-                is GamesMatchup.RetrieveGamesMatchupResult.Failure ->
-                    promise.reject(result.failure.toString(), result.failure.toString())
-
-                is GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput -> {
-                    val res = LucraMapper.gamesMatchupToMap(result)
-
+                is GameInteractions.GetMatchupResult.Failure -> {
+                   val errorMessage = when(result.failure){
+                        is GameInteractions.FailedRetrieveSportsMatchup.APIError ->  "apiError"
+                        is GameInteractions.FailedRetrieveSportsMatchup.LocationError -> "locationError"
+                    }
+                    promise.reject("getMatchupFailure", errorMessage)
+                }
+                is GameInteractions.GetMatchupResult.Success -> {
+                    val res = LucraMapper.lucraMatchupToMap(result.matchup)
                     promise.resolve(res)
                 }
             }
         }
+    }
+
+    private fun rejectLucraError(promise: Promise, error: LucraError) {
+        val code = when (error) {
+            is APIError -> "apiError"
+            is LocationError -> "locationError"
+            UserStateError.InsufficientFunds -> "insufficientFunds"
+            UserStateError.NotAllowed -> "notAllowed"
+            UserStateError.NotInitialized -> "notInitialized"
+            UserStateError.Unverified -> "unverified"
+            else -> "unknownError"
+        }
+        promise.reject(code, error.toString())
     }
 
     @ReactMethod
@@ -516,29 +555,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 SDKUserResult.Loading -> promise.reject("loading", "User is still loading")
                 SDKUserResult.WaitingForLogin -> {
                     // intentionally blank
-                }
-            }
-        }
-    }
-
-    @ReactMethod
-    fun getSportsMatchup(contestId: String, promise: Promise) {
-        LucraClient().getSportsMatchup(
-            matchupId = contestId,
-        ) { result ->
-            when (result) {
-                is SportsMatchup.RetrieveSportsMatchupResult.Failure -> {
-                    when (val failure = result.failure) {
-                        is SportsMatchup.FailedRetrieveSportsMatchup.APIError ->
-                            promise.reject("could_not_resolve_sports_matchup", failure.message)
-
-                        is SportsMatchup.FailedRetrieveSportsMatchup.LocationError ->
-                            promise.reject("could_not_resolve_sports_matchup", failure.message)
-                    }
-                }
-
-                is SportsMatchup.RetrieveSportsMatchupResult.MatchupDetailsOutput -> {
-                    promise.resolve(LucraMapper.topLevelMatchupToMap(result.topLevelMatchupType))
                 }
             }
         }

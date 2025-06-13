@@ -37,23 +37,9 @@ RCT_EXPORT_METHOD(initialize : (NSDictionary *)options resolve : (
   return [LucraSwiftClient supportedEvents];
 }
 
-RCT_EXPORT_METHOD(acceptGamesMatchup : (NSString *)matchupId teamId : (
-    NSString *)teamId resolve : (RCTPromiseResolveBlock)
-                      resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient acceptGamesMatchup:matchupId
-                           teamId:teamId
-                         resolve:resolve
-                         reject:reject];
-}
-
 RCT_EXPORT_METHOD(cancelGamesMatchup : (NSString *)matchupId resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient cancelGamesMatchup:matchupId resolve:resolve reject:reject];
-}
-
-RCT_EXPORT_METHOD(getGamesMatchup : (NSString *)matchupId resolve : (
-    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient getGamesMatchup:matchupId resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(configureUser : (NSDictionary *)user resolve : (
@@ -61,25 +47,58 @@ RCT_EXPORT_METHOD(configureUser : (NSDictionary *)user resolve : (
   [swiftClient configureUser:user resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(createGamesMatchup : (NSString *)gameTypeId wagerAmount : (
-    double)wagerAmount resolve : (RCTPromiseResolveBlock)
-                      resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient createGamesMatchup:gameTypeId
-                      wagerAmount:wagerAmount
-                         resolve:resolve
-                         reject:reject];
+RCT_EXPORT_METHOD(createRecreationalGame : (NSString *)gameTypeId
+                  atStake : (NSDictionary *)atStake
+                  playStyle : (NSString *)playStyle
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient createRecreationalGame:gameTypeId
+                              atStake:atStake
+                            playStyle:playStyle
+                              resolve:resolve
+                               reject:reject];
 }
 
-RCT_EXPORT_METHOD(present : (NSDictionary *)params resolve : (
-    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(acceptVersusRecreationalGame : (NSString *)matchupId
+                  teamId : (NSString *)teamId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient acceptVersusRecreationalGame:matchupId
+                                     teamId:teamId
+                                    resolve:resolve
+                                     reject:reject];
+}
+
+RCT_EXPORT_METHOD(acceptFreeForAllRecreationalGame : (NSString *)matchupId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient acceptFreeForAllRecreationalGame:matchupId
+                                        resolve:resolve
+                                         reject:reject];
+}
+
+RCT_EXPORT_METHOD(getMatchup : (NSString *)matchupId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getMatchup:matchupId
+                  resolve:resolve
+                   reject:reject];
+}
+
+RCT_EXPORT_METHOD(present : (NSDictionary *)params
+                  resolve : (RCTPromiseResolveBlock)resolve
+                   reject : (RCTPromiseRejectBlock)reject) {
   NSString *flow = params[@"name"];
   NSString *matchupId = params[@"matchupId"];
   NSString *teamInviteId = params[@"teamInviteId"];
   NSString *gameId = params[@"gameId"];
+  NSString *location = params[@"location"];
+
   [swiftClient present:flow
              matchupId:matchupId
           teamInviteId:teamInviteId
                 gameId:gameId
+              location:location
                resolve:resolve
                 reject:reject];
 }
@@ -140,12 +159,7 @@ RCT_EXPORT_METHOD(registerDeviceTokenBase64 : (NSString *)
                                   reject:reject];
 }
 
-RCT_EXPORT_METHOD(getSportsMatchup : (NSString *)matchupId resolve : (
-    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient getSportsMatchup:matchupId resolve:resolve reject:reject];
-}
-
-// Pool tournamets
+// Pool tournaments
 RCT_EXPORT_METHOD(getRecommendedTournaments : (NSDictionary *)params resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient getRecommendedTournaments:params resolve:resolve reject:reject];

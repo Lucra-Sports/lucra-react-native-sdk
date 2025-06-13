@@ -7,14 +7,12 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertReadableMapToStringMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
-import com.lucrasports.matchup.ParticipantGroup
 import com.lucrasports.matchup.ParticipantGroupOutcome
-import com.lucrasports.matchup.TopLevelMatchupType
+import com.lucrasports.matchup.TournamentLeaderboard
 import com.lucrasports.matchup.sports_impl.SportsInterval
-import com.lucrasports.sdk.core.contest.GYPGame
-import com.lucrasports.sdk.core.contest.GamesMatchup
-import com.lucrasports.sdk.core.contest.Participant
-import com.lucrasports.sdk.core.contest.Tournament
+import com.lucrasports.sdk.core.contest.LucraMatchup
+import com.lucrasports.sdk.core.contest.tournament.Participant
+import com.lucrasports.sdk.core.contest.tournament.Tournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
 import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.reward.LucraReward
@@ -269,117 +267,129 @@ object LucraMapper {
         return map
     }
 
-    fun topLevelMatchupToMap(matchup: TopLevelMatchupType): WritableMap {
+    fun lucraMatchupToMap(match: LucraMatchup): WritableMap {
         val map = Arguments.createMap()
-        map.putString("id", matchup.id)
-        map.putString("status", matchup.status.rawValue)
-        map.putString("subType", matchup.subtype.name)
-        map.putArray(
-            "participantGroups", participantGroupsToArray(matchup)
-        )
-        return map
-    }
-
-    private fun participantGroupsToArray(matchup: TopLevelMatchupType) =
-        Arguments.createArray().apply {
-            matchup.participantGroups.forEach { group ->
-                pushMap(
-                    participantGroupToMap(group)
-                )
-            }
-        }
-
-    private fun participantGroupToMap(group: ParticipantGroup) = Arguments.createMap().apply {
-        putString("id", group.id)
-        putString(
-            "outcome", when (group.outcome) {
-                ParticipantGroupOutcome.Loss -> "LOSS"
-                ParticipantGroupOutcome.Tie -> "TIE"
-                ParticipantGroupOutcome.Unknown -> "UNKNOWN"
-                ParticipantGroupOutcome.Win -> "WIN"
-                null -> ""
-            }
-        )
-        group.professionalTeamStatDetails?.let { teamStats ->
-            putMap("professionalTeamStateDetails", Arguments.createMap().apply {
-                putMap("metric", metricToMap(teamStats.metric))
-                putDouble("metricValue", teamStats.metricValue)
-                putDouble("spread", teamStats.spread)
-                putMap("team", teamToMap(teamStats.team))
-                putMap("schedule", scheduleToMap(teamStats.schedule))
-            })
-        }
-        group.professionalPlayerStatDetails?.let { playerStats ->
-            putMap("professionalPlayerStatDetails", Arguments.createMap().apply {
-                putMap("metric", metricToMap(playerStats.metric))
-                putDouble("metricValue", playerStats.metricValue)
-                putDouble("spread", playerStats.spread)
-                putMap("player", playerToMap(playerStats.player))
-                putMap("schedule", scheduleToMap(playerStats.schedule))
-            })
-        }
-        putArray(
-            "participants",
-            participantsToArray(group)
-        )
-    }
-
-
-    private fun participantsToArray(group: ParticipantGroup) = Arguments.createArray().apply {
-        group.participants.forEach { participant ->
-            pushMap(Arguments.createMap().apply {
-                putMap("user", userToMap(participant.user))
-                participant.reward?.toLucraReward()?.let(::rewardToMap)
-                    ?.let { putMap("reward", it) }
-            })
-        }
-    }
-
-    fun GYPGameToMap(game: GYPGame): WritableMap {
-        val map = Arguments.createMap()
-        map.putString("id", game.id)
-        map.putString("name", game.name)
-        map.putString("description", game.description)
-        map.putString("iconUrl", game.iconUrl)
-        map.putString("imageUrl", game.imageUrl)
-        val categoriesArray = Arguments.createArray()
-        game.categoryIds.forEach { category ->
-            categoriesArray.pushString(category)
-        }
-        map.putArray("categoriesIds", categoriesArray)
-        return map
-    }
-
-    fun gamesMatchupToMap(match: GamesMatchup.RetrieveGamesMatchupResult.GYPMatchupDetailsOutput): WritableMap {
-        val map = Arguments.createMap()
-
-        map.putString("gameType", match.gameType)
-        map.putString("createdAt", match.createdAt)
-        map.putString("ownerId", match.ownerId)
-        map.putString("status", match.status)
+        map.putString("id", match.id)
         map.putString("updatedAt", match.updatedAt)
-        map.putDouble("wagerAmount", match.wagerAmount)
-        map.putMap("game", GYPGameToMap(match.game))
+        map.putString("createdAt", match.createdAt)
+        map.putString("creatorId", match.creatorId)
+        map.putString("status", match.status.rawValue)
+        map.putString("subtype", match.subtype.name)
+        map.putString("type", match.type.name)
+        map.putBoolean("isPublic", match.isPublic)
 
-        val teamArray = Arguments.createArray()
-        match.teams.forEach { team ->
-            val teamRes = Arguments.createMap()
-            teamRes.putString("id", team.id)
-            teamRes.putString("outcome", team.outcome)
+        match.creator?.let { map.putMap("creator", userToMap(it)) }
 
-            val userArr = Arguments.createArray()
-            team.users.forEach { user ->
-                val userRes = Arguments.createMap()
-                userRes.putString("id", user.id)
-                userRes.putString("username", user.username)
+        val groupsArray = Arguments.createArray()
+        match.participantGroups.forEach { group ->
+            val groupMap = Arguments.createMap()
+            groupMap.putString("id", group.id)
+            groupMap.putString("createdAt", group.createdAt)
+            groupMap.putString(
+                "outcome", when (group.outcome) {
+                    ParticipantGroupOutcome.Loss -> "LOSS"
+                    ParticipantGroupOutcome.Tie -> "TIE"
+                    ParticipantGroupOutcome.Win -> "WIN"
+                    else -> "UNKNOWN"
+                }
+            )
 
-                userArr.pushMap(userRes)
+            val participantsArray = Arguments.createArray()
+            group.participants.forEach { participant ->
+                val participantMap = Arguments.createMap()
+                participantMap.putDouble("wager", participant.wager ?: 0.0)
+                participantMap.putMap("user", userToMap(participant.user))
+
+                participant.reward?.toLucraReward()?.let {
+                    participantMap.putMap("reward", rewardToMap(it))
+                }
+
+                participant.tournamentLeaderboard?.let {
+                    participantMap.putMap("tournamentLeaderboard", tournamentLeaderboardToMap(it))
+                }
+
+                participantsArray.pushMap(participantMap)
             }
-            teamArray.pushMap(teamRes)
+
+            groupMap.putArray("participants", participantsArray)
+
+            group.professionalPlayerStatDetails?.let { playerStats ->
+                groupMap.putMap("professionalPlayerStatDetails", Arguments.createMap().apply {
+                    putMap("metric", metricToMap(playerStats.metric))
+                    putDouble("metricValue", playerStats.metricValue)
+                    putDouble("spread", playerStats.spread)
+                    putMap("player", playerToMap(playerStats.player))
+                    putMap("schedule", scheduleToMap(playerStats.schedule))
+                })
+            }
+
+            group.professionalTeamStatDetails?.let { teamStats ->
+                groupMap.putMap(
+                    "professionalTeamStatDetails",
+                    Arguments.createMap().apply {
+                        putMap("metric", metricToMap(teamStats.metric))
+                        putDouble("metricValue", teamStats.metricValue)
+                        putDouble("spread", teamStats.spread)
+                        putMap("team", teamToMap(teamStats.team))
+                        putMap("schedule", scheduleToMap(teamStats.schedule))
+                    })
+            }
+
+            group.recreationalGameStatDetails?.let {
+                groupMap.putMap("recreationalGameStatDetails", Arguments.createMap().apply {
+                    putString("score", it.score)
+                    putString("teamName", it.teamName)
+                    it.handicap?.let { h -> putInt("handicap", h) }
+                })
+            }
+
+            groupsArray.pushMap(groupMap)
         }
 
-        map.putArray("teams", teamArray)
+        map.putArray("participantGroups", groupsArray)
+
+        match.winningGroup?.let {
+            map.putString("winningGroupId", it.id)
+        }
+
+        match.recreationGameExtension?.let { ext ->
+            val extMap = Arguments.createMap()
+            extMap.putString("gameId", ext.gameId)
+            extMap.putInt("buyInAmount", ext.buyInAmount)
+
+            ext.game?.let { game ->
+                val gameMap = Arguments.createMap()
+                gameMap.putString("id", game.id)
+                gameMap.putString("name", game.name)
+                game.description?.let { gameMap.putString("description", it) }
+                game.iconUrl?.let { gameMap.putString("iconUrl", it) }
+                game.imageUrl?.let { gameMap.putString("imageUrl", it) }
+                game.imageBgUrl?.let { gameMap.putString("imageBgUrl", it) }
+
+                val categoriesArray = Arguments.createArray()
+                game.categoryIds.forEach { categoriesArray.pushString(it) }
+                gameMap.putArray("categoryIds", categoriesArray)
+                extMap.putMap("game", gameMap)
+            }
+
+            map.putMap("recreationGameExtension", extMap)
+        }
+
         return map
+    }
+
+    fun tournamentLeaderboardToMap(leaderboard: TournamentLeaderboard): WritableMap {
+        return Arguments.createMap().apply {
+            leaderboard.title?.let { putString("title", it) }
+            leaderboard.userScore?.let { putString("userScore", it) }
+            leaderboard.place?.let { putInt("place", it) }
+            leaderboard.placeOverride?.let { putInt("placeOverride", it) }
+            putBoolean("isTieResult", leaderboard.isTieResult)
+            leaderboard.rewardValue?.let { putDouble("rewardValue", it) }
+            leaderboard.rewardTierValue?.let { putDouble("rewardTierValue", it) }
+            leaderboard.participantGroupId?.let { putString("participantGroupId", it) }
+            leaderboard.username?.let { putString("username", it) }
+        }
     }
 
     fun tournamentsParticipantToMap(participant: Participant): WritableMap {
@@ -435,39 +445,39 @@ object LucraMapper {
             id = map.getString("id")!!,
             title = map.getString("title")!!,
             conversionTerms =
-            map.getString("conversionTerms")!!,
+                map.getString("conversionTerms")!!,
             amount = cashAmount,
             convertedAmount = map.getDouble("convertedAmount"),
             iconUrl = map.getString("iconUrl"),
             convertedAmountDisplay =
-            map.getString("convertedAmountDisplay")!!,
+                map.getString("convertedAmountDisplay")!!,
             shortDescription =
-            map.getString("shortDescription")!!,
+                map.getString("shortDescription")!!,
             longDescription =
-            map.getString("longDescription")!!,
+                map.getString("longDescription")!!,
             metaData =
-            map.getMap("metaData")?.let {
-                convertReadableMapToStringMap(it)
-            },
+                map.getMap("metaData")?.let {
+                    convertReadableMapToStringMap(it)
+                },
             theme =
-            LucraWithdrawCardTheme(
-                cardColor =
-                map.getString(
-                    "cardColor"
-                )!!,
-                cardTextColor =
-                map.getString(
-                    "cardTextColor"
-                )!!,
-                pillColor =
-                map.getString(
-                    "pillColor"
-                )!!,
-                pillTextColor =
-                map.getString(
-                    "pillTextColor"
-                )!!,
-            )
+                LucraWithdrawCardTheme(
+                    cardColor =
+                        map.getString(
+                            "cardColor"
+                        )!!,
+                    cardTextColor =
+                        map.getString(
+                            "cardTextColor"
+                        )!!,
+                    pillColor =
+                        map.getString(
+                            "pillColor"
+                        )!!,
+                    pillTextColor =
+                        map.getString(
+                            "pillTextColor"
+                        )!!,
+                )
         )
     }
 }

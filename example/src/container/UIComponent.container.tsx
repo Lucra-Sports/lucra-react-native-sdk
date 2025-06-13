@@ -49,7 +49,7 @@ export const UIComponentContainer: FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView className="h-full bg-indigo-900">
+    <SafeAreaView className="h-full bg-indigo-900  pt-8">
       <ScrollView className="flex-1">
         <View className="pt-4 px-4 flex-1 gap-2 bg-transparent">
           <View className="flex-row items-center gap-2 pb-5">

@@ -13,11 +13,7 @@ import {
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedNativeComponent';
 export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupNativeComponent';
 export { default as LucraContestCard } from './LucraContestCardNativeComponent';
-import {
-  type SportsMatchupType,
-  type LucraReward,
-  type PoolTournament,
-} from './types';
+import { type LucraReward, type PoolTournament } from './types';
 import NativeLucraClient from './NativeLucraClient';
 export { type LucraReward, type PoolTournament } from './types';
 
@@ -143,25 +139,193 @@ export type LucraSDKParams = {
   merchantID?: string;
 };
 
-type MatchupUserInfo = {
+export type MatchupInfo = {
   id: string;
-  username: string;
-};
-
-type MatchupTeamInfo = {
-  id: string;
-  outcome: string;
-  users: MatchupUserInfo[];
-};
-
-type MatchupInfo = {
-  gameType: string;
-  createdAt: string;
-  ownerId: string;
-  status: string;
   updatedAt: string;
-  wagerAmount: number;
-  teams: MatchupTeamInfo[];
+  createdAt: string;
+  creatorId: string;
+  status: string;
+  subtype: string;
+  type: string;
+  isPublic: boolean;
+  creator?: MatchupUserInfo;
+  participantGroups: MatchupTeamInfo[];
+  winningGroupId?: string;
+  recreationGameExtension?: {
+    gameId: string;
+    buyInAmount: number;
+    game?: {
+      id: string;
+      name: string;
+      description?: string;
+      iconUrl?: string;
+      imageUrl?: string;
+      imageBgUrl?: string;
+      categoryIds: string[];
+      groupTitle?: string;
+      isFeatured: boolean;
+      howToWin?: string;
+      moreInfoHowToWin?: GamesMoreInfoData;
+      moreInfoTrackResults?: GamesMoreInfoData;
+    };
+  };
+};
+
+export type MatchupUserInfo = {
+  id: string;
+  socialConnectionId?: string;
+  username: string;
+  avatarUrl?: string;
+  loyaltyPoints: number;
+};
+
+export type MatchupTeamInfo = {
+  id: string;
+  createdAt: string;
+  outcome: 'WIN' | 'LOSS' | 'TIE' | 'UNKNOWN' | '';
+  participants: MatchupParticipantInfo[];
+  professionalPlayerStatDetails?: PlayerStatDetails;
+  professionalTeamStatDetails?: TeamStatDetails;
+  recreationalGameStatDetails?: RecreationalGameStatDetails;
+};
+
+export type MatchupParticipantInfo = {
+  wager: number;
+  user: MatchupUserInfo;
+  reward?: MatchupRewardInfo;
+  tournamentLeaderboard?: MatchupLeaderboardInfo;
+};
+
+export type MatchupRewardInfo = {
+  rewardId: string;
+  title: string;
+  descriptor: string;
+  iconUrl: string;
+  bannerIconUrl?: string;
+  disclaimer?: string;
+  metadata?: Record<string, string>;
+};
+
+export type MatchupLeaderboardInfo = {
+  title?: string;
+  userScore?: string;
+  place?: number;
+  placeOverride?: number;
+  isTieResult: boolean;
+  rewardValue?: number;
+  rewardTierValue?: number;
+  participantGroupId?: string;
+  username?: string;
+};
+
+export type PlayerStatDetails = {
+  metric: MatchupMetric;
+  metricValue: number;
+  spread: number;
+  player: MatchupPlayer;
+  schedule: MatchupSchedule;
+};
+
+export type TeamStatDetails = {
+  metric: MatchupMetric;
+  metricValue: number;
+  spread: number;
+  team: MatchupTeam;
+  schedule: MatchupSchedule;
+};
+
+export type RecreationalGameStatDetails = {
+  score: string;
+  teamName: string;
+  handicap?: number;
+};
+
+export type MatchupMetric = {
+  id: string;
+  displayName: string;
+  pluralDisplayName: string;
+  shortName: string;
+  maxValue: number;
+  active: boolean;
+  comparisonType: string;
+};
+
+export type MatchupPlayer = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  headshotUrl: string;
+  lucraPosition: string;
+  position: string;
+  positionAbbreviation: string;
+  status: string;
+  isAvailable: boolean;
+  sport: MatchupSport;
+  positionMetrics: MatchupMetric[];
+  projectedStats: MatchupPlayerStat[];
+  seasonAvgStats: MatchupPlayerStat[];
+  liveGameStats: MatchupPlayerStat[];
+  team: MatchupTeam;
+  league?: MatchupLeague;
+  ranking?: number;
+  schedule: MatchupSchedule;
+};
+
+export type MatchupPlayerStat = {
+  metricId: string;
+  value: string;
+};
+
+export type MatchupTeam = {
+  id: string;
+  fullName: string;
+  name: string;
+  abbreviation: string;
+  sport: MatchupSport;
+};
+
+export type MatchupLeague = {
+  id: string;
+  name: string;
+  logoUrl: string;
+  priority: number;
+  schedules: MatchupSchedule[];
+};
+
+export type MatchupSport = {
+  id: string;
+  name: string;
+  iconUrl: string;
+  priority: number;
+  leagues: MatchupLeague[];
+  intervals: SportInterval[];
+};
+
+export type MatchupSchedule = {
+  id: string;
+  date: string;
+  channel: string;
+  status: string;
+  homeTeam: MatchupTeam;
+  awayTeam: MatchupTeam;
+  players: MatchupPlayer[];
+  venue: string;
+  roundName: string;
+  statusDescription: string;
+  homeScore: string;
+  awayScore: string;
+  sport: MatchupSport;
+  projectionsPending?: boolean;
+};
+
+export type SportInterval = {
+  interval: number;
+  displayName: string;
+};
+
+export type GamesMoreInfoData = {
+  name: string;
+  description?: string;
 };
 
 type LucraConvertCreditResponse = {
@@ -378,24 +542,29 @@ export const LucraSDK = {
     return LucraClient.closeFullScreenLucraFlows();
   },
   present: present,
-  createGamesMatchup: (
+  createRecreationalGame: (
     gameTypeId: string,
-    wagerAmount: number
+    atStake: object, // RewardType
+    playStyle: string
   ): Promise<{
     matchupId: string;
-    ownerTeamId: string;
-    opponentTeamId: string;
   }> => {
-    return LucraClient.createGamesMatchup(gameTypeId, wagerAmount);
+    return LucraClient.createRecreationalGame(gameTypeId, atStake, playStyle);
   },
-  acceptGamesMatchup: (matchupId: string, teamId: string): Promise<void> => {
-    return LucraClient.acceptGamesMatchup(matchupId, teamId);
+  acceptVersusRecreationalGame: (
+    matchupId: string,
+    teamId: string
+  ): Promise<void> => {
+    return LucraClient.acceptVersusRecreationalGame(matchupId, teamId);
+  },
+  acceptFreeForAllRecreationalGame: (matchupId: string): Promise<void> => {
+    return LucraClient.acceptFreeForAllRecreationalGame(matchupId);
   },
   cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
   },
-  getGamesMatchup: async (gameId: string): Promise<MatchupInfo> => {
-    return (await LucraClient.getGamesMatchup(gameId)) as MatchupInfo;
+  getMatchup: async (matchupId: string): Promise<MatchupInfo> => {
+    return (await LucraClient.getMatchup(matchupId)) as MatchupInfo;
   },
   logout: (): Promise<void> => {
     return LucraClient.logout();
@@ -417,9 +586,6 @@ export const LucraSDK = {
   },
   registerDeviceTokenBase64: async (token: string): Promise<void> => {
     return LucraClient.registerDeviceTokenBase64(token);
-  },
-  getSportsMatchup: async (contestId: string): Promise<SportsMatchupType> => {
-    return (await LucraClient.getSportsMatchup(contestId)) as SportsMatchupType;
   },
   addLucraFlowDismissedListener: (listener: (flow: string) => void) => {
     lucraFlowDismissedCallback = listener;

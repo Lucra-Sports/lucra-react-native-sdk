@@ -36,7 +36,7 @@ class LucraUtils {
                     if (gameTypeId != null) {
                         return LucraUiProvider.LucraFlow.CreateGamesMatchupById(gameTypeId)
                     } else {
-                        return LucraUiProvider.LucraFlow.CreateGamesMatchup
+                        return LucraUiProvider.LucraFlow.CreateGamesMatchup()
                     }
                 }
 
