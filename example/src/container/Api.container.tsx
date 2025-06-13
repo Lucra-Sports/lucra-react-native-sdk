@@ -160,10 +160,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             <ScrollView horizontal>
-              <Text
-                selectable
-                style={{ fontFamily: 'Menlo', color: '#fff', fontSize: 12 }}
-              >
+              <Text selectable style={Styles.codeText}>
                 {fullMatchupInfo}
               </Text>
             </ScrollView>
@@ -307,5 +304,10 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
 const Styles = StyleSheet.create({
   chevron: {
     tintColor: 'white',
+  },
+  codeText: {
+    fontFamily: 'Menlo',
+    color: '#fff',
+    fontSize: 12,
   },
 });

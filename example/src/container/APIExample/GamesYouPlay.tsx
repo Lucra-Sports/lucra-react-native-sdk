@@ -21,7 +21,7 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
   const [wager, setWager] = useState('');
   const [gameType, setGameType] = useState('DARTS');
   const [gameFormat, setGameFormat] = useState('freeforall');
-  const [info, setInfo] = useState('');
+  const [_info, setInfo] = useState('');
   const [matchup, setMatchup] = useState<{ matchupId: string } | null>();
   const [fullMatchupInfo, setFullMatchupInfo] = useState('');
   const [stakeType, setStakeType] = useState<'cash' | 'tenantreward'>('cash');
@@ -216,15 +216,11 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
                 <Text className="text-white text-xs">Copy</Text>
               </TouchableOpacity>
             </View>
-            <Text
-              selectable
-              style={{ fontFamily: 'Menlo', color: '#fff', fontSize: 14 }}
-            >
+            <Text selectable className="font-mono text-white text-sm">
               {matchup.matchupId}
             </Text>
           </View>
         ) : null}
-        <Text className="text-white">{info}</Text>
         <Text className="text-white font-bold">Full Matchup info</Text>
         {fullMatchupInfo ? (
           <View className="w-full bg-gray-900 border border-indigo-400 rounded-lg mt-2 p-2">
@@ -241,11 +237,8 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
                 <Text className="text-white text-xs">Copy</Text>
               </TouchableOpacity>
             </View>
-            <ScrollView style={{ maxHeight: 300 }}>
-              <Text
-                selectable
-                style={{ fontFamily: 'Menlo', color: '#fff', fontSize: 12 }}
-              >
+            <ScrollView style={styles.matchupScrollView}>
+              <Text selectable className="font-mono text-white text-xs">
                 {fullMatchupInfo}
               </Text>
             </ScrollView>
@@ -255,7 +248,7 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
           <Button title="Create Matchup" onPress={createGamesMatchup} />
         ) : (
           <View>
-            <View style={{ gap: 12 }}>
+            <View style={styles.buttonContainer}>
               <Button title="Load Full Matchup" onPress={loadFullMatchup} />
               <Button title="Cancel Matchup" onPress={cancelMatchup} />
             </View>
@@ -264,4 +257,9 @@ export const GamesYouPlay: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
     </SafeAreaView>
   );
+};
+
+const styles = {
+  matchupScrollView: { maxHeight: 300 },
+  buttonContainer: { gap: 12 },
 };
