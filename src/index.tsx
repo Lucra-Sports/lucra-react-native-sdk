@@ -13,11 +13,7 @@ import {
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedNativeComponent';
 export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupNativeComponent';
 export { default as LucraContestCard } from './LucraContestCardNativeComponent';
-import {
-  type SportsMatchupType,
-  type LucraReward,
-  type PoolTournament,
-} from './types';
+import { type LucraReward, type PoolTournament } from './types';
 import NativeLucraClient from './NativeLucraClient';
 export { type LucraReward, type PoolTournament } from './types';
 

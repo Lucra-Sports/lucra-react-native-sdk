@@ -149,7 +149,9 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         {fullMatchupInfo ? (
           <View className="w-full bg-gray-900 border border-indigo-400 rounded-lg mt-2 p-2">
             <View className="flex-row justify-between items-center mb-2">
-              <Text className="text-indigo-300 font-bold">Full Matchup JSON</Text>
+              <Text className="text-indigo-300 font-bold">
+                Full Matchup JSON
+              </Text>
               <TouchableOpacity
                 onPress={() => Clipboard.setString(fullMatchupInfo)}
                 className="px-2 py-1 bg-indigo-700 rounded"
