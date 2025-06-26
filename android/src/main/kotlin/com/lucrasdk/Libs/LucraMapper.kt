@@ -300,7 +300,7 @@ object LucraMapper {
                 participantMap.putDouble("wager", participant.wager ?: 0.0)
                 participantMap.putMap("user", userToMap(participant.user))
 
-                participant.reward?.toLucraReward()?.let {
+                participant.tenantReward?.toLucraReward()?.let {
                     participantMap.putMap("reward", rewardToMap(it))
                 }
 
@@ -355,7 +355,7 @@ object LucraMapper {
         match.recreationGameExtension?.let { ext ->
             val extMap = Arguments.createMap()
             extMap.putString("gameId", ext.gameId)
-            extMap.putInt("buyInAmount", ext.buyInAmount)
+            extMap.putInt("buyInAmount", ext.buyInAmount.toInt())
 
             ext.game?.let { game ->
                 val gameMap = Arguments.createMap()

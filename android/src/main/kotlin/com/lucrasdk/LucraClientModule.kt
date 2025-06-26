@@ -391,9 +391,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             when (result) {
                 is GameInteractions.GetMatchupResult.Failure -> {
                    val errorMessage = when(result.failure){
-                        is GameInteractions.FailedRetrieveSportsMatchup.APIError ->  "apiError"
-                        is GameInteractions.FailedRetrieveSportsMatchup.LocationError -> "locationError"
-                    }
+                       is GameInteractions.FailedRetrieveMatchup.APIError -> "apiError"
+                       is GameInteractions.FailedRetrieveMatchup.LocationError -> "locationError"
+                   }
                     promise.reject("getMatchupFailure", errorMessage)
                 }
                 is GameInteractions.GetMatchupResult.Success -> {
