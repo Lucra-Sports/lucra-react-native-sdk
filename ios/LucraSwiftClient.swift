@@ -83,6 +83,8 @@ import LucraSDK
     eventSinkCancellable = nativeClient.$event.sink { event in
       guard let event = event else { return }
 
+      print("LucraSDK.LucraClient available events: \(event)")
+
       switch event {
       case .gamesMatchupCreated(let id):
         self.delegate?.sendEvent(
@@ -93,6 +95,9 @@ import LucraSDK
       case .gamesMatchupCanceled(let id):
         self.delegate?.sendEvent(
           name: "gamesMatchupCanceled", result: ["id": id])
+      case .gamesMatchupStarted(let id):
+        self.delegate?.sendEvent(
+          name: "gamesMatchupStarted", result: ["id": id])
       case .sportsMatchupCreated(let id):
         self.delegate?.sendEvent(
           name: "sportsMatchupCreated", result: ["id": id])
@@ -102,6 +107,9 @@ import LucraSDK
       case .sportsMatchupCanceled(let id):
         self.delegate?.sendEvent(
           name: "sportsMatchupCanceled", result: ["id": id])
+      case .tournamentJoined(let id):
+        self.delegate?.sendEvent(
+          name: "tournamentJoined", result: ["id": id])
       @unknown default:
         fatalError()
       }

@@ -367,6 +367,8 @@ type LucraContestListeners = {
   onSportsMatchupAccepted?: (id: string) => void;
   onSportsMatchupCanceled?: (id: string) => void;
   onGamesMatchupCanceled?: (id: string) => void;
+  onGamesMatchupStarted?: (id: string) => void;
+  onTournamentJoined?: (id: string) => void;
 };
 
 const Flows = {
@@ -509,10 +511,24 @@ export const LucraSDK = {
       }
     );
 
+    const gamesMatchupStartedEmitter = eventEmitter.addListener(
+      'gamesMatchupStarted',
+      (data) => {
+        listenerMap.onGamesMatchupStarted?.(data.id);
+      }
+    );
+
     const sportsMatchupCanceledEmitter = eventEmitter.addListener(
       'sportsMatchupCanceled',
       (data) => {
         listenerMap.onSportsMatchupCanceled?.(data.id);
+      }
+    );
+
+    const tournamentJoinedEmitter = eventEmitter.addListener(
+      'tournamentJoined',
+      (data) => {
+        listenerMap.onTournamentJoined?.(data.id);
       }
     );
 
@@ -522,7 +538,9 @@ export const LucraSDK = {
       gamesContextAcceptedEmitter.remove();
       sportMatchupAcceptedEmitter.remove();
       gamesMatchupCanceledEmitter.remove();
+      gamesMatchupStartedEmitter.remove();
       sportsMatchupCanceledEmitter.remove();
+      tournamentJoinedEmitter.remove();
     };
   },
   addListener: (type: 'user', cb: (data: any) => void) => {
