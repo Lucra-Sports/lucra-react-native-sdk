@@ -179,7 +179,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                 is LucraEvent.GamesContest.Canceled ->
                                     sendEvent(
                                         context,
-                                        "gamesMatchupCancelled",
+                                        "gamesMatchupCanceled",
                                         Arguments.makeNativeMap(
                                             bundleOf(
                                                 "id" to
@@ -191,7 +191,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                 is LucraEvent.SportsContest.Canceled ->
                                     sendEvent(
                                         context,
-                                        "sportsMatchupCancelled",
+                                        "sportsMatchupCanceled",
                                         Arguments.makeNativeMap(
                                             bundleOf(
                                                 "id" to
@@ -200,7 +200,23 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                         )
                                     )
 
-                                is LucraEvent.Tournament.Joined -> TODO()
+                                is LucraEvent.GamesContest.Started ->
+                                    sendEvent(
+                                        context,
+                                        "gamesMatchupStarted",
+                                        Arguments.makeNativeMap(
+                                            bundleOf("id" to event.matchupId)
+                                        )
+                                    )
+
+                                is LucraEvent.Tournament.Joined ->
+                                    sendEvent(
+                                        context,
+                                        "tournamentJoined",
+                                        Arguments.makeNativeMap(
+                                            bundleOf("id" to event.tournamentId)
+                                        )
+                                    )
                             }
                         }
                     }
@@ -345,7 +361,11 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
         LucraClient().createRecreationalGame(gameTypeId, parsedAtStake, parsedPlayStyle) {
             when (it) {
-                is RecreationalGameInteractions.CreateGamesMatchupResult.Failure -> rejectLucraError(promise, it.failure)
+                is RecreationalGameInteractions.CreateGamesMatchupResult.Failure -> rejectLucraError(
+                    promise,
+                    it.failure
+                )
+
                 is RecreationalGameInteractions.CreateGamesMatchupResult.Success -> {
                     val map = Arguments.createMap()
                     map.putString("matchupId", it.matchupId)
@@ -359,8 +379,14 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     fun acceptVersusRecreationalGame(matchupId: String, teamId: String, promise: Promise) {
         LucraClient().acceptVersusRecreationalGame(matchupId, teamId) {
             when (it) {
-                is RecreationalGameInteractions.AcceptRecreationalGameResult.Failure -> rejectLucraError(promise, it.failure)
-                is RecreationalGameInteractions.AcceptRecreationalGameResult.Success -> promise.resolve(null)
+                is RecreationalGameInteractions.AcceptRecreationalGameResult.Failure -> rejectLucraError(
+                    promise,
+                    it.failure
+                )
+
+                is RecreationalGameInteractions.AcceptRecreationalGameResult.Success -> promise.resolve(
+                    null
+                )
             }
         }
     }
@@ -369,8 +395,14 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     fun acceptFreeForAllRecreationalGame(matchupId: String, promise: Promise) {
         LucraClient().acceptFreeForAllRecreationalGame(matchupId) {
             when (it) {
-                is RecreationalGameInteractions.AcceptRecreationalGameResult.Failure -> rejectLucraError(promise, it.failure)
-                is RecreationalGameInteractions.AcceptRecreationalGameResult.Success -> promise.resolve(null)
+                is RecreationalGameInteractions.AcceptRecreationalGameResult.Failure -> rejectLucraError(
+                    promise,
+                    it.failure
+                )
+
+                is RecreationalGameInteractions.AcceptRecreationalGameResult.Success -> promise.resolve(
+                    null
+                )
             }
         }
     }
@@ -379,8 +411,14 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     fun cancelGamesMatchup(matchupId: String, promise: Promise) {
         LucraClient().cancelRecreationalGame(matchupId) {
             when (it) {
-                is RecreationalGameInteractions.CancelGamesMatchupResult.Failure -> rejectLucraError(promise, it.failure)
-                is RecreationalGameInteractions.CancelGamesMatchupResult.Success -> promise.resolve(null)
+                is RecreationalGameInteractions.CancelGamesMatchupResult.Failure -> rejectLucraError(
+                    promise,
+                    it.failure
+                )
+
+                is RecreationalGameInteractions.CancelGamesMatchupResult.Success -> promise.resolve(
+                    null
+                )
             }
         }
     }
@@ -390,12 +428,13 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().getMatchup(matchupId) { result ->
             when (result) {
                 is GameInteractions.GetMatchupResult.Failure -> {
-                   val errorMessage = when(result.failure){
-                       is GameInteractions.FailedRetrieveMatchup.APIError -> "apiError"
-                       is GameInteractions.FailedRetrieveMatchup.LocationError -> "locationError"
-                   }
+                    val errorMessage = when (result.failure) {
+                        is GameInteractions.FailedRetrieveMatchup.APIError -> "apiError"
+                        is GameInteractions.FailedRetrieveMatchup.LocationError -> "locationError"
+                    }
                     promise.reject("getMatchupFailure", errorMessage)
                 }
+
                 is GameInteractions.GetMatchupResult.Success -> {
                     val res = LucraMapper.lucraMatchupToMap(result.matchup)
                     promise.resolve(res)

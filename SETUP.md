@@ -2,30 +2,9 @@
 
 React Native depends on several frameworks and dependencies you need to setup, some locally some globally
 
-## With ASDF
+## Dependencies via nvm, rubyenv and global installs
 
-[ASDF](https://asdf-vm.com/) is a runtime framework manager, it allows you to have a local-bound installation of global tooling, therefore no need to mess up your projects when they have disparate dependency versions.
-
-You can follow the installation instructions on the website. This repo already contains a `.tool-versions` file that specified the required dependencies:
-
-```
-nodejs 18.15.0
-ruby 2.7.6
-yarn 4.1.1
-java zulu-11.56.19
-```
-
-With ASDF installed on your machine, you can then navigate to the root of this project and do:
-
-```sh
-asdf install
-```
-
-Then use the commands normally
-
-## With nvm, rubyenv and global installs
-
-If ASDF is not your cup of tea, you will be forced to install the dependencies in however way you prefer. However certain tooling will help you.
+You can install the dependencies in however way you prefer. However certain tooling will help you.
 
 `nvm` is ASDF but only for node. There is a `.nvmrc` file on the root of the project that specified the version of node required by the project.
 
@@ -70,9 +49,11 @@ Once everything is correctly set up, you can finally install the javascript depe
 
 In the root of this project you can do a simple `yarn`, it is set up in a way that will install the top level dependencies and also the dependencies in the `example` folder.
 
-For the Cocoapods dependencies, my recommended way is that you go into the `example` directory and run `npx pod-install`. Npx is the headless runner of npm, it allows you to run npm packages without having to install them first. The `pod-install` is a JS wrapper for CocoaPods created by the community that takes care of many pitfalls of directly using `CocoaPods` when one is not a ruby/iOS expert.
+For the Cocoapods dependencies, my recommended way is that you go into the `example` directory and run `npx pod-install`. Npx is the headless runner of npm, it allows you to run npm packages without having to install them first.
 
-Once everything is done and said, you can return to the root folder and run the app via `yarn build:ios` or `yarn build:android` or stay in the `example` folder and run the app like a normal RN app via `yarn ios` or `yarn android`.
+Once everything is done and said, you can run the app. Got to the `example` folder and run `npx react-native start --reset-cache` to start the Metro bundler and development server. Then on a separate terminal in the same `example` folder, start the iOS or Android apps via `yarn ios` or `yarn android`.
+
+If you see any erros that resembles `CocoaPods could not find compatible versions for pod "LucraSDK"` check the `example/ios/Podfile.lock` to see if correct SDK version is defined. If not, run `pod update` from the example folder, or if that does not work, delete the `Podfile.lock` as well as pod folder in the `example/ios` then run `npx pod-install` from the example folder.
 
 ## Checks
 
