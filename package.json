@@ -10,7 +10,8 @@
       "types": "./lib/typescript/src/index.d.ts",
       "default": "./lib/module/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
   },
   "files": [
     "src",
@@ -38,7 +39,7 @@
     "test": "jest",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "prettier:fix": "prettier --write .",
-    "prepack": "bob build",
+    "prepack": "bob build && yarn build-plugin",
     "example": "yarn workspace example",
     "prepare": "bob build",
     "build-plugin": "tsc -p ./plugin/tsconfig.json",
