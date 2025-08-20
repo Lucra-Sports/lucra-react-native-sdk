@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@lucra-sports/lucra-react-native-sdk": "2.4.3",
-    "expo": "^52.0.44",
+    "expo": "^52.0.47",
     "expo-build-properties": "~0.13.2",
     "expo-dev-client": "~5.0.19",
     "expo-font": "~13.0.4",
