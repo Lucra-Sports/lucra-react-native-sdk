@@ -3889,9 +3889,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:^52.0.44":
-  version: 52.0.44
-  resolution: "expo@npm:52.0.44"
+"expo@npm:^52.0.47":
+  version: 52.0.47
+  resolution: "expo@npm:52.0.47"
   dependencies:
     "@babel/runtime": "npm:^7.20.0"
     "@expo/cli": "npm:0.22.24"
@@ -3928,7 +3928,6 @@ __metadata:
     expo: bin/cli
     expo-modules-autolinking: bin/autolinking
     fingerprint: bin/fingerprint
-  checksum: 10c0/5a47bb7d811b46dc0783b09fb2451fb4a454e304f5d720866ff99b97504c03f4d612f95a8ff02b391d396daa071688a4d34da28e8e69ee95ad9038cd8a32acf9
   languageName: node
   linkType: hard
 
@@ -4137,14 +4136,13 @@ __metadata:
   linkType: hard
 
 "form-data@npm:^3.0.1":
-  version: 3.0.3
-  resolution: "form-data@npm:3.0.3"
+  version: 3.0.4
+  resolution: "form-data@npm:3.0.4"
   dependencies:
     asynckit: "npm:^0.4.0"
     combined-stream: "npm:^1.0.8"
     es-set-tostringtag: "npm:^2.1.0"
     mime-types: "npm:^2.1.35"
-  checksum: 10c0/a62b275f9736ff94f327c66d5f6c581391eafe07c912b12c3738e822aa3b1f27fb23d7138af5b48163497a278e2f84ec9f4a27e60dd511b7683fb76a835bb395
   languageName: node
   linkType: hard
 
