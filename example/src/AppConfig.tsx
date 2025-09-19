@@ -15,6 +15,9 @@ export interface AppConfig {
   dirty: boolean;
 }
 
+const envApiURL = (process.env.LUCRA_SDK_API_URL ?? '').trim();
+const envApiKey = (process.env.LUCRA_SDK_API_KEY ?? '').trim();
+
 export type AppConfigAction =
   | { type: 'SET_CONFIG'; config: AppConfig }
   | { type: 'SET_FIELD'; field: keyof AppConfig; value: string }
@@ -22,11 +25,11 @@ export type AppConfigAction =
   | { type: 'SET_TOGGLE'; field: 'deeplinksEnabled'; value: boolean };
 
 export const defaultAppConfig: AppConfig = {
-  apiURL: 'api-sample.sandbox.lucrasports.com',
-  apiKey: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
+  apiURL: envApiURL,
+  apiKey: envApiKey,
   environment: LucraSDK.ENVIRONMENT.SANDBOX,
   urlScheme: 'lucraexample',
-  merchantId: 'com.todo.in.upcoming.pr',
+  merchantId: 'required.for.apple.pay',
   deeplinksEnabled: true,
   theme: DEFAULT,
   dirty: false,

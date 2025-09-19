@@ -60,6 +60,8 @@ jobs:
     runs-on: [self-hosted, android]
     env:
       GPR_USER: LucraReactNativeCi
+      LUCRA_SDK_API_URL: ${{ secrets.LUCRA_SDK_API_URL }}
+      LUCRA_SDK_API_KEY: ${{ secrets.LUCRA_SDK_API_KEY }}
       JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       GRADLE_OPTS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       ANDROID_HOME: /Users/lucra/Library/Android/sdk
@@ -92,6 +94,8 @@ jobs:
     runs-on: self-hosted
     env:
       GPR_KEY: ${{ secrets.GPR_KEY }}
+      LUCRA_SDK_API_URL: ${{ secrets.LUCRA_SDK_API_URL }}
+      LUCRA_SDK_API_KEY: ${{ secrets.LUCRA_SDK_API_KEY }}
       DETOX_SANDBOX_PHONE: ${{ secrets.DETOX_SANDBOX_PHONE }}
       DETOX_SANDBOX_CODE: ${{ secrets.DETOX_SANDBOX_CODE }}
       APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
