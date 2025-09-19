@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+// import DatePicker from 'react-native-date-picker';
 import {
   LucraSDK,
   type LucraUserConfig,
@@ -285,7 +285,7 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <DatePicker
+        {/* <DatePicker
           modal
           date={state.dateOfBirth ?? new Date()}
           open={open}
@@ -297,7 +297,7 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
             setOpen(false);
             handleChange('dateOfBirth', date);
           }}
-        />
+        /> */}
         <Button title="Submit" onPress={handleSubmit} />
       </ScrollView>
     </SafeAreaView>
