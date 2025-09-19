@@ -15,6 +15,9 @@ export interface AppConfig {
   dirty: boolean;
 }
 
+const envApiURL = (process.env.LUCRA_SDK_API_URL ?? '').trim();
+const envApiKey = (process.env.LUCRA_SDK_API_KEY ?? '').trim();
+
 export type AppConfigAction =
   | { type: 'SET_CONFIG'; config: AppConfig }
   | { type: 'SET_FIELD'; field: keyof AppConfig; value: string }
@@ -22,8 +25,8 @@ export type AppConfigAction =
   | { type: 'SET_TOGGLE'; field: 'deeplinksEnabled'; value: boolean };
 
 export const defaultAppConfig: AppConfig = {
-  apiURL: '', // Be sure to include provided URL
-  apiKey: '', // Be sure to include KEY
+  apiURL: envApiURL,
+  apiKey: envApiKey,
   environment: LucraSDK.ENVIRONMENT.SANDBOX,
   urlScheme: 'lucraexample',
   merchantId: 'required.for.apple.pay',
