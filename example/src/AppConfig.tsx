@@ -22,11 +22,11 @@ export type AppConfigAction =
   | { type: 'SET_TOGGLE'; field: 'deeplinksEnabled'; value: boolean };
 
 export const defaultAppConfig: AppConfig = {
-  apiURL: 'api-sample.sandbox.lucrasports.com',
-  apiKey: 'YGugBV5xGsicmp48syEcDlBUQ98YeHE5',
+  apiURL: '', // Be sure to include provided URL
+  apiKey: '', // Be sure to include KEY
   environment: LucraSDK.ENVIRONMENT.SANDBOX,
   urlScheme: 'lucraexample',
-  merchantId: 'com.todo.in.upcoming.pr',
+  merchantId: 'required.for.apple.pay',
   deeplinksEnabled: true,
   theme: DEFAULT,
   dirty: false,
