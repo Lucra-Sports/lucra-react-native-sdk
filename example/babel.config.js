@@ -51,6 +51,12 @@ lucraEnvKeys.forEach((key) => {
   lucraEnvValues[key] = value;
 });
 
+if (!lucraEnvValues.LUCRA_SDK_API_URL || !lucraEnvValues.LUCRA_SDK_API_KEY) {
+  throw new Error(
+    'Missing LUCRA_SDK_API_URL or LUCRA_SDK_API_KEY. Provide them via example/.env or GitHub secrets.'
+  );
+}
+
 module.exports = getConfig(
   {
     presets: ['module:@react-native/babel-preset', 'nativewind/babel'],
