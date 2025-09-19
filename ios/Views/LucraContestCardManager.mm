@@ -1,10 +1,9 @@
+#ifdef RCT_NEW_ARCH_ENABLED
 #import "RCTBridge.h"
 #import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
-
-
 
 @interface LucraContestCardManager : RCTViewManager
 @end
@@ -36,3 +35,4 @@ RCT_CUSTOM_VIEW_PROPERTY(contestId, NSString, UIView) {
 }
 
 @end
+#endif

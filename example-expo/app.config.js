@@ -58,6 +58,7 @@ export default {
           },
         },
       ],
+      // In your real app use this:
       // ['@lucra-sports/lucra-react-native-sdk'],
       ['../app.plugin.js'],
     ],
