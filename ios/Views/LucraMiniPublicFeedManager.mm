@@ -1,3 +1,4 @@
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTViewManager.h>
 #import <React/RCTUIManager.h>
 #import "RCTBridge.h"
@@ -39,3 +40,4 @@ RCT_CUSTOM_VIEW_PROPERTY(playerIds, NSString, UIView)
 }
 
 @end
+#endif
