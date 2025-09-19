@@ -1,8 +1,6 @@
 require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
 Pod::Spec.new do |s|
   s.name         = "lucra-react-native-sdk"
@@ -14,13 +12,11 @@ Pod::Spec.new do |s|
 
   s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :git => "https://github.com/Lucra-Sports/lucra-react-native-sdk", :tag => "#{s.version}" }
-  s.source_files = "ios/**/*.{h,mm,swift}"
-  
+
+  s.source_files = "ios/**/*.{h,m,mm,swift}"
+  # s.private_header_files = "ios/**/*.h"
+
   s.dependency 'LucraSDK', '3.4.0'
   
-  if fabric_enabled
-    install_modules_dependencies(s)
-  else
-    s.dependency "React-Core"
-  end
+  install_modules_dependencies(s)
 end

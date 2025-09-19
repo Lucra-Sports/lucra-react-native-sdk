@@ -8,8 +8,7 @@ module.exports = getConfig(
   {
     presets: ['module:@react-native/babel-preset', 'nativewind/babel'],
     plugins: [
-      'babel-plugin-transform-typescript-metadata',
-      'react-native-reanimated/plugin',
+      'react-native-worklets/plugin',
     ],
   },
   { root, pkg }

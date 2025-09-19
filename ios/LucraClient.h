@@ -1,18 +1,10 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <LucraClientSpec/LucraClientSpec.h>
-#else
-#import <React/RCTBridge.h>
-#endif
 #import <React/RCTEventEmitter.h>
 
-@interface LucraClient: RCTEventEmitter
-#ifdef RCT_NEW_ARCH_ENABLED
-                                <NativeLucraClientSpec>
-#else
-                                <RCTBridgeModule>
-#endif
+NS_ASSUME_NONNULL_BEGIN
 
-@property(nonatomic, assign) BOOL setBridgeOnMainQueue;
+@interface LucraClient: RCTEventEmitter<NativeLucraClientSpec>
 
 // Method to access the stored instance
 + (instancetype)sharedInstance;
@@ -22,3 +14,6 @@
 
 - (bool)handleVenmoUrl:(NSURL*) url;
 @end
+NS_ASSUME_NONNULL_END
+
+#endif
