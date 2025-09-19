@@ -18,6 +18,12 @@ export interface AppConfig {
 const envApiURL = (process.env.LUCRA_SDK_API_URL ?? '').trim();
 const envApiKey = (process.env.LUCRA_SDK_API_KEY ?? '').trim();
 
+if (!envApiURL || !envApiKey) {
+  throw new Error(
+    'Missing LUCRA_SDK_API_URL or LUCRA_SDK_API_KEY. Ensure they are set in example/.env or the CI secrets.'
+  );
+}
+
 export type AppConfigAction =
   | { type: 'SET_CONFIG'; config: AppConfig }
   | { type: 'SET_FIELD'; field: keyof AppConfig; value: string }
