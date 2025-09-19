@@ -2,10 +2,16 @@
 
 ## Running
 
-- Since this app is embedded in the main mono repo it npm breaks itself trying to symlink the node_modules, therefore you have to use yarn
-- Update the `package.json` dependency to the latest published version of the `@lucra-sports/lucra-react-native-sdk` package
-- Create a `.env` file (next to the `.env.example`) with the same contents and a valid key
+- After doing a `yarn install`, create a symlink to allow metro to correctly resolve the dependency on the upper package (from the root repo):
+
+```
+cd example-expo/node_modules
+mkdir -p @lucra-sports
+cd @lucra-sports
+ln -s ../../../ lucra-react-native-sdk
+```
+
 - Follow the instructios on the main readme to create a github classic token and create the .npmrc
 - `yarn`
-- `npx expo prebuild --clean`
-- `npx expo run:ios`
+- `yarn expo prebuild --clean`
+- `yarn expo run:ios`
