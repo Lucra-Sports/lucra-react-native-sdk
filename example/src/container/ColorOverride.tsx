@@ -1,9 +1,9 @@
 import { useState, type FC } from 'react';
-import ColorPicker, {
-  Panel5,
-  OpacitySlider,
-  HueSlider,
-} from 'reanimated-color-picker';
+// import ColorPicker, {
+//   Panel5,
+//   OpacitySlider,
+//   HueSlider,
+// } from 'reanimated-color-picker';
 import {
   Modal,
   View,
@@ -42,7 +42,7 @@ const ThemePill: FC<ThemePillProps> = ({ title, onPress }) => {
 const ColorOption: FC<ColorOptionProps> = ({
   name,
   value,
-  onUpdate,
+  // onUpdate,
   className,
 }) => {
   const [showModal, setShowModal] = useState(false);
@@ -61,7 +61,7 @@ const ColorOption: FC<ColorOptionProps> = ({
       />
       <Modal visible={showModal} animationType="slide">
         <SafeAreaView>
-          <ColorPicker
+          {/* <ColorPicker
             value={value}
             onComplete={(v) => {
               onUpdate(v.hex);
@@ -70,7 +70,7 @@ const ColorOption: FC<ColorOptionProps> = ({
             <Panel5 />
             <HueSlider />
             <OpacitySlider />
-          </ColorPicker>
+          </ColorPicker> */}
         </SafeAreaView>
 
         <Button title="Ok" onPress={() => setShowModal(false)} />
