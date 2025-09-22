@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+// import DatePicker from 'react-native-date-picker';
 import {
   LucraSDK,
   type LucraUserConfig,
@@ -123,7 +123,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ConfigureUser'>;
 export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
   const [state, dispatch] = useReducer(formReducer, initialState);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -277,7 +277,8 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
         />
         <View className="flex-row">
           <Text className="text-white">Date of birth:</Text>
-          <TouchableOpacity onPress={() => setOpen(true)}>
+          {/* <TouchableOpacity onPress={() => setOpen(true)}> */}
+          <TouchableOpacity>
             <Text className="text-white">
               {state.dateOfBirth
                 ? `${state.dateOfBirth.toLocaleDateString()}`
@@ -285,7 +286,7 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <DatePicker
+        {/* <DatePicker
           modal
           date={state.dateOfBirth ?? new Date()}
           open={open}
@@ -297,7 +298,7 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
             setOpen(false);
             handleChange('dateOfBirth', date);
           }}
-        />
+        /> */}
         <Button title="Submit" onPress={handleSubmit} />
       </ScrollView>
     </SafeAreaView>

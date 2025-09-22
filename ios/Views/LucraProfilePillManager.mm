@@ -1,7 +1,7 @@
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTViewManager.h>
 #import <React/RCTUIManager.h>
 #import "RCTBridge.h"
-#import <React/RCTLog.h>
 #import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
 
 @interface LucraProfilePillManager : RCTViewManager
@@ -20,5 +20,4 @@ RCT_EXPORT_MODULE(LucraProfilePill)
 }
 
 @end
-
-
+#endif

@@ -81,7 +81,6 @@ lib/
 # React Native Codegen
 ios/generated
 android/generated
-example/.env
 example/android/.kotlin
 
 # Fastlane
@@ -100,3 +99,5 @@ example/ios/fastlane/report.xml
 
 # Created by the example-expo project
 package-lock.json
+example/.env
+**/*.log

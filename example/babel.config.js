@@ -30,7 +30,10 @@ const parseEnvFile = (filePath) => {
       const [, key, rawValue] = match;
       let value = rawValue.trim();
 
-      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
         value = value.slice(1, -1);
       }
 
@@ -61,12 +64,11 @@ module.exports = getConfig(
   {
     presets: ['module:@react-native/babel-preset', 'nativewind/babel'],
     plugins: [
-      'babel-plugin-transform-typescript-metadata',
       [
         path.resolve(__dirname, 'babel-plugins/inline-lucra-env'),
         { values: lucraEnvValues },
       ],
-      'react-native-reanimated/plugin',
+      'react-native-worklets/plugin',
     ],
   },
   { root, pkg }

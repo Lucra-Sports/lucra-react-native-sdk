@@ -67,6 +67,8 @@
 	<string>Our application needs motion information to determine if you are eligible to use this feature. Motion information is only collected when using this feature.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Needed to add a profile avatar image</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Black.ttf</string>
