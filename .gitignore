@@ -99,3 +99,5 @@ example/ios/fastlane/report.xml
 
 # Created by the example-expo project
 package-lock.json
+example/.env
+**/*.log
