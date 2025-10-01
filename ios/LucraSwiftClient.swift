@@ -98,6 +98,9 @@ import LucraSDK
       case .gamesMatchupStarted(let id):
         self.delegate?.sendEvent(
           name: "gamesMatchupStarted", result: ["id": id])
+      case .gamesActiveMatchupStarted(let id):
+        self.delegate?.sendEvent(
+          name: "gamesActiveMatchupStarted", result: ["id": id])
       case .sportsMatchupCreated(let id):
         self.delegate?.sendEvent(
           name: "sportsMatchupCreated", result: ["id": id])

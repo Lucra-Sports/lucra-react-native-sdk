@@ -134,6 +134,13 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
               { type: 'Games matchup started', id: id },
             ]);
           },
+          onGamesMatchupStartedActive: (id: string) => {
+            console.log('Games matchup started active:', id);
+            setEvents((events) => [
+              ...events,
+              { type: 'Games matchup started active', id: id },
+            ]);
+          },
           onTournamentJoined: (id: string) => {
             console.log('Tournament joined:', id);
             setEvents((events) => [

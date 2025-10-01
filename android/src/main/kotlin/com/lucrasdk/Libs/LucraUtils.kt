@@ -45,6 +45,7 @@ class LucraUtils {
                 "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
                 "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
                 "gamesMatchupDetails" -> LucraUiProvider.LucraFlow.GamesMatchupDetails(matchupId!!)
+                "matchupDetails" -> LucraUiProvider.LucraFlow.MatchupDetails(matchupId!!)
                 // TODO not yet publicly available within Android SDK
 //        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails
                 else -> throw IllegalArgumentException("Invalid flow: $flow")

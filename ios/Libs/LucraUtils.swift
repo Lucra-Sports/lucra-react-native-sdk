@@ -57,6 +57,8 @@ class LucraUtils {
       return .publicFeed
     case "gamesMatchupDetails":
       return .gamesMatchupDetails(matchupId: matchupId!)
+    case "matchupDetails":
+      return .matchupDetails(matchupId: matchupId!)
     case "sportContestDetails":
       return .sportsContestDetails(matchupId: matchupId!)
     case "myMatchup":
