@@ -395,9 +395,7 @@ function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
 function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
 
 function present(params: {
-  name:
-    | typeof Flows.GAMES_CONTEST_DETAILS
-    | typeof Flows.MATCHUP_DETAILS;
+  name: typeof Flows.GAMES_CONTEST_DETAILS | typeof Flows.MATCHUP_DETAILS;
   matchupId: string;
 }): Promise<void>;
 
