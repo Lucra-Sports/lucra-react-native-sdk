@@ -34,11 +34,11 @@ describe(':ios:Lucra RN SDK', () => {
     await element(by.text(/create games matchup/i)).tap();
     const phoneNumberInput = element(by.type('UITextField')).atIndex(0);
     await waitFor(phoneNumberInput).toBeVisible().withTimeout(5000);
-    await phoneNumberInput.replaceText('5555550101');
+    await phoneNumberInput.replaceText(SANDBOX_PHONE);
     await phoneNumberInput.tapReturnKey();
     const point = await pressButton(/CONTINUE/i);
     await expect(element(by.label(/confirmation code/i))).toBeVisible();
-    await element(by.type('UITextField')).atIndex(0).typeText(123456);
+    await element(by.type('UITextField')).atIndex(0).typeText(SANDBOX_CODE);
     await element(by.type('UITextField')).atIndex(0).tapReturnKey();
     await device.tap(point);
     await pressButton(/let's play*./i);
