@@ -22,20 +22,6 @@ const pressButton = async (label) => {
   return point;
 };
 
-/**
- * Checkbox helper when the label is detached from the actual button, it tries to find the label and tap a few points to the left.
- * As a workaround we get the button location and then call a global device.tap at the correct coordinates.
- *  */
-const pressCheckbox = async (label) => {
-  const el = element(by.label(label));
-  await expect(el).toBeVisible();
-  const attributes = await el.getAttributes();
-  await device.tap({
-    x: Math.floor(attributes.frame.x - 10),
-    y: Math.floor(attributes.frame.y),
-  });
-};
-
 describe(':ios:Lucra RN SDK', () => {
   beforeAll(async () => {
     await device.launchApp({
@@ -46,13 +32,13 @@ describe(':ios:Lucra RN SDK', () => {
   it('should be able to create a matchup', async () => {
     await element(by.text(/sheet flows/i)).tap();
     await element(by.text(/create games matchup/i)).tap();
-    await expect(element(by.label(/phone number/i))).toBeVisible();
-    await element(by.type('UITextField')).typeText(SANDBOX_PHONE);
-    await element(by.type('UITextField')).tapReturnKey();
-    await pressCheckbox(/^this feature is powered by Lucra.*/i);
+    const phoneNumberInput = element(by.type('UITextField')).atIndex(0);
+    await waitFor(phoneNumberInput).toBeVisible().withTimeout(5000);
+    await phoneNumberInput.replaceText('5555550101');
+    await phoneNumberInput.tapReturnKey();
     const point = await pressButton(/CONTINUE/i);
     await expect(element(by.label(/confirmation code/i))).toBeVisible();
-    await element(by.type('UITextField')).atIndex(0).typeText(SANDBOX_CODE);
+    await element(by.type('UITextField')).atIndex(0).typeText(123456);
     await element(by.type('UITextField')).atIndex(0).tapReturnKey();
     await device.tap(point);
     await pressButton(/let's play*./i);
