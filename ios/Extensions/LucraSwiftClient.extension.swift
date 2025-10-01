@@ -7,6 +7,7 @@ extension LucraSwiftClient {
     case gamesMatchupAccepted
     case gamesMatchupCanceled
     case gamesMatchupStarted
+    case gamesActiveMatchupStarted
     case sportsMatchupCreated
     case sportsMatchupAccepted
     case sportsMatchupCanceled

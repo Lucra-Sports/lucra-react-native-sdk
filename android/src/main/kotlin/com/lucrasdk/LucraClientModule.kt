@@ -221,7 +221,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                 is LucraEvent.GamesContest.StartedActive ->
                                     sendEvent(
                                         context,
-                                        "matchupStartedActive",
+                                        "gamesActiveMatchupStarted",
                                         Arguments.makeNativeMap(
                                             bundleOf("id" to event.matchupId)
                                         )

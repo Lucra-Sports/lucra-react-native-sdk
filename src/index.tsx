@@ -368,6 +368,7 @@ type LucraContestListeners = {
   onSportsMatchupCanceled?: (id: string) => void;
   onGamesMatchupCanceled?: (id: string) => void;
   onGamesMatchupStarted?: (id: string) => void;
+  onGamesMatchupStartedActive?: (id: string) => void;
   onTournamentJoined?: (id: string) => void;
 };
 
@@ -382,6 +383,7 @@ const Flows = {
   PUBLIC_FEED: 'publicFeed',
   MY_MATCHUP: 'myMatchup',
   GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
+  MATCHUP_DETAILS: 'matchupDetails',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -393,7 +395,9 @@ function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
 function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
 
 function present(params: {
-  name: typeof Flows.GAMES_CONTEST_DETAILS;
+  name:
+    | typeof Flows.GAMES_CONTEST_DETAILS
+    | typeof Flows.MATCHUP_DETAILS;
   matchupId: string;
 }): Promise<void>;
 
@@ -407,7 +411,11 @@ function present(params: {
 function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): Promise<void>;
 function present(params: { name: typeof Flows.PUBLIC_FEED }): Promise<void>;
 function present(params: { name: typeof Flows.MY_MATCHUP }): Promise<void>;
-function present(params: { name: FlowNames; gameId?: string }): Promise<void> {
+function present(params: {
+  name: FlowNames;
+  gameId?: string;
+  matchupId?: string;
+}): Promise<void> {
   return LucraClient.present(params);
 }
 
@@ -518,6 +526,13 @@ export const LucraSDK = {
       }
     );
 
+    const gamesMatchupStartedActiveEmitter = eventEmitter.addListener(
+      'gamesActiveMatchupStarted',
+      (data) => {
+        listenerMap.onGamesMatchupStartedActive?.(data.id);
+      }
+    );
+
     const sportsMatchupCanceledEmitter = eventEmitter.addListener(
       'sportsMatchupCanceled',
       (data) => {
@@ -539,6 +554,7 @@ export const LucraSDK = {
       sportMatchupAcceptedEmitter.remove();
       gamesMatchupCanceledEmitter.remove();
       gamesMatchupStartedEmitter.remove();
+      gamesMatchupStartedActiveEmitter.remove();
       sportsMatchupCanceledEmitter.remove();
       tournamentJoinedEmitter.remove();
     };
