@@ -150,7 +150,7 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
               }}
             >
               <Text className="text-white">
-                Show Matchup Details (New Flow)
+                Show Matchup Details (Any Matchup)
               </Text>
             </TouchableOpacity>
             <TextInput
