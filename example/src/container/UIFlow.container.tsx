@@ -37,7 +37,7 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-indigo-900">
+    <SafeAreaView className="flex-1 bg-indigo-900 pt-8">
       <KeyboardAvoidingView
         style={Styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -47,7 +47,7 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
           contentContainerStyle={Styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <View className="pt-6 px-4 gap-2">
+          <View className="pt-10 px-4 gap-4 pb-12">
             <View className="flex-row items-center gap-2 pb-5">
               <TouchableOpacity
                 onPress={() => {

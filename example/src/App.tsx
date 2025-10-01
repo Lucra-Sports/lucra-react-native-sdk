@@ -3,7 +3,7 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { Routes } from './Routes';
-import { Platform, StatusBar, Text, View } from 'react-native';
+import { Platform, SafeAreaView, StatusBar, Text, View } from 'react-native';
 import { AppContextProvider } from './AppContext';
 import LucraSDKInit from './LucraSDKInit';
 import { EventsContextProvider } from './EventsContext';
@@ -31,26 +31,28 @@ export default function App() {
   }, []);
 
   return (
-    <View className="h-full bg-indigo-900">
-      <AppContextProvider>
-        <EventsContextProvider>
-          <LucraSDKInit onStateChange={setIsReady} />
-          <StatusBar barStyle="light-content" />
-          {!isReady ? (
-            <View className="flex-1 items-center justify-center">
-              <Text className="text-white">Loading...</Text>
-            </View>
-          ) : (
-            <>
-              <DeepLinkManager />
-              <NavigationContainer>
-                <StatusBar barStyle="light-content" />
-                <Routes />
-              </NavigationContainer>
-            </>
-          )}
-        </EventsContextProvider>
-      </AppContextProvider>
-    </View>
+    <SafeAreaView className="flex-1 bg-indigo-900 pt-8">
+      <View className="flex-1 px-4 pt-4 pb-8">
+        <AppContextProvider>
+          <EventsContextProvider>
+            <LucraSDKInit onStateChange={setIsReady} />
+            <StatusBar barStyle="light-content" />
+            {!isReady ? (
+              <View className="flex-1 items-center justify-center">
+                <Text className="text-white">Loading...</Text>
+              </View>
+            ) : (
+              <>
+                <DeepLinkManager />
+                <NavigationContainer>
+                  <StatusBar barStyle="light-content" />
+                  <Routes />
+                </NavigationContainer>
+              </>
+            )}
+          </EventsContextProvider>
+        </AppContextProvider>
+      </View>
+    </SafeAreaView>
   );
 }
