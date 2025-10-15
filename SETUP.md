@@ -57,7 +57,39 @@ If you see any erros that resembles `CocoaPods could not find compatible version
 
 ## Local Integration Mode
 
-For development and testing with local SDK builds, you can enable local integration mode by editing the `local-integration.config` file in the root of the project:
+For development and testing with local SDK builds, you can use the automated script to build and integrate local SDKs.
+
+### Setup (One-time)
+
+1. **Copy the template files:**
+   ```sh
+   cp local-integration.config.example local-integration.config
+   cp scripts/test-native-sdks-locally.sh.example scripts/test-native-sdks-locally.sh
+   ```
+
+2. **Configure your local paths:**
+   Edit `scripts/test-native-sdks-locally.sh` and set your project directories:
+   ```bash
+   LUCRA_ANDROID_DIR="/path/to/your/lucra-android"
+   LUCRA_IOS_DIR="/path/to/your/lucra-ios"
+   ```
+
+### Usage
+
+Run the automated script:
+```sh
+./scripts/test-native-sdks-locally.sh
+```
+
+The script will prompt you to:
+- Select platform(s) to integrate: iOS only, Android only, Both, or None (revert to remote)
+- Automatically build and publish the SDKs locally
+- Update the `local-integration.config` file
+- Clean up iOS build artifacts as needed
+
+### Manual Configuration
+
+You can also manually edit `local-integration.config`:
 
 ```properties
 enableLocalIntegrationModeiOS=true        # Uses xcframeworks/ directory
@@ -69,8 +101,6 @@ enableLocalIntegrationModeAndroid=true    # Uses ~/.m2/repository (mavenLocal)
 **Android**: When enabled, Gradle will use `mavenLocal()` (typically `~/.m2/repository`) to resolve the Lucra SDK artifacts instead of GitHub Packages. This also skips the GPR_USER and GPR_KEY validation.
 
 Set both flags to `false` (default) to use the standard remote dependencies.
-
-You can run `test-native-sdks-locally.sh` script to automate these steps.
 
 ## Checks
 
