@@ -16,6 +16,17 @@ buildscript {
   }
 }
 
+// Read local integration mode configuration
+def enableLocalIntegrationModeAndroid = false
+def configFile = new File(projectDir.parent, 'local-integration.config')
+if (configFile.exists()) {
+  configFile.eachLine { line ->
+    if (line.trim().startsWith('enableLocalIntegrationModeAndroid=')) {
+      enableLocalIntegrationModeAndroid = line.split('=')[1].trim() == 'true'
+    }
+  }
+}
+
 def isNewArchitectureEnabled() {
   return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
 }
@@ -93,9 +104,12 @@ android {
 }
 
 repositories {
+  if (enableLocalIntegrationModeAndroid) mavenLocal()
+  
   maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
   mavenCentral()
   google()
+  
   maven {
     name = "LucraGithubPackages"
     url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android-sdk")
@@ -103,11 +117,13 @@ repositories {
       String gprUser = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
       String gprKey = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
 
-      if (!gprUser) {
-        throw new GradleException("GPR_USER not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
-      }
-      if (!gprKey) {
-        throw new GradleException("GPR_KEY not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+      if (!enableLocalIntegrationModeAndroid) {
+        if (!gprUser) {
+          throw new GradleException("GPR_USER not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+        }
+        if (!gprKey) {
+          throw new GradleException("GPR_KEY not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+        }
       }
 
       username = gprUser

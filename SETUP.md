@@ -55,6 +55,23 @@ Once everything is done and said, you can run the app. Got to the `example` fold
 
 If you see any erros that resembles `CocoaPods could not find compatible versions for pod "LucraSDK"` check the `example/ios/Podfile.lock` to see if correct SDK version is defined. If not, run `pod update` from the example folder, or if that does not work, delete the `Podfile.lock` as well as pod folder in the `example/ios` then run `npx pod-install` from the example folder.
 
+## Local Integration Mode
+
+For development and testing with local SDK builds, you can enable local integration mode by editing the `local-integration.config` file in the root of the project:
+
+```properties
+enableLocalIntegrationModeiOS=true        # Uses xcframeworks/ directory
+enableLocalIntegrationModeAndroid=true    # Uses ~/.m2/repository (mavenLocal)
+```
+
+**iOS**: When enabled, the podspec will use the local xcframeworks in the `xcframeworks/` directory instead of fetching `LucraSDK` from remote repositories.
+
+**Android**: When enabled, Gradle will use `mavenLocal()` (typically `~/.m2/repository`) to resolve the Lucra SDK artifacts instead of GitHub Packages. This also skips the GPR_USER and GPR_KEY validation.
+
+Set both flags to `false` (default) to use the standard remote dependencies.
+
+You can run `test-native-sdks-locally.sh` script to automate these steps.
+
 ## Checks
 
 A bunch of automated checks will run, but you should install prettier on your environment so the ts source code is automatically linted for you.

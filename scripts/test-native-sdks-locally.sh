@@ -1,0 +1,435 @@
+#!/bin/bash
+
+################################################################################
+# Local SDK Integration Script
+# Automates the process of building and publishing Android/iOS SDKs locally
+# and configuring the React Native wrapper to use them.
+################################################################################
+
+set -e
+
+# Trap SIGINT (Ctrl+C) and SIGTERM to allow clean exit
+trap 'echo -e "\n${YELLOW}⚠ Script interrupted by user${NC}"; exit 130' INT TERM
+
+# Track background process PIDs for cleanup
+cleanup_background_jobs() {
+    if [[ -n "$android_pid" ]] && kill -0 "$android_pid" 2>/dev/null; then
+        kill "$android_pid" 2>/dev/null || true
+    fi
+    if [[ -n "$ios_pid" ]] && kill -0 "$ios_pid" 2>/dev/null; then
+        kill "$ios_pid" 2>/dev/null || true
+    fi
+}
+trap cleanup_background_jobs EXIT
+
+# ============================================================================
+# CONFIGURATION - USER MUST UPDATE THESE PATHS
+# ============================================================================
+# Path to the root of the Lucra Android project
+LUCRA_ANDROID_DIR=""
+
+# Path to the root of the Lucra iOS project
+LUCRA_IOS_DIR=""
+
+# ============================================================================
+# AUTO-DETECTED PATHS (DO NOT MODIFY)
+# ============================================================================
+LUCRA_RN_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+XCFRAMEWORKS_DIR="$LUCRA_RN_DIR/xcframeworks"
+CONFIG_FILE="$LUCRA_RN_DIR/local-integration.config"
+PODFILE_LOCK="$LUCRA_RN_DIR/example/ios/Podfile.lock"
+
+# ============================================================================
+# COLOR CODES FOR OUTPUT
+# ============================================================================
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
+print_banner() {
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║     Lucra SDK Local Integration Setup                     ║${NC}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+}
+
+print_success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}✗ $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠ $1${NC}"
+}
+
+print_info() {
+    echo -e "${BLUE}ℹ $1${NC}"
+}
+
+print_step() {
+    echo -e "${CYAN}▶ $1${NC}"
+}
+
+# ============================================================================
+# VALIDATION FUNCTIONS
+# ============================================================================
+
+validate_configuration() {
+    # Skip validation if user selected "none" (reverting to remote artifacts)
+    if [[ "$PLATFORM_CHOICE" == "none" ]]; then
+        return 0
+    fi
+    
+    local has_error=false
+    
+    echo ""
+    print_step "Validating configuration..."
+    echo ""
+    
+    if [[ "$PLATFORM_CHOICE" == "android" || "$PLATFORM_CHOICE" == "both" ]]; then
+        if [[ -z "$LUCRA_ANDROID_DIR" ]]; then
+            print_error "LUCRA_ANDROID_DIR is not configured!"
+            echo "   Please edit this script and set LUCRA_ANDROID_DIR to your Android project path."
+            echo "   Example: LUCRA_ANDROID_DIR=\"/Users/username/Developer/lucra-android\""
+            has_error=true
+        elif [[ ! -d "$LUCRA_ANDROID_DIR" ]]; then
+            print_error "LUCRA_ANDROID_DIR does not exist: $LUCRA_ANDROID_DIR"
+            has_error=true
+        elif [[ ! -f "$LUCRA_ANDROID_DIR/gradlew" ]]; then
+            print_error "Invalid Android project: gradlew not found in $LUCRA_ANDROID_DIR"
+            has_error=true
+        else
+            print_success "Android project found: $LUCRA_ANDROID_DIR"
+        fi
+    fi
+    
+    if [[ "$PLATFORM_CHOICE" == "ios" || "$PLATFORM_CHOICE" == "both" ]]; then
+        if [[ -z "$LUCRA_IOS_DIR" ]]; then
+            print_error "LUCRA_IOS_DIR is not configured!"
+            echo "   Please edit this script and set LUCRA_IOS_DIR to your iOS project path."
+            echo "   Example: LUCRA_IOS_DIR=\"/Users/username/Developer/lucra-ios\""
+            has_error=true
+        elif [[ ! -d "$LUCRA_IOS_DIR" ]]; then
+            print_error "LUCRA_IOS_DIR does not exist: $LUCRA_IOS_DIR"
+            has_error=true
+        elif [[ ! -d "$LUCRA_IOS_DIR/SDK/LucraSDK" ]]; then
+            print_error "Invalid iOS project: SDK/LucraSDK directory not found in $LUCRA_IOS_DIR"
+            has_error=true
+        elif [[ ! -f "$LUCRA_IOS_DIR/SDK/LucraSDK/Scripts/package_sdk.sh" ]]; then
+            print_error "Invalid iOS project: Scripts/package_sdk.sh not found in $LUCRA_IOS_DIR/SDK/LucraSDK"
+            has_error=true
+        else
+            print_success "iOS project found: $LUCRA_IOS_DIR"
+        fi
+    fi
+    
+    if [[ "$has_error" == true ]]; then
+        echo ""
+        print_error "Configuration validation failed. Please fix the errors above and try again."
+        exit 1
+    fi
+    
+    echo ""
+}
+
+# ============================================================================
+# ANDROID PUBLISHING FUNCTION
+# ============================================================================
+
+publish_android_artifacts() {
+    print_step "Publishing Android artifacts to Maven Local..."
+    echo ""
+    
+    cd "$LUCRA_ANDROID_DIR"
+    
+    print_info "Running: ./gradlew publishToMavenLocal"
+    echo ""
+    
+    if ./gradlew publishToMavenLocal; then
+        echo ""
+        print_success "Android artifacts published successfully to ~/.m2/repository"
+        return 0
+    else
+        echo ""
+        print_error "Failed to publish Android artifacts"
+        return 1
+    fi
+}
+
+# ============================================================================
+# iOS PUBLISHING FUNCTION
+# ============================================================================
+
+publish_ios_artifacts() {
+    print_step "Publishing iOS frameworks..."
+    echo ""
+    
+    local IOS_SDK_DIR="$LUCRA_IOS_DIR/SDK/LucraSDK"
+    local SPM_DIR="$IOS_SDK_DIR/xcframeworks/SPM"
+    
+    cd "$IOS_SDK_DIR"
+    
+    print_info "Running: ./Scripts/package_sdk.sh"
+    echo ""
+    
+    if ! ./Scripts/package_sdk.sh; then
+        echo ""
+        print_error "Failed to package iOS SDK"
+        return 1
+    fi
+    
+    echo ""
+    print_step "Cleaning existing xcframeworks..."
+    
+    if [[ -d "$XCFRAMEWORKS_DIR" ]]; then
+        rm -rf "$XCFRAMEWORKS_DIR"/*
+        print_success "Removed existing xcframeworks"
+    fi
+    
+    echo ""
+    print_step "Extracting and moving xcframeworks..."
+    
+    if [[ ! -d "$SPM_DIR" ]]; then
+        print_error "SPM directory not found: $SPM_DIR"
+        return 1
+    fi
+    
+    local framework_count=0
+    for zip_file in "$SPM_DIR"/*.xcframework.zip; do
+        if [[ -f "$zip_file" ]]; then
+            local framework_name=$(basename "$zip_file" .zip)
+            print_info "Extracting: $framework_name"
+            
+            unzip -q "$zip_file" -d "$XCFRAMEWORKS_DIR/"
+            
+            if [[ $? -eq 0 ]]; then
+                print_success "Moved: $framework_name"
+                ((framework_count++))
+            else
+                print_error "Failed to extract: $framework_name"
+                return 1
+            fi
+        fi
+    done
+    
+    if [[ $framework_count -eq 0 ]]; then
+        print_warning "No .xcframework.zip files found in $SPM_DIR"
+        return 1
+    fi
+    
+    echo ""
+    print_success "iOS frameworks published successfully ($framework_count frameworks)"
+    return 0
+}
+
+# ============================================================================
+# CONFIG UPDATE FUNCTION
+# ============================================================================
+
+update_local_integration_config() {
+    print_step "Updating local-integration.config..."
+    echo ""
+    
+    if [[ ! -f "$CONFIG_FILE" ]]; then
+        print_error "Configuration file not found: $CONFIG_FILE"
+        return 1
+    fi
+    
+    if [[ "$PLATFORM_CHOICE" == "none" ]]; then
+        # Revert both platforms to use remote artifacts
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' 's/enableLocalIntegrationModeAndroid=.*/enableLocalIntegrationModeAndroid=false/' "$CONFIG_FILE"
+            sed -i '' 's/enableLocalIntegrationModeiOS=.*/enableLocalIntegrationModeiOS=false/' "$CONFIG_FILE"
+        else
+            sed -i 's/enableLocalIntegrationModeAndroid=.*/enableLocalIntegrationModeAndroid=false/' "$CONFIG_FILE"
+            sed -i 's/enableLocalIntegrationModeiOS=.*/enableLocalIntegrationModeiOS=false/' "$CONFIG_FILE"
+        fi
+        print_success "Disabled local integration mode for both platforms"
+        print_info "Project will now use remote artifacts"
+    elif [[ "$PLATFORM_CHOICE" == "android" || "$PLATFORM_CHOICE" == "both" ]]; then
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' 's/enableLocalIntegrationModeAndroid=.*/enableLocalIntegrationModeAndroid=true/' "$CONFIG_FILE"
+        else
+            sed -i 's/enableLocalIntegrationModeAndroid=.*/enableLocalIntegrationModeAndroid=true/' "$CONFIG_FILE"
+        fi
+        print_success "Enabled local integration mode for Android"
+    fi
+    
+    if [[ "$PLATFORM_CHOICE" == "ios" || "$PLATFORM_CHOICE" == "both" ]]; then
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' 's/enableLocalIntegrationModeiOS=.*/enableLocalIntegrationModeiOS=true/' "$CONFIG_FILE"
+        else
+            sed -i 's/enableLocalIntegrationModeiOS=.*/enableLocalIntegrationModeiOS=true/' "$CONFIG_FILE"
+        fi
+        print_success "Enabled local integration mode for iOS"
+    fi
+    
+    echo ""
+}
+
+# ============================================================================
+# PODFILE.LOCK CLEANUP FUNCTION
+# ============================================================================
+
+clean_ios_podfile_lock() {
+    if [[ -f "$PODFILE_LOCK" ]]; then
+        print_step "Cleaning iOS Podfile.lock..."
+        rm -f "$PODFILE_LOCK"
+        print_success "Removed Podfile.lock"
+        echo ""
+    fi
+}
+
+# ============================================================================
+# PLATFORM SELECTION
+# ============================================================================
+
+select_platform() {
+    echo ""
+    print_step "Select the platform(s) for local SDK integration:"
+    echo ""
+    
+    PS3="Enter your choice (1-4): "
+    options=("iOS only" "Android only" "Both iOS and Android" "None - use remote artifacts")
+    
+    select opt in "${options[@]}"; do
+        case $REPLY in
+            1)
+                PLATFORM_CHOICE="ios"
+                print_info "Selected: iOS only"
+                break
+                ;;
+            2)
+                PLATFORM_CHOICE="android"
+                print_info "Selected: Android only"
+                break
+                ;;
+            3)
+                PLATFORM_CHOICE="both"
+                print_info "Selected: Both iOS and Android"
+                break
+                ;;
+            4)
+                PLATFORM_CHOICE="none"
+                print_info "Selected: None - use remote artifacts"
+                break
+                ;;
+            *)
+                print_error "Invalid option. Please select 1, 2, 3, or 4."
+                ;;
+        esac
+    done
+    
+    echo ""
+}
+
+# ============================================================================
+# MAIN EXECUTION
+# ============================================================================
+
+main() {
+    print_banner
+    
+    # Ensure xcframeworks directory exists
+    if [[ ! -d "$XCFRAMEWORKS_DIR" ]]; then
+        mkdir -p "$XCFRAMEWORKS_DIR"
+        print_info "Created xcframeworks directory: $XCFRAMEWORKS_DIR"
+        echo ""
+    fi
+    
+    # Platform selection
+    select_platform
+    
+    # Validate configuration
+    validate_configuration
+    
+    # Execute based on platform choice
+    if [[ "$PLATFORM_CHOICE" == "none" ]]; then
+        # Skip publishing steps, just update config to use remote artifacts
+        print_info "Reverting to remote artifacts (no SDK publishing needed)"
+        echo ""
+        
+    elif [[ "$PLATFORM_CHOICE" == "both" ]]; then
+        print_step "Running Android and iOS publishing in parallel..."
+        echo ""
+        
+        # Run both in parallel
+        (publish_android_artifacts) &
+        android_pid=$!
+        
+        (publish_ios_artifacts) &
+        ios_pid=$!
+        
+        # Wait for both to complete
+        android_result=0
+        ios_result=0
+        
+        wait $android_pid || android_result=$?
+        wait $ios_pid || ios_result=$?
+        
+        echo ""
+        echo "════════════════════════════════════════════════════════════"
+        echo ""
+        
+        if [[ $android_result -ne 0 ]]; then
+            print_error "Android publishing failed"
+        fi
+        
+        if [[ $ios_result -ne 0 ]]; then
+            print_error "iOS publishing failed"
+        fi
+        
+        if [[ $android_result -ne 0 || $ios_result -ne 0 ]]; then
+            exit 1
+        fi
+        
+    elif [[ "$PLATFORM_CHOICE" == "android" ]]; then
+        if ! publish_android_artifacts; then
+            exit 1
+        fi
+        
+    elif [[ "$PLATFORM_CHOICE" == "ios" ]]; then
+        if ! publish_ios_artifacts; then
+            exit 1
+        fi
+    fi
+    
+    # Update configuration
+    update_local_integration_config
+    
+    # Clean Podfile.lock if iOS was selected
+    if [[ "$PLATFORM_CHOICE" == "ios" || "$PLATFORM_CHOICE" == "both" ]]; then
+        clean_ios_podfile_lock
+    fi
+    
+    # Success message
+    echo ""
+    if [[ "$PLATFORM_CHOICE" == "none" ]]; then
+        echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${GREEN}║  ✓ Configuration updated to use remote artifacts!         ║${NC}"
+        echo -e "${GREEN}╚════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
+        print_info "You can now run the React Native project with remote SDKs."
+    else
+        echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${GREEN}║  ✓ Local SDK integration setup completed successfully!    ║${NC}"
+        echo -e "${GREEN}╚════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
+        print_info "You can now run the React Native project to test the local SDKs."
+    fi
+    echo ""
+}
+
+# Run main function
+main
+
