@@ -63,7 +63,7 @@ For development and testing with local SDK builds, you can use the automated scr
 
 1. **Copy the template files:**
    ```sh
-   cp local-integration.config.example local-integration.config
+   cp local-integration.properties.example local-integration.properties
    cp scripts/test-native-sdks-locally.sh.example scripts/test-native-sdks-locally.sh
    ```
 
@@ -84,12 +84,12 @@ Run the automated script:
 The script will prompt you to:
 - Select platform(s) to integrate: iOS only, Android only, Both, or None (revert to remote)
 - Automatically build and publish the SDKs locally
-- Update the `local-integration.config` file
+- Update the `local-integration.properties` file
 - Clean up iOS build artifacts as needed
 
 ### Manual Configuration
 
-You can also manually edit `local-integration.config`:
+You can also manually edit `local-integration.properties`:
 
 ```properties
 enableLocalIntegrationModeiOS=true        # Uses xcframeworks/ directory

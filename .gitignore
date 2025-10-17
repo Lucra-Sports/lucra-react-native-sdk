@@ -102,5 +102,5 @@ example/ios/fastlane/report.xml
 package-lock.json
 
 # Local Integration Configuration
-local-integration.config
+local-integration.properties
 scripts/test-native-sdks-locally.sh

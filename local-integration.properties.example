@@ -4,7 +4,7 @@
 # Android: Uses ~/.m2/repository (mavenLocal)
 #
 # SETUP INSTRUCTIONS:
-# 1. Copy this file: cp local-integration.config.example local-integration.config
+# 1. Copy this file: cp local-integration.properties.example local-integration.properties
 # 2. The test-native-sdks-locally.sh script will automatically update these values
 # 3. You can also manually edit them to switch between local and remote SDKs
 

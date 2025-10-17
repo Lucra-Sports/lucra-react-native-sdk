@@ -16,16 +16,13 @@ buildscript {
   }
 }
 
-// Read local integration mode configuration
-def enableLocalIntegrationModeAndroid = false
-def configFile = new File(projectDir.parent, 'local-integration.config')
-if (configFile.exists()) {
-  configFile.eachLine { line ->
-    if (line.trim().startsWith('enableLocalIntegrationModeAndroid=')) {
-      enableLocalIntegrationModeAndroid = line.split('=')[1].trim() == 'true'
-    }
-  }
+// Load local integration mode configuration from properties file
+def props = new Properties()
+def propsFile = new File(projectDir.parent, 'local-integration.properties')
+if (propsFile.exists()) {
+  propsFile.withInputStream { props.load(it) }
 }
+def enableLocalIntegrationModeAndroid = props.getProperty('enableLocalIntegrationModeAndroid', 'false').toBoolean()
 
 def isNewArchitectureEnabled() {
   return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"

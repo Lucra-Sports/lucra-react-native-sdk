@@ -36,7 +36,7 @@ LUCRA_IOS_DIR=""
 # ============================================================================
 LUCRA_RN_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 XCFRAMEWORKS_DIR="$LUCRA_RN_DIR/xcframeworks"
-CONFIG_FILE="$LUCRA_RN_DIR/local-integration.config"
+CONFIG_FILE="$LUCRA_RN_DIR/local-integration.properties"
 PODFILE_LOCK="$LUCRA_RN_DIR/example/ios/Podfile.lock"
 
 # ============================================================================
@@ -237,7 +237,7 @@ publish_ios_artifacts() {
 # ============================================================================
 
 update_local_integration_config() {
-    print_step "Updating local-integration.config..."
+    print_step "Updating local-integration.properties..."
     echo ""
     
     if [[ ! -f "$CONFIG_FILE" ]]; then

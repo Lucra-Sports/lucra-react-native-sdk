@@ -4,8 +4,8 @@ package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
-# Read local integration mode configuration
-config_file = File.join(__dir__, "local-integration.config")
+# Read local integration mode configuration from properties file
+config_file = File.join(__dir__, "local-integration.properties")
 enableLocalIntegrationModeiOS = false
 if File.exist?(config_file)
   File.readlines(config_file).each do |line|

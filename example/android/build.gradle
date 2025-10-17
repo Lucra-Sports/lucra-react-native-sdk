@@ -1,16 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-  // Read local integration mode configuration
-  def tempEnableLocal = false
-  def configFile = new File(rootProject.projectDir, '../../local-integration.config')
-  if (configFile.exists()) {
-    configFile.eachLine { line ->
-      if (line.trim().startsWith('enableLocalIntegrationModeAndroid=')) {
-        tempEnableLocal = line.split('=')[1].trim() == 'true'
-      }
-    }
+  // Load local integration mode configuration from properties file
+  def props = new Properties()
+  def propsFile = new File(rootProject.projectDir, '../../local-integration.properties')
+  if (propsFile.exists()) {
+    propsFile.withInputStream { props.load(it) }
   }
+  ext.enableLocalIntegrationModeAndroid = props.getProperty('enableLocalIntegrationModeAndroid', 'false').toBoolean()
   
   ext {
     // Versions should match our SDK support levels
@@ -20,7 +17,6 @@ buildscript {
     ndkVersion = "27.1.12297006"
     targetSdkVersion = 35
     kotlinVersion = "2.0.21"
-    enableLocalIntegrationModeAndroid = tempEnableLocal
   }
   repositories {
     google()
