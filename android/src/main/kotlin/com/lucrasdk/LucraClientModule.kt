@@ -567,6 +567,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 username = user.getString("username"),
                 zip = addressJS.getString("zip"),
                 avatarUrl = user.getString("avatarURL")
+                // TODO: metadata map?
             )
         LucraClient().configure(sdkUser = newUser) {
             when (it) {
