@@ -663,7 +663,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                     rejectJoinTournamentError(promise, result)
                 }
 
-                is PoolTournament.JoinTournamentResult.JoinTournamentOutput -> {
+                is PoolTournament.JoinTournamentResult.Success -> {
                     promise.resolve(null)
                 }
             }

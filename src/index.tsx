@@ -384,6 +384,7 @@ const Flows = {
   MY_MATCHUP: 'myMatchup',
   GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
   MATCHUP_DETAILS: 'matchupDetails',
+  DEMOGRAPHIC_COLLECTION: 'demographicCollection',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
