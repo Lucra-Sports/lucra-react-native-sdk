@@ -46,6 +46,11 @@ function handleLucraSDKError(e: LucraSDKError) {
       LucraSDK.present({ name: LucraSDK.FLOW.ADD_FUNDS });
       break;
 
+    case 'missingDemographicInformation':
+      console.warn('Missing demographic information', e);
+      LucraSDK.present({ name: LucraSDK.FLOW.DEMOGRAPHIC_COLLECTION });
+      break;
+
     case 'unknown':
     default:
       console.warn('Unknown SDK error', e);
@@ -257,16 +262,15 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
-          onPress={async () => {
-            try {
-              await LucraSDK.joinTournament(tournamentId);
-              Alert.alert(
-                'Success',
-                'Joined tournament with id: ' + tournamentId
-              );
-            } catch (e) {
-              console.error(e);
-            }
+          onPress={() => {
+            LucraSDK.joinTournament(tournamentId)
+              .then(() => {
+                Alert.alert(
+                  'Success',
+                  'Joined tournament with id: ' + tournamentId
+                );
+              })
+              .catch(handleLucraSDKError);
           }}
         >
           <Text className="text-white">Join Current Tournament</Text>
