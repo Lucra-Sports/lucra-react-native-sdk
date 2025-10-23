@@ -92,6 +92,7 @@ object LucraMapper {
         userMap.putMap("address", addressMap)
         userMap.putDouble("balance", user.balance ?: 0.0)
         userMap.putString("accountStatus", user.accountStatus)
+        userMap.putMap("metadata", convertStringMapToWritableMap(user.metadata))
 
         val resultMap = Arguments.createMap()
         resultMap.putMap("user", userMap)

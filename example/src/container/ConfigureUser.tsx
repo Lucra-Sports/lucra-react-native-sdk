@@ -49,6 +49,7 @@ type FormState = {
     zip?: string | null;
   };
   dateOfBirth?: Date | null;
+  metadata: Array<{ key: string; value: string }>;
 };
 
 type FormAction =
@@ -58,7 +59,10 @@ type FormAction =
       field: keyof FormState['address'];
       value: string;
     }
-  | { type: 'SET_INITIAL_DATA'; data: FormState };
+  | { type: 'SET_INITIAL_DATA'; data: FormState }
+  | { type: 'ADD_METADATA'; key: string; value: string }
+  | { type: 'UPDATE_METADATA'; index: number; key: string; value: string }
+  | { type: 'REMOVE_METADATA'; index: number };
 
 const initialState: FormState = {
   username: null,
@@ -75,6 +79,7 @@ const initialState: FormState = {
     zip: null,
   },
   dateOfBirth: new Date(),
+  metadata: [],
 };
 
 function getLucraUserConfig(state: FormState): LucraUserConfig {
@@ -96,6 +101,14 @@ function getLucraUserConfig(state: FormState): LucraUserConfig {
       zip: state.address.zip ?? undefined,
     };
   }
+  if (state.metadata.length > 0) {
+    lucraUserConfig.metadata = state.metadata.reduce((acc, item) => {
+      if (item.key && item.value) {
+        acc[item.key] = item.value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+  }
   return lucraUserConfig;
 }
 
@@ -113,6 +126,23 @@ function formReducer(state: FormState, action: FormAction): FormState {
       };
     case 'SET_INITIAL_DATA':
       return { ...state, ...action.data };
+    case 'ADD_METADATA':
+      return {
+        ...state,
+        metadata: [...state.metadata, { key: action.key, value: action.value }],
+      };
+    case 'UPDATE_METADATA':
+      return {
+        ...state,
+        metadata: state.metadata.map((item, idx) =>
+          idx === action.index ? { key: action.key, value: action.value } : item
+        ),
+      };
+    case 'REMOVE_METADATA':
+      return {
+        ...state,
+        metadata: state.metadata.filter((_, idx) => idx !== action.index),
+      };
     default:
       return state;
   }
@@ -132,6 +162,9 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
       try {
         const user = await LucraSDK.getUser();
         setLoggedIn(true);
+        const metadataArray = user.metadata
+          ? Object.entries(user.metadata).map(([key, value]) => ({ key, value }))
+          : [];
         dispatch({
           type: 'SET_INITIAL_DATA',
           data: {
@@ -148,6 +181,7 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
             dateOfBirth: user.dateOfBirth
               ? new Date(user.dateOfBirth)
               : new Date(),
+            metadata: metadataArray,
           },
         });
       } catch (error) {
@@ -298,6 +332,60 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
             handleChange('dateOfBirth', date);
           }}
         />
+        <View className="mt-4">
+          <Text className="text-white text-lg font-semibold mb-2">
+            Metadata
+          </Text>
+          <Text className="text-white text-sm mb-3">
+            Link your user with Lucra user using custom metadata
+          </Text>
+          {state.metadata.map((item, index) => (
+            <View key={index} className="flex-row gap-2 mb-2">
+              <TextInput
+                className="flex-1 text-white border border-indigo-300 rounded p-2"
+                placeholder="Key"
+                placeholderTextColor="#a5b4fc"
+                value={item.key}
+                onChangeText={(value) =>
+                  dispatch({
+                    type: 'UPDATE_METADATA',
+                    index,
+                    key: value,
+                    value: item.value,
+                  })
+                }
+              />
+              <TextInput
+                className="flex-1 text-white border border-indigo-300 rounded p-2"
+                placeholder="Value"
+                placeholderTextColor="#a5b4fc"
+                value={item.value}
+                onChangeText={(value) =>
+                  dispatch({
+                    type: 'UPDATE_METADATA',
+                    index,
+                    key: item.key,
+                    value: value,
+                  })
+                }
+              />
+              <TouchableOpacity
+                onPress={() => dispatch({ type: 'REMOVE_METADATA', index })}
+                className="justify-center px-3 bg-red-600 rounded"
+              >
+                <Text className="text-white">✕</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+          <TouchableOpacity
+            onPress={() =>
+              dispatch({ type: 'ADD_METADATA', key: '', value: '' })
+            }
+            className="bg-indigo-600 p-3 rounded items-center mt-2"
+          >
+            <Text className="text-white">+ Add Metadata</Text>
+          </TouchableOpacity>
+        </View>
         <Button title="Submit" onPress={handleSubmit} />
       </ScrollView>
     </SafeAreaView>
