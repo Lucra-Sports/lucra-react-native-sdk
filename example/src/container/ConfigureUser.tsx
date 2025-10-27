@@ -219,14 +219,6 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  if (!loggedIn) {
-    return (
-      <View>
-        <Text>Not logged in</Text>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView className="flex-1 bg-indigo-900">
       <View className="flex-row items-center">
@@ -244,6 +236,15 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
         <Text className="text-white">Configure User</Text>
       </View>
       <ScrollView contentContainerClassName="p-4 gap-3">
+        {!loggedIn ? (
+          <View className="bg-yellow-600 p-2 items-center rounded">
+            <Text className="text-white">
+              Not logged in. The user info below will submit after user logs in.
+              Submitting phone number prior to login will lock the phone number
+              entry.
+            </Text>
+          </View>
+        ) : null}
         {message ? (
           <View className="bg-sky-700 p-2 items-center">
             <Text className="text-white">{message}</Text>
