@@ -102,12 +102,15 @@ function getLucraUserConfig(state: FormState): LucraUserConfig {
     };
   }
   if (state.metadata.length > 0) {
-    lucraUserConfig.metadata = state.metadata.reduce((acc, item) => {
-      if (item.key && item.value) {
-        acc[item.key] = item.value;
-      }
-      return acc;
-    }, {} as Record<string, string>);
+    lucraUserConfig.metadata = state.metadata.reduce(
+      (acc, item) => {
+        if (item.key && item.value) {
+          acc[item.key] = item.value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>
+    );
   }
   return lucraUserConfig;
 }
@@ -163,7 +166,10 @@ export const ConfigureUser: React.FC<Props> = ({ navigation }) => {
         const user = await LucraSDK.getUser();
         setLoggedIn(true);
         const metadataArray = user.metadata
-          ? Object.entries(user.metadata).map(([key, value]) => ({ key, value }))
+          ? Object.entries(user.metadata).map(([key, value]) => ({
+              key,
+              value,
+            }))
           : [];
         dispatch({
           type: 'SET_INITIAL_DATA',
