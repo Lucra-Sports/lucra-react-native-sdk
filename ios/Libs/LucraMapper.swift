@@ -436,7 +436,7 @@ public func mapToSDKUser(user: [String: Any]) -> LucraSDK.SDKUser {
     lastName: user["lastName"] as? String,
     address: sdkAddress,
     dateOfBirth: user["dateOfBirth"] as? Date,
-	metadata: user["metadata"] as? [String : String],
+	metadata: user["metadata"] as? [String : String]
   )
 }
 
