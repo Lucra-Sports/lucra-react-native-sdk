@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
     s.dependency 'Auth0'
   else
     s.source = { :git => "https://github.com/Lucra-Sports/lucra-react-native-sdk", :tag => "#{s.version}" }
-    s.dependency 'LucraSDK', '3.6.1'
+    s.dependency 'LucraSDK', '4.0.0'
   end
   
   if fabric_enabled

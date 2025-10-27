@@ -76,6 +76,7 @@ export type LucraUserConfig = {
     zip?: string;
   };
   dateOfBirth?: Date;
+  metadata?: Record<string, string>;
 };
 
 export type LucraUser = {
@@ -96,6 +97,7 @@ export type LucraUser = {
   balance: number;
   accountStatus: VerificationStatus;
   dateOfBirth: Date | null;
+  metadata?: Record<string, string> | null;
 };
 
 if (LucraClient == null) {
@@ -384,6 +386,7 @@ const Flows = {
   MY_MATCHUP: 'myMatchup',
   GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
   MATCHUP_DETAILS: 'matchupDetails',
+  DEMOGRAPHIC_COLLECTION: 'demographicCollection',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -409,6 +412,9 @@ function present(params: {
 function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): Promise<void>;
 function present(params: { name: typeof Flows.PUBLIC_FEED }): Promise<void>;
 function present(params: { name: typeof Flows.MY_MATCHUP }): Promise<void>;
+function present(params: {
+  name: typeof Flows.DEMOGRAPHIC_COLLECTION;
+}): Promise<void>;
 function present(params: {
   name: FlowNames;
   gameId?: string;
@@ -664,6 +670,7 @@ export type LucraSDKError = {
     | 'notAllowed'
     | 'insufficientFunds'
     | 'apiError'
+    | 'missingDemographicInformation'
     | 'locationError'
     | 'unknown';
 } & Error;

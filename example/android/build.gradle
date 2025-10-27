@@ -36,6 +36,9 @@ buildscript {
     repositories {
       if (enableLocalIntegrationModeAndroid) mavenLocal()
       
+      google()
+      mavenCentral()
+      
       maven {
         name = "LucraGithubPackages"
         url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android-sdk")

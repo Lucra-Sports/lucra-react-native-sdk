@@ -485,13 +485,15 @@ import {
 function handleLucraSDKError(e: LucraSDKError) {
   switch (e.code) {
     case 'notInitialized':
-      console.warn('User not initialized', e);
-      LucraSDK.present({name: LucraSDK.FLOW.ONBOARDING});
+      console.warn('SDK not initialized', e);
+      LucraSDK.present({ name: LucraSDK.FLOW.ONBOARDING });
       break;
 
     case 'unverified':
       console.warn('User not verified', e);
-      LucraSDK.present({name: LucraSDK.FLOW.VERIFY_IDENTITY});
+      LucraSDK.present({
+        name: LucraSDK.FLOW.VERIFY_IDENTITY,
+      });
       break;
 
     case 'notAllowed':
@@ -500,14 +502,17 @@ function handleLucraSDKError(e: LucraSDKError) {
 
     case 'insufficientFunds':
       console.warn('Insufficient funds', e);
-      LucraSDK.present({name: LucraSDK.FLOW.ADD_FUNDS});
+      LucraSDK.present({ name: LucraSDK.FLOW.ADD_FUNDS });
+      break;
+
+    case 'missingDemographicInformation':
+      console.warn('Missing demographic information', e);
+      LucraSDK.present({ name: LucraSDK.FLOW.DEMOGRAPHIC_COLLECTION });
       break;
 
     case 'unknown':
-      console.warn('Unknown error', e);
-      break;
-
     default:
+      console.warn('Unknown SDK error', e);
       break;
   }
 }

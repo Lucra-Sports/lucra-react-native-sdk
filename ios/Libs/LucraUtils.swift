@@ -45,6 +45,8 @@ class LucraUtils {
       return .addFunds
     case "onboarding":
       return .onboarding
+    case "demographicCollection":
+      return .demographicCollection
     case "verifyIdentity":
       return .verifyIdentity
     case "createGamesMatchup":

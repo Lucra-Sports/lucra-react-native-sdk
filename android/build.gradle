@@ -6,11 +6,12 @@ buildscript {
 
   repositories {
     google()
+    mavenCentral()
     gradlePluginPortal()
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:7.3.1"
+    classpath "com.android.tools.build:gradle:8.2.2"
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
@@ -132,8 +133,8 @@ repositories {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation("com.lucrasports.sdk:sdk-core:4.5.1")
-  implementation("com.lucrasports.sdk:sdk-ui:4.5.1")
+  implementation("com.lucrasports.sdk:sdk-core:5.0.1")
+  implementation("com.lucrasports.sdk:sdk-ui:5.0.1")
   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
   implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 

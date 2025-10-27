@@ -11,6 +11,8 @@ class ErrorMapper {
         reject("notInitialized", "User has not been initialized", nil);
     case .unverified:
         reject("unverified", "User has not been verified", nil);
+    case .demographicInformationMissing:
+        reject("missingDemographicInformation", "User has missing demographic information", nil);
     @unknown default:
         reject("unknown", "Uknown error", nil);
     }

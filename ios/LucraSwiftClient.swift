@@ -415,6 +415,8 @@ import LucraSDK
         code = "notInitialized"
       case UserStateError.unverified:
         code = "unverified"
+      case UserStateError.demographicInformationMissing:
+        code = "missingDemographicInformation"
       default:
         code = "unknownError"
       }
@@ -583,12 +585,47 @@ import LucraSDK
     reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
-      do {
-        try await self.nativeClient.api.self.joinTournament(id: id)
+      let result = await self.nativeClient.api.joinTournament(id: id)
+      switch result {
+      case .success:
         resolve(nil)
-      } catch {
-        ErrorMapper.reject(reject, error: error)
+      case .failure(let error):
+        rejectJoinTournamentError(reject, error: error)
       }
     }
+  }
+
+  private func rejectJoinTournamentError(_ reject: RCTPromiseRejectBlock, error: JoinTournamentError) {
+    let code: String
+    let message: String
+    
+    switch error {
+    case .userNotInitialized:
+      code = "notInitialized"
+      message = "User has not been initialized"
+    case .userBlockedOrSuspended:
+      code = "notAllowed"
+      message = "User not allowed to perform operation"
+    case .demographicCollectionPending:
+      code = "missingDemographicInformation"
+      message = "User has missing demographic information"
+    case .unverified:
+      code = "unverified"
+      message = "User is not verified"
+    case .insufficientFunds:
+      code = "insufficientFunds"
+      message = "User has insufficient funds"
+    case .unableToDetermineLocation, .coreLocationError, .unauthorizedLocationError:
+      code = "LocationError"
+      message = "\(error)"
+    case .customError(let msg):
+      code = "APIError"
+      message = msg
+    case .unknown:
+      code = "unknown"
+      message = "Unknown error occurred"
+    }
+    
+    reject(code, message, nil)
   }
 }
