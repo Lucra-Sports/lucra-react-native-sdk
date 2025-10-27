@@ -412,7 +412,9 @@ function present(params: {
 function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): Promise<void>;
 function present(params: { name: typeof Flows.PUBLIC_FEED }): Promise<void>;
 function present(params: { name: typeof Flows.MY_MATCHUP }): Promise<void>;
-function present(params: { name: typeof Flows.DEMOGRAPHIC_COLLECTION }): Promise<void>;
+function present(params: {
+  name: typeof Flows.DEMOGRAPHIC_COLLECTION;
+}): Promise<void>;
 function present(params: {
   name: FlowNames;
   gameId?: string;
