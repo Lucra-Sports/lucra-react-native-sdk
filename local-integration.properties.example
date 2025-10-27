@@ -1,0 +1,13 @@
+# Local Integration Mode Configuration
+# Set to true to use local SDKs instead of remote repositories
+# iOS: Uses xcframeworks/ directory
+# Android: Uses ~/.m2/repository (mavenLocal)
+#
+# SETUP INSTRUCTIONS:
+# 1. Copy this file: cp local-integration.properties.example local-integration.properties
+# 2. The test-native-sdks-locally.sh script will automatically update these values
+# 3. You can also manually edit them to switch between local and remote SDKs
+
+enableLocalIntegrationModeiOS=false
+enableLocalIntegrationModeAndroid=false
+

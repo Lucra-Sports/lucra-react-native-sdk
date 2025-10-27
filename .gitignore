@@ -100,3 +100,7 @@ example/ios/fastlane/report.xml
 
 # Created by the example-expo project
 package-lock.json
+
+# Local Integration Configuration
+local-integration.properties
+scripts/test-native-sdks-locally.sh

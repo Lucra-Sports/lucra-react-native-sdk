@@ -1,6 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+  // Load local integration mode configuration from properties file
+  def props = new Properties()
+  def propsFile = new File(rootProject.projectDir, '../../local-integration.properties')
+  if (propsFile.exists()) {
+    propsFile.withInputStream { props.load(it) }
+  }
+  ext.enableLocalIntegrationModeAndroid = props.getProperty('enableLocalIntegrationModeAndroid', 'false').toBoolean()
+  
   ext {
     // Versions should match our SDK support levels
     buildToolsVersion = "35.0.0"
@@ -26,6 +34,8 @@ buildscript {
 
   allprojects {
     repositories {
+      if (enableLocalIntegrationModeAndroid) mavenLocal()
+      
       maven {
         name = "LucraGithubPackages"
         url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android-sdk")
@@ -33,11 +43,13 @@ buildscript {
           String gprUser = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
           String gprKey = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
 
-          if (!gprUser) {
-            throw new GradleException("GPR_USER not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
-          }
-          if (!gprKey) {
-            throw new GradleException("GPR_KEY not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+          if (!enableLocalIntegrationModeAndroid) {
+            if (!gprUser) {
+              throw new GradleException("GPR_USER not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+            }
+            if (!gprKey) {
+              throw new GradleException("GPR_KEY not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
+            }
           }
 
           username = gprUser
