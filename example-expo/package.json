@@ -26,7 +26,8 @@
   },
   "resolutions": {
     "react-native": "0.76.9",
-    "cross-spawn": "7.0.6"
+    "cross-spawn": "7.0.6",
+    "glob": "10.5.0"
   },
   "private": true
 }
