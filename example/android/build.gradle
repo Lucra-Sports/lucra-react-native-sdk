@@ -40,30 +40,7 @@ buildscript {
       mavenCentral()
       
       maven {
-        name = "LucraGithubPackages"
-        url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android-sdk")
-        credentials {
-          String gprUser = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
-          String gprKey = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
-
-          if (!enableLocalIntegrationModeAndroid) {
-            if (!gprUser) {
-              throw new GradleException("GPR_USER not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
-            }
-            if (!gprKey) {
-              throw new GradleException("GPR_KEY not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
-            }
-          }
-
-          username = gprUser
-          password = gprKey
-        }
-      }
-      maven {
         url("$rootDir/../node_modules/detox/Detox-android")
-      }
-      maven {
-        url "https://zendesk.jfrog.io/zendesk/repo"
       }
     }
   }

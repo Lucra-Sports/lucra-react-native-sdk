@@ -12,8 +12,6 @@ env:
 jobs:
   release-android:
     runs-on: ubuntu-latest
-    env:
-      GPR_USER: LucraReactNativeCi
     steps:
       - name: Checkout
         uses: actions/checkout@v4

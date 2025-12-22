@@ -12,15 +12,6 @@ PAT and your username
         google()
         mavenCentral()
         maven { setUrl("https://jitpack.io") }
-        maven(url = "https://zendesk.jfrog.io/zendesk/repo")
-        maven {
-            name = "LucraGithubPackages"
-            url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android-sdk")
-            credentials {
-                username = {YOUR_GITHUB_USERNAME}
-                password = {YOUR_GITHUB_LUCRA_PAT}
-            }
-        }
     }
 ```
 

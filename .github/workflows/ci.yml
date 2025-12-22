@@ -59,7 +59,6 @@ jobs:
   test-android:
     runs-on: [self-hosted, android]
     env:
-      GPR_USER: LucraReactNativeCi
       LUCRA_SDK_API_URL: ${{ secrets.LUCRA_SDK_API_URL }}
       LUCRA_SDK_API_KEY: ${{ secrets.LUCRA_SDK_API_KEY }}
       JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'

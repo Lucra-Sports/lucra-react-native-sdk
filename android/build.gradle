@@ -103,8 +103,6 @@ android {
 
 repositories {
   if (enableLocalIntegrationModeAndroid) mavenLocal()
-  
-  maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
   mavenCentral()
   google()
 }
