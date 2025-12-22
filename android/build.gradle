@@ -107,34 +107,13 @@ repositories {
   maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
   mavenCentral()
   google()
-  
-  maven {
-    name = "LucraGithubPackages"
-    url = uri("https://maven.pkg.github.com/Lucra-Sports/lucra-android-sdk")
-    credentials {
-      String gprUser = findProperty('GPR_USER') ?: System.getenv('GPR_USER')
-      String gprKey = findProperty('GPR_KEY') ?: System.getenv('GPR_KEY')
-
-      if (!enableLocalIntegrationModeAndroid) {
-        if (!gprUser) {
-          throw new GradleException("GPR_USER not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
-        }
-        if (!gprKey) {
-          throw new GradleException("GPR_KEY not set in ~ .gradle/gradle.properties, local gradle.properties or as an environment variable.")
-        }
-      }
-
-      username = gprUser
-      password = gprKey
-    }
-  }
 }
 
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation("com.lucrasports.sdk:sdk-core:5.2.0")
-  implementation("com.lucrasports.sdk:sdk-ui:5.2.0")
+  implementation("com.lucrasports.sdk:sdk-core:5.3.0")
+  implementation("com.lucrasports.sdk:sdk-ui:5.3.0")
   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
   implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
