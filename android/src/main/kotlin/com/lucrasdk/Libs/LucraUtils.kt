@@ -47,6 +47,7 @@ class LucraUtils {
                 "gamesMatchupDetails" -> LucraUiProvider.LucraFlow.GamesMatchupDetails(matchupId!!)
                 "matchupDetails" -> LucraUiProvider.LucraFlow.MatchupDetails(matchupId!!)
                 "demographicCollection" -> LucraUiProvider.LucraFlow.DemographicForm
+                "wallet" -> LucraUiProvider.LucraFlow.Wallet
                 // TODO not yet publicly available within Android SDK
 //        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails
                 else -> throw IllegalArgumentException("Invalid flow: $flow")

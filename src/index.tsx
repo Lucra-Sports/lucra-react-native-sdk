@@ -387,6 +387,7 @@ const Flows = {
   GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
   MATCHUP_DETAILS: 'matchupDetails',
   DEMOGRAPHIC_COLLECTION: 'demographicCollection',
+  WALLET: 'wallet',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -396,6 +397,7 @@ function present(params: { name: typeof Flows.ONBOARDING }): Promise<void>;
 function present(params: { name: typeof Flows.VERIFY_IDENTITY }): Promise<void>;
 function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
 function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
+function present(params: { name: typeof Flows.WALLET }): Promise<void>;
 
 function present(params: {
   name: typeof Flows.GAMES_CONTEST_DETAILS | typeof Flows.MATCHUP_DETAILS;

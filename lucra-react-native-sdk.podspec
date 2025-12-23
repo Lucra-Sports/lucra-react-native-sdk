@@ -36,11 +36,10 @@ Pod::Spec.new do |s|
     ]
     
     # Dependencies required by LucraSDK.xcframework
-    s.dependency 'ZendeskSupportSDK'
     s.dependency 'Auth0'
   else
     s.source = { :git => "https://github.com/Lucra-Sports/lucra-react-native-sdk", :tag => "#{s.version}" }
-    s.dependency 'LucraSDK', '4.0.0'
+    s.dependency 'LucraSDK', '4.3.0'
   end
   
   if fabric_enabled

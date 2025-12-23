@@ -65,6 +65,8 @@ class LucraUtils {
       return .sportsContestDetails(matchupId: matchupId!)
     case "myMatchup":
       return .myMatchups
+    case "wallet":
+      return .wallet
     default:
       fatalError("Unimplemented lucra flow \(flowName)")
     }
