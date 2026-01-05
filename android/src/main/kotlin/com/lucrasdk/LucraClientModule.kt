@@ -111,9 +111,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         try {
             LucraClient.initialize(
                 application = context.applicationContext as Application,
-                lucraUiProvider = buildLucraUIInstance(),
-                apiUrl = apiURL,
                 apiKey = apiKey,
+                lucraUiProvider = buildLucraUIInstance(),
                 environment = LucraUtils.getLucraEnvironment(environment),
                 clientTheme = clientTheme,
                 outputLogs = true,
@@ -313,8 +312,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         val matchupId = args.getString("matchupId")
         val teaminviteId = args.getString("teaminviteId")
         val gameTypeId = args.getString("gameId")
+        val locationId = args.getString("locationId")
 
-        val flow = LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId)
+        val flow = LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId, locationId)
 
         fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(flow)
 

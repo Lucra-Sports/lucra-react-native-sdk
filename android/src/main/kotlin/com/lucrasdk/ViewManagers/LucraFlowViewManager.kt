@@ -27,7 +27,7 @@ class LucraFlowViewManager(private val callerContext: ReactApplicationContext) :
     if(flow == null) {
       throw Exception("Flow is required")
     }
-    val lucraFlow = LucraUtils.getLucraFlow(flow, null, null, null)
+    val lucraFlow = LucraUtils.getLucraFlow(flow, null, null, null, null)
     // TODO migrate this to a fragment implementation
     //  follow this approach https://github.com/appcues/appcues-react-native-module/blob/d9302d99e63ea46e6588845018aa4428b921b628/android/src/main/java/com/appcuesreactnative/AppcuesFrameViewManager.kt#L45
     val component = LucraClient().getLucraFlowView(context, lucraFlow)

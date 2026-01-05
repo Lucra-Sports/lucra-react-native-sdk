@@ -26,7 +26,7 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
 
     setInitialized(true);
     LucraSDK.init({
-      apiURL: state.apiURL || defaultAppConfig.apiURL,
+      apiURL: defaultAppConfig.apiURL, // TODO: Required for iOS for now, deprecated for Android. Remove before release
       apiKey: state.apiKey || defaultAppConfig.apiKey,
       environment: state.environment || defaultAppConfig.environment,
       urlScheme: defaultAppConfig.urlScheme,

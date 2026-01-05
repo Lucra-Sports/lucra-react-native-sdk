@@ -28,6 +28,7 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
   );
 
   const [matchupId, setMatchupId] = React.useState('');
+  const [locationId, setLocationId] = React.useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -212,6 +213,25 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
             >
               <Text className="font-bold text-white">My Matchups</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+              onPress={() => {
+                LucraSDK.present({
+                  name: LucraSDK.FLOW.HOME_PAGE,
+                  locationId: locationId || undefined,
+                });
+              }}
+            >
+              <Text className="text-white">Home Page (with Location ID)</Text>
+            </TouchableOpacity>
+            <TextInput
+              value={locationId}
+              onChangeText={setLocationId}
+              placeholder="Set Location ID (optional)"
+              placeholderTextColor={'#CCC'}
+              className="border border-indigo-400 p-4 rounded-lg text-white"
+            />
 
             <TouchableOpacity
               className="w-full border border-red-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
