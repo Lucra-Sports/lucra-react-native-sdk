@@ -114,7 +114,6 @@ export enum LucraEnvironment {
 }
 
 export type LucraSDKParams = {
-  apiURL?: string; // Deprecated: No longer required by Android SDK
   apiKey: string;
   environment: LucraEnvironment;
   theme?: {

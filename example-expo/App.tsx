@@ -5,14 +5,12 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { nullthrows } from './nullthrows';
 import * as Linking from 'expo-linking';
 
-let apiUrl = process.env.EXPO_PUBLIC_LUCRASDK_API_URL!;
+
 let apiKey = process.env.EXPO_PUBLIC_LUCRASDK_API_KEY!;
 
-nullthrows(apiUrl, 'Missing API URL');
 nullthrows(apiKey, 'Missing API Key');
 export default function App() {
   LucraSDK.init({
-    apiURL: apiUrl,
     apiKey: apiKey,
     environment: LucraSDK.ENVIRONMENT.SANDBOX,
     theme: {
@@ -42,7 +40,6 @@ export default function App() {
   });
   useEffect(() => {
     console.warn(apiKey);
-    console.warn(apiUrl);
   }, []);
 
   useEffect(() => {

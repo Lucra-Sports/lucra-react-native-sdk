@@ -14,7 +14,6 @@ export interface AppConfig {
   dirty: boolean;
 }
 
-const envApiURL = (process.env.LUCRA_SDK_API_URL ?? '').trim(); // TODO: Required for iOS for now, deprecated for Android. Remove before release
 const envApiKey = (process.env.LUCRA_SDK_API_KEY ?? '').trim();
 
 export type AppConfigAction =
@@ -23,8 +22,7 @@ export type AppConfigAction =
   | { type: 'SET_THEME'; theme: Theme }
   | { type: 'SET_TOGGLE'; field: 'deeplinksEnabled'; value: boolean };
 
-export const defaultAppConfig: AppConfig & { apiURL: string } = {
-  apiURL: envApiURL, // TODO: Required for iOS for now, deprecated for Android. Remove before release
+export const defaultAppConfig: AppConfig = {
   apiKey: envApiKey,
   environment: LucraSDK.ENVIRONMENT.SANDBOX,
   urlScheme: 'lucraexample',

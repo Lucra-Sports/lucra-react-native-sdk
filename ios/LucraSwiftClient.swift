@@ -36,15 +36,6 @@ import LucraSDK
       return
     }
 
-    guard let apiURL = options["apiURL"] as? String
-    else {
-      reject(
-        "PARAM_ERROR",
-        "no apiURL passed to LucraSDK constructor",
-        nil
-      )
-      return
-    }
     guard let apiKey = options["apiKey"] as? String
     else {
       reject(
@@ -70,7 +61,6 @@ import LucraSDK
     nativeClient = LucraSDK.LucraClient(
       config: .init(
         environment: .init(
-          apiURL: apiURL,
           apiKey: apiKey,
           environment: environment,
           urlScheme: urlScheme,
@@ -391,8 +381,6 @@ import LucraSDK
                 let res = lucraMatchupToMap(match: matchup)
                 resolve(res)
             }
-
-            
         } catch {
           reject("unknownError", error.localizedDescription, error)
         }

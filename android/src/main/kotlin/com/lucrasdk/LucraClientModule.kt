@@ -4,6 +4,7 @@ import ErrorMapper.rejectJoinTournamentError
 import ErrorMapper.rejectRecommendedTournamentsError
 import ErrorMapper.rejectRetrieveTournamentError
 import android.app.Application
+import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
@@ -26,6 +27,8 @@ import com.lucrasdk.Libs.LucraMapper.sdkUserToMap
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraConvertToCreditWithdrawMethod
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraReward
 import com.lucrasdk.Libs.LucraUtils
+import com.lucrasports.logger.LucraLogger
+import com.lucrasports.logger.model.AnalyticEvent
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.APIError
 import com.lucrasports.sdk.core.contest.GameInteractions
@@ -84,9 +87,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     @ReactMethod
     fun initialize(options: ReadableMap, promise: Promise) {
-        val apiURL =
-            options.getString("apiURL")
-                ?: throw Exception("LucraSDK no api URL passed to constructor")
         val apiKey =
             options.getString("apiKey")
                 ?: throw Exception("LucraSDK no apiKey passed to constructor")
@@ -108,6 +108,10 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             clientTheme = ClientTheme(colorStyle, fontFamily)
         }
 
+        Log.d(
+            "LucraClient RN",
+            "Initializing LucraClient, environment $environment\nkey: $apiKey"
+        )
         try {
             LucraClient.initialize(
                 application = context.applicationContext as Application,
@@ -115,6 +119,19 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 lucraUiProvider = buildLucraUIInstance(),
                 environment = LucraUtils.getLucraEnvironment(environment),
                 clientTheme = clientTheme,
+                customLogger = object : LucraLogger.Logger {
+                    override fun logNonFatalException(exception: Throwable) {
+                        Log.e("LucraClient RN", exception.message, exception)
+                    }
+
+                    override fun breadcrumb(event: String, postToLogs: Boolean) {
+                        Log.d("LucraClient RN", event)
+                    }
+
+                    override fun log(event: AnalyticEvent) {
+                        Log.d("LucraClient RN", event.toString())
+                    }
+                },
                 outputLogs = true,
             )
 
@@ -314,7 +331,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         val gameTypeId = args.getString("gameId")
         val locationId = args.getString("locationId")
 
-        val flow = LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId, locationId)
+        val flow =
+            LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId, locationId)
 
         fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(flow)
 
