@@ -117,13 +117,9 @@ export type LucraSDKParams = {
   apiKey: string;
   environment: LucraEnvironment;
   theme?: {
-    background?: string;
-    surface?: string;
     primary?: string;
     secondary?: string;
     tertiary?: string;
-    onBackground?: string;
-    onSurface?: string;
     onPrimary?: string;
     onSecondary?: string;
     onTertiary?: string;

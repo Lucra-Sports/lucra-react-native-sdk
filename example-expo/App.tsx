@@ -14,25 +14,28 @@ export default function App() {
     apiKey: apiKey,
     environment: LucraSDK.ENVIRONMENT.SANDBOX,
     theme: {
-      background: '#001448',
-      surface: '#1C2575',
       primary: '#09E35F',
       secondary: '#5E5BD0',
       tertiary: '#9C99FC',
-      onBackground: '#FFFFFF',
-      onSurface: '#FFFFFF',
       onPrimary: '#001448',
       onSecondary: '#FFFFFF',
       onTertiary: '#FFFFFF',
-      fontFamily:
-        Platform.OS === 'ios'
-          ? 'Rawson'
-          : {
-              normal: 'fonts/RawsonRegular.otf',
-              bold: 'fonts/RawsonBold.otf',
-              semibold: 'fonts/RawsonSemiBold.otf',
-              medium: 'fonts/RawsonRegular.otf',
-            },
+      fontFamily: {
+        normal:
+          Platform.OS === 'ios'
+            ? 'Rawson Regular'
+            : 'fonts/RawsonRegular.otf',
+        medium:
+          Platform.OS === 'ios'
+            ? 'Rawson Medium'
+            : 'fonts/RawsonRegular.otf',
+        semibold:
+          Platform.OS === 'ios'
+            ? 'Rawson SemiBold'
+            : 'fonts/RawsonSemiBold.otf',
+        bold:
+          Platform.OS === 'ios' ? 'Rawson Bold' : 'fonts/RawsonBold.otf',
+      },
     },
   }).then(() => {
     console.warn('LucraSDK initialized');

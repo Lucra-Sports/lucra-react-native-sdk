@@ -57,6 +57,16 @@ import kotlinx.coroutines.channels.Channel
 class LucraClientModule(private val context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
 
+    private object ErrorCodes {
+        const val API_ERROR = "apiError"
+        const val LOCATION_ERROR = "locationError"
+        const val INSUFFICIENT_FUNDS = "insufficientFunds"
+        const val NOT_ALLOWED = "notAllowed"
+        const val NOT_INITIALIZED = "notInitialized"
+        const val UNVERIFIED = "unverified"
+        const val UNKNOWN_ERROR = "unknownError"
+    }
+
     private var fullAppFlowDialogFragment: DialogFragment? = null
 
     // FIFO queue to store deep links since many can be requested at once,
@@ -108,10 +118,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             clientTheme = ClientTheme(colorStyle, fontFamily)
         }
 
-        Log.d(
-            "LucraClient RN",
-            "Initializing LucraClient, environment $environment\nkey: $apiKey"
-        )
         try {
             LucraClient.initialize(
                 application = context.applicationContext as Application,
@@ -455,11 +461,11 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().getMatchup(matchupId) { result ->
             when (result) {
                 is GameInteractions.GetMatchupResult.Failure -> {
-                    val errorMessage = when (result.failure) {
-                        is GameInteractions.FailedRetrieveMatchup.APIError -> "apiError"
-                        is GameInteractions.FailedRetrieveMatchup.LocationError -> "locationError"
+                    val (code, message) = when (val failure = result.failure) {
+                        is GameInteractions.FailedRetrieveMatchup.APIError -> ErrorCodes.API_ERROR to failure.message.ifNullOrBlank { "API error occurred" }
+                        is GameInteractions.FailedRetrieveMatchup.LocationError -> ErrorCodes.LOCATION_ERROR to failure.message.ifNullOrBlank { "Location error occurred" }
                     }
-                    promise.reject("getMatchupFailure", errorMessage)
+                    promise.reject(code, message)
                 }
 
                 is GameInteractions.GetMatchupResult.Success -> {
@@ -471,16 +477,20 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     private fun rejectLucraError(promise: Promise, error: LucraError) {
-        val code = when (error) {
-            is APIError -> "apiError"
-            is LocationError -> "locationError"
-            UserStateError.InsufficientFunds -> "insufficientFunds"
-            UserStateError.NotAllowed -> "notAllowed"
-            UserStateError.NotInitialized -> "notInitialized"
-            UserStateError.Unverified -> "unverified"
-            else -> "unknownError"
+        val (code, message) = when (error) {
+            is APIError -> ErrorCodes.API_ERROR to (error.message.ifNullOrBlank { "API error occurred" })
+            is LocationError -> ErrorCodes.LOCATION_ERROR to (error.message.ifNullOrBlank { "Location error occurred" })
+            UserStateError.InsufficientFunds -> ErrorCodes.INSUFFICIENT_FUNDS to "User has insufficient funds"
+            UserStateError.NotAllowed -> ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
+            UserStateError.NotInitialized -> ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
+            UserStateError.Unverified -> ErrorCodes.UNVERIFIED to "User has not been verified"
+            else -> ErrorCodes.UNKNOWN_ERROR to (error.toString().ifNullOrBlank { "Unknown error occurred" })
         }
-        promise.reject(code, error.toString())
+        promise.reject(code, message)
+    }
+
+    private inline fun String?.ifNullOrBlank(default: () -> String): String {
+        return if (this.isNullOrBlank()) default() else this
     }
 
     @ReactMethod

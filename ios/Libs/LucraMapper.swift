@@ -388,31 +388,50 @@ public func sdkUserToMap(user: LucraSDK.SDKUser) -> [String: Any] {
 }
 
 public func mapToClientTheme(theme: [String: Any]) -> LucraSDK.ClientTheme {
-  let background = theme["background"] as? String
-  let surface = theme["surface"] as? String
   let primary = theme["primary"] as? String
   let secondary = theme["secondary"] as? String
   let tertiary = theme["tertiary"] as? String
-  let onBackground = theme["onBackground"] as? String
-  let onSurface = theme["onSurface"] as? String
   let onPrimary = theme["onPrimary"] as? String
   let onSecondary = theme["onSecondary"] as? String
   let onTertiary = theme["onTertiary"] as? String
-  let fontFamilyName = theme["fontFamily"] as? String
+  var fontFamily: FontFamily? = nil
+
+  if let fontDict = theme["fontFamily"] as? [String: Any] {
+    let regular = (fontDict["regular"] as? String) ?? (fontDict["normal"] as? String)
+    let medium = (fontDict["medium"] as? String) ?? regular
+    let semiBold = (fontDict["semibold"] as? String) ?? (fontDict["semiBold"] as? String) ?? regular
+    let bold = (fontDict["bold"] as? String) ?? semiBold ?? regular
+
+    if let regular = regular, let medium = medium, let semiBold = semiBold, let bold = bold {
+      fontFamily = FontFamily(
+        mediumFontName: medium,
+        regularFontName: regular,
+        semiBoldFontName: semiBold,
+        boldFontName: bold
+      )
+    }
+  } else if let fontBaseName = theme["fontFamily"] as? String {
+    fontFamily = FontFamily(
+      mediumFontName: "\(fontBaseName) Medium",
+      regularFontName: "\(fontBaseName) Regular",
+      semiBoldFontName: "\(fontBaseName) SemiBold",
+      boldFontName: "\(fontBaseName) Bold"
+    )
+  }
 
   return ClientTheme(
     universalTheme: DynamicColorSet(
-      background: background,
-      surface: surface,
+      background: nil,
+      surface: nil,
       primary: primary,
       secondary: secondary,
       tertiary: tertiary,
-      onBackground: onBackground,
-      onSurface: onSurface,
+      onBackground: nil,
+      onSurface: nil,
       onPrimary: onPrimary,
       onSecondary: onSecondary,
       onTertiary: onTertiary),
-    fontFamilyName: fontFamilyName
+    fontFamily: fontFamily
   )
 }
 
@@ -439,5 +458,3 @@ public func mapToSDKUser(user: [String: Any]) -> LucraSDK.SDKUser {
 	metadata: user["metadata"] as? [String : String]
   )
 }
-
-

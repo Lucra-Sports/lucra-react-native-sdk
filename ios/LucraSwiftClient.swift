@@ -1,6 +1,17 @@
 import Combine
 import LucraSDK
 
+private enum ErrorCode {
+  static let apiError = "apiError"
+  static let locationError = "locationError"
+  static let insufficientFunds = "insufficientFunds"
+  static let notAllowed = "notAllowed"
+  static let notInitialized = "notInitialized"
+  static let unverified = "unverified"
+  static let missingDemographicInformation = "missingDemographicInformation"
+  static let unknownError = "unknownError"
+}
+
 @objc public protocol LucraClientDelegate {
   func sendEvent(name: String, result: [String: Any])
 }
@@ -88,7 +99,7 @@ import LucraSDK
       case .gamesMatchupStarted(let id):
         self.delegate?.sendEvent(
           name: "gamesMatchupStarted", result: ["id": id])
-      case .gamesActiveMatchupStarted(let id):
+      case .gamesActiveMatchupStarted(id: let id, matchup: _):
         self.delegate?.sendEvent(
           name: "gamesActiveMatchupStarted", result: ["id": id])
       case .sportsMatchupCreated(let id):
@@ -253,71 +264,72 @@ import LucraSDK
       reject: @escaping RCTPromiseRejectBlock
     ) {
       Task { @MainActor in
-        do {
-          // Parse atStake
-          let rewardType: RewardType
-          if let type = (atStake["type"] as? String)?.lowercased() {
-            switch type {
-            case "cash":
-              guard let amount = atStake["amount"] as? Double else {
-                reject("invalidAtStake", "Missing or invalid 'amount' for type 'cash'", nil)
-                return
-              }
-              rewardType = RewardType(cashReward: Decimal(amount))
-
-            case "tenantreward":
-              let rewardId = atStake["rewardId"] as? String ?? ""
-              let title = atStake["title"] as? String ?? ""
-              let descriptor = atStake["descriptor"] as? String ?? ""
-              let iconUrl = atStake["iconUrl"] as? String ?? ""
-              let bannerIconUrl = atStake["bannerIconUrl"] as? String
-              let disclaimer = atStake["disclaimer"] as? String
-              let metadataRaw = atStake["metadata"] as? [String: Any]
-              let metadata = metadataRaw?.compactMapValues { "\($0)" }
-
-              let lucraReward = LucraReward(
-                rewardId: rewardId,
-                title: title,
-                descriptor: descriptor,
-                iconUrl: iconUrl,
-                bannerIconUrl: bannerIconUrl,
-                disclaimer: disclaimer,
-                metadata: metadata
-              )
-
-              rewardType = RewardType(tenantReward: lucraReward)
-
-            default:
-              reject("invalidRewardType", "Invalid RewardType: \(type)", nil)
+        // Parse atStake
+        let rewardType: RewardType
+        if let type = (atStake["type"] as? String)?.lowercased() {
+          switch type {
+          case "cash":
+            guard let amount = atStake["amount"] as? Double else {
+              reject("invalidAtStake", "Missing or invalid 'amount' for type 'cash'", nil)
               return
             }
-          } else {
-            reject("invalidAtStake", "Missing 'type' in atStake", nil)
-            return
-          }
+            rewardType = RewardType(cashReward: Decimal(amount))
 
-          // Parse playStyle
-          let parsedPlayStyle: PlayStyle
-          switch playStyle.lowercased() {
-          case "groupvsgroup":
-            parsedPlayStyle = .groupVsGroup
-          case "freeforall":
-            parsedPlayStyle = .freeForAll
+          case "tenantreward":
+            let rewardId = atStake["rewardId"] as? String ?? ""
+            let title = atStake["title"] as? String ?? ""
+            let descriptor = atStake["descriptor"] as? String ?? ""
+            let iconUrl = atStake["iconUrl"] as? String ?? ""
+            let bannerIconUrl = atStake["bannerIconUrl"] as? String
+            let disclaimer = atStake["disclaimer"] as? String
+            let metadataRaw = atStake["metadata"] as? [String: Any]
+            let metadata = metadataRaw?.compactMapValues { "\($0)" }
+
+            let lucraReward = LucraReward(
+              rewardId: rewardId,
+              title: title,
+              descriptor: descriptor,
+              iconUrl: iconUrl,
+              bannerIconUrl: bannerIconUrl,
+              disclaimer: disclaimer,
+              metadata: metadata
+            )
+
+            rewardType = RewardType(tenantReward: lucraReward)
+
           default:
-            reject("invalidPlayStyle", "Invalid PlayStyle: \(playStyle)", nil)
+            reject("invalidRewardType", "Invalid RewardType: \(type)", nil)
             return
           }
+        } else {
+          reject("invalidAtStake", "Missing 'type' in atStake", nil)
+          return
+        }
 
-          // Call API
-          let matchupId = try await self.nativeClient.api.createRecreationalGame(
-            gameTypeId: gameTypeId,
-            atStake: rewardType,
-            playStyle: parsedPlayStyle
-          )
+        // Parse playStyle
+        let parsedPlayStyle: PlayStyle
+        switch playStyle.lowercased() {
+        case "groupvsgroup":
+          parsedPlayStyle = .groupVsGroup
+        case "freeforall":
+          parsedPlayStyle = .freeForAll
+        default:
+          reject("invalidPlayStyle", "Invalid PlayStyle: \(playStyle)", nil)
+          return
+        }
 
+        // Call API
+        let result = await self.nativeClient.api.createRecreationalGame(
+          gameTypeId: gameTypeId,
+          atStake: rewardType,
+          playStyle: parsedPlayStyle
+        )
+
+        switch result {
+        case .success(let matchupId):
           resolve(["matchupId": matchupId])
-        } catch {
-          ErrorMapper.reject(reject, error: error)
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
         }
       }
     }
@@ -331,11 +343,16 @@ import LucraSDK
       reject: @escaping RCTPromiseRejectBlock
     ) {
       Task { @MainActor in
-        do {
-            let _ = try await self.nativeClient.api.acceptVersusRecreationalGame(matchupId: matchupId, groupId: teamId)
-            resolve(nil)
-        } catch {
-          reject("unknownError", error.localizedDescription, error)
+        let result = await self.nativeClient.api.acceptVersusRecreationalGame(
+          matchupId: matchupId,
+          groupId: teamId
+        )
+
+        switch result {
+        case .success:
+          resolve(nil)
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
         }
       }
     }
@@ -346,11 +363,15 @@ import LucraSDK
       reject: @escaping RCTPromiseRejectBlock
     ) {
       Task { @MainActor in
-        do {
-          let result = try await self.nativeClient.api.acceptFreeForAllRecreationalGame(matchupId: matchupId)
+        let result = await self.nativeClient.api.acceptFreeForAllRecreationalGame(
+          matchupId: matchupId
+        )
+
+        switch result {
+        case .success:
           resolve(nil)
-        } catch {
-          reject("unknownError", error.localizedDescription, error)
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
         }
       }
     }
@@ -361,11 +382,15 @@ import LucraSDK
       reject: @escaping RCTPromiseRejectBlock
     ) {
       Task { @MainActor in
-        do {
-            let result = try await self.nativeClient.api.cancelRecreationalGame(matchupId: matchupId)
-            resolve(nil)
-        } catch {
-            rejectLucraError(reject, error: error)
+        let result = await self.nativeClient.api.cancelRecreationalGame(
+          matchupId: matchupId
+        )
+
+        switch result {
+        case .success:
+          resolve(nil)
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
         }
       }
     }
@@ -376,40 +401,146 @@ import LucraSDK
       reject: @escaping RCTPromiseRejectBlock
     ) {
       Task { @MainActor in
-        do {
-            if let matchup = try await self.nativeClient.api.matchup(for: matchupId) {
-                let res = lucraMatchupToMap(match: matchup)
-                resolve(res)
-            }
-        } catch {
-          reject("unknownError", error.localizedDescription, error)
+        let result = await self.nativeClient.api.matchup(for: matchupId)
+
+        switch result {
+        case .success(let matchup):
+          let res = lucraMatchupToMap(match: matchup)
+          resolve(res)
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
         }
       }
     }
 
     private func rejectLucraError(_ reject: RCTPromiseRejectBlock, error: Error) {
       let code: String
+      let message: String
 
       switch error {
-      case is APIError:
-        code = "apiError"
-      case is LocationError:
-        code = "locationError"
-      case UserStateError.insufficientFunds:
-        code = "insufficientFunds"
-      case UserStateError.notAllowed:
-        code = "notAllowed"
-      case UserStateError.notInitialized:
-        code = "notInitialized"
-      case UserStateError.unverified:
-        code = "unverified"
-      case UserStateError.demographicInformationMissing:
-        code = "missingDemographicInformation"
+      case let matchupError as MatchupError:
+        switch matchupError {
+        case .user(let userError):
+          code = codeForUserStateError(userError)
+          message = messageForUserStateError(userError)
+        case .location(let locationError):
+          code = ErrorCode.locationError
+          message = extractMessage(from: locationError)
+        case .customError(let messageString):
+          code = ErrorCode.apiError
+          message = messageString
+        case .unknown:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: matchupError)
+        @unknown default:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: matchupError)
+        }
+      case let gamesMatchupError as GamesMatchupError:
+        switch gamesMatchupError {
+        case .user(let userError):
+          code = codeForUserStateError(userError)
+          message = messageForUserStateError(userError)
+        case .location(let locationError):
+          code = ErrorCode.locationError
+          message = extractMessage(from: locationError)
+        case .customError(let messageString):
+          code = ErrorCode.apiError
+          message = messageString
+        case .unknown:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: gamesMatchupError)
+        @unknown default:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: gamesMatchupError)
+        }
+      case let tournamentError as TournamentError:
+        switch tournamentError {
+        case .user(let userError):
+          code = codeForUserStateError(userError)
+          message = messageForUserStateError(userError)
+        case .location(let locationError):
+          code = ErrorCode.locationError
+          message = extractMessage(from: locationError)
+        case .customError(let messageString):
+          code = ErrorCode.apiError
+          message = messageString
+        case .unknown:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: tournamentError)
+        @unknown default:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: tournamentError)
+        }
+      case let apiError as APIError:
+        code = ErrorCode.apiError
+        message = extractMessage(from: apiError)
+      case let locationError as LocationError:
+        code = ErrorCode.locationError
+        message = extractMessage(from: locationError)
+      case let userError as UserStateError:
+        code = codeForUserStateError(userError)
+        message = messageForUserStateError(userError)
       default:
-        code = "unknownError"
+        code = ErrorCode.unknownError
+        message = extractMessage(from: error)
       }
 
-      reject(code, error.localizedDescription, error)
+      reject(code, message, error)
+    }
+
+    private func extractMessage(from error: Error) -> String {
+      if let apiError = error as? APIError {
+        if let desc = apiError.errorDescription, desc.isEmpty == false {
+          return desc
+        }
+
+        if apiError.underlyingError.isEmpty == false {
+          return apiError.underlyingError
+        }
+      }
+
+      if let localized = (error as? LocalizedError)?.errorDescription,
+         localized.isEmpty == false {
+        return localized
+      }
+
+      let fallback = error.localizedDescription
+      return fallback.isEmpty ? "Unknown error occurred" : fallback
+    }
+
+    private func codeForUserStateError(_ error: UserStateError) -> String {
+      switch error {
+      case .insufficientFunds:
+        return ErrorCode.insufficientFunds
+      case .notAllowed:
+        return ErrorCode.notAllowed
+      case .notInitialized:
+        return ErrorCode.notInitialized
+      case .unverified:
+        return ErrorCode.unverified
+      case .demographicInformationMissing:
+        return ErrorCode.missingDemographicInformation
+      @unknown default:
+        return ErrorCode.unknownError
+      }
+    }
+
+    private func messageForUserStateError(_ error: UserStateError) -> String {
+      switch error {
+      case .insufficientFunds:
+        return "User has insufficient funds"
+      case .notAllowed:
+        return "User is not allowed to perform such operation"
+      case .notInitialized:
+        return "User has not been initialized"
+      case .unverified:
+        return "User has not been verified"
+      case .demographicInformationMissing:
+        return "User has missing demographic information"
+      @unknown default:
+        return "Unknown user state error"
+      }
     }
 
 
@@ -537,14 +668,15 @@ import LucraSDK
     let limit: Int = params["limit"] as? Int ?? 50
 
     Task { @MainActor in
-      do {
-        let tournaments = try await self.nativeClient.api
-          .getRecommendedTournaments(
-            includeClosed: includeClosed, limit: limit
-          )
-          resolve(tournaments.map(tournamentsMatchupToMap))
-      } catch {
-        ErrorMapper.reject(reject, error: error)
+      let result = await self.nativeClient.api.getRecommendedTournaments(
+        includeClosed: includeClosed, limit: limit
+      )
+
+      switch result {
+      case .success(let tournaments):
+        resolve(tournaments.map(tournamentsMatchupToMap))
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
       }
     }
   }
@@ -553,67 +685,34 @@ import LucraSDK
     _ id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
-      do {
-        if let tournament = try await self.nativeClient.api.tournamentsMatchup(
-          for: id
-        ) {
-          resolve(tournamentsMatchupToMap(tournament: tournament))
-        } else {
-          resolve(nil)
-        }
-      } catch {
-        ErrorMapper.reject(reject, error: error)
-      }
+      let result = await self.nativeClient.api.tournamentsMatchup(for: id)
 
+      switch result {
+      case .success(let tournament):
+        resolve(tournamentsMatchupToMap(tournament: tournament))
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
+      }
     }
   }
 
   @objc public func joinTournament(
-    _ id: String, resolve: @escaping RCTPromiseResolveBlock,
+    _ matchupId: String,
+    resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
-      let result = await self.nativeClient.api.joinTournament(id: id)
+      let result = await self.nativeClient.api.joinTournament(
+        matchupId: matchupId,
+        joinCode: nil
+      )
+
       switch result {
       case .success:
         resolve(nil)
       case .failure(let error):
-        rejectJoinTournamentError(reject, error: error)
+        rejectLucraError(reject, error: error)
       }
     }
-  }
-
-  private func rejectJoinTournamentError(_ reject: RCTPromiseRejectBlock, error: JoinTournamentError) {
-    let code: String
-    let message: String
-    
-    switch error {
-    case .userNotInitialized:
-      code = "notInitialized"
-      message = "User has not been initialized"
-    case .userBlockedOrSuspended:
-      code = "notAllowed"
-      message = "User not allowed to perform operation"
-    case .demographicCollectionPending:
-      code = "missingDemographicInformation"
-      message = "User has missing demographic information"
-    case .unverified:
-      code = "unverified"
-      message = "User is not verified"
-    case .insufficientFunds:
-      code = "insufficientFunds"
-      message = "User has insufficient funds"
-    case .unableToDetermineLocation, .coreLocationError, .unauthorizedLocationError:
-      code = "LocationError"
-      message = "\(error)"
-    case .customError(let msg):
-      code = "APIError"
-      message = msg
-    case .unknown:
-      code = "unknown"
-      message = "Unknown error occurred"
-    }
-    
-    reject(code, message, nil)
   }
 }

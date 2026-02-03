@@ -125,21 +125,6 @@ export function ColorOverride() {
       </View>
       <View className="gap-0.5">
         <ColorOption
-          name="Background"
-          value={theme.background}
-          onUpdate={(value: string) => {
-            setThemeValue('background', value);
-          }}
-          className="rounded-t-xl"
-        />
-        <ColorOption
-          name="Surface"
-          value={theme.background}
-          onUpdate={(value: string) => {
-            setThemeValue('surface', value);
-          }}
-        />
-        <ColorOption
           name="Primary"
           value={theme.primary}
           onUpdate={(value: string) => {
@@ -158,20 +143,6 @@ export function ColorOverride() {
           value={theme.tertiary}
           onUpdate={(value: string) => {
             setThemeValue('tertiary', value);
-          }}
-        />
-        <ColorOption
-          name="On Background"
-          value={theme.onBackground}
-          onUpdate={(value: string) => {
-            setThemeValue('onBackground', value);
-          }}
-        />
-        <ColorOption
-          name="On Surface"
-          value={theme.onSurface}
-          onUpdate={(value: string) => {
-            setThemeValue('onSurface', value);
           }}
         />
         <ColorOption
