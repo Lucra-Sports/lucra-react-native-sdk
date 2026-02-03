@@ -5,7 +5,6 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { nullthrows } from './nullthrows';
 import * as Linking from 'expo-linking';
 
-
 let apiKey = process.env.EXPO_PUBLIC_LUCRASDK_API_KEY!;
 
 nullthrows(apiKey, 'Missing API Key');
@@ -22,19 +21,14 @@ export default function App() {
       onTertiary: '#FFFFFF',
       fontFamily: {
         normal:
-          Platform.OS === 'ios'
-            ? 'Rawson Regular'
-            : 'fonts/RawsonRegular.otf',
+          Platform.OS === 'ios' ? 'Rawson Regular' : 'fonts/RawsonRegular.otf',
         medium:
-          Platform.OS === 'ios'
-            ? 'Rawson Medium'
-            : 'fonts/RawsonRegular.otf',
+          Platform.OS === 'ios' ? 'Rawson Medium' : 'fonts/RawsonRegular.otf',
         semibold:
           Platform.OS === 'ios'
             ? 'Rawson SemiBold'
             : 'fonts/RawsonSemiBold.otf',
-        bold:
-          Platform.OS === 'ios' ? 'Rawson Bold' : 'fonts/RawsonBold.otf',
+        bold: Platform.OS === 'ios' ? 'Rawson Bold' : 'fonts/RawsonBold.otf',
       },
     },
   }).then(() => {

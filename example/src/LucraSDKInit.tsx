@@ -25,9 +25,14 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
     }
 
     setInitialized(true);
+    const apiKey = state.apiKey || defaultAppConfig.apiKey;
+    const environment = state.environment || defaultAppConfig.environment;
+
+    console.log('[LucraSDK] init', { apiKey, environment });
+
     LucraSDK.init({
-      apiKey: state.apiKey || defaultAppConfig.apiKey,
-      environment: state.environment || defaultAppConfig.environment,
+      apiKey,
+      environment,
       urlScheme: defaultAppConfig.urlScheme,
       theme: {
         primary: state.theme?.primary ?? defaultAppConfig.theme.primary,
@@ -40,19 +45,14 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
           state.theme?.onTertiary ?? defaultAppConfig.theme.onTertiary,
         fontFamily: {
           normal:
-            Platform.OS === 'ios'
-              ? 'Inter Regular'
-              : 'fonts/Inter-Regular.ttf',
+            Platform.OS === 'ios' ? 'Inter Regular' : 'fonts/Inter-Regular.ttf',
           medium:
-            Platform.OS === 'ios'
-              ? 'Inter Medium'
-              : 'fonts/Inter-Medium.ttf',
+            Platform.OS === 'ios' ? 'Inter Medium' : 'fonts/Inter-Medium.ttf',
           semibold:
             Platform.OS === 'ios'
               ? 'Inter SemiBold'
               : 'fonts/Inter-SemiBold.ttf',
-          bold:
-            Platform.OS === 'ios' ? 'Inter Bold' : 'fonts/Inter-Bold.ttf',
+          bold: Platform.OS === 'ios' ? 'Inter Bold' : 'fonts/Inter-Bold.ttf',
         },
       },
     })
