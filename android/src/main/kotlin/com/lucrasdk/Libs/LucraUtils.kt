@@ -23,7 +23,8 @@ class LucraUtils {
             flow: String,
             matchupId: String?,
             teaminviteId: String?,
-            gameTypeId: String?
+            gameTypeId: String?,
+            locationId: String?
         ): LucraUiProvider.LucraFlow {
             return when (flow) {
                 // TODO ios uses onboarding, Android uses Login
@@ -48,6 +49,7 @@ class LucraUtils {
                 "matchupDetails" -> LucraUiProvider.LucraFlow.MatchupDetails(matchupId!!)
                 "demographicCollection" -> LucraUiProvider.LucraFlow.DemographicForm
                 "wallet" -> LucraUiProvider.LucraFlow.Wallet
+                "homePage" -> LucraUiProvider.LucraFlow.HomePage(locationId)
                 // TODO not yet publicly available within Android SDK
 //        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails
                 else -> throw IllegalArgumentException("Invalid flow: $flow")

@@ -5,36 +5,31 @@ import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 import { nullthrows } from './nullthrows';
 import * as Linking from 'expo-linking';
 
-let apiUrl = process.env.EXPO_PUBLIC_LUCRASDK_API_URL!;
 let apiKey = process.env.EXPO_PUBLIC_LUCRASDK_API_KEY!;
 
-nullthrows(apiUrl, 'Missing API URL');
 nullthrows(apiKey, 'Missing API Key');
 export default function App() {
   LucraSDK.init({
-    apiURL: apiUrl,
     apiKey: apiKey,
     environment: LucraSDK.ENVIRONMENT.SANDBOX,
     theme: {
-      background: '#001448',
-      surface: '#1C2575',
       primary: '#09E35F',
       secondary: '#5E5BD0',
       tertiary: '#9C99FC',
-      onBackground: '#FFFFFF',
-      onSurface: '#FFFFFF',
       onPrimary: '#001448',
       onSecondary: '#FFFFFF',
       onTertiary: '#FFFFFF',
-      fontFamily:
-        Platform.OS === 'ios'
-          ? 'Rawson'
-          : {
-              normal: 'fonts/RawsonRegular.otf',
-              bold: 'fonts/RawsonBold.otf',
-              semibold: 'fonts/RawsonSemiBold.otf',
-              medium: 'fonts/RawsonRegular.otf',
-            },
+      fontFamily: {
+        normal:
+          Platform.OS === 'ios' ? 'Rawson Regular' : 'fonts/RawsonRegular.otf',
+        medium:
+          Platform.OS === 'ios' ? 'Rawson Medium' : 'fonts/RawsonRegular.otf',
+        semibold:
+          Platform.OS === 'ios'
+            ? 'Rawson SemiBold'
+            : 'fonts/RawsonSemiBold.otf',
+        bold: Platform.OS === 'ios' ? 'Rawson Bold' : 'fonts/RawsonBold.otf',
+      },
     },
   }).then(() => {
     console.warn('LucraSDK initialized');
@@ -42,7 +37,6 @@ export default function App() {
   });
   useEffect(() => {
     console.warn(apiKey);
-    console.warn(apiUrl);
   }, []);
 
   useEffect(() => {

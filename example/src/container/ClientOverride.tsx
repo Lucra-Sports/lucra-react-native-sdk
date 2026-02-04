@@ -58,14 +58,6 @@ export function ClientOverride() {
         className="rounded-t-xl"
       />
       <ClientOption
-        name="API URL"
-        placeholder={defaultAppConfig.apiURL}
-        value={state.apiURL}
-        onChange={(value: string) =>
-          dispatch({ type: 'SET_FIELD', field: 'apiURL', value })
-        }
-      />
-      <ClientOption
         name="API Key"
         placeholder={defaultAppConfig.apiKey}
         value={state.apiKey}

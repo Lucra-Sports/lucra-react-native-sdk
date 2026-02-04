@@ -6,7 +6,6 @@ import { DEFAULT, type Theme } from './theme';
 
 export interface AppConfig {
   environment: LucraEnvironment;
-  apiURL: string;
   apiKey: string;
   urlScheme: string;
   merchantId: string;
@@ -15,7 +14,6 @@ export interface AppConfig {
   dirty: boolean;
 }
 
-const envApiURL = (process.env.LUCRA_SDK_API_URL ?? '').trim();
 const envApiKey = (process.env.LUCRA_SDK_API_KEY ?? '').trim();
 
 export type AppConfigAction =
@@ -25,7 +23,6 @@ export type AppConfigAction =
   | { type: 'SET_TOGGLE'; field: 'deeplinksEnabled'; value: boolean };
 
 export const defaultAppConfig: AppConfig = {
-  apiURL: envApiURL,
   apiKey: envApiKey,
   environment: LucraSDK.ENVIRONMENT.SANDBOX,
   urlScheme: 'lucraexample',
@@ -36,7 +33,6 @@ export const defaultAppConfig: AppConfig = {
 };
 
 export const initialAppConfig: AppConfig = {
-  apiURL: '',
   apiKey: '',
   environment: LucraEnvironment.SANDBOX,
   urlScheme: '',
@@ -56,9 +52,6 @@ export function appConfigReducer(
     case 'SET_FIELD':
       if (action.field === 'apiKey' && !action.value) {
         return { ...state, apiKey: initialAppConfig.apiKey, dirty: true };
-      }
-      if (action.field === 'apiURL' && !action.value) {
-        return { ...state, apiURL: initialAppConfig.apiURL, dirty: true };
       }
       if (action.field === 'environment' && !action.value) {
         return {

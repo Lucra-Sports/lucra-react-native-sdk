@@ -23,12 +23,12 @@ static LucraClient *_sharedInstance = nil;
 
 RCT_EXPORT_METHOD(initialize : (NSDictionary *)options resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    swiftClient = [LucraSwiftClient getShared];
-    [swiftClient initialize:options resolve:resolve reject:reject];
-    [swiftClient setDelegate:self];
-    [LucraClient setSharedInstance:self];
-  });
+    dispatch_async(dispatch_get_main_queue(), ^{
+      swiftClient = [LucraSwiftClient getShared];
+      [swiftClient initialize:options resolve:resolve reject:reject];
+      [swiftClient setDelegate:self];
+      [LucraClient setSharedInstance:self];
+    });
 }
 
 - (LucraSwiftClient *)getSwiftClient {

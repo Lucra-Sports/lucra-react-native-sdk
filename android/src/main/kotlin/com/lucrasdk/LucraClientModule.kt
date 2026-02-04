@@ -4,6 +4,7 @@ import ErrorMapper.rejectJoinTournamentError
 import ErrorMapper.rejectRecommendedTournamentsError
 import ErrorMapper.rejectRetrieveTournamentError
 import android.app.Application
+import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
@@ -26,6 +27,8 @@ import com.lucrasdk.Libs.LucraMapper.sdkUserToMap
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraConvertToCreditWithdrawMethod
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraReward
 import com.lucrasdk.Libs.LucraUtils
+import com.lucrasports.logger.LucraLogger
+import com.lucrasports.logger.model.AnalyticEvent
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.contest.APIError
 import com.lucrasports.sdk.core.contest.GameInteractions
@@ -53,6 +56,16 @@ import kotlinx.coroutines.channels.Channel
 @ReactModule(name = LucraClientModule.NAME)
 class LucraClientModule(private val context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
+
+    private object ErrorCodes {
+        const val API_ERROR = "apiError"
+        const val LOCATION_ERROR = "locationError"
+        const val INSUFFICIENT_FUNDS = "insufficientFunds"
+        const val NOT_ALLOWED = "notAllowed"
+        const val NOT_INITIALIZED = "notInitialized"
+        const val UNVERIFIED = "unverified"
+        const val UNKNOWN_ERROR = "unknownError"
+    }
 
     private var fullAppFlowDialogFragment: DialogFragment? = null
 
@@ -84,9 +97,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     @ReactMethod
     fun initialize(options: ReadableMap, promise: Promise) {
-        val apiURL =
-            options.getString("apiURL")
-                ?: throw Exception("LucraSDK no api URL passed to constructor")
         val apiKey =
             options.getString("apiKey")
                 ?: throw Exception("LucraSDK no apiKey passed to constructor")
@@ -111,11 +121,23 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         try {
             LucraClient.initialize(
                 application = context.applicationContext as Application,
-                lucraUiProvider = buildLucraUIInstance(),
-                apiUrl = apiURL,
                 apiKey = apiKey,
+                lucraUiProvider = buildLucraUIInstance(),
                 environment = LucraUtils.getLucraEnvironment(environment),
                 clientTheme = clientTheme,
+                customLogger = object : LucraLogger.Logger {
+                    override fun logNonFatalException(exception: Throwable) {
+                        Log.e("LucraClient RN", exception.message, exception)
+                    }
+
+                    override fun breadcrumb(event: String, postToLogs: Boolean) {
+                        Log.d("LucraClient RN", event)
+                    }
+
+                    override fun log(event: AnalyticEvent) {
+                        Log.d("LucraClient RN", event.toString())
+                    }
+                },
                 outputLogs = true,
             )
 
@@ -313,8 +335,10 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         val matchupId = args.getString("matchupId")
         val teaminviteId = args.getString("teaminviteId")
         val gameTypeId = args.getString("gameId")
+        val locationId = args.getString("locationId")
 
-        val flow = LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId)
+        val flow =
+            LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId, locationId)
 
         fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(flow)
 
@@ -437,11 +461,11 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().getMatchup(matchupId) { result ->
             when (result) {
                 is GameInteractions.GetMatchupResult.Failure -> {
-                    val errorMessage = when (result.failure) {
-                        is GameInteractions.FailedRetrieveMatchup.APIError -> "apiError"
-                        is GameInteractions.FailedRetrieveMatchup.LocationError -> "locationError"
+                    val (code, message) = when (val failure = result.failure) {
+                        is GameInteractions.FailedRetrieveMatchup.APIError -> ErrorCodes.API_ERROR to failure.message.ifNullOrBlank { "API error occurred" }
+                        is GameInteractions.FailedRetrieveMatchup.LocationError -> ErrorCodes.LOCATION_ERROR to failure.message.ifNullOrBlank { "Location error occurred" }
                     }
-                    promise.reject("getMatchupFailure", errorMessage)
+                    promise.reject(code, message)
                 }
 
                 is GameInteractions.GetMatchupResult.Success -> {
@@ -453,16 +477,20 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     private fun rejectLucraError(promise: Promise, error: LucraError) {
-        val code = when (error) {
-            is APIError -> "apiError"
-            is LocationError -> "locationError"
-            UserStateError.InsufficientFunds -> "insufficientFunds"
-            UserStateError.NotAllowed -> "notAllowed"
-            UserStateError.NotInitialized -> "notInitialized"
-            UserStateError.Unverified -> "unverified"
-            else -> "unknownError"
+        val (code, message) = when (error) {
+            is APIError -> ErrorCodes.API_ERROR to (error.message.ifNullOrBlank { "API error occurred" })
+            is LocationError -> ErrorCodes.LOCATION_ERROR to (error.message.ifNullOrBlank { "Location error occurred" })
+            UserStateError.InsufficientFunds -> ErrorCodes.INSUFFICIENT_FUNDS to "User has insufficient funds"
+            UserStateError.NotAllowed -> ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
+            UserStateError.NotInitialized -> ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
+            UserStateError.Unverified -> ErrorCodes.UNVERIFIED to "User has not been verified"
+            else -> ErrorCodes.UNKNOWN_ERROR to (error.toString().ifNullOrBlank { "Unknown error occurred" })
         }
-        promise.reject(code, error.toString())
+        promise.reject(code, message)
+    }
+
+    private inline fun String?.ifNullOrBlank(default: () -> String): String {
+        return if (this.isNullOrBlank()) default() else this
     }
 
     @ReactMethod

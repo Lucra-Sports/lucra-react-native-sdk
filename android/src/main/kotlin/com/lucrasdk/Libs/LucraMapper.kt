@@ -37,16 +37,16 @@ object LucraMapper {
 
     fun readableMapToColorStyle(params: ReadableMap): ColorStyle {
         return ColorStyle(
-            params.getString("background"),
-            params.getString("surface"),
-            params.getString("primary"),
-            params.getString("secondary"),
-            params.getString("tertiary"),
-            params.getString("onBackground"),
-            params.getString("onSurface"),
-            params.getString("onPrimary"),
-            params.getString("onSecondary"),
-            params.getString("onTertiary")
+            background = null,
+            surface = null,
+            primary = params.getString("primary"),
+            secondary = params.getString("secondary"),
+            tertiary = params.getString("tertiary"),
+            onBackground = null,
+            onSurface = null,
+            onPrimary = params.getString("onPrimary"),
+            onSecondary = params.getString("onSecondary"),
+            onTertiary = params.getString("onTertiary")
         )
     }
 

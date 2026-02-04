@@ -25,22 +25,35 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
     }
 
     setInitialized(true);
+    const apiKey = state.apiKey || defaultAppConfig.apiKey;
+    const environment = state.environment || defaultAppConfig.environment;
+
+    console.log('[LucraSDK] init', { apiKey, environment });
+
     LucraSDK.init({
-      apiURL: state.apiURL || defaultAppConfig.apiURL,
-      apiKey: state.apiKey || defaultAppConfig.apiKey,
-      environment: state.environment || defaultAppConfig.environment,
+      apiKey,
+      environment,
       urlScheme: defaultAppConfig.urlScheme,
       theme: {
-        ...state.theme,
-        fontFamily:
-          Platform.OS === 'ios'
-            ? 'Inter'
-            : {
-                normal: 'fonts/Inter-Regular.ttf',
-                bold: 'fonts/Inter-Bold.ttf',
-                semibold: 'fonts/Inter-SemiBold.ttf',
-                medium: 'fonts/Inter-Medium.ttf',
-              },
+        primary: state.theme?.primary ?? defaultAppConfig.theme.primary,
+        secondary: state.theme?.secondary ?? defaultAppConfig.theme.secondary,
+        tertiary: state.theme?.tertiary ?? defaultAppConfig.theme.tertiary,
+        onPrimary: state.theme?.onPrimary ?? defaultAppConfig.theme.onPrimary,
+        onSecondary:
+          state.theme?.onSecondary ?? defaultAppConfig.theme.onSecondary,
+        onTertiary:
+          state.theme?.onTertiary ?? defaultAppConfig.theme.onTertiary,
+        fontFamily: {
+          normal:
+            Platform.OS === 'ios' ? 'Inter Regular' : 'fonts/Inter-Regular.ttf',
+          medium:
+            Platform.OS === 'ios' ? 'Inter Medium' : 'fonts/Inter-Medium.ttf',
+          semibold:
+            Platform.OS === 'ios'
+              ? 'Inter SemiBold'
+              : 'fonts/Inter-SemiBold.ttf',
+          bold: Platform.OS === 'ios' ? 'Inter Bold' : 'fonts/Inter-Bold.ttf',
+        },
       },
     })
       .then(() => {

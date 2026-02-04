@@ -114,17 +114,12 @@ export enum LucraEnvironment {
 }
 
 export type LucraSDKParams = {
-  apiURL: string;
   apiKey: string;
   environment: LucraEnvironment;
   theme?: {
-    background?: string;
-    surface?: string;
     primary?: string;
     secondary?: string;
     tertiary?: string;
-    onBackground?: string;
-    onSurface?: string;
     onPrimary?: string;
     onSecondary?: string;
     onTertiary?: string;
@@ -388,6 +383,7 @@ const Flows = {
   MATCHUP_DETAILS: 'matchupDetails',
   DEMOGRAPHIC_COLLECTION: 'demographicCollection',
   WALLET: 'wallet',
+  HOME_PAGE: 'homePage',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -398,6 +394,10 @@ function present(params: { name: typeof Flows.VERIFY_IDENTITY }): Promise<void>;
 function present(params: { name: typeof Flows.PROFILE }): Promise<void>;
 function present(params: { name: typeof Flows.ADD_FUNDS }): Promise<void>;
 function present(params: { name: typeof Flows.WALLET }): Promise<void>;
+function present(params: {
+  name: typeof Flows.HOME_PAGE;
+  locationId?: string;
+}): Promise<void>;
 
 function present(params: {
   name: typeof Flows.GAMES_CONTEST_DETAILS | typeof Flows.MATCHUP_DETAILS;
@@ -421,6 +421,7 @@ function present(params: {
   name: FlowNames;
   gameId?: string;
   matchupId?: string;
+  locationId?: string;
 }): Promise<void> {
   return LucraClient.present(params);
 }
