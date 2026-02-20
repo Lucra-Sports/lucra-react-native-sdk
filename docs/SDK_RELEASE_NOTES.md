@@ -1,4 +1,9 @@
-# 5.0.0
+# 5.0.1
+* Fixed critical authentication regression, which preventing consistent token refresh after expiration.
+* Bumped Android to [6.0.1](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.0.1)
+* Bumped iOS to [5.0.2](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.0.2)
+
+## 5.0.0 (Please upgrade to 5.0.1)
 * Major update - `apiKey` is now the only required key to initialize the client. Requires *new* apiKey to initialize the SDK. NOTE: Your existing apiKey will no longer work, please reach out to Lucra to get your new 'apiKey'.
 * Introduced `HOME_PAGE` Flow, which is the same as `CREATE_GAMES_MATCHUP`.
 * Breaking: Fonts must now be provided per-weight (normal/medium/semibold/bold). iOS uses PostScript names (e.g., `Inter Regular`), Android uses asset paths as before. Single `fontFamily` strings are no longer honored.
