@@ -5,7 +5,7 @@ const pkg = require('../package.json');
 
 const root = path.resolve(__dirname, '..');
 const envFilePath = path.resolve(__dirname, '.env');
-const lucraEnvKeys = ['LUCRA_SDK_API_URL', 'LUCRA_SDK_API_KEY'];
+const lucraEnvKeys = ['LUCRA_SDK_API_KEY'];
 
 const parseEnvFile = (filePath) => {
   if (!fs.existsSync(filePath)) {
@@ -51,9 +51,9 @@ lucraEnvKeys.forEach((key) => {
   lucraEnvValues[key] = value;
 });
 
-if (!lucraEnvValues.LUCRA_SDK_API_URL || !lucraEnvValues.LUCRA_SDK_API_KEY) {
+if (!lucraEnvValues.LUCRA_SDK_API_KEY) {
   throw new Error(
-    'Missing LUCRA_SDK_API_URL or LUCRA_SDK_API_KEY. Provide them via example/.env or GitHub secrets.'
+    'Missing LUCRA_SDK_API_KEY. Provide it via example/.env or GitHub secrets.'
   );
 }
 
