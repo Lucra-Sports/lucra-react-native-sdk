@@ -67,6 +67,8 @@ class LucraUtils {
       return .myMatchups
     case "wallet":
       return .wallet
+    case "homePage":
+      return .homePage(location: location)
     default:
       fatalError("Unimplemented lucra flow \(flowName)")
     }
