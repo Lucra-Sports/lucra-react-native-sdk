@@ -2,7 +2,7 @@
 * Bumped iOS to [5.1.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.1.0)
 * Bumped Android to [6.1.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.1.0)
 * Critical configure user bug patched
-* Improved tournament details infrastructure
+* Added more clarity on tournament details UI so payouts per user and each ranking on the leaderboard has improved visibility.
 
 # 5.0.1
 * Fixed critical authentication regression, which preventing consistent token refresh after expiration.
