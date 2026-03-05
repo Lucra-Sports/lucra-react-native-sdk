@@ -1,3 +1,8 @@
+# 5.1.1 (unreleased)
+* Fixed Android `present` runtime parity: `LucraSDK.present(...)` now consistently returns a Promise and no longer resolves as `undefined` at runtime when chaining `.then(...)`.
+* Fixed iOS `present` parameter mapping so `locationId` from React Native is forwarded correctly to native flow creation.
+
+
 # 5.1.0
 * Bumped iOS to [5.1.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.1.0)
 * Bumped Android to [6.1.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.1.0)

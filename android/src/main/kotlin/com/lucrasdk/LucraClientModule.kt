@@ -330,23 +330,33 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun present(args: ReadableMap) {
-        val flowName = args.getString("name")!!
-        val matchupId = args.getString("matchupId")
-        val teaminviteId = args.getString("teaminviteId")
-        val gameTypeId = args.getString("gameId")
-        val locationId = args.getString("locationId")
+    fun present(args: ReadableMap, promise: Promise) {
+        try {
+            val flowName = args.getString("name")
+                ?: throw IllegalArgumentException("Missing required present param: name")
+            val matchupId = args.getString("matchupId")
+            val teaminviteId = args.getString("teaminviteId")
+            val gameTypeId = args.getString("gameId")
+            val locationId = args.getString("locationId")
 
-        val flow =
-            LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId, locationId)
+            val flow =
+                LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId, locationId)
 
-        fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(flow)
+            val currentActivity = context.currentActivity as? FragmentActivity
+                ?: throw IllegalStateException("Current activity is not a FragmentActivity")
 
-        fullAppFlowDialogFragment?.show(
-            (context.currentActivity as FragmentActivity).supportFragmentManager,
-            flow.toString() // this tag will be used to dismiss in
-            // onFlowDismissRequested(flow)
-        )
+            fullAppFlowDialogFragment = LucraClient().getLucraDialogFragment(flow)
+
+            fullAppFlowDialogFragment?.show(
+                currentActivity.supportFragmentManager,
+                flow.toString() // this tag will be used to dismiss in
+                // onFlowDismissRequested(flow)
+            )
+
+            promise.resolve(null)
+        } catch (e: Exception) {
+            promise.reject("presentError", e.message, e)
+        }
     }
 
     @ReactMethod

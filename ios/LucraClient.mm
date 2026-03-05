@@ -94,7 +94,7 @@ RCT_EXPORT_METHOD(present : (NSDictionary *)params
   NSString *matchupId = params[@"matchupId"];
   NSString *teamInviteId = params[@"teamInviteId"];
   NSString *gameId = params[@"gameId"];
-  NSString *location = params[@"location"];
+  NSString *location = params[@"locationId"];
 
   [swiftClient present:flow
              matchupId:matchupId

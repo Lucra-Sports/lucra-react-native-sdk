@@ -423,7 +423,11 @@ function present(params: {
   matchupId?: string;
   locationId?: string;
 }): Promise<void> {
-  return LucraClient.present(params);
+  try {
+    return Promise.resolve(LucraClient.present(params));
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
 
 export const LucraSDK = {
