@@ -9,6 +9,7 @@ import { UIEmbeddedPublicFeed } from './container/UIEmbeddedPublicFeed';
 import { EventViewer } from './container/EventViewer';
 import { SportsYouWatch } from './container/APIExample/SportsYouWatch';
 import { GamesYouPlay } from './container/APIExample/GamesYouPlay';
+import { MiniGameLauncher } from './container/MiniGameLauncher';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -20,6 +21,7 @@ export type RootStackParamList = {
   EventViewer: undefined;
   SportsYouWatch: undefined;
   GamesYouPlay: undefined;
+  MiniGameLauncher: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -92,6 +94,13 @@ export const Routes: FC = () => {
       <Stack.Screen
         name="GamesYouPlay"
         component={GamesYouPlay}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="MiniGameLauncher"
+        component={MiniGameLauncher}
         options={{
           headerShown: false,
         }}

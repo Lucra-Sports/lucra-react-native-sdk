@@ -44,6 +44,20 @@ RCT_EXPORT_METHOD(cancelGamesMatchup : (NSString *)matchupId resolve : (
   [swiftClient cancelGamesMatchup:matchupId resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(startMiniGame : (NSString *)gameId
+                  gameMode : (NSString *)gameMode
+                  amount : (double)amount
+                  matchupId : (NSString *)matchupId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient startMiniGame:gameId
+                    gameMode:gameMode
+                      amount:amount
+                   matchupId:matchupId
+                     resolve:resolve
+                      reject:reject];
+}
+
 RCT_EXPORT_METHOD(configureUser : (NSDictionary *)user resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient configureUser:user resolve:resolve reject:reject];

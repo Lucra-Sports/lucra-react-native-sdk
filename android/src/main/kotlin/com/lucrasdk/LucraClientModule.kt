@@ -35,7 +35,9 @@ import com.lucrasports.sdk.core.contest.GameInteractions
 import com.lucrasports.sdk.core.contest.LocationError
 import com.lucrasports.sdk.core.contest.LucraError
 import com.lucrasports.sdk.core.contest.UserStateError
+import com.lucrasports.sdk.core.contest.minigame.MiniGameInteractions
 import com.lucrasports.sdk.core.contest.recreational.RecreationalGameInteractions
+import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
 import com.lucrasports.sdk.core.contest.tournament.PoolTournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditProvider
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
@@ -246,6 +248,18 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                         "gamesActiveMatchupStarted",
                                         Arguments.makeNativeMap(
                                             bundleOf("id" to event.matchupId)
+                                        )
+                                    )
+
+                                is LucraEvent.MiniGame.Finished ->
+                                    sendEvent(
+                                        context,
+                                        "miniGameFinished",
+                                        Arguments.makeNativeMap(
+                                            bundleOf(
+                                                "gameId" to event.gameId,
+                                                "matchupId" to event.matchupId
+                                            )
                                         )
                                     )
                             }
@@ -462,6 +476,51 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 is RecreationalGameInteractions.CancelGamesMatchupResult.Success -> promise.resolve(
                     null
                 )
+            }
+        }
+    }
+
+    @ReactMethod
+    fun startMiniGame(
+        gameId: String,
+        gameMode: String,
+        amount: Double,
+        matchupId: String,
+        promise: Promise
+    ) {
+        val parsedMode = when (gameMode.lowercase()) {
+            "practice" -> LucraMiniGameMode.Practice
+            "1v1" -> LucraMiniGameMode.OneVsOne
+            "free_for_all" -> LucraMiniGameMode.FreeForAll
+            "tournament" -> LucraMiniGameMode.Tournament
+            else -> {
+                promise.reject("invalidGameMode", "Invalid MiniGameMode: $gameMode")
+                return
+            }
+        }
+
+        val optionalMatchupId: String? = matchupId.ifEmpty { null }
+        val optionalAmount: Double? = if (amount == 0.0) null else amount
+
+        LucraClient().startMiniGame(
+            gameId = gameId,
+            gameMode = parsedMode,
+            amount = optionalAmount,
+            matchupId = optionalMatchupId,
+        ) { result ->
+            when (result) {
+                is MiniGameInteractions.StartMiniGameResult.Failure -> rejectLucraError(
+                    promise,
+                    result.failure
+                )
+
+                is MiniGameInteractions.StartMiniGameResult.Success -> {
+                    val map = Arguments.createMap()
+                    map.putString("url", result.session.iframeUrl)
+                    map.putString("sessionId", result.session.sessionId)
+                    result.session.matchupId?.let { id -> map.putString("matchupId", id) }
+                    promise.resolve(map)
+                }
             }
         }
     }

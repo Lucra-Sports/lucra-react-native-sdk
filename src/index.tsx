@@ -106,6 +106,19 @@ if (LucraClient == null) {
   );
 }
 
+export enum MiniGameMode {
+  PRACTICE = 'practice',
+  ONE_VS_ONE = '1v1',
+  FREE_FOR_ALL = 'free_for_all',
+  TOURNAMENT = 'tournament',
+}
+
+export type StartMiniGameResult = {
+  url: string;
+  sessionId: string;
+  matchupId?: string;
+};
+
 export enum LucraEnvironment {
   PRODUCTION = 'production',
   STAGING = 'staging',
@@ -607,6 +620,19 @@ export const LucraSDK = {
   },
   cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
+  },
+  startMiniGame: async (
+    gameId: string,
+    gameMode: MiniGameMode,
+    amount: number = 0,
+    matchupId?: string
+  ): Promise<StartMiniGameResult> => {
+    return (await LucraClient.startMiniGame(
+      gameId,
+      gameMode,
+      amount,
+      matchupId ?? ''
+    )) as StartMiniGameResult;
   },
   getMatchup: async (matchupId: string): Promise<MatchupInfo> => {
     return (await LucraClient.getMatchup(matchupId)) as MatchupInfo;

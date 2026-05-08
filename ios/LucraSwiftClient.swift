@@ -413,6 +413,53 @@ private enum ErrorCode {
       }
     }
 
+    @objc public func startMiniGame(
+      _ gameId: String,
+      gameMode: String,
+      amount: Double,
+      matchupId: String,
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        let parsedMode: MiniGameMode
+        switch gameMode.lowercased() {
+        case "practice":
+          parsedMode = .practice
+        case "1v1":
+          parsedMode = .oneVsOne
+        case "free_for_all":
+          parsedMode = .freeForAll
+        case "tournament":
+          parsedMode = .tournament
+        default:
+          reject("invalidGameMode", "Invalid MiniGameMode: \(gameMode)", nil)
+          return
+        }
+
+        let optionalMatchupId: String? = matchupId.isEmpty ? nil : matchupId
+
+        let result = await self.nativeClient.api.startMiniGame(
+          gameId: gameId,
+          gameMode: parsedMode,
+          amount: Decimal(amount),
+          matchupId: optionalMatchupId,
+          onProgress: nil
+        )
+
+        switch result {
+        case .success(let session):
+          resolve([
+            "url": session.iframeURL.absoluteString,
+            "sessionId": session.sessionId,
+            "matchupId": session.matchupId as Any
+          ])
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
     private func rejectLucraError(_ reject: RCTPromiseRejectBlock, error: Error) {
       let code: String
       let message: String
