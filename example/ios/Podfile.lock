@@ -100,7 +100,7 @@ PODS:
     - hermes-engine/Pre-built (= 0.79.2)
   - hermes-engine/Pre-built (0.79.2)
   - JWTDecode (3.3.0)
-  - lucra-react-native-sdk (0.0.0):
+  - lucra-react-native-sdk (5.3.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2012,6 +2012,30 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNReactNativeHapticFeedback (3.0.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (4.10.0):
     - DoubleConversion
     - glog
@@ -2175,6 +2199,7 @@ DEPENDENCIES:
   - "RNFBDynamicLinks (from `../node_modules/@react-native-firebase/dynamic-links`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -2362,6 +2387,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNReactNativeHapticFeedback:
+    :path: "../node_modules/react-native-haptic-feedback"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNVectorIcons:
@@ -2392,7 +2419,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: 314be5250afa5692b57b4dd1705959e1973a8ebe
   JWTDecode: 1ca6f765844457d0dd8690436860fecee788f631
-  lucra-react-native-sdk: 9356a6301e100920c7fb470de88c68c4523b33db
+  lucra-react-native-sdk: 2b7612932d198cada416ae73a7f9d2960157dcf9
   LucraSDK: 791d53be085707c9f27eb54980191ab00cba0f7a
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
@@ -2469,6 +2496,7 @@ SPEC CHECKSUMS:
   RNFBDynamicLinks: 3e07d1af77e17bd19bc44aa4f75879a4be98554b
   RNGestureHandler: b249b5be5a3659025aed8898aaaafd567dc2d660
   RNPermissions: d61b587117adb35bb3431dd167d05e775a3db56c
+  RNReactNativeHapticFeedback: 912454bf61e2e99f8d801722bb541acadbc6ca23
   RNScreens: 4ada1709be95c3a4bf1f885378262ceadd9cc939
   RNVectorIcons: 32cc786d5a3c2d8e20ee5c1c7c63c2609f411eb7
   SimpleKeychain: 9c0f3ca8458fed74e01db864d181c5cbe278603e

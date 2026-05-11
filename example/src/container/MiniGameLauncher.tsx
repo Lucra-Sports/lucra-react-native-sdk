@@ -14,8 +14,10 @@ import {
   View,
   ActivityIndicator,
   Alert,
-  Vibration,
 } from 'react-native';
+import ReactNativeHapticFeedback, {
+  type HapticFeedbackTypes,
+} from 'react-native-haptic-feedback';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
@@ -34,29 +36,23 @@ const GAME_MODES = [
   { label: 'Tournament', value: MiniGameMode.TOURNAMENT },
 ];
 
+const HAPTIC_MAP: Record<string, HapticFeedbackTypes> = {
+  light: 'impactLight',
+  soft: 'soft',
+  tiny: 'impactLight',
+  selection: 'selection',
+  medium: 'impactMedium',
+  success: 'notificationSuccess',
+  heavy: 'impactHeavy',
+  rigid: 'rigid',
+  failure: 'notificationError',
+  warning: 'notificationWarning',
+};
+
 function triggerHaptic(type: string) {
   try {
-    switch (type.toLowerCase()) {
-      case 'light':
-      case 'soft':
-      case 'tiny':
-      case 'selection':
-        Vibration.vibrate(10);
-        break;
-      case 'medium':
-      case 'success':
-        Vibration.vibrate(20);
-        break;
-      case 'heavy':
-      case 'rigid':
-      case 'failure':
-      case 'warning':
-        Vibration.vibrate(40);
-        break;
-      default:
-        Vibration.vibrate(10);
-        break;
-    }
+    const key = type.toLowerCase();
+    ReactNativeHapticFeedback.trigger(HAPTIC_MAP[key] ?? 'impactLight');
   } catch {}
 }
 

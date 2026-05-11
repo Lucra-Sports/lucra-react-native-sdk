@@ -32,6 +32,7 @@
     "react-native": "^0.79.2",
     "react-native-date-picker": "^5.0.12",
     "react-native-gesture-handler": "^2.25.0",
+    "react-native-haptic-feedback": "^3.0.0",
     "react-native-permissions": "^5.0.2",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.10.0",

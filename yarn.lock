@@ -6193,6 +6193,7 @@ __metadata:
     react-native: ^0.79.2
     react-native-date-picker: ^5.0.12
     react-native-gesture-handler: ^2.25.0
+    react-native-haptic-feedback: ^3.0.0
     react-native-permissions: ^5.0.2
     react-native-safe-area-context: ^5.4.0
     react-native-screens: ^4.10.0
@@ -10624,6 +10625,19 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 51b155bcc56043b9e06bf8ded089c44348e8da297b38e73f203f2d6ce8bd51698f85a38dca8eeab3d2ab721aeddefc270acd99e16cf493b20f1f429ad02214b8
+  languageName: node
+  linkType: hard
+
+"react-native-haptic-feedback@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "react-native-haptic-feedback@npm:3.0.0"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-native: ">=0.71.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 9fca6abeb5463edd3ee00812b11af211a9161a14beeb900b78d9cf3244d28c8c9952c682cbb3a8c4fe42bd9d490dc4372ff7be84bda0af7bcf6b14b12818d4c4
   languageName: node
   linkType: hard
 
