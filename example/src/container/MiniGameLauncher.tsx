@@ -110,15 +110,18 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
     setGameUrl(null);
   }, []);
 
-  const handleModalDismiss = useCallback(() => {
-    if (pendingMatchupId) {
-      LucraSDK.present({
-        name: LucraSDK.FLOW.GAMES_CONTEST_DETAILS,
-        matchupId: pendingMatchupId,
-      });
-      setPendingMatchupId(null);
+  useEffect(() => {
+    if (pendingMatchupId && !gameUrl) {
+      const timer = setTimeout(() => {
+        LucraSDK.present({
+          name: LucraSDK.FLOW.GAMES_CONTEST_DETAILS,
+          matchupId: pendingMatchupId,
+        });
+        setPendingMatchupId(null);
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [pendingMatchupId]);
+  }, [pendingMatchupId, gameUrl]);
 
   const webViewRef = useRef<WebView>(null);
 
@@ -186,7 +189,6 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
       presentationStyle="fullScreen"
       statusBarTranslucent
       supportedOrientations={['portrait', 'landscape']}
-      onDismiss={handleModalDismiss}
     >
       <StatusBar hidden />
       <View style={Styles.fullScreen}>
