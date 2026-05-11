@@ -35,27 +35,29 @@ const GAME_MODES = [
 ];
 
 function triggerHaptic(type: string) {
-  switch (type.toLowerCase()) {
-    case 'light':
-    case 'soft':
-    case 'tiny':
-    case 'selection':
-      Vibration.vibrate(10);
-      break;
-    case 'medium':
-    case 'success':
-      Vibration.vibrate(20);
-      break;
-    case 'heavy':
-    case 'rigid':
-    case 'failure':
-    case 'warning':
-      Vibration.vibrate(40);
-      break;
-    default:
-      Vibration.vibrate(10);
-      break;
-  }
+  try {
+    switch (type.toLowerCase()) {
+      case 'light':
+      case 'soft':
+      case 'tiny':
+      case 'selection':
+        Vibration.vibrate(10);
+        break;
+      case 'medium':
+      case 'success':
+        Vibration.vibrate(20);
+        break;
+      case 'heavy':
+      case 'rigid':
+      case 'failure':
+      case 'warning':
+        Vibration.vibrate(40);
+        break;
+      default:
+        Vibration.vibrate(10);
+        break;
+    }
+  } catch {}
 }
 
 export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
