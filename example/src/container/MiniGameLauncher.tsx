@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -61,6 +61,10 @@ function triggerHaptic(type: string) {
 }
 
 export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
+  useEffect(() => {
+    LucraSDK.preloadGeoToken();
+  }, []);
+
   const [gameId, setGameId] = useState('');
   const [gameMode, setGameMode] = useState<MiniGameMode>(
     MiniGameMode.PRACTICE

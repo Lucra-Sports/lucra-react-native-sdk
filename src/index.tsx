@@ -621,6 +621,9 @@ export const LucraSDK = {
   cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
   },
+  preloadGeoToken: (): void => {
+    LucraClient.preloadGeoToken();
+  },
   startMiniGame: async (
     gameId: string,
     gameMode: MiniGameMode,

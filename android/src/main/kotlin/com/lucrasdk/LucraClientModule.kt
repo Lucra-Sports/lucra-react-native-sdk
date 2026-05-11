@@ -481,6 +481,11 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun preloadGeoToken() {
+        LucraClient().preloadGeoToken()
+    }
+
+    @ReactMethod
     fun startMiniGame(
         gameId: String,
         gameMode: String,

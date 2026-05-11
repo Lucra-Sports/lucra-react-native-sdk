@@ -44,6 +44,10 @@ RCT_EXPORT_METHOD(cancelGamesMatchup : (NSString *)matchupId resolve : (
   [swiftClient cancelGamesMatchup:matchupId resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(preloadGeoToken) {
+  [swiftClient preloadGeoToken];
+}
+
 RCT_EXPORT_METHOD(startMiniGame : (NSString *)gameId
                   gameMode : (NSString *)gameMode
                   amount : (double)amount

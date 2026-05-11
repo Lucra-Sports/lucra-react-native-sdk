@@ -413,6 +413,10 @@ private enum ErrorCode {
       }
     }
 
+    @objc public func preloadGeoToken() {
+      self.nativeClient.api.preloadGeoToken(context: .cashBuyIn)
+    }
+
     @objc public func startMiniGame(
       _ gameId: String,
       gameMode: String,
