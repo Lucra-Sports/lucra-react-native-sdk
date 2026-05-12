@@ -35,7 +35,6 @@ const GAME_MODES = [
 export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     LucraSDK.preloadGeoToken(GeoComplyContext.CASH_BUY_IN);
-    LucraSDK.preloadGeoToken(GeoComplyContext.FREE_BUY_IN);
   }, []);
 
   const [gameId, setGameId] = useState('');

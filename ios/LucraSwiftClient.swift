@@ -425,7 +425,9 @@ private enum ErrorCode {
       default:
         geoContext = .cashBuyIn
       }
-      self.nativeClient.api.preloadGeoToken(context: geoContext)
+      DispatchQueue.main.async {
+        self.nativeClient.api.preloadGeoToken(context: geoContext)
+      }
     }
 
     @objc public func startMiniGame(

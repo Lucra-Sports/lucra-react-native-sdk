@@ -445,7 +445,7 @@ function present(params: {
   locationId?: string;
 }): Promise<void> {
   try {
-    return Promise.resolve(LucraClient.present(params));
+    return LucraClient.present(params);
   } catch (error) {
     return Promise.reject(error);
   }
