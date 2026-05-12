@@ -39,9 +39,7 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const [gameId, setGameId] = useState('');
-  const [gameMode, setGameMode] = useState<MiniGameMode>(
-    MiniGameMode.PRACTICE
-  );
+  const [gameMode, setGameMode] = useState<MiniGameMode>(MiniGameMode.PRACTICE);
   const [amount, setAmount] = useState(0);
   const [matchupId, setMatchupId] = useState('');
   const [loading, setLoading] = useState(false);
@@ -76,7 +74,12 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
 
   const closeGame = useCallback(() => {
     const returnedMatchupId = resultMatchupIdRef.current;
-    console.log('[MiniGame] closeGame called, matchupId:', returnedMatchupId, 'gameUrl:', gameUrl);
+    console.log(
+      '[MiniGame] closeGame called, matchupId:',
+      returnedMatchupId,
+      'gameUrl:',
+      gameUrl
+    );
     resultMatchupIdRef.current = null;
     if (returnedMatchupId) {
       setPendingMatchupId(returnedMatchupId);
@@ -85,13 +88,24 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
   }, [gameUrl]);
 
   useEffect(() => {
-    console.log('[MiniGame] useEffect: pendingMatchupId=', pendingMatchupId, 'gameUrl=', gameUrl);
+    console.log(
+      '[MiniGame] useEffect: pendingMatchupId=',
+      pendingMatchupId,
+      'gameUrl=',
+      gameUrl
+    );
     if (!pendingMatchupId || gameUrl) {
       return;
     }
-    console.log('[MiniGame] Will present matchup details in 500ms for:', pendingMatchupId);
+    console.log(
+      '[MiniGame] Will present matchup details in 500ms for:',
+      pendingMatchupId
+    );
     const timer = setTimeout(async () => {
-      console.log('[MiniGame] Presenting matchup details for:', pendingMatchupId);
+      console.log(
+        '[MiniGame] Presenting matchup details for:',
+        pendingMatchupId
+      );
       try {
         await LucraSDK.present({
           name: LucraSDK.FLOW.GAMES_CONTEST_DETAILS,
@@ -146,9 +160,7 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
                   }`}
                   onPress={() => setGameId(id)}
                 >
-                  <Text className="text-white text-center text-xs">
-                    {id}
-                  </Text>
+                  <Text className="text-white text-center text-xs">{id}</Text>
                 </TouchableOpacity>
               ))}
             </View>

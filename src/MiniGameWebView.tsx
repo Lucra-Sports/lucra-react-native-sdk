@@ -85,7 +85,10 @@ export const MiniGameWebView: React.FC<MiniGameWebViewProps> = ({
         case 'hide_loading_screen':
           break;
         case 'close_game':
-          console.log('[MiniGameWebView] close_game received, didClose:', didClose.current);
+          console.log(
+            '[MiniGameWebView] close_game received, didClose:',
+            didClose.current
+          );
           if (!didClose.current) {
             didClose.current = true;
             onClose();
