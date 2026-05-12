@@ -1,6 +1,7 @@
 import React from 'react';
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlowView } from './LucraFlowViewNativeComponent';
+export { MiniGameWebView } from './MiniGameWebView';
 import { default as LucraProfilePillNative } from './LucraProfilePillNativeComponent';
 import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonNativeComponent';
 import {
@@ -104,6 +105,13 @@ if (LucraClient == null) {
   throw new Error(
     'Native LucraSDK is not found. You can try clearing your build cache and try again.'
   );
+}
+
+export enum GeoComplyContext {
+  FREE_BUY_IN = 'freeBuyIn',
+  CASH_BUY_IN = 'cashBuyIn',
+  DEPOSIT = 'deposit',
+  WITHDRAWAL = 'withdrawal',
 }
 
 export enum MiniGameMode {
@@ -621,8 +629,8 @@ export const LucraSDK = {
   cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
   },
-  preloadGeoToken: (): void => {
-    LucraClient.preloadGeoToken();
+  preloadGeoToken: (context: GeoComplyContext): void => {
+    LucraClient.preloadGeoToken(context);
   },
   startMiniGame: async (
     gameId: string,

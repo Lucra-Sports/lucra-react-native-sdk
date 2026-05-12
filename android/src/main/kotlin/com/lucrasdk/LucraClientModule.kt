@@ -481,7 +481,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun preloadGeoToken() {
+    fun preloadGeoToken(context: String) {
         LucraClient().preloadGeoToken()
     }
 

@@ -2,11 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -15,16 +13,14 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import ReactNativeHapticFeedback, {
-  type HapticFeedbackTypes,
-} from 'react-native-haptic-feedback';
-import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   LucraSDK,
   MiniGameMode,
+  GeoComplyContext,
+  MiniGameWebView,
 } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MiniGameLauncher'>;
@@ -36,29 +32,10 @@ const GAME_MODES = [
   { label: 'Tournament', value: MiniGameMode.TOURNAMENT },
 ];
 
-const HAPTIC_MAP: Record<string, HapticFeedbackTypes> = {
-  light: 'impactLight',
-  soft: 'soft',
-  tiny: 'impactLight',
-  selection: 'selection',
-  medium: 'impactMedium',
-  success: 'notificationSuccess',
-  heavy: 'impactHeavy',
-  rigid: 'rigid',
-  failure: 'notificationError',
-  warning: 'notificationWarning',
-};
-
-function triggerHaptic(type: string) {
-  try {
-    const key = type.toLowerCase();
-    ReactNativeHapticFeedback.trigger(HAPTIC_MAP[key] ?? 'impactLight');
-  } catch {}
-}
-
 export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
-    LucraSDK.preloadGeoToken();
+    LucraSDK.preloadGeoToken(GeoComplyContext.CASH_BUY_IN);
+    LucraSDK.preloadGeoToken(GeoComplyContext.FREE_BUY_IN);
   }, []);
 
   const [gameId, setGameId] = useState('');
@@ -70,6 +47,7 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [gameUrl, setGameUrl] = useState<string | null>(null);
   const resultMatchupIdRef = useRef<string | null>(null);
+  const [pendingMatchupId, setPendingMatchupId] = useState<string | null>(null);
 
   const handleStartMiniGame = async () => {
     if (!gameId.trim()) {
@@ -86,6 +64,7 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
         gameMode === MiniGameMode.PRACTICE ? 0 : amount,
         matchupId.trim() || undefined
       );
+      console.log('[MiniGame] startMiniGame result:', JSON.stringify(result));
       resultMatchupIdRef.current = result.matchupId ?? null;
       setGameUrl(result.url);
     } catch (e: any) {
@@ -95,123 +74,41 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const [pendingMatchupId, setPendingMatchupId] = useState<string | null>(null);
-
   const closeGame = useCallback(() => {
     const returnedMatchupId = resultMatchupIdRef.current;
+    console.log('[MiniGame] closeGame called, matchupId:', returnedMatchupId, 'gameUrl:', gameUrl);
     resultMatchupIdRef.current = null;
     if (returnedMatchupId) {
       setPendingMatchupId(returnedMatchupId);
     }
     setGameUrl(null);
-  }, []);
+  }, [gameUrl]);
 
   useEffect(() => {
-    if (pendingMatchupId && !gameUrl) {
-      const timer = setTimeout(() => {
-        LucraSDK.present({
+    console.log('[MiniGame] useEffect: pendingMatchupId=', pendingMatchupId, 'gameUrl=', gameUrl);
+    if (!pendingMatchupId || gameUrl) {
+      return;
+    }
+    console.log('[MiniGame] Will present matchup details in 500ms for:', pendingMatchupId);
+    const timer = setTimeout(async () => {
+      console.log('[MiniGame] Presenting matchup details for:', pendingMatchupId);
+      try {
+        await LucraSDK.present({
           name: LucraSDK.FLOW.GAMES_CONTEST_DETAILS,
           matchupId: pendingMatchupId,
         });
-        setPendingMatchupId(null);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
+        console.log('[MiniGame] present() resolved');
+      } catch (e: any) {
+        console.log('[MiniGame] present() error:', e?.message || String(e));
+      }
+      setPendingMatchupId(null);
+    }, 1000);
+    return () => clearTimeout(timer);
   }, [pendingMatchupId, gameUrl]);
-
-  const webViewRef = useRef<WebView>(null);
-
-  const handleWebViewMessage = useCallback(
-    (event: WebViewMessageEvent) => {
-      let body: { type?: string; payload?: any };
-      try {
-        body = JSON.parse(event.nativeEvent.data);
-      } catch {
-        return;
-      }
-
-      const { type, payload } = body;
-      switch (type) {
-        case 'set_load_progress':
-          break;
-        case 'loaded':
-        case 'hide_loading_screen':
-          break;
-        case 'close_game':
-          closeGame();
-          break;
-        case 'haptic_feedback': {
-          const cleaned =
-            typeof payload === 'string' ? payload.replace(/"/g, '') : '';
-          triggerHaptic(cleaned);
-          break;
-        }
-        case 'log': {
-          if (payload && typeof payload === 'object') {
-            const logType = payload.LogType ?? 'Log';
-            const msg = payload.Message ?? '';
-            const stack = payload.StackTrace ?? '';
-            console.log(
-              `[MiniGame JS] [${logType}] ${msg}${stack ? ` | ${stack}` : ''}`
-            );
-          }
-          break;
-        }
-      }
-    },
-    [closeGame]
-  );
-
-  const INJECTED_JS = `
-    (function() {
-      window.addEventListener('message', function(e) {
-        window.ReactNativeWebView.postMessage(typeof e.data === 'string' ? e.data : JSON.stringify(e.data));
-      });
-      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.skm) {
-        var orig = window.webkit.messageHandlers.skm.postMessage.bind(window.webkit.messageHandlers.skm);
-        window.webkit.messageHandlers.skm.postMessage = function(msg) {
-          window.ReactNativeWebView.postMessage(JSON.stringify(msg));
-          orig(msg);
-        };
-      }
-      true;
-    })();
-  `;
-
-  const gameModal = (
-    <Modal
-      visible={!!gameUrl}
-      animationType="slide"
-      presentationStyle="fullScreen"
-      statusBarTranslucent
-      supportedOrientations={['portrait', 'landscape']}
-    >
-      <StatusBar hidden />
-      <View style={Styles.fullScreen}>
-        <WebView
-          ref={webViewRef}
-          source={{ uri: gameUrl ?? '' }}
-          style={Styles.flex}
-          javaScriptEnabled
-          domStorageEnabled
-          allowsInlineMediaPlayback
-          mediaPlaybackRequiresUserAction={false}
-          onMessage={handleWebViewMessage}
-          injectedJavaScript={INJECTED_JS}
-        />
-        <TouchableOpacity
-          style={Styles.closeButton}
-          onPress={closeGame}
-        >
-          <Text style={Styles.closeIcon}>✕</Text>
-        </TouchableOpacity>
-      </View>
-    </Modal>
-  );
 
   return (
     <SafeAreaView className="flex-1 bg-indigo-900 pt-8">
-      {gameModal}
+      <MiniGameWebView url={gameUrl} onClose={closeGame} />
       <KeyboardAvoidingView
         style={Styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -353,26 +250,5 @@ const Styles = StyleSheet.create({
   },
   chevron: {
     tintColor: 'white',
-  },
-  fullScreen: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 50,
-    left: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-  closeIcon: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 });

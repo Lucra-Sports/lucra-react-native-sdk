@@ -413,8 +413,19 @@ private enum ErrorCode {
       }
     }
 
-    @objc public func preloadGeoToken() {
-      self.nativeClient.api.preloadGeoToken(context: .cashBuyIn)
+    @objc public func preloadGeoToken(_ context: String) {
+      let geoContext: GeoComplyContext
+      switch context.lowercased() {
+      case "freebuyin":
+        geoContext = .freeBuyIn
+      case "deposit":
+        geoContext = .deposit
+      case "withdrawal":
+        geoContext = .withdrawal
+      default:
+        geoContext = .cashBuyIn
+      }
+      self.nativeClient.api.preloadGeoToken(context: geoContext)
     }
 
     @objc public func startMiniGame(

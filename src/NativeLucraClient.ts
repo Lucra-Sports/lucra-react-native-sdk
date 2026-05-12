@@ -31,7 +31,7 @@ interface Spec extends TurboModule {
   cancelGamesMatchup(matchupId: string): Promise<void>;
 
   // Mini Games
-  preloadGeoToken: () => void;
+  preloadGeoToken: (context: string) => void;
   startMiniGame(
     gameId: string,
     gameMode: string,
