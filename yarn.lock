@@ -2652,12 +2652,16 @@ __metadata:
     react-native: 0.79.2
     react-native-builder-bob: ^0.40.11
     react-native-css-interop: ^0.1.20
+    react-native-haptic-feedback: ^3.0.0
     react-native-reanimated: ^3.17.5
     react-native-safe-area-context: ^4.12.0
+    react-native-webview: ^13.14.0
     typescript: ^5.8.3
   peerDependencies:
     react: "*"
     react-native: "*"
+    react-native-haptic-feedback: ">=2.0.0"
+    react-native-webview: ">=13.0.0"
   languageName: unknown
   linkType: soft
 
@@ -6193,10 +6197,12 @@ __metadata:
     react-native: ^0.79.2
     react-native-date-picker: ^5.0.12
     react-native-gesture-handler: ^2.25.0
+    react-native-haptic-feedback: ^3.0.0
     react-native-permissions: ^5.0.2
     react-native-safe-area-context: ^5.4.0
     react-native-screens: ^4.10.0
     react-native-vector-icons: ^10.2.0
+    react-native-webview: ^13.14.0
     reanimated-color-picker: ^4.0.1
     tailwindcss: ^3.4.14
   languageName: unknown
@@ -7230,7 +7236,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:^2.2.4":
+"invariant@npm:2.2.4, invariant@npm:^2.2.4":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
   dependencies:
@@ -10626,6 +10632,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-haptic-feedback@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "react-native-haptic-feedback@npm:3.0.0"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-native: ">=0.71.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 9fca6abeb5463edd3ee00812b11af211a9161a14beeb900b78d9cf3244d28c8c9952c682cbb3a8c4fe42bd9d490dc4372ff7be84bda0af7bcf6b14b12818d4c4
+  languageName: node
+  linkType: hard
+
 "react-native-is-edge-to-edge@npm:1.1.7":
   version: 1.1.7
   resolution: "react-native-is-edge-to-edge@npm:1.1.7"
@@ -10729,6 +10748,19 @@ __metadata:
     fa6-upgrade: bin/fa6-upgrade.sh
     generate-icon: bin/generate-icon.js
   checksum: fda930df4e63f12533268f5b339ebe4c77c691eae43503328466b3087ed868a06a4593fd246e75ac6b5ec955543eec35608c7922191bdcc3b3a94ed7f3575ef0
+  languageName: node
+  linkType: hard
+
+"react-native-webview@npm:^13.14.0":
+  version: 13.16.1
+  resolution: "react-native-webview@npm:13.16.1"
+  dependencies:
+    escape-string-regexp: ^4.0.0
+    invariant: 2.2.4
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: c202500df090114877d7a92549dbac1c36bdcc2010d50ddffb57aedcec81870d9695f1e4e3ef852cbe02a8ef952ef8626b120b774813c396a32b4fdc5838a4a5
   languageName: node
   linkType: hard
 

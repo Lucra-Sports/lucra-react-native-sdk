@@ -30,6 +30,15 @@ interface Spec extends TurboModule {
   acceptFreeForAllRecreationalGame(matchupId: string): Promise<void>;
   cancelGamesMatchup(matchupId: string): Promise<void>;
 
+  // Mini Games
+  preloadGeoToken: (context: string) => void;
+  startMiniGame(
+    gameId: string,
+    gameMode: string,
+    amount: number,
+    matchupId: string
+  ): Promise<Object>;
+
   // Pool tournaments
   // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
   getRecommendedTournaments: (params: Object) => Promise<Object[]>;

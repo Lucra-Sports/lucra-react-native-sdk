@@ -1,6 +1,7 @@
 import React from 'react';
 import LucraClient from './NativeLucraClient';
 export { default as LucraFlowView } from './LucraFlowViewNativeComponent';
+export { MiniGameWebView } from './MiniGameWebView';
 import { default as LucraProfilePillNative } from './LucraProfilePillNativeComponent';
 import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonNativeComponent';
 import {
@@ -105,6 +106,26 @@ if (LucraClient == null) {
     'Native LucraSDK is not found. You can try clearing your build cache and try again.'
   );
 }
+
+export enum GeoComplyContext {
+  FREE_BUY_IN = 'freeBuyIn',
+  CASH_BUY_IN = 'cashBuyIn',
+  DEPOSIT = 'deposit',
+  WITHDRAWAL = 'withdrawal',
+}
+
+export enum MiniGameMode {
+  PRACTICE = 'practice',
+  ONE_VS_ONE = '1v1',
+  FREE_FOR_ALL = 'free_for_all',
+  TOURNAMENT = 'tournament',
+}
+
+export type StartMiniGameResult = {
+  url: string;
+  sessionId: string;
+  matchupId?: string;
+};
 
 export enum LucraEnvironment {
   PRODUCTION = 'production',
@@ -424,7 +445,7 @@ function present(params: {
   locationId?: string;
 }): Promise<void> {
   try {
-    return Promise.resolve(LucraClient.present(params));
+    return LucraClient.present(params);
   } catch (error) {
     return Promise.reject(error);
   }
@@ -607,6 +628,22 @@ export const LucraSDK = {
   },
   cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
+  },
+  preloadGeoToken: (context: GeoComplyContext): void => {
+    LucraClient.preloadGeoToken(context);
+  },
+  startMiniGame: async (
+    gameId: string,
+    gameMode: MiniGameMode,
+    amount: number = 0,
+    matchupId?: string
+  ): Promise<StartMiniGameResult> => {
+    return (await LucraClient.startMiniGame(
+      gameId,
+      gameMode,
+      amount,
+      matchupId ?? ''
+    )) as StartMiniGameResult;
   },
   getMatchup: async (matchupId: string): Promise<MatchupInfo> => {
     return (await LucraClient.getMatchup(matchupId)) as MatchupInfo;

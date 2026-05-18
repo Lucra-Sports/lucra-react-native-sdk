@@ -13,6 +13,7 @@
 [Games You Play](2.0.0_gyp.md)
 [Tournaments](3.0.0_tournaments.md)
 [Sports You Watch](4.0.0_syw.md)
+[Mini Games](5.0.0_mini_games.md)
 
 ## Theming/Appearance
 [Theming and Appearance](1.2.1_theming.md)

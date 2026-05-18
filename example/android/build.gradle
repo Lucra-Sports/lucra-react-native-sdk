@@ -38,7 +38,8 @@ buildscript {
       
       google()
       mavenCentral()
-      
+      maven { url "https://central.sonatype.com/repository/maven-snapshots/" }
+
       maven {
         url("$rootDir/../node_modules/detox/Detox-android")
       }
