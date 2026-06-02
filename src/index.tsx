@@ -413,6 +413,7 @@ type LucraContestListeners = {
   onGamesMatchupStarted?: (id: string) => void;
   onGamesMatchupStartedActive?: (id: string) => void;
   onTournamentJoined?: (id: string) => void;
+  onAutoJoinedTournaments?: (tournamentIds: string[]) => void;
   onMiniGameFinished?: (event: MiniGameFinishedEvent) => void;
 };
 
@@ -617,6 +618,13 @@ export const LucraSDK = {
       }
     );
 
+    const tournamentsAutoJoinedEmitter = eventEmitter.addListener(
+      'tournamentsAutoJoined',
+      (data) => {
+        listenerMap.onAutoJoinedTournaments?.(data.tournamentIds);
+      }
+    );
+
     const miniGameFinishedEmitter = eventEmitter.addListener(
       'miniGameFinished',
       (data) => {
@@ -634,6 +642,7 @@ export const LucraSDK = {
       gamesMatchupStartedActiveEmitter.remove();
       sportsMatchupCanceledEmitter.remove();
       tournamentJoinedEmitter.remove();
+      tournamentsAutoJoinedEmitter.remove();
       miniGameFinishedEmitter.remove();
     };
   },

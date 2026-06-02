@@ -245,6 +245,18 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                         )
                                     )
 
+                                is LucraEvent.Tournament.AutoJoinedTournaments ->
+                                    sendEvent(
+                                        context,
+                                        "tournamentsAutoJoined",
+                                        Arguments.createMap().apply {
+                                            putArray(
+                                                "tournamentIds",
+                                                Arguments.makeNativeArray(event.tournamentIds)
+                                            )
+                                        }
+                                    )
+
                                 is LucraEvent.GamesContest.StartedActive ->
                                     sendEvent(
                                         context,
