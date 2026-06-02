@@ -156,3 +156,86 @@ export type SportsMatchupType = {
   subType: string;
   participantGroups: ParticipantGroup[];
 };
+
+// ────────────────────────────────────────────────────────────────────────────
+// Minigames Headless epic — Rewards & Achievements
+// Shapes are normalized so iOS and Android map to the same JS structure.
+// ────────────────────────────────────────────────────────────────────────────
+
+export type LucraDiscountCodeConfig = {
+  code?: string;
+  claimUrl?: string;
+};
+
+export type LucraFreeItemConfig = {
+  itemId?: string;
+};
+
+// Catalog reward backing a tournament/minigame reward or an achievement.
+// iOS: RewardItem / Android: LucraCatalogReward
+export type LucraCatalogReward = {
+  id: string;
+  type?: string;
+  title: string;
+  descriptor?: string;
+  iconUrl?: string;
+  bannerIconUrl?: string;
+  disclaimer?: string;
+  discountCode?: LucraDiscountCodeConfig;
+  freeItem?: LucraFreeItemConfig;
+};
+
+// A non-monetary reward earned for a tournament or minigame matchup.
+// iOS: EarnedReward / Android: LucraTournamentReward
+export type LucraTournamentReward = {
+  id: string;
+  place: number;
+  matchupId?: string;
+  matchupTitle?: string;
+  claimedAt?: string;
+  viewedAt?: string;
+  reward?: LucraCatalogReward;
+};
+
+export type LucraAchievementCriteriaType =
+  | 'scoreThreshold'
+  | 'winCount'
+  | 'placementCount'
+  | 'participationCount';
+
+export type LucraAchievementCriteriaConfig = {
+  threshold?: number;
+  conditionOperator?: 'gte' | 'lte' | 'eq';
+  count?: number;
+  place?: number;
+};
+
+// Achievement definition / metadata.
+// iOS: AchievementItem / Android: LucraAchievementDefinition
+export type LucraAchievementDefinition = {
+  id: string;
+  title: string;
+  description?: string;
+  iconUrl?: string;
+  criteriaType: LucraAchievementCriteriaType;
+  criteriaConfig: LucraAchievementCriteriaConfig;
+  gameId?: string;
+  catalogReward?: LucraCatalogReward;
+};
+
+// A user's progress/state for an achievement.
+// iOS: UserAchievement / Android: LucraAchievement
+export type LucraAchievement = {
+  id: string;
+  userId: string;
+  achievementId: string;
+  tenantId: string;
+  matchupId?: string;
+  userGameScoreId?: string;
+  isEarned: boolean;
+  earnedAt?: string;
+  viewedAt?: string;
+  claimedAt?: string;
+  currentProgress: number;
+  achievement?: LucraAchievementDefinition;
+};

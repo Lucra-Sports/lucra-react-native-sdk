@@ -23,6 +23,7 @@
 		94978B37DF9443B58DA51694 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C9C2A9B48B254D158DF5124D /* Inter-Bold.ttf */; };
 		A0D9D1E9C143405E8AEF3D64 /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BE684234CF3842F980AC2C5C /* Inter-Light.ttf */; };
 		B81773CBAB8F42D88C369E46 /* Inter-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1B102E40FDF4B7894CF5F5B /* Inter-Black.ttf */; };
+		BB0EC6E5BD30007BDF33F270 /* noop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C896E5262446D5BFE7B273A /* noop.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		725DD2B3661B4C2F8D31BCEE /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		75F7112ED044540DD6FDAB8D /* Pods-LucrasdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.release.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		7B59D28DE7FF033016E7B13C /* Pods-LucrasdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LucrasdkExample.debug.xcconfig"; path = "Target Support Files/Pods-LucrasdkExample/Pods-LucrasdkExample.debug.xcconfig"; sourceTree = "<group>"; };
+		7C896E5262446D5BFE7B273A /* noop.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = noop.swift; path = LucrasdkExample/noop.swift; sourceTree = "<group>"; };
 		7F05699448C246C4AF3791E2 /* Inter-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.ttf"; path = "../assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = LucrasdkExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		826E38E317026612CCF700EB /* Pods_LucrasdkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LucrasdkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -73,6 +75,7 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				8DDA5389320FEF63EB75428A /* PrivacyInfo.xcprivacy */,
+				7C896E5262446D5BFE7B273A /* noop.swift */,
 			);
 			name = LucrasdkExample;
 			sourceTree = "<group>";
@@ -335,6 +338,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				BB0EC6E5BD30007BDF33F270 /* noop.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -60,12 +60,20 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
         <View className="mt-4 gap-0.5">
           <Text className="text-white">Mini Games</Text>
           <TouchableOpacity
-            className="mt-2 bg-indigo-700 p-4 rounded-xl"
+            className="mt-2 bg-indigo-700 p-4 rounded-t-xl"
             onPress={() => {
               navigation.navigate('MiniGameLauncher');
             }}
           >
             <Text className="text-white">Mini Game Launcher</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-indigo-700 p-4 rounded-b-xl"
+            onPress={() => {
+              navigation.navigate('RewardsAchievements');
+            }}
+          >
+            <Text className="text-white">Rewards & Achievements</Text>
           </TouchableOpacity>
         </View>
         <View className="mt-4 gap-0.5">

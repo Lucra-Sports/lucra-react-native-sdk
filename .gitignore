@@ -105,6 +105,9 @@ package-lock.json
 local-integration.properties
 scripts/test-native-sdks-locally.sh
 
+# Locally-built native SDK artifacts (never commit)
+xcframeworks/
+
 # Looking at you vibe coders
 AGENTS.md
 /.cursor

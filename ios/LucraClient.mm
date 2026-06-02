@@ -62,6 +62,42 @@ RCT_EXPORT_METHOD(startMiniGame : (NSString *)gameId
                       reject:reject];
 }
 
+RCT_EXPORT_METHOD(getUserTournamentRewards : (NSDictionary *)params
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getUserTournamentRewards:params resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(claimReward : (NSString *)rewardId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient claimReward:rewardId resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(markRewardViewed : (NSString *)rewardId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient markRewardViewed:rewardId resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getUserAchievements : (NSDictionary *)params
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getUserAchievements:params resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(claimAchievement : (NSString *)userAchievementId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient claimAchievement:userAchievementId resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(markAchievementViewed : (NSString *)userAchievementId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient markAchievementViewed:userAchievementId resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(configureUser : (NSDictionary *)user resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient configureUser:user resolve:resolve reject:reject];
@@ -113,12 +149,16 @@ RCT_EXPORT_METHOD(present : (NSDictionary *)params
   NSString *teamInviteId = params[@"teamInviteId"];
   NSString *gameId = params[@"gameId"];
   NSString *location = params[@"locationId"];
+  NSString *gameMode = params[@"gameMode"];
+  NSNumber *amount = params[@"amount"];
 
   [swiftClient present:flow
              matchupId:matchupId
           teamInviteId:teamInviteId
                 gameId:gameId
               location:location
+              gameMode:gameMode
+                amount:amount
                resolve:resolve
                 reject:reject];
 }
