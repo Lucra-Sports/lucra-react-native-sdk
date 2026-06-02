@@ -814,5 +814,5 @@ export type LucraSDKError = {
     | 'apiError'
     | 'missingDemographicInformation'
     | 'locationError'
-    | 'unknown';
+    | 'unknownError';
 } & Error;

@@ -114,6 +114,9 @@ private enum ErrorCode {
       case .tournamentJoined(let id):
         self.delegate?.sendEvent(
           name: "tournamentJoined", result: ["id": id])
+      case .autoJoinedTournaments(let tournamentIds):
+        self.delegate?.sendEvent(
+          name: "tournamentsAutoJoined", result: ["tournamentIds": tournamentIds])
       case .miniGameFinished(let gameId, let gameMode, let amount, let matchupId):
         self.delegate?.sendEvent(
           name: "miniGameFinished",
@@ -436,7 +439,8 @@ private enum ErrorCode {
       case "cashminigame", "cashminigames":
         tokenType = .cashMinigame
       default:
-        tokenType = .cashMinigame
+        // Unknown context — don't pre-warm a (possibly wrong) token.
+        return
       }
       DispatchQueue.main.async {
         self.nativeClient.api.preloadGeoToken(type: tokenType)

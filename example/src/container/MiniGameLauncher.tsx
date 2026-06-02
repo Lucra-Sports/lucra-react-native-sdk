@@ -46,6 +46,7 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
   const [amount, setAmount] = useState(0);
   const [matchupId, setMatchupId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [presenting, setPresenting] = useState(false);
   const [gameUrl, setGameUrl] = useState<string | null>(null);
   const resultMatchupIdRef = useRef<string | null>(null);
   const [pendingMatchupId, setPendingMatchupId] = useState<string | null>(null);
@@ -83,6 +84,10 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
       Alert.alert('Error', 'Please enter a Game ID');
       return;
     }
+    if (presenting) {
+      return; // guard against duplicate taps while a present() is in flight
+    }
+    setPresenting(true);
     try {
       await LucraSDK.present({
         name: LucraSDK.FLOW.MINI_GAME,
@@ -93,6 +98,8 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
       });
     } catch (e: any) {
       Alert.alert('Error', e?.message || String(e));
+    } finally {
+      setPresenting(false);
     }
   };
 
@@ -271,10 +278,15 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
             <TouchableOpacity
               className="w-full bg-indigo-500 p-4 items-center justify-center rounded-lg"
               onPress={handleStartMiniGameFlow}
+              disabled={presenting}
             >
-              <Text className="font-bold text-white">
-                Launch via MiniGame Flow (fires onMiniGameFinished)
-              </Text>
+              {presenting ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="font-bold text-white">
+                  Launch via MiniGame Flow (fires onMiniGameFinished)
+                </Text>
+              )}
             </TouchableOpacity>
 
             {/* Event viewer — mirrors the iOS SDK Sample minigames event display.

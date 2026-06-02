@@ -36,10 +36,18 @@ import com.lucrasports.sports_contests.LucraSport
 import com.lucrasports.sports_contests.LucraTeam
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 object LucraMapper {
 
     val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US)
+
+    // Full ISO-8601 in UTC (with seconds) — matches iOS `Date.ISO8601Format()`
+    // so reward/achievement timestamps are consistent across platforms.
+    private val isoUtcDf =
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
 
     fun readableMapToColorStyle(params: ReadableMap): ColorStyle {
         return ColorStyle(
@@ -205,9 +213,9 @@ object LucraMapper {
         map.putString("matchupId", achievement.matchupId)
         map.putString("userGameScoreId", achievement.userGameScoreId)
         map.putBoolean("isEarned", achievement.isEarned)
-        map.putString("earnedAt", achievement.earnedAt?.let { df.format(it) })
-        map.putString("viewedAt", achievement.viewedAt?.let { df.format(it) })
-        map.putString("claimedAt", achievement.claimedAt?.let { df.format(it) })
+        map.putString("earnedAt", achievement.earnedAt?.let { isoUtcDf.format(it) })
+        map.putString("viewedAt", achievement.viewedAt?.let { isoUtcDf.format(it) })
+        map.putString("claimedAt", achievement.claimedAt?.let { isoUtcDf.format(it) })
         map.putInt("currentProgress", achievement.currentProgress)
         achievement.achievement?.let { map.putMap("achievement", achievementDefinitionToMap(it)) }
         return map

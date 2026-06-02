@@ -161,6 +161,16 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
               { type: 'Tournament joined', id: id },
             ]);
           },
+          onAutoJoinedTournaments: (tournamentIds: string[]) => {
+            console.log('Auto-joined tournaments:', tournamentIds);
+            setEvents((events) => [
+              ...events,
+              {
+                type: 'Auto-joined tournaments',
+                id: tournamentIds.join(', '),
+              },
+            ]);
+          },
           onMiniGameFinished: (event) => {
             console.log('MiniGame finished:', event);
             setEvents((events) => [

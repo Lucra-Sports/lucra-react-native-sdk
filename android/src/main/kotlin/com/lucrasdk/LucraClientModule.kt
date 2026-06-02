@@ -512,7 +512,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             "cashbuyin" -> LucraGeoTokenType.CashBuyIn
             "freeminigame", "freeminigames" -> LucraGeoTokenType.FreeMinigame
             "cashminigame", "cashminigames" -> LucraGeoTokenType.CashMinigame
-            else -> LucraGeoTokenType.CashMinigame
+            // Unknown context — don't pre-warm a (possibly wrong) token.
+            else -> return
         }
         LucraClient().preloadGeoToken(tokenType)
     }

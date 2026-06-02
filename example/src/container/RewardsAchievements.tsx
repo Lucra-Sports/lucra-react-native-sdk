@@ -92,7 +92,9 @@ export const RewardsAchievements: React.FC<Props> = ({ navigation }) => {
         setAchievementsResult(msg);
       }
     } finally {
-      setBusy(null);
+      // Only clear if this request is still the in-flight one, so a later
+      // action's finally doesn't wipe an earlier one's busy state.
+      setBusy((curr) => (curr === key ? null : curr));
     }
   };
 
@@ -101,10 +103,8 @@ export const RewardsAchievements: React.FC<Props> = ({ navigation }) => {
       const rewards: LucraTournamentReward[] =
         await LucraSDK.getUserTournamentRewards({});
       setRewardsResult(JSON.stringify(rewards, null, 2));
-      // Auto-fill the rewardId for claim/view convenience.
-      if (rewards[0]?.id) {
-        setRewardId(rewards[0].id);
-      }
+      // Auto-fill the rewardId for claim/view convenience (clear if none).
+      setRewardId(rewards[0]?.id ?? '');
     });
 
   const claimReward = () =>
@@ -132,9 +132,7 @@ export const RewardsAchievements: React.FC<Props> = ({ navigation }) => {
       const achievements: LucraAchievement[] =
         await LucraSDK.getUserAchievements({ includeNoProgress: true });
       setAchievementsResult(JSON.stringify(achievements, null, 2));
-      if (achievements[0]?.id) {
-        setUserAchievementId(achievements[0].id);
-      }
+      setUserAchievementId(achievements[0]?.id ?? '');
     });
 
   const claimAchievement = () =>
