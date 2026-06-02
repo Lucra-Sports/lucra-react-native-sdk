@@ -40,7 +40,11 @@ const ResultBox: React.FC<{ title: string; value: string }> = ({
           <Text className="text-white text-xs">Copy</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView style={styles.resultScroll}>
+      <ScrollView
+        style={styles.resultScroll}
+        nestedScrollEnabled
+        keyboardShouldPersistTaps="handled"
+      >
         <Text selectable className="font-mono text-white text-xs">
           {value}
         </Text>
