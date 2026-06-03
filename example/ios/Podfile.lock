@@ -100,7 +100,7 @@ PODS:
     - hermes-engine/Pre-built (= 0.79.2)
   - hermes-engine/Pre-built (0.79.2)
   - JWTDecode (3.3.0)
-  - lucra-react-native-sdk (5.3.0):
+  - lucra-react-native-sdk (5.4.0):
     - DoubleConversion
     - glog
     - hermes-engine
