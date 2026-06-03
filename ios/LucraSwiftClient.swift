@@ -114,8 +114,20 @@ private enum ErrorCode {
       case .tournamentJoined(let id):
         self.delegate?.sendEvent(
           name: "tournamentJoined", result: ["id": id])
+      case .autoJoinedTournaments(let tournamentIds):
+        self.delegate?.sendEvent(
+          name: "tournamentsAutoJoined", result: ["tournamentIds": tournamentIds])
+      case .miniGameFinished(let gameId, let gameMode, let amount, let matchupId):
+        self.delegate?.sendEvent(
+          name: "miniGameFinished",
+          result: [
+            "gameId": gameId as Any,
+            "gameMode": gameMode?.rawValue as Any,
+            "amount": (amount as NSDecimalNumber?)?.doubleValue as Any,
+            "matchupId": matchupId as Any,
+          ])
       @unknown default:
-        fatalError()
+        break
       }
     }
 
@@ -232,6 +244,7 @@ private enum ErrorCode {
   @objc public func present(
     _ flowName: String, matchupId: String?, teamInviteId: String?,
     gameId: String?, location: String?,
+    gameMode: String?, amount: NSNumber?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -240,7 +253,8 @@ private enum ErrorCode {
     do {
       let flow = try LucraUtils.stringToLucraFlow(
         flowName, matchupId: matchupId, teamInviteId: teamInviteId,
-        gameId: gameId, location: location)
+        gameId: gameId, location: location,
+        gameMode: gameMode, amount: amount?.decimalValue)
 
       DispatchQueue.main.async {
         UIViewController.topViewController?.present(
@@ -414,19 +428,22 @@ private enum ErrorCode {
     }
 
     @objc public func preloadGeoToken(_ context: String) {
-      let geoContext: GeoComplyContext
+      let tokenType: MiniGameGeoTokenType
       switch context.lowercased() {
       case "freebuyin":
-        geoContext = .freeBuyIn
-      case "deposit":
-        geoContext = .deposit
-      case "withdrawal":
-        geoContext = .withdrawal
+        tokenType = .freeBuyIn
+      case "cashbuyin":
+        tokenType = .cashBuyIn
+      case "freeminigame", "freeminigames":
+        tokenType = .freeMinigame
+      case "cashminigame", "cashminigames":
+        tokenType = .cashMinigame
       default:
-        geoContext = .cashBuyIn
+        // Unknown context — don't pre-warm a (possibly wrong) token.
+        return
       }
       DispatchQueue.main.async {
-        self.nativeClient.api.preloadGeoToken(context: geoContext)
+        self.nativeClient.api.preloadGeoToken(type: tokenType)
       }
     }
 
@@ -471,6 +488,120 @@ private enum ErrorCode {
             "sessionId": session.sessionId,
             "matchupId": session.matchupId as Any
           ])
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
+    // MARK: - Rewards & Achievements headless (Minigames Headless epic)
+
+    @objc public func getUserTournamentRewards(
+      _ params: [String: Any],
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      let tournamentId = params["tournamentId"] as? String
+      let viewed = params["viewed"] as? Bool
+      let claimed = params["claimed"] as? Bool
+
+      Task { @MainActor in
+        let result = await self.nativeClient.api.getUserTournamentRewards(
+          viewed: viewed, claimed: claimed, tournamentId: tournamentId)
+
+        switch result {
+        case .success(let rewards):
+          resolve(rewards.map { earnedRewardToMap($0) })
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
+    @objc public func claimReward(
+      _ rewardId: String,
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        let result = await self.nativeClient.api.claimRewards(rewardId: rewardId)
+
+        switch result {
+        case .success:
+          resolve(nil)
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
+    @objc public func markRewardViewed(
+      _ rewardId: String,
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        let result = await self.nativeClient.api.markRewardAsViewed(rewardId: rewardId)
+
+        switch result {
+        case .success:
+          resolve(nil)
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
+    @objc public func getUserAchievements(
+      _ params: [String: Any],
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      let viewed = params["viewed"] as? Bool
+      let claimed = params["claimed"] as? Bool
+      let includeNoProgress = params["includeNoProgress"] as? Bool ?? true
+
+      Task { @MainActor in
+        let result = await self.nativeClient.api.getUserAchievements(
+          viewed: viewed, claimed: claimed, includeNoProgress: includeNoProgress)
+
+        switch result {
+        case .success(let achievements):
+          resolve(achievements.map { userAchievementToMap($0) })
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
+    @objc public func claimAchievement(
+      _ userAchievementId: String,
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        let result = await self.nativeClient.api.claimAchievement(userAchievementId: userAchievementId)
+
+        switch result {
+        case .success:
+          resolve(nil)
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
+    @objc public func markAchievementViewed(
+      _ userAchievementId: String,
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        let result = await self.nativeClient.api.markAchievementAsViewed(userAchievementId: userAchievementId)
+
+        switch result {
+        case .success:
+          resolve(nil)
         case .failure(let error):
           rejectLucraError(reject, error: error)
         }
@@ -535,6 +666,36 @@ private enum ErrorCode {
         @unknown default:
           code = ErrorCode.unknownError
           message = extractMessage(from: tournamentError)
+        }
+      case let rewardError as RewardError:
+        switch rewardError {
+        case .user(let userError):
+          code = codeForUserStateError(userError)
+          message = messageForUserStateError(userError)
+        case .customError(let messageString):
+          code = ErrorCode.apiError
+          message = messageString
+        case .unknown:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: rewardError)
+        @unknown default:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: rewardError)
+        }
+      case let achievementError as AchievementError:
+        switch achievementError {
+        case .user(let userError):
+          code = codeForUserStateError(userError)
+          message = messageForUserStateError(userError)
+        case .customError(let messageString):
+          code = ErrorCode.apiError
+          message = messageString
+        case .unknown:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: achievementError)
+        @unknown default:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: achievementError)
         }
       case let apiError as APIError:
         code = ErrorCode.apiError

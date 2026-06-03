@@ -13,9 +13,11 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { Assets } from '../Assets';
 import type { RootStackParamList } from '../Routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useEventsContext, type LucraEvent } from '../EventsContext';
 import {
   LucraSDK,
   MiniGameMode,
@@ -33,6 +35,8 @@ const GAME_MODES = [
 ];
 
 export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
+  const [events] = useEventsContext();
+
   useEffect(() => {
     LucraSDK.preloadGeoToken(GeoComplyContext.CASH_BUY_IN);
   }, []);
@@ -42,6 +46,7 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
   const [amount, setAmount] = useState(0);
   const [matchupId, setMatchupId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [presenting, setPresenting] = useState(false);
   const [gameUrl, setGameUrl] = useState<string | null>(null);
   const resultMatchupIdRef = useRef<string | null>(null);
   const [pendingMatchupId, setPendingMatchupId] = useState<string | null>(null);
@@ -68,6 +73,33 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
       Alert.alert('Error', e?.message || String(e));
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Native MiniGame *flow* (LucraFlow.miniGame). Unlike the headless startMiniGame
+  // path above, this is what emits the native `MiniGame.Finished` event →
+  // forwarded to JS as onMiniGameFinished → shown in the Events panel below.
+  const handleStartMiniGameFlow = async () => {
+    if (!gameId.trim()) {
+      Alert.alert('Error', 'Please enter a Game ID');
+      return;
+    }
+    if (presenting) {
+      return; // guard against duplicate taps while a present() is in flight
+    }
+    setPresenting(true);
+    try {
+      await LucraSDK.present({
+        name: LucraSDK.FLOW.MINI_GAME,
+        gameId: gameId.trim(),
+        gameMode,
+        amount: gameMode === MiniGameMode.PRACTICE ? 0 : amount,
+        matchupId: matchupId.trim() || undefined,
+      });
+    } catch (e: any) {
+      Alert.alert('Error', e?.message || String(e));
+    } finally {
+      setPresenting(false);
     }
   };
 
@@ -237,13 +269,95 @@ export const MiniGameLauncher: React.FC<Props> = ({ navigation }) => {
               {loading ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text className="font-bold text-white">Start Mini Game</Text>
+                <Text className="font-bold text-white">
+                  Start Mini Game (headless)
+                </Text>
               )}
             </TouchableOpacity>
+
+            <TouchableOpacity
+              className="w-full bg-indigo-500 p-4 items-center justify-center rounded-lg"
+              onPress={handleStartMiniGameFlow}
+              disabled={presenting}
+            >
+              {presenting ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="font-bold text-white">
+                  Launch via MiniGame Flow (fires onMiniGameFinished)
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            {/* Event viewer — mirrors the iOS SDK Sample minigames event display.
+                Captures SDK events (incl. miniGameFinished) from EventsContext. */}
+            <View className="mt-4 border-t border-indigo-700 pt-4 gap-2">
+              <Text className="text-white text-base font-bold">
+                Events ({events.length})
+              </Text>
+              {events.length === 0 ? (
+                <Text className="text-neutral-400">No events yet</Text>
+              ) : (
+                [...events]
+                  .reverse()
+                  .map((event, index) => (
+                    <EventRow key={`${event.type}-${index}`} event={event} />
+                  ))
+              )}
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+  );
+};
+
+type MiniGameFinishedPayload = {
+  gameId?: string;
+  gameMode?: string;
+  amount?: number;
+  matchupId?: string;
+};
+
+// Renders a single SDK event. `miniGameFinished` gets labeled rows (matching the
+// iOS SDK Sample); every other event shows type + id and is tap-to-copy.
+const EventRow: React.FC<{ event: LucraEvent }> = ({ event }) => {
+  if (event.type === 'MiniGame finished') {
+    let payload: MiniGameFinishedPayload = {};
+    try {
+      payload = JSON.parse(event.id) as MiniGameFinishedPayload;
+    } catch {
+      // leave payload empty if it isn't valid JSON
+    }
+    return (
+      <View className="p-3 rounded-lg bg-indigo-800 border border-indigo-600">
+        <Text className="text-white font-semibold mb-1">🎮 {event.type}</Text>
+        <Text className="text-indigo-200 text-xs">
+          Game ID: {payload.gameId ?? 'nil'}
+        </Text>
+        <Text className="text-indigo-200 text-xs">
+          Mode: {payload.gameMode ?? 'nil'}
+        </Text>
+        <Text className="text-indigo-200 text-xs">
+          Amount: {payload.amount ?? 'nil'}
+        </Text>
+        <Text className="text-indigo-200 text-xs">
+          Matchup ID: {payload.matchupId ?? 'nil'}
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <TouchableOpacity
+      className="p-3 rounded-lg bg-indigo-800"
+      onPress={() => Clipboard.setString(event.id)}
+    >
+      <Text className="text-white font-semibold">{event.type}</Text>
+      <Text className="text-indigo-200 text-xs" numberOfLines={2}>
+        {event.id}
+      </Text>
+    </TouchableOpacity>
   );
 };
 

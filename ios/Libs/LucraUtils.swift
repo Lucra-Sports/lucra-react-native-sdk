@@ -36,7 +36,8 @@ class LucraUtils {
   }
 
   static public func stringToLucraFlow(
-    _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?, location: String?
+    _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?, location: String?,
+    gameMode: String? = nil, amount: Decimal? = nil
   ) throws -> LucraSDK.LucraFlow {
     switch flowName {
     case "profile":
@@ -69,6 +70,16 @@ class LucraUtils {
       return .wallet
     case "homePage":
       return .homePage(location: location)
+    case "miniGame":
+      guard let gameMode, let parsedMode = MiniGameMode(rawValue: gameMode) else {
+        throw NSError(
+          domain: "InvalidMiniGameFlow", code: 0,
+          userInfo: [NSLocalizedDescriptionKey: "miniGame flow requires a valid gameMode"])
+      }
+      return .miniGame(
+        gameId: gameId, gameMode: parsedMode, amount: amount, matchupId: matchupId)
+    case "achievements":
+      return .achievements
     default:
       fatalError("Unimplemented lucra flow \(flowName)")
     }

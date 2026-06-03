@@ -1,3 +1,11 @@
+# 5.3.0
+* Mapped the latest Minigames Headless SDK surface through the React Native library (TV-1637):
+  * New headless functions: `getUserTournamentRewards`, `claimReward`, `markRewardViewed`, `getUserAchievements`, `claimAchievement`, `markAchievementViewed`. See [Rewards & Achievements headless functions](5.3_rewards_achievements_headless.md).
+  * New `MINI_GAME` flow exposed via `LucraSDK.present({ name: LucraSDK.FLOW.MINI_GAME, gameId, gameMode, amount?, matchupId? })` — the UI counterpart to the existing headless `startMiniGame`. Also exposed the `ACHIEVEMENTS` flow.
+  * New `onMiniGameFinished` contest-listener callback, forwarded from the native `MiniGame.Finished` event with `{ gameId, gameMode, amount, matchupId }`.
+  * Added shared types: `LucraTournamentReward`, `LucraCatalogReward`, `LucraAchievement`, `LucraAchievementDefinition` (and criteria types).
+* Android and iOS surfaces are at parity for all of the above.
+
 # 5.2.0
 * Bumped Android to [6.2.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.2.0)
 * Fixed Android `present` runtime parity: `LucraSDK.present(...)` now consistently returns a Promise and no longer resolves as `undefined` at runtime when chaining `.then(...)`.

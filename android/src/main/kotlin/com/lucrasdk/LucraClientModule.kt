@@ -38,6 +38,7 @@ import com.lucrasports.sdk.core.contest.UserStateError
 import com.lucrasports.sdk.core.contest.minigame.MiniGameInteractions
 import com.lucrasports.sdk.core.contest.recreational.RecreationalGameInteractions
 import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
+import com.lucrasports.sdk.core.minigames.LucraGeoTokenType
 import com.lucrasports.sdk.core.contest.tournament.PoolTournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditProvider
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
@@ -45,6 +46,8 @@ import com.lucrasports.sdk.core.events.LucraEvent
 import com.lucrasports.sdk.core.events.LucraEventListener
 import com.lucrasports.sdk.core.reward.LucraReward
 import com.lucrasports.sdk.core.reward.LucraRewardProvider
+import com.lucrasports.sdk.core.reward.RewardInteractions
+import com.lucrasports.sdk.core.achievement.AchievementInteractions
 import com.lucrasports.sdk.core.style_guide.ClientTheme
 import com.lucrasports.sdk.core.style_guide.FontFamily
 import com.lucrasports.sdk.core.ui.LucraFlowListener
@@ -242,6 +245,18 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                         )
                                     )
 
+                                is LucraEvent.Tournament.AutoJoinedTournaments ->
+                                    sendEvent(
+                                        context,
+                                        "tournamentsAutoJoined",
+                                        Arguments.createMap().apply {
+                                            putArray(
+                                                "tournamentIds",
+                                                Arguments.makeNativeArray(event.tournamentIds)
+                                            )
+                                        }
+                                    )
+
                                 is LucraEvent.GamesContest.StartedActive ->
                                     sendEvent(
                                         context,
@@ -258,6 +273,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                         Arguments.makeNativeMap(
                                             bundleOf(
                                                 "gameId" to event.gameId,
+                                                "gameMode" to miniGameModeToString(event.gameMode),
+                                                "amount" to event.amount,
                                                 "matchupId" to event.matchupId
                                             )
                                         )
@@ -352,9 +369,17 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             val teaminviteId = args.getString("teaminviteId")
             val gameTypeId = args.getString("gameId")
             val locationId = args.getString("locationId")
+            val gameMode = args.getString("gameMode")
+            val amount = if (args.hasKey("amount") && !args.isNull("amount")) {
+                args.getDouble("amount")
+            } else {
+                null
+            }
 
             val flow =
-                LucraUtils.getLucraFlow(flowName, matchupId, teaminviteId, gameTypeId, locationId)
+                LucraUtils.getLucraFlow(
+                    flowName, matchupId, teaminviteId, gameTypeId, locationId, gameMode, amount
+                )
 
             val currentActivity = context.currentActivity as? FragmentActivity
                 ?: throw IllegalStateException("Current activity is not a FragmentActivity")
@@ -482,7 +507,15 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     @ReactMethod
     fun preloadGeoToken(context: String) {
-        LucraClient().preloadGeoToken()
+        val tokenType = when (context.lowercase()) {
+            "freebuyin" -> LucraGeoTokenType.FreeBuyIn
+            "cashbuyin" -> LucraGeoTokenType.CashBuyIn
+            "freeminigame", "freeminigames" -> LucraGeoTokenType.FreeMinigame
+            "cashminigame", "cashminigames" -> LucraGeoTokenType.CashMinigame
+            // Unknown context — don't pre-warm a (possibly wrong) token.
+            else -> return
+        }
+        LucraClient().preloadGeoToken(tokenType)
     }
 
     @ReactMethod
@@ -528,6 +561,155 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 }
             }
         }
+    }
+
+    // MARK: - Rewards & Achievements headless (Minigames Headless epic)
+
+    @Suppress("DEPRECATION")
+    @ReactMethod
+    fun getUserTournamentRewards(params: ReadableMap, promise: Promise) {
+        val tournamentId = params.getString("tournamentId")
+        val viewed = params.optionalBoolean("viewed")
+        val claimed = params.optionalBoolean("claimed")
+
+        LucraClient().getUserTournamentRewards(
+            tournamentId = tournamentId,
+            viewed = viewed,
+            claimed = claimed,
+        ) { result ->
+            when (result) {
+                is RewardInteractions.GetUserTournamentRewardsResult.Success -> {
+                    val array = Arguments.createArray()
+                    result.rewards.forEach { array.pushMap(LucraMapper.tournamentRewardToMap(it)) }
+                    promise.resolve(array)
+                }
+
+                is RewardInteractions.GetUserTournamentRewardsResult.Failure ->
+                    rejectRewardError(promise, result.failure)
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @ReactMethod
+    fun claimReward(rewardId: String, promise: Promise) {
+        LucraClient().claimReward(rewardId) { result ->
+            when (result) {
+                is RewardInteractions.ClaimRewardResult.Success -> promise.resolve(null)
+                is RewardInteractions.ClaimRewardResult.Failure ->
+                    rejectRewardError(promise, result.failure)
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @ReactMethod
+    fun markRewardViewed(rewardId: String, promise: Promise) {
+        LucraClient().markRewardViewed(rewardId) { result ->
+            when (result) {
+                is RewardInteractions.MarkRewardViewedResult.Success -> promise.resolve(null)
+                is RewardInteractions.MarkRewardViewedResult.Failure ->
+                    rejectRewardError(promise, result.failure)
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @ReactMethod
+    fun getUserAchievements(params: ReadableMap, promise: Promise) {
+        val viewed = params.optionalBoolean("viewed")
+        val claimed = params.optionalBoolean("claimed")
+        val includeNoProgress = params.optionalBoolean("includeNoProgress") ?: true
+
+        LucraClient().getUserAchievements(
+            viewed = viewed,
+            claimed = claimed,
+            includeNoProgress = includeNoProgress,
+        ) { result ->
+            when (result) {
+                is AchievementInteractions.GetUserAchievementsResult.Success -> {
+                    val array = Arguments.createArray()
+                    result.achievements.forEach { array.pushMap(LucraMapper.achievementToMap(it)) }
+                    promise.resolve(array)
+                }
+
+                is AchievementInteractions.GetUserAchievementsResult.Failure ->
+                    rejectAchievementError(promise, result.failure)
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @ReactMethod
+    fun claimAchievement(userAchievementId: String, promise: Promise) {
+        LucraClient().claimAchievement(userAchievementId) { result ->
+            when (result) {
+                is AchievementInteractions.ClaimAchievementResult.Success -> promise.resolve(null)
+                is AchievementInteractions.ClaimAchievementResult.Failure ->
+                    rejectAchievementError(promise, result.failure)
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @ReactMethod
+    fun markAchievementViewed(userAchievementId: String, promise: Promise) {
+        LucraClient().markAchievementViewed(userAchievementId) { result ->
+            when (result) {
+                is AchievementInteractions.MarkAchievementViewedResult.Success -> promise.resolve(null)
+                is AchievementInteractions.MarkAchievementViewedResult.Failure ->
+                    rejectAchievementError(promise, result.failure)
+            }
+        }
+    }
+
+    private fun ReadableMap.optionalBoolean(key: String): Boolean? =
+        if (hasKey(key) && !isNull(key)) getBoolean(key) else null
+
+    private fun miniGameModeToString(mode: LucraMiniGameMode?): String? = when (mode) {
+        LucraMiniGameMode.Practice -> "practice"
+        LucraMiniGameMode.OneVsOne -> "1v1"
+        LucraMiniGameMode.FreeForAll -> "free_for_all"
+        LucraMiniGameMode.Tournament -> "tournament"
+        null -> null
+    }
+
+    private fun rejectRewardError(
+        promise: Promise,
+        failure: RewardInteractions.FailedRewardCall
+    ) {
+        val (code, message) = when (failure) {
+            is RewardInteractions.FailedRewardCall.User -> when (failure.error) {
+                RewardInteractions.FailedRewardCall.UserStateError.NotInitialized ->
+                    ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
+                RewardInteractions.FailedRewardCall.UserStateError.NotAllowed ->
+                    ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
+            }
+            is RewardInteractions.FailedRewardCall.CustomError ->
+                ErrorCodes.API_ERROR to failure.message
+            RewardInteractions.FailedRewardCall.Unknown ->
+                ErrorCodes.UNKNOWN_ERROR to "Unknown error occurred"
+        }
+        promise.reject(code, message)
+    }
+
+    private fun rejectAchievementError(
+        promise: Promise,
+        failure: AchievementInteractions.FailedGetUserAchievements
+    ) {
+        val (code, message) = when (failure) {
+            is AchievementInteractions.FailedGetUserAchievements.User -> when (failure.error) {
+                AchievementInteractions.FailedGetUserAchievements.UserStateError.NotInitialized ->
+                    ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
+                AchievementInteractions.FailedGetUserAchievements.UserStateError.NotAllowed ->
+                    ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
+            }
+            is AchievementInteractions.FailedGetUserAchievements.CustomError ->
+                ErrorCodes.API_ERROR to failure.message
+            AchievementInteractions.FailedGetUserAchievements.Unknown ->
+                ErrorCodes.UNKNOWN_ERROR to "Unknown error occurred"
+        }
+        promise.reject(code, message)
     }
 
     @ReactMethod

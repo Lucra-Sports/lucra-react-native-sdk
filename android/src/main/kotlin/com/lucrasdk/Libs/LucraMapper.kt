@@ -17,6 +17,12 @@ import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMetho
 import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.reward.LucraReward
 import com.lucrasports.sdk.core.reward.toLucraReward
+import com.lucrasports.sdk.core.reward.LucraTournamentReward
+import com.lucrasports.sdk.core.reward.LucraCatalogReward
+import com.lucrasports.sdk.core.achievement.LucraAchievement
+import com.lucrasports.sdk.core.achievement.LucraAchievementDefinition
+import com.lucrasports.sdk.core.achievement.LucraAchievementCriteriaType
+import com.lucrasports.sdk.core.achievement.LucraAchievementCriteriaConfig
 import com.lucrasports.sdk.core.style_guide.ColorStyle
 import com.lucrasports.sdk.core.style_guide.Font
 import com.lucrasports.sdk.core.style_guide.FontFamily
@@ -30,10 +36,18 @@ import com.lucrasports.sports_contests.LucraSport
 import com.lucrasports.sports_contests.LucraTeam
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 object LucraMapper {
 
     val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US)
+
+    // Full ISO-8601 in UTC (with seconds) — matches iOS `Date.ISO8601Format()`
+    // so reward/achievement timestamps are consistent across platforms.
+    private val isoUtcDf =
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
 
     fun readableMapToColorStyle(params: ReadableMap): ColorStyle {
         return ColorStyle(
@@ -110,6 +124,100 @@ object LucraMapper {
         map.putString("bannerIconUrl", reward.bannerIconUrl)
         map.putString("disclaimer", reward.disclaimer)
         map.putMap("metadata", convertStringMapToWritableMap(reward.metadata))
+        return map
+    }
+
+    // Minigames Headless epic — Rewards & Achievements.
+    // Shapes are normalized to match the iOS bridge / shared JS types.
+
+    fun catalogRewardToMap(reward: LucraCatalogReward): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", reward.id)
+        map.putString("type", reward.type)
+        map.putString("title", reward.title)
+        map.putString("descriptor", reward.descriptor)
+        map.putString("iconUrl", reward.iconUrl)
+        map.putString("bannerIconUrl", reward.bannerIconUrl)
+        map.putString("disclaimer", reward.disclaimer)
+        reward.discountCode?.let {
+            val discount = Arguments.createMap()
+            discount.putString("code", it.code)
+            discount.putString("claimUrl", it.claimUrl)
+            map.putMap("discountCode", discount)
+        }
+        reward.freeItem?.let {
+            val free = Arguments.createMap()
+            free.putString("itemId", it.itemId)
+            map.putMap("freeItem", free)
+        }
+        return map
+    }
+
+    fun tournamentRewardToMap(reward: LucraTournamentReward): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", reward.rewardId)
+        map.putInt("place", reward.place)
+        map.putString("matchupId", reward.matchupId)
+        map.putString("matchupTitle", reward.matchupTitle)
+        map.putString("claimedAt", reward.claimedAt)
+        map.putString("viewedAt", reward.viewedAt)
+        reward.reward?.let { map.putMap("reward", catalogRewardToMap(it)) }
+        return map
+    }
+
+    private fun criteriaTypeToString(type: LucraAchievementCriteriaType): String = when (type) {
+        LucraAchievementCriteriaType.SCORE_THRESHOLD -> "scoreThreshold"
+        LucraAchievementCriteriaType.WIN_COUNT -> "winCount"
+        LucraAchievementCriteriaType.PLACEMENT_COUNT -> "placementCount"
+        LucraAchievementCriteriaType.PARTICIPATION_COUNT -> "participationCount"
+    }
+
+    private fun conditionOperatorToString(
+        op: LucraAchievementCriteriaConfig.ConditionOperator
+    ): String = when (op) {
+        LucraAchievementCriteriaConfig.ConditionOperator.GTE -> "gte"
+        LucraAchievementCriteriaConfig.ConditionOperator.LTE -> "lte"
+        LucraAchievementCriteriaConfig.ConditionOperator.EQ -> "eq"
+    }
+
+    fun criteriaConfigToMap(config: LucraAchievementCriteriaConfig): WritableMap {
+        val map = Arguments.createMap()
+        config.threshold?.let { map.putDouble("threshold", it) } ?: map.putNull("threshold")
+        config.conditionOperator?.let {
+            map.putString("conditionOperator", conditionOperatorToString(it))
+        } ?: map.putNull("conditionOperator")
+        config.count?.let { map.putInt("count", it) } ?: map.putNull("count")
+        config.place?.let { map.putInt("place", it) } ?: map.putNull("place")
+        return map
+    }
+
+    fun achievementDefinitionToMap(def: LucraAchievementDefinition): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", def.id)
+        map.putString("title", def.title)
+        map.putString("description", def.description)
+        map.putString("iconUrl", def.iconUrl)
+        map.putString("criteriaType", criteriaTypeToString(def.criteriaType))
+        map.putMap("criteriaConfig", criteriaConfigToMap(def.criteriaConfig))
+        map.putString("gameId", def.gameId)
+        def.catalogReward?.let { map.putMap("catalogReward", catalogRewardToMap(it)) }
+        return map
+    }
+
+    fun achievementToMap(achievement: LucraAchievement): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", achievement.id)
+        map.putString("userId", achievement.userId)
+        map.putString("achievementId", achievement.achievementId)
+        map.putString("tenantId", achievement.tenantId)
+        map.putString("matchupId", achievement.matchupId)
+        map.putString("userGameScoreId", achievement.userGameScoreId)
+        map.putBoolean("isEarned", achievement.isEarned)
+        map.putString("earnedAt", achievement.earnedAt?.let { isoUtcDf.format(it) })
+        map.putString("viewedAt", achievement.viewedAt?.let { isoUtcDf.format(it) })
+        map.putString("claimedAt", achievement.claimedAt?.let { isoUtcDf.format(it) })
+        map.putInt("currentProgress", achievement.currentProgress)
+        achievement.achievement?.let { map.putMap("achievement", achievementDefinitionToMap(it)) }
         return map
     }
 

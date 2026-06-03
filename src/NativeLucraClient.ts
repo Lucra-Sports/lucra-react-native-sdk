@@ -39,6 +39,14 @@ interface Spec extends TurboModule {
     matchupId: string
   ): Promise<Object>;
 
+  // Rewards & Achievements headless (Minigames Headless epic)
+  getUserTournamentRewards(params: Object): Promise<Object[]>;
+  claimReward(rewardId: string): Promise<void>;
+  markRewardViewed(rewardId: string): Promise<void>;
+  getUserAchievements(params: Object): Promise<Object[]>;
+  claimAchievement(userAchievementId: string): Promise<void>;
+  markAchievementViewed(userAchievementId: string): Promise<void>;
+
   // Pool tournaments
   // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
   getRecommendedTournaments: (params: Object) => Promise<Object[]>;

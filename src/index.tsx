@@ -14,9 +14,25 @@ import {
 export { default as LucraMiniPublicFeed } from './LucraMiniPublicFeedNativeComponent';
 export { default as LucraRecommendedMatchup } from './LucraRecommendedMatchupNativeComponent';
 export { default as LucraContestCard } from './LucraContestCardNativeComponent';
-import { type LucraReward, type PoolTournament } from './types';
+import {
+  type LucraReward,
+  type PoolTournament,
+  type LucraTournamentReward,
+  type LucraAchievement,
+} from './types';
 import NativeLucraClient from './NativeLucraClient';
-export { type LucraReward, type PoolTournament } from './types';
+export {
+  type LucraReward,
+  type PoolTournament,
+  type LucraTournamentReward,
+  type LucraCatalogReward,
+  type LucraDiscountCodeConfig,
+  type LucraFreeItemConfig,
+  type LucraAchievement,
+  type LucraAchievementDefinition,
+  type LucraAchievementCriteriaType,
+  type LucraAchievementCriteriaConfig,
+} from './types';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
 
@@ -110,6 +126,8 @@ if (LucraClient == null) {
 export enum GeoComplyContext {
   FREE_BUY_IN = 'freeBuyIn',
   CASH_BUY_IN = 'cashBuyIn',
+  FREE_MINIGAME = 'freeMinigame',
+  CASH_MINIGAME = 'cashMinigame',
   DEPOSIT = 'deposit',
   WITHDRAWAL = 'withdrawal',
 }
@@ -124,6 +142,13 @@ export enum MiniGameMode {
 export type StartMiniGameResult = {
   url: string;
   sessionId: string;
+  matchupId?: string;
+};
+
+export type MiniGameFinishedEvent = {
+  gameId?: string;
+  gameMode?: MiniGameMode;
+  amount?: number;
   matchupId?: string;
 };
 
@@ -388,6 +413,8 @@ type LucraContestListeners = {
   onGamesMatchupStarted?: (id: string) => void;
   onGamesMatchupStartedActive?: (id: string) => void;
   onTournamentJoined?: (id: string) => void;
+  onAutoJoinedTournaments?: (tournamentIds: string[]) => void;
+  onMiniGameFinished?: (event: MiniGameFinishedEvent) => void;
 };
 
 const Flows = {
@@ -405,6 +432,8 @@ const Flows = {
   DEMOGRAPHIC_COLLECTION: 'demographicCollection',
   WALLET: 'wallet',
   HOME_PAGE: 'homePage',
+  MINI_GAME: 'miniGame',
+  ACHIEVEMENTS: 'achievements',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -439,8 +468,18 @@ function present(params: {
   name: typeof Flows.DEMOGRAPHIC_COLLECTION;
 }): Promise<void>;
 function present(params: {
+  name: typeof Flows.MINI_GAME;
+  gameId: string;
+  gameMode: MiniGameMode;
+  amount?: number;
+  matchupId?: string;
+}): Promise<void>;
+function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
+function present(params: {
   name: FlowNames;
   gameId?: string;
+  gameMode?: MiniGameMode;
+  amount?: number;
   matchupId?: string;
   locationId?: string;
 }): Promise<void> {
@@ -579,6 +618,20 @@ export const LucraSDK = {
       }
     );
 
+    const tournamentsAutoJoinedEmitter = eventEmitter.addListener(
+      'tournamentsAutoJoined',
+      (data) => {
+        listenerMap.onAutoJoinedTournaments?.(data.tournamentIds);
+      }
+    );
+
+    const miniGameFinishedEmitter = eventEmitter.addListener(
+      'miniGameFinished',
+      (data) => {
+        listenerMap.onMiniGameFinished?.(data as MiniGameFinishedEvent);
+      }
+    );
+
     return () => {
       gamesMatchupCreatedEmitter.remove();
       sportsMatchupCreatedEmitter.remove();
@@ -589,6 +642,8 @@ export const LucraSDK = {
       gamesMatchupStartedActiveEmitter.remove();
       sportsMatchupCanceledEmitter.remove();
       tournamentJoinedEmitter.remove();
+      tournamentsAutoJoinedEmitter.remove();
+      miniGameFinishedEmitter.remove();
     };
   },
   addListener: (type: 'user', cb: (data: any) => void) => {
@@ -644,6 +699,49 @@ export const LucraSDK = {
       amount,
       matchupId ?? ''
     )) as StartMiniGameResult;
+  },
+  // Rewards & Achievements headless (Minigames Headless epic)
+  getUserTournamentRewards: async ({
+    tournamentId,
+    viewed,
+    claimed,
+  }: {
+    tournamentId?: string;
+    viewed?: boolean;
+    claimed?: boolean;
+  } = {}): Promise<LucraTournamentReward[]> => {
+    return (await LucraClient.getUserTournamentRewards({
+      tournamentId,
+      viewed,
+      claimed,
+    })) as LucraTournamentReward[];
+  },
+  claimReward: (rewardId: string): Promise<void> => {
+    return LucraClient.claimReward(rewardId);
+  },
+  markRewardViewed: (rewardId: string): Promise<void> => {
+    return LucraClient.markRewardViewed(rewardId);
+  },
+  getUserAchievements: async ({
+    viewed,
+    claimed,
+    includeNoProgress = true,
+  }: {
+    viewed?: boolean;
+    claimed?: boolean;
+    includeNoProgress?: boolean;
+  } = {}): Promise<LucraAchievement[]> => {
+    return (await LucraClient.getUserAchievements({
+      viewed,
+      claimed,
+      includeNoProgress,
+    })) as LucraAchievement[];
+  },
+  claimAchievement: (userAchievementId: string): Promise<void> => {
+    return LucraClient.claimAchievement(userAchievementId);
+  },
+  markAchievementViewed: (userAchievementId: string): Promise<void> => {
+    return LucraClient.markAchievementViewed(userAchievementId);
   },
   getMatchup: async (matchupId: string): Promise<MatchupInfo> => {
     return (await LucraClient.getMatchup(matchupId)) as MatchupInfo;
@@ -716,5 +814,5 @@ export type LucraSDKError = {
     | 'apiError'
     | 'missingDemographicInformation'
     | 'locationError'
-    | 'unknown';
+    | 'unknownError';
 } & Error;

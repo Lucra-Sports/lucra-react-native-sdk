@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.lucrasports.sdk.core.LucraClient
+import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 
 class LucraUtils {
@@ -24,7 +25,9 @@ class LucraUtils {
             matchupId: String?,
             teaminviteId: String?,
             gameTypeId: String?,
-            locationId: String?
+            locationId: String?,
+            gameMode: String? = null,
+            amount: Double? = null
         ): LucraUiProvider.LucraFlow {
             return when (flow) {
                 // TODO ios uses onboarding, Android uses Login
@@ -50,6 +53,25 @@ class LucraUtils {
                 "demographicCollection" -> LucraUiProvider.LucraFlow.DemographicForm
                 "wallet" -> LucraUiProvider.LucraFlow.Wallet
                 "homePage" -> LucraUiProvider.LucraFlow.HomePage(locationId)
+                "miniGame" -> {
+                    val parsedMode = when (gameMode?.lowercase()) {
+                        "practice" -> LucraMiniGameMode.Practice
+                        "1v1" -> LucraMiniGameMode.OneVsOne
+                        "free_for_all" -> LucraMiniGameMode.FreeForAll
+                        "tournament" -> LucraMiniGameMode.Tournament
+                        else -> throw IllegalArgumentException(
+                            "miniGame flow requires a valid gameMode: $gameMode"
+                        )
+                    }
+                    LucraUiProvider.LucraFlow.MiniGame(
+                        gameId = gameTypeId
+                            ?: throw IllegalArgumentException("miniGame flow requires gameId"),
+                        gameMode = parsedMode,
+                        amount = amount,
+                        matchupId = matchupId,
+                    )
+                }
+                "achievements" -> LucraUiProvider.LucraFlow.Achievements
                 // TODO not yet publicly available within Android SDK
 //        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails
                 else -> throw IllegalArgumentException("Invalid flow: $flow")

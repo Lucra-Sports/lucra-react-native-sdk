@@ -51,7 +51,7 @@ function handleLucraSDKError(e: LucraSDKError) {
       LucraSDK.present({ name: LucraSDK.FLOW.DEMOGRAPHIC_COLLECTION });
       break;
 
-    case 'unknown':
+    case 'unknownError':
     default:
       console.warn('Unknown SDK error', e);
       break;

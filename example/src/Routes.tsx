@@ -10,6 +10,7 @@ import { EventViewer } from './container/EventViewer';
 import { SportsYouWatch } from './container/APIExample/SportsYouWatch';
 import { GamesYouPlay } from './container/APIExample/GamesYouPlay';
 import { MiniGameLauncher } from './container/MiniGameLauncher';
+import { RewardsAchievements } from './container/RewardsAchievements';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   SportsYouWatch: undefined;
   GamesYouPlay: undefined;
   MiniGameLauncher: undefined;
+  RewardsAchievements: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -101,6 +103,13 @@ export const Routes: FC = () => {
       <Stack.Screen
         name="MiniGameLauncher"
         component={MiniGameLauncher}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="RewardsAchievements"
+        component={RewardsAchievements}
         options={{
           headerShown: false,
         }}

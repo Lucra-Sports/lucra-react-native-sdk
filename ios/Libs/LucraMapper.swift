@@ -458,3 +458,84 @@ public func mapToSDKUser(user: [String: Any]) -> LucraSDK.SDKUser {
 	metadata: user["metadata"] as? [String : String]
   )
 }
+
+// MARK: - Minigames Headless epic — Rewards & Achievements
+
+public func rewardItemToMap(_ item: LucraSDK.RewardItem) -> [String: Any?] {
+  var discountCode: [String: Any?]?
+  if let code = item.discountCode {
+    discountCode = [
+      "code": code.code,
+      "claimUrl": code.claimUrl,
+    ]
+  }
+
+  var freeItem: [String: Any?]?
+  if let free = item.freeItem {
+    freeItem = [
+      "itemId": free.itemId,
+    ]
+  }
+
+  return [
+    "id": item.id,
+    "title": item.title,
+    "descriptor": item.descriptor,
+    "iconUrl": item.iconURL,
+    "bannerIconUrl": item.bannerIconURL,
+    "disclaimer": item.disclaimer,
+    "discountCode": discountCode,
+    "freeItem": freeItem,
+  ]
+}
+
+public func earnedRewardToMap(_ reward: LucraSDK.EarnedReward) -> [String: Any?] {
+  return [
+    "id": reward.id,
+    "place": reward.place,
+    "matchupId": reward.matchupId,
+    "matchupTitle": reward.matchupTitle,
+    "claimedAt": reward.claimedAt?.ISO8601Format(),
+    "viewedAt": reward.viewedAt?.ISO8601Format(),
+    "reward": rewardItemToMap(reward.reward),
+  ]
+}
+
+public func achievementCriteriaConfigToMap(_ config: LucraSDK.AchievementCriteriaConfig) -> [String: Any?] {
+  return [
+    "threshold": config.threshold,
+    "conditionOperator": config.conditionOperator?.rawValue,
+    "count": config.count,
+    "place": config.place,
+  ]
+}
+
+public func achievementItemToMap(_ item: LucraSDK.AchievementItem) -> [String: Any?] {
+  return [
+    "id": item.id,
+    "title": item.title,
+    "description": item.description,
+    "iconUrl": item.iconUrl,
+    "criteriaType": item.criteriaType.rawValue,
+    "criteriaConfig": achievementCriteriaConfigToMap(item.criteriaConfig),
+    "gameId": item.gameId,
+    "catalogReward": item.catalogReward.map { rewardItemToMap($0) },
+  ]
+}
+
+public func userAchievementToMap(_ achievement: LucraSDK.UserAchievement) -> [String: Any?] {
+  return [
+    "id": achievement.id,
+    "userId": achievement.userId,
+    "achievementId": achievement.achievementId,
+    "tenantId": achievement.tenantId,
+    "matchupId": achievement.matchupId,
+    "userGameScoreId": achievement.userGameScoreId,
+    "isEarned": achievement.isEarned,
+    "earnedAt": achievement.earnedAt?.ISO8601Format(),
+    "viewedAt": achievement.viewedAt?.ISO8601Format(),
+    "claimedAt": achievement.claimedAt?.ISO8601Format(),
+    "currentProgress": achievement.currentProgress,
+    "achievement": achievement.achievement.map { achievementItemToMap($0) },
+  ]
+}

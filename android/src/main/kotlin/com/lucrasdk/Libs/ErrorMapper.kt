@@ -11,6 +11,8 @@ object ErrorMapper {
         const val NOT_INITIALIZED = "notInitialized"
         const val UNVERIFIED = "unverified"
         const val MISSING_DEMOGRAPHIC_INFORMATION = "missingDemographicInformation"
+        const val FEATURE_DISABLED = "featureDisabled"
+        const val UNKNOWN_ERROR = "unknownError"
     }
 
     private inline fun String?.ifNullOrBlank(default: () -> String): String {
@@ -42,6 +44,12 @@ object ErrorMapper {
 
             FailedTournamentCall.UserStateError.DemographicInformationMissing ->
                 ErrorCodes.MISSING_DEMOGRAPHIC_INFORMATION to "User has missing demographic information"
+
+            FailedTournamentCall.FeatureDisabled ->
+                ErrorCodes.FEATURE_DISABLED to "Feature is disabled"
+
+            FailedTournamentCall.Unknown ->
+                ErrorCodes.UNKNOWN_ERROR to "An unknown error occurred"
         }
 
         promise.reject(code, message)
