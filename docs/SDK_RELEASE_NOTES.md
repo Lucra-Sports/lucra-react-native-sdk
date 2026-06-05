@@ -1,3 +1,7 @@
+# 5.4.1
+* Empty state profile UI/UX fix for both iOS and Android
+* Android geocomply issue fix
+
 # 5.4.0
 * Includes the Mini Games integration surface introduced during the 5.3.0 beta:
   * Added the `LucraSDK.startMiniGame(gameId, gameMode, amount?, matchupId?)` headless function. It starts a mini game session without presenting Lucra UI and returns a game `url`, `sessionId`, and optional `matchupId`. See [Mini Games headless functions](5.1_mini_games_headless.md).
