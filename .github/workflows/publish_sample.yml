@@ -73,6 +73,16 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Cache cocoapods
+        id: cocoapods-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/ios/Pods
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cocoapods-
+
       - name: Set up Fastlane
         run: |
           cd example
@@ -83,10 +93,21 @@ jobs:
         run: |
           gem install cocoapods
 
-      - name: Install pods
+      - name: Validate Podfile.lock consistency
+        run: |
+          if ! cmp -s Podfile.lock Pods/Manifest.lock; then
+            cd example/ios
+            echo "Podfile.lock is out of sync, requiring pod install"
+            rm -rf Pods/
+            pod cache clean --all
+            echo "pod_install_required=1" >> $GITHUB_ENV
+          fi
+
+      - name: Install cocoapods
+        if: steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1'
         run: |
           pod repo update
-          pod update
+          pod install --repo-update
         working-directory: example/ios
 
       - name: Release example for iOS
