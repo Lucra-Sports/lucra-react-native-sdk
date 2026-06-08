@@ -13,7 +13,7 @@
 @synthesize bridge = _bridge;
 LucraSwiftClient *swiftClient;
 
-RCT_EXPORT_MODULE(LucraClient)
+RCT_EXPORT_MODULE(NativeLucraClient)
 
 static LucraClient *_sharedInstance = nil;
 
