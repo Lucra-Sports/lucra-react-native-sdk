@@ -26,10 +26,12 @@ Pod::Spec.new do |s|
 
   s.platforms    = { :ios => min_ios_version_supported }
   s.source_files = "ios/**/*.{h,mm,swift}"
-  s.public_header_files = "ios/**/*.h"
+  s.public_header_files = "ios/lucra_react_native_sdk.h", "ios/**/*.h"
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_INSTALL_OBJC_HEADER' => 'YES'
+    'SWIFT_INSTALL_OBJC_HEADER' => 'YES',
+    'HEADER_SEARCH_PATHS' => '$(inherited) $(PODS_TARGET_SRCROOT)/ios',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_TARGET_SRCROOT)/ios'
   }
   
   if enableLocalIntegrationModeiOS
