@@ -1,6 +1,6 @@
 import { TurboModuleRegistry, type TurboModule } from 'react-native';
 
-interface Spec extends TurboModule {
+export interface Spec extends TurboModule {
   initialize(options: Object): Promise<void>;
 
   //Lucra Flow
@@ -66,4 +66,4 @@ interface Spec extends TurboModule {
   emitAvailableRewards: (rewards: Object[]) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('LucraClient');
+export default TurboModuleRegistry.getEnforcing<Spec>('NativeLucraClient');

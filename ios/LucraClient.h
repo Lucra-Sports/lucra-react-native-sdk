@@ -1,5 +1,5 @@
 #ifdef RCT_NEW_ARCH_ENABLED
-#import <LucraClientSpec/LucraClientSpec.h>
+#import <NativeLucraClientSpec/NativeLucraClientSpec.h>
 #else
 #import <React/RCTBridge.h>
 #endif

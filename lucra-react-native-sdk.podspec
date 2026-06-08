@@ -17,6 +17,7 @@ end
 
 Pod::Spec.new do |s|
   s.name         = "lucra-react-native-sdk"
+  s.module_name  = "lucra_react_native_sdk"
   s.version      = package["version"]
   s.summary      = package["description"]
   s.homepage     = package["homepage"]
@@ -25,6 +26,11 @@ Pod::Spec.new do |s|
 
   s.platforms    = { :ios => min_ios_version_supported }
   s.source_files = "ios/**/*.{h,mm,swift}"
+  s.public_header_files = "ios/**/*.h"
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'SWIFT_INSTALL_OBJC_HEADER' => 'YES'
+  }
   
   if enableLocalIntegrationModeiOS
     s.source = { :path => './xcframeworks/' }

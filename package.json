@@ -141,7 +141,7 @@
     ]
   },
   "codegenConfig": {
-    "name": "LucraClientSpec",
+    "name": "NativeLucraClientSpec",
     "type": "all",
     "jsSrcsDir": "src",
     "android": {

@@ -1,5 +1,9 @@
 #import "RCTBridge.h"
-#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
+#if __has_include(<lucra_react_native_sdk/lucra_react_native_sdk-Swift.h>)
+#import <lucra_react_native_sdk/lucra_react_native_sdk-Swift.h>
+#else
+#import "lucra_react_native_sdk-Swift.h"
+#endif
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
