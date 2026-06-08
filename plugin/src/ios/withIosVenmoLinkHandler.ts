@@ -3,7 +3,8 @@ import { ConfigPlugin, withAppDelegate } from '@expo/config-plugins';
 const objcFunctionSignature =
   'application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options';
 
-const objcHandleVenmoCall = '[[LucraClient sharedInstance] handleVenmoUrl:url];';
+const objcHandleVenmoCall =
+  '[[LucraClient sharedInstance] handleVenmoUrl:url];';
 const swiftHandleVenmoCall = 'LucraClient.sharedInstance().handleVenmoUrl(url)';
 const swiftInjectedMethod = `
 public override func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -18,13 +19,15 @@ export const withIosVenmoLinkHandler: ConfigPlugin = (config) => {
     const language = config.modResults.language;
 
     if (language === 'swift') {
-      if (!config.modResults.contents.includes('import lucra_react_native_sdk')) {
+      if (
+        !config.modResults.contents.includes('import lucra_react_native_sdk')
+      ) {
         config.modResults.contents = `import lucra_react_native_sdk\n${config.modResults.contents}`;
       }
 
       // Clean up previously injected global method blocks (outside AppDelegate).
       config.modResults.contents = config.modResults.contents.replace(
-        /\npublic override func application\(_ application: UIApplication, open url: URL, options: \[UIApplication\.OpenURLOptionsKey : Any\] = \[:\]\) -> Bool \{\n  _ = LucraClient\.sharedInstance\(\)\.handleVenmoUrl\(url\)\n  return super\.application\(application, open: url, options: options\)\n\}\n/g,
+        /\npublic override func application\(_ application: UIApplication, open url: URL, options: \[UIApplication\.OpenURLOptionsKey : Any\] = \[:\]\) -> Bool \{\n {2}_ = LucraClient\.sharedInstance\(\)\.handleVenmoUrl\(url\)\n {2}return super\.application\(application, open: url, options: options\)\n\}\n/g,
         '\n'
       );
 
