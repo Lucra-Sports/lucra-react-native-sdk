@@ -1,3 +1,14 @@
+# 5.5.0
+* Bumped iOS to [5.5.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.5.0)
+* Bumped Android to [6.6.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.6.0)
+* Added tournament payout and reward metadata to `LucraSDK.tournamentMatchup(tournamentId)`:
+  * `rewardType` identifies the raw tournament reward category, such as cash versus tenant-provided rewards.
+  * `payoutStructure` exposes the same payout model used by native tournament details screens, including formatted labels, jackpot metadata, payout flags, and ordered reward rows.
+  * Reward rows can include `catalogReward` details for tangible-prize tournaments without exposing redemption-only data such as discount codes, claim URLs, or free-item IDs.
+* Added TypeScript exports for `PayoutStructure`, `PayoutReward`, and `CatalogReward` so apps can type tournament payout UI directly from the SDK response.
+* Updated both Android and iOS mappers so the new tournament payout fields are returned consistently across platforms.
+* Updated tournament headless docs with the new response fields, example payload, and type definitions.
+
 # 5.4.1
 * Empty state profile UI/UX fix for both iOS and Android
 * Android geocomply issue fix
