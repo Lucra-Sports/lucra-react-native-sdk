@@ -24,6 +24,9 @@ import NativeLucraClient from './NativeLucraClient';
 export {
   type LucraReward,
   type PoolTournament,
+  type PayoutStructure,
+  type PayoutReward,
+  type CatalogReward,
   type LucraTournamentReward,
   type LucraCatalogReward,
   type LucraDiscountCodeConfig,
@@ -794,11 +797,11 @@ export const LucraSDK = {
       limit,
     })) as PoolTournament[];
   },
-  tournamentMatchup: async (tournamentId: string) => {
+  tournamentMatchup: async (tournamentId: string): Promise<PoolTournament> => {
     if (!tournamentId) {
       throw new Error('tournamentId is required');
     }
-    return await LucraClient.tournamentMatchup(tournamentId);
+    return (await LucraClient.tournamentMatchup(tournamentId)) as PoolTournament;
   },
   joinTournament: async (tournamentId: string) => {
     return await LucraClient.joinTournament(tournamentId);

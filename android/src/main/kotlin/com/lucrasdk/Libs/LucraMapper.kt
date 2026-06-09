@@ -564,7 +564,7 @@ object LucraMapper {
         reward.positionLabel?.let { map.putString("positionLabel", it) }
         reward.rewardLabel?.let { map.putString("rewardLabel", it) }
         reward.amountLabel?.let { map.putString("amountLabel", it) }
-        reward.value?.let { map.putInt("value", it) }
+        reward.value?.let { map.putDouble("value", it) }
         reward.catalogReward?.let { map.putMap("catalogReward", payoutCatalogRewardToMap(it)) }
         return map
     }
