@@ -11,7 +11,10 @@ import com.lucrasports.matchup.ParticipantGroupOutcome
 import com.lucrasports.matchup.TournamentLeaderboard
 import com.lucrasports.matchup.sports_impl.SportsInterval
 import com.lucrasports.sdk.core.contest.LucraMatchup
+import com.lucrasports.sdk.core.contest.tournament.CatalogReward
 import com.lucrasports.sdk.core.contest.tournament.Participant
+import com.lucrasports.sdk.core.contest.tournament.PayoutReward
+import com.lucrasports.sdk.core.contest.tournament.PayoutStructure
 import com.lucrasports.sdk.core.contest.tournament.Tournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
 import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
@@ -530,7 +533,51 @@ object LucraMapper {
         matchup.expiresAt?.let { map.putString("expiresAt", it.toString()) }
         map.putDouble("potTotal", matchup.potTotal)
         map.putDouble("potNetAmount", matchup.potNetAmount)
+        matchup.rewardType?.let { map.putString("rewardType", it) }
+        matchup.payoutStructure?.let { map.putMap("payoutStructure", payoutStructureToMap(it)) }
 
+        return map
+    }
+
+    fun payoutStructureToMap(payout: PayoutStructure): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("title", payout.title)
+        map.putString("description", payout.description)
+        payout.labelTitle?.let { map.putString("labelTitle", it) }
+        payout.labelDescription?.let { map.putString("labelDescription", it) }
+        map.putBoolean("noPayout", payout.noPayout)
+        map.putBoolean("isPercentagePayout", payout.isPercentagePayout)
+        map.putBoolean("showAmount", payout.showAmount)
+        payout.jackpotAmount?.let { map.putString("jackpotAmount", it) }
+        payout.jackpotDescriptor?.let { map.putString("jackpotDescriptor", it) }
+        val rewards = Arguments.createArray()
+        payout.rewards.forEach { rewards.pushMap(payoutRewardToMap(it)) }
+        map.putArray("rewards", rewards)
+        return map
+    }
+
+    fun payoutRewardToMap(reward: PayoutReward): WritableMap {
+        val map = Arguments.createMap()
+        reward.place?.let { map.putInt("place", it) }
+        reward.endPlace?.let { map.putInt("endPlace", it) }
+        reward.placeLabel?.let { map.putString("placeLabel", it) }
+        reward.positionLabel?.let { map.putString("positionLabel", it) }
+        reward.rewardLabel?.let { map.putString("rewardLabel", it) }
+        reward.amountLabel?.let { map.putString("amountLabel", it) }
+        reward.value?.let { map.putDouble("value", it) }
+        reward.catalogReward?.let { map.putMap("catalogReward", payoutCatalogRewardToMap(it)) }
+        return map
+    }
+
+    fun payoutCatalogRewardToMap(reward: CatalogReward): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", reward.id)
+        map.putString("type", reward.type)
+        map.putString("title", reward.title)
+        reward.description?.let { map.putString("description", it) }
+        reward.iconUrl?.let { map.putString("iconUrl", it) }
+        reward.bannerIconUrl?.let { map.putString("bannerIconUrl", it) }
+        reward.disclaimer?.let { map.putString("disclaimer", it) }
         return map
     }
 

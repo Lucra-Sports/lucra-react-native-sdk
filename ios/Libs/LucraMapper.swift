@@ -352,6 +352,48 @@ public func tournamentsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> 
     "iconUrl": tournament.iconUrl as Any,
     "expiresAt": tournament.expiresAt?.ISO8601Format(),
     "potTotal": tournament.potTotal,
+    "rewardType": tournament.rewardType as Any,
+    "payoutStructure": tournament.payoutStructure.map(payoutStructureToMap) as Any,
+  ]
+}
+
+public func payoutStructureToMap(_ payout: LucraSDK.TournamentsMatchup.PayoutStructure) -> [String: Any?] {
+  return [
+    "title": payout.title,
+    "description": payout.description,
+    "labelTitle": payout.labelTitle as Any,
+    "labelDescription": payout.labelDescription as Any,
+    "noPayout": payout.noPayout,
+    "isPercentagePayout": payout.isPercentagePayout,
+    "showAmount": payout.showAmount,
+    "jackpotAmount": payout.jackpotAmount as Any,
+    "jackpotDescriptor": payout.jackpotDescriptor as Any,
+    "rewards": payout.rewards.map(payoutRewardToMap),
+  ]
+}
+
+public func payoutRewardToMap(_ reward: LucraSDK.TournamentsMatchup.PayoutReward) -> [String: Any?] {
+  return [
+    "place": reward.place as Any,
+    "endPlace": reward.endPlace as Any,
+    "placeLabel": reward.placeLabel as Any,
+    "positionLabel": reward.positionLabel as Any,
+    "rewardLabel": reward.rewardLabel as Any,
+    "amountLabel": reward.amountLabel as Any,
+    "value": reward.value as Any,
+    "catalogReward": reward.catalogReward.map(payoutCatalogRewardToMap) as Any,
+  ]
+}
+
+public func payoutCatalogRewardToMap(_ reward: LucraSDK.TournamentsMatchup.CatalogReward) -> [String: Any?] {
+  return [
+    "id": reward.id,
+    "type": reward.type,
+    "title": reward.title,
+    "description": reward.description as Any,
+    "iconUrl": reward.iconUrl as Any,
+    "bannerIconUrl": reward.bannerIconUrl as Any,
+    "disclaimer": reward.disclaimer as Any,
   ]
 }
 

@@ -34,5 +34,20 @@ target 'LucrasdkExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # fmt 11.0.2 (via RCT-Folly / RN 0.79) fails to compile under newer Clang
+    # (Xcode 16.3+/26) with "call to consteval function ... is not a constant
+    # expression". fmt/base.h recomputes FMT_USE_CONSTEVAL from compiler feature
+    # macros with no #ifndef guard, so a -D override is ignored; force it off in
+    # the pod source instead. Re-applies on every `pod install`.
+    fmt_base_h = File.join(installer.sandbox.root, 'fmt', 'include', 'fmt', 'base.h')
+    if File.exist?(fmt_base_h)
+      contents = File.read(fmt_base_h)
+      patched = contents.gsub('define FMT_USE_CONSTEVAL 1', 'define FMT_USE_CONSTEVAL 0')
+      if patched != contents
+        File.write(fmt_base_h, patched)
+        Pod::UI.puts '[Lucra] Patched fmt/base.h to disable FMT_USE_CONSTEVAL (Xcode/Clang consteval workaround)'
+      end
+    end
   end
 end
