@@ -50,7 +50,7 @@ module.exports = {
     emulator: {
       type: 'android.emulator',
       device: {
-        avdName: 'arm64emulator',
+        avdName: process.env.DETOX_AVD_NAME,
       },
     },
   },
