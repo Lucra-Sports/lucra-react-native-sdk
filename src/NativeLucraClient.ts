@@ -14,6 +14,11 @@ interface Spec extends TurboModule {
 
   // All types of matchups
   getMatchup(matchupId: string): Promise<Object>;
+  getMatchupDetails(matchupId: string): Promise<Object>;
+  // Live matchup-details subscription — results arrive via the `matchupDetails`
+  // event; cancel ends the native subscription.
+  subscribeMatchupDetails(matchupId: string): void;
+  cancelMatchupDetailsSubscription(): void;
 
   // Games related
   createRecreationalGame(

@@ -101,10 +101,10 @@ PODS:
   - hermes-engine/Pre-built (0.79.2)
   - JWTDecode (3.3.0)
   - lucra-react-native-sdk (5.5.0):
-    - Auth0
     - DoubleConversion
     - glog
     - hermes-engine
+    - LucraSDK (= 5.5.0)
     - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
     - RCTTypeSafety
@@ -125,6 +125,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - LucraSDK (5.5.0):
+    - Auth0
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -2214,6 +2216,7 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleUtilities
     - JWTDecode
+    - LucraSDK
     - nanopb
     - PromisesObjC
     - SimpleKeychain
@@ -2416,7 +2419,8 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: 314be5250afa5692b57b4dd1705959e1973a8ebe
   JWTDecode: 1ca6f765844457d0dd8690436860fecee788f631
-  lucra-react-native-sdk: 4342c9be66817aad1beb49b0589a6933ba46a19c
+  lucra-react-native-sdk: 4b7a8572afa80a3ac9f74badfbbe673be47aa08d
+  LucraSDK: bd3c23378edf22807cc88ed1d4d9b218546d28f0
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
@@ -2482,7 +2486,7 @@ SPEC CHECKSUMS:
   React-timing: beb0ba912f9ffc1a6758afa767ae5c03302dc9ee
   React-utils: 4b32801a05eff845d316edd59b313a3e25c5fc08
   ReactAppDependencyProvider: 04d5eb15eb46be6720e17a4a7fa92940a776e584
-  ReactCodegen: bc41fa2ca7be8239f9d7cba538dfb0443a537da6
+  ReactCodegen: 041559ba76d00f6680dfa0916b3c791f4babe5ea
   ReactCommon: 1511ef100f1afa4c199fe52fe7a8d2529a41429a
   Resolver: 89e3fa61be7350b5faa3cb45cef11c2d9f6a7b2b
   RNCAsyncStorage: 646c1bf2ebfc78d6632a3b0399f471fba8101e73
@@ -2501,4 +2505,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 057413d3ec6fc9cc94d5ef21a76854377931b31f
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

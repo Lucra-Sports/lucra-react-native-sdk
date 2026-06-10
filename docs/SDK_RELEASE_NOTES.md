@@ -1,3 +1,20 @@
+# UPCOMING
+* Added the `LucraSDK.getMatchupDetails(matchupId)` function to retrieve detailed matchup information, including
+  participant groups with scores and outcomes, and individual payouts.
+  See [GYP headless functions](2.3_gyp_headless_functions.md#get-matchup-details).
+* Added `LucraSDK.subscribeToMatchupDetails(matchupId, onResult, onError?)` to receive live updates when matchup details
+  change. The callback fires immediately and whenever scores update or settlement occurs. Returns an `unsubscribe`
+  function to cancel the subscription.
+  See [Subscribe to Matchup Details](2.3_gyp_headless_functions.md#subscribe-to-matchup-details-live).
+* Added the `useMatchupDetails(matchupId)` React hook for subscribing to matchup details within a component.
+  Automatically unsubscribes when the component unmounts.
+* `getMatchup` cross-platform parity fixes:
+  * iOS: `status`, `type`, and `subtype` are now returned (previously dropped — Swift enums were not serializable across the bridge).
+  * iOS: `tournamentLeaderboard` is no longer attached as a placeholder to participants of non-tournament matchups, and `place`/`placeOverride` are numbers (previously strings).
+  * iOS: `socialConnectionId` now maps the actual field instead of repeating the user `id`.
+  * Android: `participantGroups` is no longer empty (the underlying one-shot query skipped groups for unauthenticated requests; the matchup now resolves through the details query).
+  * Breaking (Android): `type` and `subtype` now return canonical raw values matching iOS and the `MatchupType`/`MatchupSubtype` TypeScript unions — e.g. `RECREATIONAL_GAME` instead of `RecreationalGame`, `GROUP_VS_GROUP` instead of `GroupVsGroup`.
+
 # 5.5.0
 * Bumped iOS to [5.5.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.5.0)
 * Bumped Android to [6.6.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.6.0)

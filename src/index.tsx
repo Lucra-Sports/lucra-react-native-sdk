@@ -185,14 +185,44 @@ export type LucraSDKParams = {
   merchantID?: string;
 };
 
+export type MatchupStatus =
+  | 'OPEN'
+  | 'CONFIRMED'
+  | 'LOCKED'
+  | 'CLOSED'
+  | 'CLOSED_TIE'
+  | 'PENDING_OUTCOMES'
+  | 'DISPUTE'
+  | 'CANCELED_BY_OWNER'
+  | 'CANCELED_DISPUTE'
+  | 'CANCELED_GAME_CANCELED'
+  | 'CANCELED_NOT_ACCEPTED'
+  | 'CANCELED_PLAYER_INACTIVE'
+  | 'CANCELED_THROUGH_API'
+  | 'CANCELED_TIMEOUT'
+  | 'UNKNOWN';
+
+export type MatchupType =
+  | 'RECREATIONAL_GAME'
+  | 'PROFESSIONAL_SPORTS_PLAYER_STAT'
+  | 'PROFESSIONAL_SPORTS_TEAM_STAT'
+  | 'POOL_TOURNAMENT'
+  | 'UNKNOWN';
+
+export type MatchupSubtype =
+  | 'GROUP_VS_GROUP'
+  | 'FREE_FOR_ALL'
+  | 'POOL_N_WINNER'
+  | 'UNKNOWN';
+
 export type MatchupInfo = {
   id: string;
   updatedAt: string;
   createdAt: string;
   creatorId: string;
-  status: string;
-  subtype: string;
-  type: string;
+  status: MatchupStatus;
+  subtype: MatchupSubtype;
+  type: MatchupType;
   isPublic: boolean;
   creator?: MatchupUserInfo;
   participantGroups: MatchupTeamInfo[];
@@ -223,6 +253,37 @@ export type MatchupUserInfo = {
   username: string;
   avatarUrl?: string;
   loyaltyPoints: number;
+};
+
+export type MatchupDetails = {
+  matchup: MatchupInfo;
+  groups: MatchupGroupDetails[];
+  participantScores: MatchupParticipantScore[];
+};
+
+export type MatchupGroupDetails = {
+  id: string;
+  name?: string;
+  outcome: 'WIN' | 'LOSS' | 'TIE' | 'UNKNOWN';
+  score?: number;
+  participants: MatchupParticipantDetails[];
+};
+
+export type MatchupParticipantDetails = {
+  userId: string;
+  username: string;
+  avatarUrl?: string;
+  individualPayout?: number;
+};
+
+export type MatchupParticipantScore = {
+  userId?: string;
+  username?: string;
+  avatarUrl?: string;
+  place?: number;
+  score?: number;
+  finishedAt?: string;
+  groupId?: string;
 };
 
 export type MatchupTeamInfo = {
@@ -405,6 +466,8 @@ let viewRewardsCallback: (() => void) | null = null;
 let viewRewardsSubscription: NativeEventSubscription;
 let lucraFlowDismissedSubscription: NativeEventSubscription;
 let lucraFlowDismissedCallback: ((flow: string) => void) | null = null;
+let matchupDetailsListener: NativeEventSubscription | null = null;
+let matchupDetailsGeneration = 0;
 
 type LucraContestListeners = {
   onGamesMatchupCreated?: (id: string) => void;
@@ -749,6 +812,55 @@ export const LucraSDK = {
   getMatchup: async (matchupId: string): Promise<MatchupInfo> => {
     return (await LucraClient.getMatchup(matchupId)) as MatchupInfo;
   },
+  getMatchupDetails: async (matchupId: string): Promise<MatchupDetails> => {
+    return (await LucraClient.getMatchupDetails(matchupId)) as MatchupDetails;
+  },
+  /**
+   * Subscribe to live matchup detail updates (e.g. GYP scores / auto
+   * settlement as a game progresses). `onResult` fires immediately with the
+   * current details and again on every server-side change.
+   *
+   * In React components prefer the `useMatchupDetails` hook, which scopes the
+   * subscription to the component lifecycle automatically.
+   *
+   * Returns an unsubscribe function — call it to stop receiving updates and
+   * cancel the native subscription. Only one matchup-details subscription is
+   * active at a time; subscribing again replaces the previous one. The
+   * returned function is safe to call more than once, and a stale unsubscribe
+   * never cancels a subscription that has since replaced it.
+   */
+  subscribeToMatchupDetails: (
+    matchupId: string,
+    onResult: (details: MatchupDetails) => void,
+    onError?: (error: { code: string; message: string }) => void
+  ): (() => void) => {
+    matchupDetailsListener?.remove();
+    const generation = ++matchupDetailsGeneration;
+    const subscription = eventEmitter.addListener(
+      'matchupDetails',
+      (payload: {
+        matchupId: string;
+        details?: MatchupDetails;
+        error?: { code: string; message: string };
+      }) => {
+        if (payload.matchupId !== matchupId) return;
+        if (payload.error) {
+          onError?.(payload.error);
+        } else if (payload.details) {
+          onResult(payload.details);
+        }
+      }
+    );
+    matchupDetailsListener = subscription;
+    LucraClient.subscribeMatchupDetails(matchupId);
+    return () => {
+      subscription.remove();
+      if (generation === matchupDetailsGeneration) {
+        matchupDetailsListener = null;
+        LucraClient.cancelMatchupDetailsSubscription();
+      }
+    };
+  },
   logout: (): Promise<void> => {
     return LucraClient.logout();
   },
@@ -809,6 +921,43 @@ export const LucraSDK = {
     return await LucraClient.joinTournament(tournamentId);
   },
 };
+
+/**
+ * React hook for live matchup details, scoped to the component lifecycle —
+ * the React equivalent of Android's lifecycle-scoped coroutines. Subscribes
+ * on mount (and whenever `matchupId` changes) and automatically cancels the
+ * native subscription on unmount, so it cannot leak.
+ *
+ * Pass `undefined` to stay idle (e.g. while the matchup id is still loading).
+ */
+export function useMatchupDetails(matchupId: string | undefined): {
+  details: MatchupDetails | null;
+  error: { code: string; message: string } | null;
+} {
+  const [details, setDetails] = React.useState<MatchupDetails | null>(null);
+  const [error, setError] = React.useState<{
+    code: string;
+    message: string;
+  } | null>(null);
+
+  React.useEffect(() => {
+    if (!matchupId) {
+      return;
+    }
+    setDetails(null);
+    setError(null);
+    return LucraSDK.subscribeToMatchupDetails(
+      matchupId,
+      (next) => {
+        setError(null);
+        setDetails(next);
+      },
+      setError
+    );
+  }, [matchupId]);
+
+  return { details, error };
+}
 
 export type LucraSDKError = {
   code:
