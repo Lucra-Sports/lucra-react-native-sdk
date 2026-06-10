@@ -141,6 +141,22 @@ RCT_EXPORT_METHOD(getMatchup : (NSString *)matchupId
                    reject:reject];
 }
 
+RCT_EXPORT_METHOD(getMatchupDetails : (NSString *)matchupId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getMatchupDetails:matchupId
+                         resolve:resolve
+                          reject:reject];
+}
+
+RCT_EXPORT_METHOD(subscribeMatchupDetails : (NSString *)matchupId) {
+  [swiftClient subscribeMatchupDetails:matchupId];
+}
+
+RCT_EXPORT_METHOD(cancelMatchupDetailsSubscription) {
+  [swiftClient cancelMatchupDetailsSubscription];
+}
+
 RCT_EXPORT_METHOD(present : (NSDictionary *)params
                   resolve : (RCTPromiseResolveBlock)resolve
                    reject : (RCTPromiseRejectBlock)reject) {

@@ -427,6 +427,60 @@ private enum ErrorCode {
       }
     }
 
+    @objc public func getMatchupDetails(
+      _ matchupId: String,
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        // Annotated to pick the one-shot async overload over the AsyncStream one.
+        let result: Result<LucraMatchupDetails, GamesMatchupError> =
+          await self.nativeClient.api.getMatchupDetails(matchupId: matchupId)
+
+        switch result {
+        case .success(let details):
+          resolve(lucraMatchupDetailsToMap(details: details))
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
+    @objc public func subscribeMatchupDetails(_ matchupId: String) {
+      Task { @MainActor in
+        // The AsyncStream overload fires immediately and again on every
+        // server-side change; cancelMatchupDetailsSubscription() finishes it.
+        let stream: AsyncStream<Result<LucraMatchupDetails, GamesMatchupError>> =
+          self.nativeClient.api.getMatchupDetails(matchupId: matchupId)
+
+        for await result in stream {
+          switch result {
+          case .success(let details):
+            self.delegate?.sendEvent(
+              name: "matchupDetails",
+              result: [
+                "matchupId": matchupId,
+                "details": lucraMatchupDetailsToMap(details: details)
+              ])
+          case .failure(let error):
+            let (code, message) = self.lucraErrorCodeMessage(error)
+            self.delegate?.sendEvent(
+              name: "matchupDetails",
+              result: [
+                "matchupId": matchupId,
+                "error": ["code": code, "message": message]
+              ])
+          }
+        }
+      }
+    }
+
+    @objc public func cancelMatchupDetailsSubscription() {
+      Task { @MainActor in
+        self.nativeClient.api.cancelMatchupDetailsSubscription()
+      }
+    }
+
     @objc public func preloadGeoToken(_ context: String) {
       let tokenType: MiniGameGeoTokenType
       switch context.lowercased() {
@@ -609,6 +663,11 @@ private enum ErrorCode {
     }
 
     private func rejectLucraError(_ reject: RCTPromiseRejectBlock, error: Error) {
+      let (code, message) = lucraErrorCodeMessage(error)
+      reject(code, message, error)
+    }
+
+    private func lucraErrorCodeMessage(_ error: Error) -> (code: String, message: String) {
       let code: String
       let message: String
 
@@ -711,7 +770,7 @@ private enum ErrorCode {
         message = extractMessage(from: error)
       }
 
-      reject(code, message, error)
+      return (code, message)
     }
 
     private func extractMessage(from error: Error) -> String {

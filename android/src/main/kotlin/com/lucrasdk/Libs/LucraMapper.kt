@@ -8,9 +8,13 @@ import com.lucrasdk.Libs.LucraUtils.Companion.convertReadableMapToStringMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
 import com.lucrasports.matchup.ParticipantGroupOutcome
+import com.lucrasports.matchup.RecreationalGame
+import com.lucrasports.matchup.TopLevelMatchupSubType
 import com.lucrasports.matchup.TournamentLeaderboard
 import com.lucrasports.matchup.sports_impl.SportsInterval
 import com.lucrasports.sdk.core.contest.LucraMatchup
+import com.lucrasports.sdk.core.contest.LucraMatchupDetails
+import com.lucrasports.sdk.core.contest.MatchupSubtype
 import com.lucrasports.sdk.core.contest.tournament.CatalogReward
 import com.lucrasports.sdk.core.contest.tournament.Participant
 import com.lucrasports.sdk.core.contest.tournament.PayoutReward
@@ -386,8 +390,23 @@ object LucraMapper {
         map.putString("createdAt", match.createdAt)
         map.putString("creatorId", match.creatorId)
         map.putString("status", match.status.rawValue)
-        map.putString("subtype", match.subtype.name)
-        map.putString("type", match.type.name)
+        // Emit the backend's canonical raw values so both platforms return the
+        // same strings (iOS maps these from String-backed enum raw values).
+        map.putString(
+            "subtype", when (match.subtype) {
+                MatchupSubtype.GroupVsGroup -> "GROUP_VS_GROUP"
+                MatchupSubtype.FreeForAll -> "FREE_FOR_ALL"
+            }
+        )
+        map.putString(
+            "type", when (match.type) {
+                TopLevelMatchupSubType.ProfessionalSportsPlayerStat -> "PROFESSIONAL_SPORTS_PLAYER_STAT"
+                TopLevelMatchupSubType.ProfessionalSportsTeamStat -> "PROFESSIONAL_SPORTS_TEAM_STAT"
+                TopLevelMatchupSubType.PoolTournament -> "POOL_TOURNAMENT"
+                is RecreationalGame -> "RECREATIONAL_GAME"
+                else -> "UNKNOWN"
+            }
+        )
         map.putBoolean("isPublic", match.isPublic)
 
         match.creator?.let { map.putMap("creator", userToMap(it)) }
@@ -486,6 +505,59 @@ object LucraMapper {
 
             map.putMap("recreationGameExtension", extMap)
         }
+
+        return map
+    }
+
+    fun lucraMatchupDetailsToMap(details: LucraMatchupDetails): WritableMap {
+        val map = Arguments.createMap()
+        map.putMap("matchup", lucraMatchupToMap(details.matchup))
+
+        val groupsArray = Arguments.createArray()
+        details.groups.forEach { group ->
+            val groupMap = Arguments.createMap()
+            groupMap.putString("id", group.id)
+            group.name?.let { groupMap.putString("name", it) }
+            groupMap.putString(
+                "outcome", when (group.outcome) {
+                    ParticipantGroupOutcome.Loss -> "LOSS"
+                    ParticipantGroupOutcome.Tie -> "TIE"
+                    ParticipantGroupOutcome.Win -> "WIN"
+                    else -> "UNKNOWN"
+                }
+            )
+            group.score?.let { groupMap.putDouble("score", it) }
+
+            val participantsArray = Arguments.createArray()
+            group.participants.forEach { participant ->
+                val participantMap = Arguments.createMap()
+                participantMap.putString("userId", participant.userId)
+                participantMap.putString("username", participant.username)
+                participant.avatarUrl?.let { participantMap.putString("avatarUrl", it) }
+                participant.individualPayout?.let {
+                    participantMap.putDouble("individualPayout", it)
+                }
+                participantsArray.pushMap(participantMap)
+            }
+            groupMap.putArray("participants", participantsArray)
+
+            groupsArray.pushMap(groupMap)
+        }
+        map.putArray("groups", groupsArray)
+
+        val scoresArray = Arguments.createArray()
+        details.participantScores.forEach { score ->
+            val scoreMap = Arguments.createMap()
+            score.userId?.let { scoreMap.putString("userId", it) }
+            score.username?.let { scoreMap.putString("username", it) }
+            score.avatarUrl?.let { scoreMap.putString("avatarUrl", it) }
+            score.place?.let { scoreMap.putInt("place", it) }
+            score.score?.let { scoreMap.putDouble("score", it) }
+            score.finishedAt?.let { scoreMap.putString("finishedAt", it) }
+            score.groupId?.let { scoreMap.putString("groupId", it) }
+            scoresArray.pushMap(scoreMap)
+        }
+        map.putArray("participantScores", scoresArray)
 
         return map
     }

@@ -23,6 +23,79 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'APIFlow'>;
 
+// iOS serializes dictionaries in random key order while Android preserves
+// insertion order — sort keys so responses diff cleanly across platforms.
+const sortKeysDeep = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    return value.map(sortKeysDeep);
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.keys(value as Record<string, unknown>)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, key) => {
+        acc[key] = sortKeysDeep((value as Record<string, unknown>)[key]);
+        return acc;
+      }, {});
+  }
+  return value;
+};
+
+// Matches, in priority order: an object key ("foo":), a string value,
+// a number, a boolean, or null — so each can be colorized independently.
+const JSON_TOKEN_REGEX =
+  /("(?:\\.|[^"\\])*"\s*:)|("(?:\\.|[^"\\])*")|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|(true|false)|(null)/g;
+
+/** Renders pretty-printed JSON with lightweight syntax highlighting. */
+const HighlightedJson: React.FC<{ json: string }> = ({ json }) => {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let key = 0;
+  let match: RegExpExecArray | null;
+  JSON_TOKEN_REGEX.lastIndex = 0;
+
+  while ((match = JSON_TOKEN_REGEX.exec(json)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(
+        <Text key={key++} style={Styles.jsonPunctuation}>
+          {json.slice(lastIndex, match.index)}
+        </Text>
+      );
+    }
+
+    const [token] = match;
+    const style = match[1]
+      ? Styles.jsonKey
+      : match[2]
+        ? Styles.jsonString
+        : match[3]
+          ? Styles.jsonNumber
+          : match[4]
+            ? Styles.jsonBoolean
+            : Styles.jsonNull;
+
+    nodes.push(
+      <Text key={key++} style={style}>
+        {token}
+      </Text>
+    );
+    lastIndex = match.index + token.length;
+  }
+
+  if (lastIndex < json.length) {
+    nodes.push(
+      <Text key={key++} style={Styles.jsonPunctuation}>
+        {json.slice(lastIndex)}
+      </Text>
+    );
+  }
+
+  return (
+    <Text selectable style={Styles.codeText}>
+      {nodes}
+    </Text>
+  );
+};
+
 function handleLucraSDKError(e: LucraSDKError) {
   switch (e.code) {
     case 'notInitialized':
@@ -66,6 +139,31 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
     PoolTournament[]
   >([]);
   const [fullMatchupInfo, setFullMatchupInfo] = React.useState('');
+  const [resultTitle, setResultTitle] = React.useState('Result');
+  const [copied, setCopied] = React.useState(false);
+  const [isSubscribed, setIsSubscribed] = React.useState(false);
+  const unsubscribeRef = React.useRef<(() => void) | null>(null);
+
+  const showResult = React.useCallback((title: string, data: unknown) => {
+    setResultTitle(title);
+    setFullMatchupInfo(JSON.stringify(sortKeysDeep(data), null, 2));
+    setCopied(false);
+  }, []);
+
+  const stopSubscription = React.useCallback(() => {
+    unsubscribeRef.current?.();
+    unsubscribeRef.current = null;
+    setIsSubscribed(false);
+  }, []);
+
+  // Always tear down the live subscription when leaving the screen.
+  React.useEffect(() => stopSubscription, [stopSubscription]);
+
+  const copyResult = React.useCallback(() => {
+    Clipboard.setString(fullMatchupInfo);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }, [fullMatchupInfo]);
 
   return (
     <SafeAreaView className="h-full bg-indigo-900  pt-8">
@@ -140,8 +238,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
             }
             try {
               const fullMatchup = await LucraSDK.getMatchup(matchupId);
-              const prettyJson = JSON.stringify(fullMatchup, null, 2);
-              setFullMatchupInfo(prettyJson);
+              showResult('Matchup', fullMatchup);
             } catch (e) {
               setFullMatchupInfo('');
               Alert.alert('Error', String(e));
@@ -151,23 +248,96 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <Text className="text-white">Get Matchup</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            if (!matchupId) {
+              Alert.alert('Error', 'Please enter a Matchup ID');
+              return;
+            }
+            try {
+              const matchupDetails =
+                await LucraSDK.getMatchupDetails(matchupId);
+              showResult('Matchup Details', matchupDetails);
+            } catch (e) {
+              setFullMatchupInfo('');
+              Alert.alert('Error', String(e));
+            }
+          }}
+        >
+          <Text className="text-white">Get Matchup Details</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 p-4 items-center justify-center rounded-lg"
+          style={isSubscribed ? Styles.copiedButton : Styles.actionButton}
+          onPress={() => {
+            if (isSubscribed) {
+              stopSubscription();
+              return;
+            }
+            if (!matchupId) {
+              Alert.alert('Error', 'Please enter a Matchup ID');
+              return;
+            }
+            unsubscribeRef.current = LucraSDK.subscribeToMatchupDetails(
+              matchupId,
+              (details) => showResult('Matchup Details (live)', details),
+              (error) =>
+                Alert.alert(
+                  'Subscription error',
+                  `${error.code}: ${error.message}`
+                )
+            );
+            setIsSubscribed(true);
+          }}
+        >
+          <Text className="text-white">
+            {isSubscribed
+              ? '● Unsubscribe (live)'
+              : 'Subscribe to Matchup Details'}
+          </Text>
+        </TouchableOpacity>
+
         {fullMatchupInfo ? (
-          <View className="w-full bg-gray-900 border border-indigo-400 rounded-lg mt-2 p-2">
-            <View className="flex-row justify-between items-center mb-2">
-              <Text className="text-indigo-300 font-bold">
-                Full Matchup JSON
-              </Text>
-              <TouchableOpacity
-                onPress={() => Clipboard.setString(fullMatchupInfo)}
-                className="px-2 py-1 bg-indigo-700 rounded"
-              >
-                <Text className="text-white text-xs">Copy</Text>
-              </TouchableOpacity>
+          <View
+            className="w-full border border-indigo-400 rounded-xl mt-2 overflow-hidden"
+            style={Styles.jsonCard}
+          >
+            <View
+              className="flex-row justify-between items-center px-3 py-2 border-b border-indigo-400"
+              style={Styles.jsonHeader}
+            >
+              <Text className="text-white font-bold">{resultTitle}</Text>
+              <View className="flex-row gap-2">
+                <TouchableOpacity
+                  onPress={copyResult}
+                  className="px-3 py-1 rounded"
+                  style={copied ? Styles.copiedButton : Styles.actionButton}
+                >
+                  <Text className="text-white text-xs font-semibold">
+                    {copied ? '✓ Copied' : 'Copy'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setFullMatchupInfo('')}
+                  className="px-3 py-1 rounded"
+                  style={Styles.actionButton}
+                >
+                  <Text className="text-white text-xs font-semibold">
+                    Clear
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <ScrollView horizontal>
-              <Text selectable style={Styles.codeText}>
-                {fullMatchupInfo}
-              </Text>
+            <ScrollView
+              style={Styles.jsonScroll}
+              nestedScrollEnabled
+              contentContainerClassName="p-3"
+            >
+              <ScrollView horizontal nestedScrollEnabled>
+                <HighlightedJson json={fullMatchupInfo} />
+              </ScrollView>
             </ScrollView>
           </View>
         ) : null}
@@ -252,7 +422,7 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           onPress={async () => {
             try {
               let tournament = await LucraSDK.tournamentMatchup(tournamentId);
-              Alert.alert('Tournament', JSON.stringify(tournament, null, 2));
+              showResult('Tournament', tournament);
             } catch (e) {
               console.error(e);
             }
@@ -311,7 +481,41 @@ const Styles = StyleSheet.create({
   },
   codeText: {
     fontFamily: 'Menlo',
-    color: '#fff',
+    color: '#e2e8f0',
     fontSize: 12,
+    lineHeight: 18,
+  },
+  jsonCard: {
+    backgroundColor: '#020617',
+  },
+  jsonHeader: {
+    backgroundColor: '#3730a3',
+  },
+  jsonScroll: {
+    maxHeight: 360,
+  },
+  actionButton: {
+    backgroundColor: '#4f46e5',
+  },
+  copiedButton: {
+    backgroundColor: '#16a34a',
+  },
+  jsonKey: {
+    color: '#7dd3fc',
+  },
+  jsonString: {
+    color: '#86efac',
+  },
+  jsonNumber: {
+    color: '#fdba74',
+  },
+  jsonBoolean: {
+    color: '#c4b5fd',
+  },
+  jsonNull: {
+    color: '#94a3b8',
+  },
+  jsonPunctuation: {
+    color: '#e2e8f0',
   },
 });
