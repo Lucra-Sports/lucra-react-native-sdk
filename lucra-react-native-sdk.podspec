@@ -27,6 +27,7 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => min_ios_version_supported }
   s.source_files = "ios/**/*.{h,mm,swift}"
   s.header_dir = "lucra_react_native_sdk"
+  # s.header_mappings_dir = "ios"
   s.public_header_files = "ios/**/*.h"
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
