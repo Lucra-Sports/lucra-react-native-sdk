@@ -64,6 +64,8 @@ interface Spec extends TurboModule {
   emitDeepLink: (deepLink: string) => void;
   emitCreditConversion: (creditConversion: Object) => void;
   handleLucraLink: (link: string) => Promise<boolean>;
+  // Resolves a Lucra deeplink to flow info without presenting UI; null when unrecognized
+  parseLucraLink: (link: string) => Promise<Object>;
   registerDeviceTokenHex: (token: string) => Promise<void>;
   registerDeviceTokenBase64: (token: string) => Promise<void>;
   registerConvertToCreditProvider: () => void;

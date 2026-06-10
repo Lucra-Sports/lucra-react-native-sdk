@@ -660,3 +660,72 @@ public func userAchievementToMap(_ achievement: LucraSDK.UserAchievement) -> [St
     "achievement": achievement.achievement.map { achievementItemToMap($0) },
   ]
 }
+
+public func lucraFlowToMap(_ flow: LucraSDK.LucraFlow) -> [String: Any] {
+  switch flow {
+  case .onboarding:
+    return ["flow": "onboarding"]
+  case .verifyIdentity:
+    return ["flow": "verifyIdentity"]
+  case .addFunds:
+    return ["flow": "addFunds"]
+  case .withdrawFunds:
+    return ["flow": "withdrawFunds"]
+  case .createGamesMatchup(let gameId, let location):
+    var map: [String: Any] = ["flow": "createGamesMatchup"]
+    if let gameId { map["gameId"] = gameId }
+    if let location { map["location"] = location }
+    return map
+  case .createSportsMatchup:
+    return ["flow": "createSportsMatchup"]
+  case .profile:
+    return ["flow": "profile"]
+  case .publicFeed:
+    return ["flow": "publicFeed"]
+  case .sportsContestDetails(let matchupId):
+    return ["flow": "sportContestDetails", "matchupId": matchupId]
+  case .gamesMatchupDetails(let matchupId):
+    return ["flow": "gamesMatchupDetails", "matchupId": matchupId]
+  case .myMatchups:
+    return ["flow": "myMatchup"]
+  case .matchupDetails(let matchupId):
+    return ["flow": "matchupDetails", "matchupId": matchupId]
+  case .tournamentDetails(let matchupId):
+    return ["flow": "tournamentDetails", "matchupId": matchupId]
+  case .demographicCollection:
+    return ["flow": "demographicCollection"]
+  case .wallet:
+    return ["flow": "wallet"]
+  case .homePage(let location):
+    var map: [String: Any] = ["flow": "homePage"]
+    if let location { map["location"] = location }
+    return map
+  case .achievements:
+    return ["flow": "achievements"]
+  case .transactionHistory:
+    return ["flow": "transactionHistory"]
+  case .customerSupport:
+    return ["flow": "customerSupport"]
+  case .responsibleGaming:
+    return ["flow": "responsibleGaming"]
+  case .notifications:
+    return ["flow": "notifications"]
+  case .miniGame(let gameId, let gameMode, let amount, let matchupId):
+    // JS-facing mode strings (MiniGameMode enum), not the native rawValues
+    let modeString: String
+    switch gameMode {
+    case .practice: modeString = "practice"
+    case .oneVsOne: modeString = "1v1"
+    case .freeForAll: modeString = "free_for_all"
+    case .tournament: modeString = "tournament"
+    @unknown default: modeString = gameMode.rawValue
+    }
+    var map: [String: Any] = ["flow": "miniGame", "gameMode": modeString]
+    if let gameId { map["gameId"] = gameId }
+    if let amount { map["amount"] = NSDecimalNumber(decimal: amount) }
+    if let matchupId { map["matchupId"] = matchupId }
+    return map
+  @unknown default:
+    return ["flow": String(describing: flow)]
+  }
+}
