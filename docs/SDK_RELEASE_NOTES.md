@@ -1,4 +1,12 @@
 # UPCOMING
+* Added `LucraSDK.handleLucraNotification(payload)` for push notifications: extracts the Lucra deeplink from a tapped
+  notification's data payload and resolves it to `{ flow, matchupId, ... }` **without presenting UI**, so headless
+  integrations can route to their own screens. See [Push Notifications](1.2.3_push_notifications.md).
+* Added `LucraSDK.parseLucraLink(link)`: the headless counterpart to `handleLucraLink`, resolving a Lucra deeplink to
+  flow info without presenting Lucra UI. See [Headless Deeplink Parsing](1.2.3_push_notifications.md#headless-deeplink-parsing).
+* Added the exported `LucraFlowInfo` TypeScript type and the `extractLucraDeeplink(payload)` helper.
+* Android: `registerDeviceTokenHex`/`registerDeviceTokenBase64` are now implemented (previously declared but missing);
+  both forward the FCM token string to Lucra.
 * Added the `LucraSDK.getMatchupDetails(matchupId)` function to retrieve detailed matchup information, including
   participant groups with scores and outcomes, and individual payouts.
   See [GYP headless functions](2.3_gyp_headless_functions.md#get-matchup-details).

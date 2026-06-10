@@ -219,6 +219,11 @@ RCT_EXPORT_METHOD(handleLucraLink : (NSString *)link resolve : (
   [swiftClient handleLucraLink:link resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(parseLucraLink : (NSString *)link resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient parseLucraLink:link resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(registerDeviceTokenHex : (NSString *)
                       deviceTokenHex resolve : (RCTPromiseResolveBlock)
                           resolve reject : (RCTPromiseRejectBlock)reject) {

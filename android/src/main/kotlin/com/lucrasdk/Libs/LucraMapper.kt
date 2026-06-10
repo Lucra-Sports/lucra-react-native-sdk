@@ -21,6 +21,8 @@ import com.lucrasports.sdk.core.contest.tournament.PayoutReward
 import com.lucrasports.sdk.core.contest.tournament.PayoutStructure
 import com.lucrasports.sdk.core.contest.tournament.Tournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
+import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
+import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.reward.LucraReward
 import com.lucrasports.sdk.core.reward.toLucraReward
@@ -132,6 +134,83 @@ object LucraMapper {
         map.putString("disclaimer", reward.disclaimer)
         map.putMap("metadata", convertStringMapToWritableMap(reward.metadata))
         return map
+    }
+
+    // Flow names match LucraUtils.getLucraFlow / the iOS bridge so the result
+    // round-trips through LucraSDK.present where the flow is presentable.
+    fun lucraFlowToMap(flow: LucraUiProvider.LucraFlow): WritableMap {
+        val map = Arguments.createMap()
+        when (flow) {
+            is LucraUiProvider.LucraFlow.Login -> map.putString("flow", "onboarding")
+            is LucraUiProvider.LucraFlow.Profile -> map.putString("flow", "profile")
+            is LucraUiProvider.LucraFlow.AddFunds -> map.putString("flow", "addFunds")
+            is LucraUiProvider.LucraFlow.VerifyIdentity -> map.putString("flow", "verifyIdentity")
+            is LucraUiProvider.LucraFlow.CreateGamesMatchup -> {
+                map.putString("flow", "createGamesMatchup")
+                flow.locationId?.let { map.putString("location", it) }
+            }
+            is LucraUiProvider.LucraFlow.CreateGamesMatchupById -> {
+                map.putString("flow", "createGamesMatchup")
+                map.putString("gameId", flow.gameId)
+            }
+            is LucraUiProvider.LucraFlow.CreateSportsMatchup ->
+                map.putString("flow", "createSportsMatchup")
+            is LucraUiProvider.LucraFlow.WithdrawFunds -> map.putString("flow", "withdrawFunds")
+            is LucraUiProvider.LucraFlow.PublicFeed -> map.putString("flow", "publicFeed")
+            is LucraUiProvider.LucraFlow.MyMatchup -> map.putString("flow", "myMatchup")
+            is LucraUiProvider.LucraFlow.GamesMatchupDetails -> {
+                map.putString("flow", "gamesMatchupDetails")
+                map.putString("matchupId", flow.matchupId)
+            }
+            is LucraUiProvider.LucraFlow.MatchupDetails -> {
+                map.putString("flow", "matchupDetails")
+                map.putString("matchupId", flow.matchupId)
+            }
+            is LucraUiProvider.LucraFlow.TournamentDetails -> {
+                map.putString("flow", "tournamentDetails")
+                map.putString("matchupId", flow.tournamentId)
+            }
+            is LucraUiProvider.LucraFlow.DemographicForm ->
+                map.putString("flow", "demographicCollection")
+            is LucraUiProvider.LucraFlow.Wallet -> map.putString("flow", "wallet")
+            is LucraUiProvider.LucraFlow.HomePage -> {
+                map.putString("flow", "homePage")
+                flow.locationId?.let { map.putString("location", it) }
+            }
+            is LucraUiProvider.LucraFlow.MiniGame -> {
+                map.putString("flow", "miniGame")
+                flow.gameId?.let { map.putString("gameId", it) }
+                miniGameModeToString(flow.gameMode)?.let { map.putString("gameMode", it) }
+                flow.amount?.let { map.putDouble("amount", it) }
+                flow.matchupId?.let { map.putString("matchupId", it) }
+            }
+            is LucraUiProvider.LucraFlow.Achievements -> map.putString("flow", "achievements")
+            is LucraUiProvider.LucraFlow.TransactionHistory ->
+                map.putString("flow", "transactionHistory")
+            is LucraUiProvider.LucraFlow.CustomerSupport ->
+                map.putString("flow", "customerSupport")
+            is LucraUiProvider.LucraFlow.ResponsibleGaming ->
+                map.putString("flow", "responsibleGaming")
+            is LucraUiProvider.LucraFlow.Notifications -> map.putString("flow", "notifications")
+            is LucraUiProvider.LucraFlow.Tournaments -> map.putString("flow", "tournaments")
+            is LucraUiProvider.LucraFlow.ClaimRewards -> map.putString("flow", "claimRewards")
+            is LucraUiProvider.LucraFlow.ClaimAchievementRewards ->
+                map.putString("flow", "claimAchievementRewards")
+            is LucraUiProvider.LucraFlow.Dynamic -> {
+                map.putString("flow", "dynamic")
+                map.putString("route", flow.route)
+            }
+            else -> map.putString("flow", flow.toString())
+        }
+        return map
+    }
+
+    private fun miniGameModeToString(mode: LucraMiniGameMode?): String? = when (mode) {
+        LucraMiniGameMode.Practice -> "practice"
+        LucraMiniGameMode.OneVsOne -> "1v1"
+        LucraMiniGameMode.FreeForAll -> "free_for_all"
+        LucraMiniGameMode.Tournament -> "tournament"
+        null -> null
     }
 
     // Minigames Headless epic — Rewards & Achievements.

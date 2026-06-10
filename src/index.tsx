@@ -21,6 +21,8 @@ import {
   type LucraAchievement,
 } from './types';
 import NativeLucraClient from './NativeLucraClient';
+import { extractLucraDeeplink } from './pushPayload';
+export { extractLucraDeeplink } from './pushPayload';
 export {
   type LucraReward,
   type PoolTournament,
@@ -483,6 +485,22 @@ type LucraContestListeners = {
   onMiniGameFinished?: (event: MiniGameFinishedEvent) => void;
 };
 
+/**
+ * Flow info resolved from a Lucra deeplink or push notification, without
+ * presenting any UI. `flow` uses the same names `LucraSDK.present` accepts
+ * where the flow is presentable.
+ */
+export type LucraFlowInfo = {
+  flow: string;
+  matchupId?: string;
+  gameId?: string;
+  location?: string;
+  gameMode?: string;
+  amount?: number;
+  /** Android-only dynamic flow route */
+  route?: string;
+};
+
 const Flows = {
   ONBOARDING: 'onboarding',
   VERIFY_IDENTITY: 'verifyIdentity',
@@ -875,6 +893,18 @@ export const LucraSDK = {
   },
   handleLucraLink: async (link: string): Promise<boolean> => {
     return LucraClient.handleLucraLink(link);
+  },
+  parseLucraLink: async (link: string): Promise<LucraFlowInfo | null> => {
+    return ((await LucraClient.parseLucraLink(link)) as LucraFlowInfo) ?? null;
+  },
+  handleLucraNotification: async (
+    payload: Record<string, unknown>
+  ): Promise<LucraFlowInfo | null> => {
+    const link = extractLucraDeeplink(payload);
+    if (!link) {
+      return null;
+    }
+    return ((await LucraClient.parseLucraLink(link)) as LucraFlowInfo) ?? null;
   },
   registerDeviceTokenHex: async (token: string): Promise<void> => {
     return LucraClient.registerDeviceTokenHex(token);

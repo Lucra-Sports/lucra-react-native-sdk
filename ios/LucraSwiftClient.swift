@@ -868,6 +868,20 @@ private enum ErrorCode {
 
   }
 
+  @MainActor @objc public func parseLucraLink(
+    _ link: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let url = URL(string: link),
+      let flow = self.nativeClient.handleDeeplink(url: url)
+    else {
+      resolve(nil)
+      return
+    }
+    resolve(lucraFlowToMap(flow))
+  }
+
   @objc public func registerDeviceTokenHex(
     _ token: String,
     resolve: @escaping RCTPromiseResolveBlock,

@@ -876,6 +876,28 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun parseLucraLink(lucraLink: String, promise: Promise) {
+        val lucraFlow = LucraClient().getLucraFlowForDeeplinkUri(lucraLink)
+        if (lucraFlow != null) {
+            promise.resolve(LucraMapper.lucraFlowToMap(lucraFlow))
+        } else {
+            promise.resolve(null)
+        }
+    }
+
+    @ReactMethod
+    fun registerDeviceTokenHex(token: String, promise: Promise) {
+        LucraClient().registerForPushNotifications(token)
+        promise.resolve(null)
+    }
+
+    @ReactMethod
+    fun registerDeviceTokenBase64(token: String, promise: Promise) {
+        LucraClient().registerForPushNotifications(token)
+        promise.resolve(null)
+    }
+
+    @ReactMethod
     fun configureUser(user: ReadableMap, promise: Promise) {
         // small trick to simplify code a bit
         val addressJS = if (user.hasKey("address")) user.getMap("address")!! else user
