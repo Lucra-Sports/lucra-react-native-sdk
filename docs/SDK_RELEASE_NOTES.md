@@ -1,4 +1,5 @@
-# UPCOMING
+# 5.6.0
+* Bumped Android to [6.6.1](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.6.1)
 * Added `LucraSDK.handleLucraNotification(payload)` for push notifications: extracts the Lucra deeplink from a tapped
   notification's data payload and resolves it to `{ flow, matchupId, ... }` **without presenting UI**, so headless
   integrations can route to their own screens. See [Push Notifications](1.2.3_push_notifications.md).
