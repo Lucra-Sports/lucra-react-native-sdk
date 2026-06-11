@@ -1,3 +1,6 @@
+# 5.5.1
+* Internal changes to support the latest Expo versions
+
 # 5.4.1
 * Empty state profile UI/UX fix for both iOS and Android
 * Android geocomply issue fix
