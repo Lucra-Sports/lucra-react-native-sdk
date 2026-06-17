@@ -1,0 +1,163 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# CodeRabbit configuration for @lucra-sports/lucra-react-native-sdk
+#
+# This is a PUBLIC-FACING React Native SDK. It is a thin pass-through wrapper
+# around two native SDKs — iOS (Swift) and Android (Kotlin) — and re-exposes
+# their functionality through a single React Native surface: the `LucraClient`
+# class (src/index.tsx), backed by the TurboModule spec in
+# src/NativeLucraClient.ts and typed by src/types.ts.
+#
+# These path_instructions are ADDITIVE. CodeRabbit must continue to perform its
+# full standard review (bugs, logic, anti-patterns, security, performance) in
+# addition to the repo-specific checks below.
+
+language: en-US
+tone_instructions: >-
+  You are reviewing a public-facing SDK consumed by external integrators.
+  Treat cross-platform (iOS/Android) parity, documentation accuracy, and
+  release-note accuracy as first-class review concerns alongside correctness.
+  Be specific: name the exact file that is out of sync.
+
+early_access: false
+
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+
+  finishing_touches:
+    # Unit-test generation is Pro+/Enterprise only — explicitly disabled.
+    unit_tests:
+      enabled: false
+
+  path_instructions:
+    # 1) BASELINE — full standard review on all source.
+    - path: "**/*.{ts,tsx,swift,kt}"
+      instructions: >-
+        Perform the full standard CodeRabbit review on this file: correctness
+        and logic bugs, concurrency/async issues (promises, callbacks,
+        coroutines, main-thread/UI-thread work), null-safety and optional
+        handling, error handling, security, performance, and anti-patterns.
+        Honor the repo's documented style conventions: ESLint `@react-native`
+        + Prettier (singleQuote, 2-space tabWidth, trailingComma es5,
+        quoteProps consistent) for TypeScript/TSX. This repository is a thin
+        React Native pass-through wrapper around native iOS (Swift) and Android
+        (Kotlin) SDKs; its most important invariant is CROSS-PLATFORM PARITY.
+        Treat any behavior, payload, error, or side effect that diverges
+        between the iOS and Android implementations as a defect, not a style
+        nit.
+
+    # 2) DATA MAPPING / PARITY LAYERS — the bridge surface that must stay in
+    #    lock-step across platforms.
+    - path: "{ios/Libs/**,ios/Extensions/**,android/src/main/kotlin/com/lucrasdk/Libs/**,src/types.ts,src/NativeLucraClient.ts}"
+      instructions: >-
+        These are the data mapping / bridge layers. Every field, payload,
+        error message/code, event, and nuanced side effect that crosses the
+        bridge MUST be mapped CONSISTENTLY on both platforms. The
+        corresponding layers are:
+        iOS (Swift) — ios/Libs/LucraMapper.swift (native types ->
+        [String: Any]), ios/Libs/ErrorMapper.swift (errors), and supporting
+        ios/Libs/ConversionProvider.swift, ios/Libs/RewardProvider.swift,
+        ios/Libs/LucraUtils.swift, plus ios/Extensions/*.
+        Android (Kotlin) — android/src/main/kotlin/com/lucrasdk/Libs/LucraMapper.kt
+        (native types -> WritableMap), .../Libs/ErrorMapper.kt (errors), and
+        supporting .../Libs/LucraUtils.kt.
+        TypeScript surface — src/types.ts and src/NativeLucraClient.ts.
+        When a PR adds or changes a field/type/error/event, VERIFY that:
+        (a) an exact counterpart exists in BOTH LucraMapper.swift and
+        LucraMapper.kt with the same keys, casing, value encoding, and
+        nullability; (b) error messages and codes match between
+        ErrorMapper.swift and ErrorMapper.kt; (c) the shape matches the
+        declarations in src/types.ts and src/NativeLucraClient.ts; and (d) any
+        new method declared in src/NativeLucraClient.ts is implemented in BOTH
+        ios/LucraSwiftClient.swift and
+        android/src/main/kotlin/com/lucrasdk/LucraClientModule.kt. Flag any
+        platform-specific side effect (lifecycle, navigation, threading, event
+        timing) that is not mirrored on the other platform, and name the exact
+        file that is missing the counterpart.
+
+    # 3) SDK SURFACE — public, integrator-facing code. Doc + release-note sync.
+    - path: "src/**"
+      instructions: >-
+        This is the public, integrator-facing SDK surface. In addition to the
+        standard review, when a public symbol is added, changed, renamed, or
+        removed (exported functions, methods, components, hooks, types, enums,
+        or event payloads), VERIFY the matching documentation under docs/ is
+        updated or added and is correct for: SIGNATURE (names, params, order,
+        types, callback/return shapes); PROPERTY NAMES (exact match — flag
+        stale identifiers); PROPERTY MEANING (descriptions, units, nullability,
+        defaults, allowed values); and ANY OTHER DOCUMENTATION (examples,
+        prose, enum lists, type references). Map the change to the relevant
+        docs file, e.g. docs/1.2.7_lucraflows.md, docs/1.2.8_lucracomponents.md,
+        docs/1.2.9_headless_interactions.md, docs/2.3_gyp_headless_functions.md,
+        docs/3.3_tournaments_headless.md, docs/4.3_syw_headless_functions.md,
+        docs/5.1_mini_games_headless.md,
+        docs/5.3_rewards_achievements_headless.md (see docs/README.md for the
+        full index). If new functionality has NO corresponding doc, flag that a
+        doc must be added. Also VERIFY docs/SDK_RELEASE_NOTES.md has a
+        corresponding entry. Flag and name the exact file(s) when out of sync.
+
+    # 4) ENTRY POINT — strongest enforcement on the Client surface.
+    - path: "{src/index.tsx,src/NativeLucraClient.ts}"
+      instructions: >-
+        These define the primary integrator entry point (the `LucraClient`
+        class and its native bridge spec). Apply the STRONGEST enforcement:
+        treat ANY change to a public method, parameter, return type, event, or
+        data model here as an SDK-surface change that REQUIRES BOTH (a) updated
+        or newly added documentation under docs/ matching the new
+        signature/property names/property meaning/examples, AND (b) a
+        corresponding, integrator-readable entry in docs/SDK_RELEASE_NOTES.md.
+        Confirm the same change is reflected in both native implementations
+        (ios/LucraSwiftClient.swift and
+        android/src/main/kotlin/com/lucrasdk/LucraClientModule.kt). Block-level
+        feedback: if docs or release notes are missing, say so explicitly and
+        name the files.
+
+    # 5) RELEASE NOTES — integrator-readable + correct semver labeling.
+    - path: "docs/SDK_RELEASE_NOTES.md"
+      instructions: >-
+        This is the SDK changelog read by external engineers to know what to
+        expect from a new version. VERIFY each new or edited entry:
+        (1) Is INTEGRATOR-READABLE — new functionality is named by its public
+        symbol (e.g. `LucraSDK.getMatchupDetails(...)`); fixes describe
+        integrator-visible behavior. Flag vague entries like "bug fixes" or
+        "misc changes".
+        (2) Uses the repo's version-header format: a level-1 heading `# X.Y.Z`
+        (note: H1, not `##`), aligned with the version in package.json
+        (`version` key).
+        (3) Is correctly LABELED FOR SEMANTIC VERSIONING. Breaking changes —
+        removed/renamed public symbols, changed signatures, removed/renamed
+        properties, or backward-incompatible behavior (including a platform's
+        payload now diverging from a prior shape) — MUST be explicitly called
+        out as **Breaking** so engineers know the next release is a MAJOR bump.
+        Purely additive changes = MINOR. Behavior-only fixes = PATCH. Flag any
+        entry whose wording implies the wrong severity (e.g. a renamed property
+        described as a "fix" with no breaking-change callout). Mirror the
+        existing convention of linking native SDK bumps to their iOS/Android
+        release tags.
+
+    # 6) DOCS FOLDER — keep docs accurate vs. the public code.
+    - path: "docs/**/*.md"
+      instructions: >-
+        Partner/integrator-facing documentation. When docs change, VERIFY they
+        remain accurate and consistent with the public code surface in src/
+        (and the native mappers it depends on). Apply the same checks as the
+        SDK surface: SIGNATURE (names, params, order, types, callback/return
+        shapes), PROPERTY NAMES (exact identifiers — no stale names), PROPERTY
+        MEANING (descriptions, units, nullability, defaults, allowed values),
+        and EXAMPLES (must compile/run against the current API and use real
+        exported symbols and payload shapes). Flag documented behavior that
+        does not exist in the code, and code behavior that the doc misstates.
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
