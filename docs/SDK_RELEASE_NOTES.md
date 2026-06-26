@@ -1,3 +1,10 @@
+# 5.7.0
+* Added `autoJoin` boolean to `LucraSDKParams` (optional, defaults to `true`). When `true`, the SDK automatically joins all eligible free-entry tournaments as soon as the user authenticates. Set to `false` to suppress automatic joining and drive it yourself.
+  * Passed through to `LucraClient.initialize(autoJoin:)` on Android and `LucraEnvironmentOverrides.init(autoJoin:)` on iOS. Both platforms previously hardcoded their own defaults (Android `true`, iOS `false`); the bridge now makes `true` the explicit cross-platform default.
+* Added `LucraSDK.autoJoinTournaments(): Promise<string[]>` — a headless function to manually trigger the auto-join flow. Returns the IDs of all tournaments that were joined in that call. Useful when `autoJoin` is disabled at init time or when you want to re-run joining on demand (e.g., after a location permission grant). Rejects with a structured error code if prerequisites aren't met (location not granted, user unverified, feature disabled, etc.). The `onAutoJoinedTournaments` contest-listener event continues to fire alongside the promise resolution.
+  * Android: unwraps `AutoJoinTournamentsResult.AutoJoinedTournamentsOutput.tournamentIds`
+  * iOS: unwraps `Result<[String], TournamentError>` success value
+
 # 5.6.0
 * Bumped Android to [6.6.1](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.6.1)
 * Added `LucraSDK.handleLucraNotification(payload)` for push notifications: extracts the Lucra deeplink from a tapped
