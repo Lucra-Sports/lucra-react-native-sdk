@@ -1,5 +1,6 @@
 package com.lucrasdk
 
+import ErrorMapper.rejectAutoJoinTournamentsError
 import ErrorMapper.rejectJoinTournamentError
 import ErrorMapper.rejectRecommendedTournamentsError
 import ErrorMapper.rejectRetrieveTournamentError
@@ -123,6 +124,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             clientTheme = ClientTheme(colorStyle, fontFamily)
         }
 
+        val autoJoin = if (options.hasKey("autoJoin")) options.getBoolean("autoJoin") else true
+
         try {
             LucraClient.initialize(
                 application = context.applicationContext as Application,
@@ -130,6 +133,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 lucraUiProvider = buildLucraUIInstance(),
                 environment = LucraUtils.getLucraEnvironment(environment),
                 clientTheme = clientTheme,
+                autoJoin = autoJoin,
                 customLogger = object : LucraLogger.Logger {
                     override fun logNonFatalException(exception: Throwable) {
                         Log.e("LucraClient RN", exception.message, exception)
@@ -1000,6 +1004,23 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                     promise.resolve(LucraMapper.tournamentsMatchupToMap(result.tournament))
                 }
 
+            }
+        }
+    }
+
+    @ReactMethod
+    fun autoJoinTournaments(promise: Promise) {
+        LucraClient().autoJoinTournaments { result ->
+            when (result) {
+                is PoolTournament.AutoJoinTournamentsResult.Failure -> {
+                    rejectAutoJoinTournamentsError(promise, result)
+                }
+
+                is PoolTournament.AutoJoinTournamentsResult.AutoJoinedTournamentsOutput -> {
+                    val writableArray = Arguments.createArray()
+                    result.tournamentIds.forEach { writableArray.pushString(it) }
+                    promise.resolve(writableArray)
+                }
             }
         }
     }

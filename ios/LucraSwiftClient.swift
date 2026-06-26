@@ -69,13 +69,16 @@ private enum ErrorCode {
     let environment = LucraUtils.stringToEnvironment(
       options["environment"] as? String)
 
+    let autoJoin = options["autoJoin"] as? Bool ?? true
+
     nativeClient = LucraSDK.LucraClient(
       config: .init(
         environment: .init(
           apiKey: apiKey,
           environment: environment,
           urlScheme: urlScheme,
-          merchantID: merchantID
+          merchantID: merchantID,
+          autoJoin: autoJoin
         ),
         appearance: clientTheme
       )
@@ -988,6 +991,21 @@ private enum ErrorCode {
       switch result {
       case .success(let tournament):
         resolve(tournamentsMatchupToMap(tournament: tournament))
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func autoJoinTournaments(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      let result = await self.nativeClient.api.autoJoinTournaments()
+      switch result {
+      case .success(let tournamentIds):
+        resolve(tournamentIds)
       case .failure(let error):
         rejectLucraError(reject, error: error)
       }

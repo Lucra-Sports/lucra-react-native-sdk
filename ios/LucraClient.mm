@@ -251,6 +251,11 @@ RCT_EXPORT_METHOD(tournamentMatchup : (NSString *)idString resolve : (
   [swiftClient tournamentMatchup:idString resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(autoJoinTournaments : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient autoJoinTournamentsWithResolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(joinTournament : (NSString *)idString resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient joinTournament:idString resolve:resolve reject:reject];

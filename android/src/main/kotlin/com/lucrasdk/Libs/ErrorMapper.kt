@@ -75,4 +75,11 @@ object ErrorMapper {
     ) {
         mapTournamentFailure(promise, error.failure)
     }
+
+    fun rejectAutoJoinTournamentsError(
+        promise: Promise,
+        error: PoolTournament.AutoJoinTournamentsResult.Failure
+    ) {
+        mapTournamentFailure(promise, error.failure)
+    }
 }
