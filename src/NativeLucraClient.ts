@@ -57,6 +57,7 @@ interface Spec extends TurboModule {
   getRecommendedTournaments: (params: Object) => Promise<Object[]>;
   tournamentMatchup: (tournamentId: string) => Promise<Object>;
   joinTournament: (tournamentId: string) => Promise<void>;
+  autoJoinTournaments: () => Promise<string[]>;
 
   // Client <-> SDK listener types
   addListener: (eventType: string) => void;

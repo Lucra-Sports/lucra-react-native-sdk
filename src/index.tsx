@@ -185,6 +185,7 @@ export type LucraSDKParams = {
   };
   urlScheme?: string;
   merchantID?: string;
+  autoJoin?: boolean;
 };
 
 export type MatchupStatus =
@@ -949,6 +950,9 @@ export const LucraSDK = {
   },
   joinTournament: async (tournamentId: string) => {
     return await LucraClient.joinTournament(tournamentId);
+  },
+  autoJoinTournaments: async (): Promise<string[]> => {
+    return await LucraClient.autoJoinTournaments();
   },
 };
 
