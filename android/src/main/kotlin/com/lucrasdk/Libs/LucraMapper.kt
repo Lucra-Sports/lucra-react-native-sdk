@@ -7,6 +7,8 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertReadableMapToStringMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
+import com.lucrasports.minigame.MiniGameCatalogConfig
+import com.lucrasports.minigame.MiniGameCatalogItem
 import com.lucrasports.matchup.ParticipantGroupOutcome
 import com.lucrasports.matchup.RecreationalGame
 import com.lucrasports.matchup.TopLevelMatchupSubType
@@ -304,6 +306,33 @@ object LucraMapper {
         map.putString("claimedAt", achievement.claimedAt?.let { isoUtcDf.format(it) })
         map.putInt("currentProgress", achievement.currentProgress)
         achievement.achievement?.let { map.putMap("achievement", achievementDefinitionToMap(it)) }
+        return map
+    }
+
+    fun miniGameCatalogConfigToMap(config: MiniGameCatalogConfig): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", config.id)
+        map.putString("gameId", config.gameId)
+        map.putString("mode", config.mode)
+        config.wagerAmount?.let { map.putDouble("wagerAmount", it) } ?: map.putNull("wagerAmount")
+        config.groupSize?.let { map.putInt("groupSize", it) } ?: map.putNull("groupSize")
+        map.putString("createdAt", config.createdAt)
+        map.putString("updatedAt", config.updatedAt)
+        return map
+    }
+
+    fun miniGameCatalogItemToMap(item: MiniGameCatalogItem): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("gameId", item.gameId)
+        map.putString("name", item.name)
+        map.putString("description", item.description)
+        map.putString("imageUrl", item.imageUrl)
+        map.putString("videoUrl", item.videoUrl)
+        map.putString("createdAt", item.createdAt)
+        map.putString("updatedAt", item.updatedAt)
+        val configArray = Arguments.createArray()
+        item.config.forEach { configArray.pushMap(miniGameCatalogConfigToMap(it)) }
+        map.putArray("config", configArray)
         return map
     }
 

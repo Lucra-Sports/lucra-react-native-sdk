@@ -62,6 +62,11 @@ RCT_EXPORT_METHOD(startMiniGame : (NSString *)gameId
                       reject:reject];
 }
 
+RCT_EXPORT_METHOD(getMiniGames : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getMiniGames:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(getUserTournamentRewards : (NSDictionary *)params
                   resolve : (RCTPromiseResolveBlock)resolve
                   reject : (RCTPromiseRejectBlock)reject) {

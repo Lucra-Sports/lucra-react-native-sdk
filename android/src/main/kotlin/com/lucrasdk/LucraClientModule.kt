@@ -571,6 +571,23 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     @Suppress("DEPRECATION")
     @ReactMethod
+    fun getMiniGames(promise: Promise) {
+        LucraClient().getMiniGames { result ->
+            when (result) {
+                is MiniGameInteractions.GetMiniGamesResult.Success -> {
+                    val array = Arguments.createArray()
+                    result.games.forEach { array.pushMap(LucraMapper.miniGameCatalogItemToMap(it)) }
+                    promise.resolve(array)
+                }
+
+                is MiniGameInteractions.GetMiniGamesResult.Failure ->
+                    rejectLucraError(promise, result.failure)
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @ReactMethod
     fun getUserTournamentRewards(params: ReadableMap, promise: Promise) {
         val tournamentId = params.getString("tournamentId")
         val viewed = params.optionalBoolean("viewed")

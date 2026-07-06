@@ -15,6 +15,7 @@ import type { RootStackParamList } from '../Routes';
 import { ClientOverride } from './ClientOverride';
 import { ColorOverride } from './ColorOverride';
 import { useAppContext } from '../AppContext';
+import { LucraSDK } from '@lucra-sports/lucra-react-native-sdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
@@ -66,6 +67,14 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             }}
           >
             <Text className="text-white">Mini Game Launcher</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-indigo-700 p-4"
+            onPress={() => {
+              LucraSDK.present({ name: LucraSDK.FLOW.MINI_GAMES_HOME });
+            }}
+          >
+            <Text className="text-white">Mini Games Home</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-indigo-700 p-4 rounded-b-xl"

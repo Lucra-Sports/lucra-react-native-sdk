@@ -157,6 +157,27 @@ export type MiniGameFinishedEvent = {
   matchupId?: string;
 };
 
+export type MiniGameCatalogConfig = {
+  id: string;
+  gameId: string;
+  mode: string;
+  wagerAmount?: number;
+  groupSize?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MiniGameCatalogItem = {
+  gameId: string;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+  config: MiniGameCatalogConfig[];
+};
+
 export enum LucraEnvironment {
   PRODUCTION = 'production',
   STAGING = 'staging',
@@ -518,6 +539,7 @@ const Flows = {
   WALLET: 'wallet',
   HOME_PAGE: 'homePage',
   MINI_GAME: 'miniGame',
+  MINI_GAMES_HOME: 'miniGamesHome',
   ACHIEVEMENTS: 'achievements',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
@@ -560,6 +582,7 @@ function present(params: {
   matchupId?: string;
 }): Promise<void>;
 function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
+function present(params: { name: typeof Flows.MINI_GAMES_HOME }): Promise<void>;
 function present(params: {
   name: FlowNames;
   gameId?: string;
@@ -827,6 +850,10 @@ export const LucraSDK = {
   },
   markAchievementViewed: (userAchievementId: string): Promise<void> => {
     return LucraClient.markAchievementViewed(userAchievementId);
+  },
+  /** Lists every mini game enabled for the current tenant, each with the tenant's subscribed config options. */
+  getMiniGames: async (): Promise<MiniGameCatalogItem[]> => {
+    return (await LucraClient.getMiniGames()) as MiniGameCatalogItem[];
   },
   getMatchup: async (matchupId: string): Promise<MatchupInfo> => {
     return (await LucraClient.getMatchup(matchupId)) as MatchupInfo;

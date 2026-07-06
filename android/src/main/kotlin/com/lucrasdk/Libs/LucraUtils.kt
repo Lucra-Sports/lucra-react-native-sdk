@@ -71,6 +71,7 @@ class LucraUtils {
                         matchupId = matchupId,
                     )
                 }
+                "miniGamesHome" -> LucraUiProvider.LucraFlow.MinigamesHome
                 "achievements" -> LucraUiProvider.LucraFlow.Achievements
                 // TODO not yet publicly available within Android SDK
 //        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails

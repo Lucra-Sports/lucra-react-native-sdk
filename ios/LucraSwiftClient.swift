@@ -665,6 +665,22 @@ private enum ErrorCode {
       }
     }
 
+    @objc public func getMiniGames(
+      _ resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        let result = await self.nativeClient.api.getMiniGames()
+
+        switch result {
+        case .success(let games):
+          resolve(games.map { miniGameCatalogItemToMap($0) })
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
     private func rejectLucraError(_ reject: RCTPromiseRejectBlock, error: Error) {
       let (code, message) = lucraErrorCodeMessage(error)
       reject(code, message, error)
