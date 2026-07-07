@@ -737,6 +737,12 @@ public func lucraFlowToMap(_ flow: LucraSDK.LucraFlow) -> [String: Any] {
     return ["flow": "notifications"]
   case .miniGamesHome:
     return ["flow": "miniGamesHome"]
+  case .miniGamesProfile:
+    return ["flow": "miniGamesProfile"]
+  case .miniGamesRewards:
+    return ["flow": "miniGamesRewards"]
+  case .miniGamesMatchupDetails(let matchupId):
+    return ["flow": "miniGamesMatchupDetails", "matchupId": matchupId]
   case .miniGame(let gameId, let gameMode, let amount, let matchupId, _):
     // JS-facing mode strings (MiniGameMode enum), not the native rawValues
     let modeString: String

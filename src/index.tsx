@@ -540,6 +540,9 @@ const Flows = {
   HOME_PAGE: 'homePage',
   MINI_GAME: 'miniGame',
   MINI_GAMES_HOME: 'miniGamesHome',
+  MINI_GAMES_PROFILE: 'miniGamesProfile',
+  MINI_GAMES_REWARDS: 'miniGamesRewards',
+  MINI_GAMES_MATCHUP_DETAILS: 'miniGamesMatchupDetails',
   ACHIEVEMENTS: 'achievements',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
@@ -583,6 +586,16 @@ function present(params: {
 }): Promise<void>;
 function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
 function present(params: { name: typeof Flows.MINI_GAMES_HOME }): Promise<void>;
+function present(params: {
+  name: typeof Flows.MINI_GAMES_PROFILE;
+}): Promise<void>;
+function present(params: {
+  name: typeof Flows.MINI_GAMES_REWARDS;
+}): Promise<void>;
+function present(params: {
+  name: typeof Flows.MINI_GAMES_MATCHUP_DETAILS;
+  matchupId: string;
+}): Promise<void>;
 function present(params: {
   name: FlowNames;
   gameId?: string;

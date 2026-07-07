@@ -81,6 +81,12 @@ class LucraUtils {
         handlePostNavigation: false)
     case "miniGamesHome":
       return .miniGamesHome
+    case "miniGamesProfile":
+      return .miniGamesProfile
+    case "miniGamesRewards":
+      return .miniGamesRewards
+    case "miniGamesMatchupDetails":
+      return .miniGamesMatchupDetails(matchupId: matchupId!)
     case "achievements":
       return .achievements
     default:

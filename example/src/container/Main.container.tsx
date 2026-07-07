@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   Button,
   Alert,
@@ -21,6 +22,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Main'>;
 
 export const MainContainer: React.FC<Props> = ({ navigation }) => {
   const { state } = useAppContext();
+  const [miniGamesMatchupId, setMiniGamesMatchupId] = React.useState('');
   return (
     <SafeAreaView className="flex-1">
       <ScrollView className="flex-1" contentContainerClassName="p-4">
@@ -75,6 +77,50 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             }}
           >
             <Text className="text-white">Mini Games Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-indigo-700 p-4"
+            onPress={() => {
+              LucraSDK.present({ name: LucraSDK.FLOW.MINI_GAMES_PROFILE });
+            }}
+          >
+            <Text className="text-white">Mini Games Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-indigo-700 p-4"
+            onPress={() => {
+              LucraSDK.present({ name: LucraSDK.FLOW.MINI_GAMES_REWARDS });
+            }}
+          >
+            <Text className="text-white">Mini Games Rewards</Text>
+          </TouchableOpacity>
+          <TextInput
+            className="bg-indigo-900 text-white p-4"
+            placeholder="Matchup ID (for Matchup Details)"
+            placeholderTextColor="#a5b4fc"
+            autoCapitalize="none"
+            autoCorrect={false}
+            value={miniGamesMatchupId}
+            onChangeText={setMiniGamesMatchupId}
+          />
+          <TouchableOpacity
+            className="bg-indigo-700 p-4"
+            onPress={() => {
+              const id = miniGamesMatchupId.trim();
+              if (!id) {
+                Alert.alert(
+                  'Matchup ID required',
+                  'Enter a matchup ID above first.'
+                );
+                return;
+              }
+              LucraSDK.present({
+                name: LucraSDK.FLOW.MINI_GAMES_MATCHUP_DETAILS,
+                matchupId: id,
+              });
+            }}
+          >
+            <Text className="text-white">Mini Games Matchup Details</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-indigo-700 p-4 rounded-b-xl"
