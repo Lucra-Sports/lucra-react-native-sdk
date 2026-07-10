@@ -111,8 +111,8 @@ repositories {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation("com.lucrasports.sdk:sdk-core:6.6.1")
-  implementation("com.lucrasports.sdk:sdk-ui:6.6.1")
+  implementation("com.lucrasports.sdk:sdk-core:6.7.0")
+  implementation("com.lucrasports.sdk:sdk-ui:6.7.0")
   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
   implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 

@@ -1,3 +1,16 @@
+# 5.8.0
+* Bumped iOS to [5.6.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.6.0)
+* Bumped Android to [6.7.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.7.0)
+* Mapped the new Mini Games surface from the native SDKs' Minigames epic through the React Native library:
+  * Added `LucraSDK.getMiniGames(): Promise<MiniGameCatalogItem[]>` — a headless function that lists every mini game enabled for the current tenant, each with the tenant's subscribed config options (mode, wager amount, group size). No Lucra UI is presented.
+  * Added the exported `MiniGameCatalogItem` and `MiniGameCatalogConfig` TypeScript types describing the catalog response.
+  * Added the Lucra-managed Mini Games flows, presented via `LucraSDK.present({ name: … })`:
+    * `MINI_GAMES_HOME` — the Mini Games home experience (profile pill, achievement card, game carousel, featured tournament).
+    * `MINI_GAMES_PROFILE` — the Mini Games profile (avatar, username, balance, stats, recent results).
+    * `MINI_GAMES_REWARDS` — the Mini Games rewards screen (achievement rewards grouped by game).
+    * `MINI_GAMES_MATCHUP_DETAILS` — the Mini Games matchup result screen (requires `matchupId`).
+* Cross-platform parity: both Android and iOS expose the same Mini Games flows and return identical `MiniGameCatalogItem`/`MiniGameCatalogConfig` shapes.
+
 # 5.7.0
 * Added `autoJoin` boolean to `LucraSDKParams` (optional, defaults to `true`). When `true`, the SDK automatically joins all eligible free-entry tournaments as soon as the user authenticates. Set to `false` to suppress automatic joining and drive it yourself.
   * Passed through to `LucraClient.initialize(autoJoin:)` on Android and `LucraEnvironmentOverrides.init(autoJoin:)` on iOS. Both platforms previously hardcoded their own defaults (Android `true`, iOS `false`); the bridge now makes `true` the explicit cross-platform default.

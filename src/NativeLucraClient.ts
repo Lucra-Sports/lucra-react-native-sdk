@@ -43,6 +43,7 @@ interface Spec extends TurboModule {
     amount: number,
     matchupId: string
   ): Promise<Object>;
+  getMiniGames(): Promise<Object[]>;
 
   // Rewards & Achievements headless (Minigames Headless epic)
   getUserTournamentRewards(params: Object): Promise<Object[]>;

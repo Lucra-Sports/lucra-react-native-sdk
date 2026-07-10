@@ -661,6 +661,31 @@ public func userAchievementToMap(_ achievement: LucraSDK.UserAchievement) -> [St
   ]
 }
 
+public func miniGameCatalogConfigToMap(_ config: LucraSDK.MiniGameCatalogConfig) -> [String: Any?] {
+  return [
+    "id": config.id,
+    "gameId": config.gameId,
+    "mode": config.mode,
+    "wagerAmount": config.wagerAmount.map { NSDecimalNumber(decimal: $0).doubleValue },
+    "groupSize": config.groupSize,
+    "createdAt": config.createdAt,
+    "updatedAt": config.updatedAt,
+  ]
+}
+
+public func miniGameCatalogItemToMap(_ item: LucraSDK.MiniGameCatalogItem) -> [String: Any?] {
+  return [
+    "gameId": item.gameId,
+    "name": item.name,
+    "description": item.description,
+    "imageUrl": item.imageUrl,
+    "videoUrl": item.videoUrl,
+    "createdAt": item.createdAt,
+    "updatedAt": item.updatedAt,
+    "config": item.config.map { miniGameCatalogConfigToMap($0) },
+  ]
+}
+
 public func lucraFlowToMap(_ flow: LucraSDK.LucraFlow) -> [String: Any] {
   switch flow {
   case .onboarding:
@@ -710,7 +735,15 @@ public func lucraFlowToMap(_ flow: LucraSDK.LucraFlow) -> [String: Any] {
     return ["flow": "responsibleGaming"]
   case .notifications:
     return ["flow": "notifications"]
-  case .miniGame(let gameId, let gameMode, let amount, let matchupId):
+  case .miniGamesHome:
+    return ["flow": "miniGamesHome"]
+  case .miniGamesProfile:
+    return ["flow": "miniGamesProfile"]
+  case .miniGamesRewards:
+    return ["flow": "miniGamesRewards"]
+  case .miniGamesMatchupDetails(let matchupId):
+    return ["flow": "miniGamesMatchupDetails", "matchupId": matchupId]
+  case .miniGame(let gameId, let gameMode, let amount, let matchupId, _):
     // JS-facing mode strings (MiniGameMode enum), not the native rawValues
     let modeString: String
     switch gameMode {
