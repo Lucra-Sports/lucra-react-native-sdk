@@ -1,4 +1,6 @@
 # 5.8.0
+* Bumped iOS to [5.6.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.6.0)
+* Bumped Android to [6.7.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.7.0)
 * Mapped the new Mini Games surface from the native SDKs' Minigames epic through the React Native library:
   * Added `LucraSDK.getMiniGames(): Promise<MiniGameCatalogItem[]>` — a headless function that lists every mini game enabled for the current tenant, each with the tenant's subscribed config options (mode, wager amount, group size). No Lucra UI is presented.
   * Added the exported `MiniGameCatalogItem` and `MiniGameCatalogConfig` TypeScript types describing the catalog response.
