@@ -29,7 +29,8 @@ goal to one of these before writing integration code:
 The package is on **GitHub Packages, not the public npm registry** — this is the most common first
 stumble:
 
-- Create a GitHub Personal Access Token (classic, `packages:read` + `repo`), then add a `.npmrc` with
+- Create a GitHub Personal Access Token (classic, `read:packages` scope; add `repo` only if you also
+  need private-repository access), then add a `.npmrc` with
   the token and the `@lucra-sports` registry mapping, and `npm i -s @lucra-sports/lucra-react-native-sdk`.
   Don't commit `.npmrc`.
 - **iOS:** deployment target 15.1; add Lucra's private CocoaPods repo (`pod repo add LucraSDK …`) and
@@ -71,7 +72,7 @@ If any of these don't hold, the Troubleshoot section below covers the common cau
 
 | Symptom | First thing to check | Reopen |
 |---|---|---|
-| `npm install` 401/404 on `@lucra-sports/...` | `.npmrc` missing or PAT lacks `packages:read` — the package is on GitHub Packages, not public npm | [Project Setup](../../1.0.0_project_setup.md) |
+| `npm install` 401/404 on `@lucra-sports/...` | `.npmrc` missing or PAT lacks the `read:packages` scope — the package is on GitHub Packages, not public npm | [Project Setup](../../1.0.0_project_setup.md) |
 | `pod install` can't find the Lucra pod | Private pod repo not added (`pod repo add LucraSDK …`) or Podfile missing the two `source` lines | [Project Setup](../../1.0.0_project_setup.md) |
 | Android manifest merger failure mentioning `auth0Domain`/`auth0Scheme` | Auth0 manifest placeholders missing from `defaultConfig` | [Project Setup](../../1.0.0_project_setup.md) |
 | Presenting a flow does nothing / rejects | Was `LucraSDK.init(…)` awaited to resolution first? Flows and headless calls only work after init resolves | [Initialization](../../1.2.0_initialize_client.md) |

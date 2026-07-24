@@ -85,6 +85,9 @@ The intended shape: your launcher UI (from `getMiniGames()`) → `preloadGeoToke
 flow with the returned `matchupId`. **Timing matters at the seam:** after the WebView modal closes, wait
 ~1000ms (`setTimeout`) before presenting the details flow — presenting immediately races the modal
 dismissal and the flow silently fails to appear ("view is not in the window hierarchy"). The WebView doc
-shows this exact pattern. The `MiniGame.Finished` event fires when a session completes — prefer reacting
-to it over polling. → [Mini Games WebView](../../5.2_mini_games_webview.md),
+shows this exact pattern. **In this headless path, `onClose` is your completion signal** — the game's
+`close_game` message and a manual exit both land there and are not distinguishable. The
+`MiniGame.Finished` event (`onMiniGameFinished`) is emitted by the native-run session, so it fires for
+the `MINI_GAME` UI flow — not for games rendered in your own `MiniGameWebView`. →
+[Mini Games WebView](../../5.2_mini_games_webview.md),
 [Event Listener](../../1.2.10_lucra_event_listener.md)
