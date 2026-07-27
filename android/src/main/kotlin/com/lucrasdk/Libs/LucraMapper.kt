@@ -7,13 +7,24 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertReadableMapToStringMap
 import com.lucrasdk.Libs.LucraUtils.Companion.convertStringMapToWritableMap
 import com.lucrasports.LucraUser
+import com.lucrasports.minigame.MiniGameCatalogConfig
+import com.lucrasports.minigame.MiniGameCatalogItem
 import com.lucrasports.matchup.ParticipantGroupOutcome
+import com.lucrasports.matchup.RecreationalGame
+import com.lucrasports.matchup.TopLevelMatchupSubType
 import com.lucrasports.matchup.TournamentLeaderboard
 import com.lucrasports.matchup.sports_impl.SportsInterval
 import com.lucrasports.sdk.core.contest.LucraMatchup
+import com.lucrasports.sdk.core.contest.LucraMatchupDetails
+import com.lucrasports.sdk.core.contest.MatchupSubtype
+import com.lucrasports.sdk.core.contest.tournament.CatalogReward
 import com.lucrasports.sdk.core.contest.tournament.Participant
+import com.lucrasports.sdk.core.contest.tournament.PayoutReward
+import com.lucrasports.sdk.core.contest.tournament.PayoutStructure
 import com.lucrasports.sdk.core.contest.tournament.Tournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
+import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
+import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.reward.LucraReward
 import com.lucrasports.sdk.core.reward.toLucraReward
@@ -127,6 +138,83 @@ object LucraMapper {
         return map
     }
 
+    // Flow names match LucraUtils.getLucraFlow / the iOS bridge so the result
+    // round-trips through LucraSDK.present where the flow is presentable.
+    fun lucraFlowToMap(flow: LucraUiProvider.LucraFlow): WritableMap {
+        val map = Arguments.createMap()
+        when (flow) {
+            is LucraUiProvider.LucraFlow.Login -> map.putString("flow", "onboarding")
+            is LucraUiProvider.LucraFlow.Profile -> map.putString("flow", "profile")
+            is LucraUiProvider.LucraFlow.AddFunds -> map.putString("flow", "addFunds")
+            is LucraUiProvider.LucraFlow.VerifyIdentity -> map.putString("flow", "verifyIdentity")
+            is LucraUiProvider.LucraFlow.CreateGamesMatchup -> {
+                map.putString("flow", "createGamesMatchup")
+                flow.locationId?.let { map.putString("location", it) }
+            }
+            is LucraUiProvider.LucraFlow.CreateGamesMatchupById -> {
+                map.putString("flow", "createGamesMatchup")
+                map.putString("gameId", flow.gameId)
+            }
+            is LucraUiProvider.LucraFlow.CreateSportsMatchup ->
+                map.putString("flow", "createSportsMatchup")
+            is LucraUiProvider.LucraFlow.WithdrawFunds -> map.putString("flow", "withdrawFunds")
+            is LucraUiProvider.LucraFlow.PublicFeed -> map.putString("flow", "publicFeed")
+            is LucraUiProvider.LucraFlow.MyMatchup -> map.putString("flow", "myMatchup")
+            is LucraUiProvider.LucraFlow.GamesMatchupDetails -> {
+                map.putString("flow", "gamesMatchupDetails")
+                map.putString("matchupId", flow.matchupId)
+            }
+            is LucraUiProvider.LucraFlow.MatchupDetails -> {
+                map.putString("flow", "matchupDetails")
+                map.putString("matchupId", flow.matchupId)
+            }
+            is LucraUiProvider.LucraFlow.TournamentDetails -> {
+                map.putString("flow", "tournamentDetails")
+                map.putString("matchupId", flow.tournamentId)
+            }
+            is LucraUiProvider.LucraFlow.DemographicForm ->
+                map.putString("flow", "demographicCollection")
+            is LucraUiProvider.LucraFlow.Wallet -> map.putString("flow", "wallet")
+            is LucraUiProvider.LucraFlow.HomePage -> {
+                map.putString("flow", "homePage")
+                flow.locationId?.let { map.putString("location", it) }
+            }
+            is LucraUiProvider.LucraFlow.MiniGame -> {
+                map.putString("flow", "miniGame")
+                flow.gameId?.let { map.putString("gameId", it) }
+                miniGameModeToString(flow.gameMode)?.let { map.putString("gameMode", it) }
+                flow.amount?.let { map.putDouble("amount", it) }
+                flow.matchupId?.let { map.putString("matchupId", it) }
+            }
+            is LucraUiProvider.LucraFlow.Achievements -> map.putString("flow", "achievements")
+            is LucraUiProvider.LucraFlow.TransactionHistory ->
+                map.putString("flow", "transactionHistory")
+            is LucraUiProvider.LucraFlow.CustomerSupport ->
+                map.putString("flow", "customerSupport")
+            is LucraUiProvider.LucraFlow.ResponsibleGaming ->
+                map.putString("flow", "responsibleGaming")
+            is LucraUiProvider.LucraFlow.Notifications -> map.putString("flow", "notifications")
+            is LucraUiProvider.LucraFlow.Tournaments -> map.putString("flow", "tournaments")
+            is LucraUiProvider.LucraFlow.ClaimRewards -> map.putString("flow", "claimRewards")
+            is LucraUiProvider.LucraFlow.ClaimAchievementRewards ->
+                map.putString("flow", "claimAchievementRewards")
+            is LucraUiProvider.LucraFlow.Dynamic -> {
+                map.putString("flow", "dynamic")
+                map.putString("route", flow.route)
+            }
+            else -> map.putString("flow", flow.toString())
+        }
+        return map
+    }
+
+    private fun miniGameModeToString(mode: LucraMiniGameMode?): String? = when (mode) {
+        LucraMiniGameMode.Practice -> "practice"
+        LucraMiniGameMode.OneVsOne -> "1v1"
+        LucraMiniGameMode.FreeForAll -> "free_for_all"
+        LucraMiniGameMode.Tournament -> "tournament"
+        null -> null
+    }
+
     // Minigames Headless epic — Rewards & Achievements.
     // Shapes are normalized to match the iOS bridge / shared JS types.
 
@@ -218,6 +306,33 @@ object LucraMapper {
         map.putString("claimedAt", achievement.claimedAt?.let { isoUtcDf.format(it) })
         map.putInt("currentProgress", achievement.currentProgress)
         achievement.achievement?.let { map.putMap("achievement", achievementDefinitionToMap(it)) }
+        return map
+    }
+
+    fun miniGameCatalogConfigToMap(config: MiniGameCatalogConfig): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", config.id)
+        map.putString("gameId", config.gameId)
+        map.putString("mode", config.mode)
+        config.wagerAmount?.let { map.putDouble("wagerAmount", it) } ?: map.putNull("wagerAmount")
+        config.groupSize?.let { map.putInt("groupSize", it) } ?: map.putNull("groupSize")
+        map.putString("createdAt", config.createdAt)
+        map.putString("updatedAt", config.updatedAt)
+        return map
+    }
+
+    fun miniGameCatalogItemToMap(item: MiniGameCatalogItem): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("gameId", item.gameId)
+        map.putString("name", item.name)
+        map.putString("description", item.description)
+        map.putString("imageUrl", item.imageUrl)
+        map.putString("videoUrl", item.videoUrl)
+        map.putString("createdAt", item.createdAt)
+        map.putString("updatedAt", item.updatedAt)
+        val configArray = Arguments.createArray()
+        item.config.forEach { configArray.pushMap(miniGameCatalogConfigToMap(it)) }
+        map.putArray("config", configArray)
         return map
     }
 
@@ -383,8 +498,23 @@ object LucraMapper {
         map.putString("createdAt", match.createdAt)
         map.putString("creatorId", match.creatorId)
         map.putString("status", match.status.rawValue)
-        map.putString("subtype", match.subtype.name)
-        map.putString("type", match.type.name)
+        // Emit the backend's canonical raw values so both platforms return the
+        // same strings (iOS maps these from String-backed enum raw values).
+        map.putString(
+            "subtype", when (match.subtype) {
+                MatchupSubtype.GroupVsGroup -> "GROUP_VS_GROUP"
+                MatchupSubtype.FreeForAll -> "FREE_FOR_ALL"
+            }
+        )
+        map.putString(
+            "type", when (match.type) {
+                TopLevelMatchupSubType.ProfessionalSportsPlayerStat -> "PROFESSIONAL_SPORTS_PLAYER_STAT"
+                TopLevelMatchupSubType.ProfessionalSportsTeamStat -> "PROFESSIONAL_SPORTS_TEAM_STAT"
+                TopLevelMatchupSubType.PoolTournament -> "POOL_TOURNAMENT"
+                is RecreationalGame -> "RECREATIONAL_GAME"
+                else -> "UNKNOWN"
+            }
+        )
         map.putBoolean("isPublic", match.isPublic)
 
         match.creator?.let { map.putMap("creator", userToMap(it)) }
@@ -487,6 +617,59 @@ object LucraMapper {
         return map
     }
 
+    fun lucraMatchupDetailsToMap(details: LucraMatchupDetails): WritableMap {
+        val map = Arguments.createMap()
+        map.putMap("matchup", lucraMatchupToMap(details.matchup))
+
+        val groupsArray = Arguments.createArray()
+        details.groups.forEach { group ->
+            val groupMap = Arguments.createMap()
+            groupMap.putString("id", group.id)
+            group.name?.let { groupMap.putString("name", it) }
+            groupMap.putString(
+                "outcome", when (group.outcome) {
+                    ParticipantGroupOutcome.Loss -> "LOSS"
+                    ParticipantGroupOutcome.Tie -> "TIE"
+                    ParticipantGroupOutcome.Win -> "WIN"
+                    else -> "UNKNOWN"
+                }
+            )
+            group.score?.let { groupMap.putDouble("score", it) }
+
+            val participantsArray = Arguments.createArray()
+            group.participants.forEach { participant ->
+                val participantMap = Arguments.createMap()
+                participantMap.putString("userId", participant.userId)
+                participantMap.putString("username", participant.username)
+                participant.avatarUrl?.let { participantMap.putString("avatarUrl", it) }
+                participant.individualPayout?.let {
+                    participantMap.putDouble("individualPayout", it)
+                }
+                participantsArray.pushMap(participantMap)
+            }
+            groupMap.putArray("participants", participantsArray)
+
+            groupsArray.pushMap(groupMap)
+        }
+        map.putArray("groups", groupsArray)
+
+        val scoresArray = Arguments.createArray()
+        details.participantScores.forEach { score ->
+            val scoreMap = Arguments.createMap()
+            score.userId?.let { scoreMap.putString("userId", it) }
+            score.username?.let { scoreMap.putString("username", it) }
+            score.avatarUrl?.let { scoreMap.putString("avatarUrl", it) }
+            score.place?.let { scoreMap.putInt("place", it) }
+            score.score?.let { scoreMap.putDouble("score", it) }
+            score.finishedAt?.let { scoreMap.putString("finishedAt", it) }
+            score.groupId?.let { scoreMap.putString("groupId", it) }
+            scoresArray.pushMap(scoreMap)
+        }
+        map.putArray("participantScores", scoresArray)
+
+        return map
+    }
+
     fun tournamentLeaderboardToMap(leaderboard: TournamentLeaderboard): WritableMap {
         return Arguments.createMap().apply {
             leaderboard.title?.let { putString("title", it) }
@@ -530,7 +713,51 @@ object LucraMapper {
         matchup.expiresAt?.let { map.putString("expiresAt", it.toString()) }
         map.putDouble("potTotal", matchup.potTotal)
         map.putDouble("potNetAmount", matchup.potNetAmount)
+        matchup.rewardType?.let { map.putString("rewardType", it) }
+        matchup.payoutStructure?.let { map.putMap("payoutStructure", payoutStructureToMap(it)) }
 
+        return map
+    }
+
+    fun payoutStructureToMap(payout: PayoutStructure): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("title", payout.title)
+        map.putString("description", payout.description)
+        payout.labelTitle?.let { map.putString("labelTitle", it) }
+        payout.labelDescription?.let { map.putString("labelDescription", it) }
+        map.putBoolean("noPayout", payout.noPayout)
+        map.putBoolean("isPercentagePayout", payout.isPercentagePayout)
+        map.putBoolean("showAmount", payout.showAmount)
+        payout.jackpotAmount?.let { map.putString("jackpotAmount", it) }
+        payout.jackpotDescriptor?.let { map.putString("jackpotDescriptor", it) }
+        val rewards = Arguments.createArray()
+        payout.rewards.forEach { rewards.pushMap(payoutRewardToMap(it)) }
+        map.putArray("rewards", rewards)
+        return map
+    }
+
+    fun payoutRewardToMap(reward: PayoutReward): WritableMap {
+        val map = Arguments.createMap()
+        reward.place?.let { map.putInt("place", it) }
+        reward.endPlace?.let { map.putInt("endPlace", it) }
+        reward.placeLabel?.let { map.putString("placeLabel", it) }
+        reward.positionLabel?.let { map.putString("positionLabel", it) }
+        reward.rewardLabel?.let { map.putString("rewardLabel", it) }
+        reward.amountLabel?.let { map.putString("amountLabel", it) }
+        reward.value?.let { map.putDouble("value", it) }
+        reward.catalogReward?.let { map.putMap("catalogReward", payoutCatalogRewardToMap(it)) }
+        return map
+    }
+
+    fun payoutCatalogRewardToMap(reward: CatalogReward): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", reward.id)
+        map.putString("type", reward.type)
+        map.putString("title", reward.title)
+        reward.description?.let { map.putString("description", it) }
+        reward.iconUrl?.let { map.putString("iconUrl", it) }
+        reward.bannerIconUrl?.let { map.putString("bannerIconUrl", it) }
+        reward.disclaimer?.let { map.putString("disclaimer", it) }
         return map
     }
 

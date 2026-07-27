@@ -1,5 +1,6 @@
 package com.lucrasdk
 
+import ErrorMapper.rejectAutoJoinTournamentsError
 import ErrorMapper.rejectJoinTournamentError
 import ErrorMapper.rejectRecommendedTournamentsError
 import ErrorMapper.rejectRetrieveTournamentError
@@ -123,6 +124,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             clientTheme = ClientTheme(colorStyle, fontFamily)
         }
 
+        val autoJoin = if (options.hasKey("autoJoin")) options.getBoolean("autoJoin") else true
+
         try {
             LucraClient.initialize(
                 application = context.applicationContext as Application,
@@ -130,6 +133,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 lucraUiProvider = buildLucraUIInstance(),
                 environment = LucraUtils.getLucraEnvironment(environment),
                 clientTheme = clientTheme,
+                autoJoin = autoJoin,
                 customLogger = object : LucraLogger.Logger {
                     override fun logNonFatalException(exception: Throwable) {
                         Log.e("LucraClient RN", exception.message, exception)
@@ -567,6 +571,23 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     @Suppress("DEPRECATION")
     @ReactMethod
+    fun getMiniGames(promise: Promise) {
+        LucraClient().getMiniGames { result ->
+            when (result) {
+                is MiniGameInteractions.GetMiniGamesResult.Success -> {
+                    val array = Arguments.createArray()
+                    result.games.forEach { array.pushMap(LucraMapper.miniGameCatalogItemToMap(it)) }
+                    promise.resolve(array)
+                }
+
+                is MiniGameInteractions.GetMiniGamesResult.Failure ->
+                    rejectLucraError(promise, result.failure)
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @ReactMethod
     fun getUserTournamentRewards(params: ReadableMap, promise: Promise) {
         val tournamentId = params.getString("tournamentId")
         val viewed = params.optionalBoolean("viewed")
@@ -714,34 +735,75 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     @ReactMethod
     fun getMatchup(matchupId: String, promise: Promise) {
-        LucraClient().getMatchup(matchupId) { result ->
+        // The native one-shot getMatchup runs an unauthenticated query that skips
+        // participant groups server-side; getMatchupDetails fetches the same
+        // matchup with groups populated, so resolve from its inner matchup.
+        LucraClient().getMatchupDetails(matchupId) { result ->
             when (result) {
-                is GameInteractions.GetMatchupResult.Failure -> {
-                    val (code, message) = when (val failure = result.failure) {
-                        is GameInteractions.FailedRetrieveMatchup.APIError -> ErrorCodes.API_ERROR to failure.message.ifNullOrBlank { "API error occurred" }
-                        is GameInteractions.FailedRetrieveMatchup.LocationError -> ErrorCodes.LOCATION_ERROR to failure.message.ifNullOrBlank { "Location error occurred" }
-                    }
-                    promise.reject(code, message)
-                }
+                is GameInteractions.GetMatchupDetailsResult.Failure ->
+                    rejectLucraError(promise, result.error)
 
-                is GameInteractions.GetMatchupResult.Success -> {
-                    val res = LucraMapper.lucraMatchupToMap(result.matchup)
-                    promise.resolve(res)
-                }
+                is GameInteractions.GetMatchupDetailsResult.Success ->
+                    promise.resolve(LucraMapper.lucraMatchupToMap(result.details.matchup))
             }
         }
     }
 
-    private fun rejectLucraError(promise: Promise, error: LucraError) {
-        val (code, message) = when (error) {
-            is APIError -> ErrorCodes.API_ERROR to (error.message.ifNullOrBlank { "API error occurred" })
-            is LocationError -> ErrorCodes.LOCATION_ERROR to (error.message.ifNullOrBlank { "Location error occurred" })
-            UserStateError.InsufficientFunds -> ErrorCodes.INSUFFICIENT_FUNDS to "User has insufficient funds"
-            UserStateError.NotAllowed -> ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
-            UserStateError.NotInitialized -> ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
-            UserStateError.Unverified -> ErrorCodes.UNVERIFIED to "User has not been verified"
-            else -> ErrorCodes.UNKNOWN_ERROR to (error.toString().ifNullOrBlank { "Unknown error occurred" })
+    @ReactMethod
+    fun getMatchupDetails(matchupId: String, promise: Promise) {
+        LucraClient().getMatchupDetails(matchupId) { result ->
+            when (result) {
+                is GameInteractions.GetMatchupDetailsResult.Failure ->
+                    rejectLucraError(promise, result.error)
+
+                is GameInteractions.GetMatchupDetailsResult.Success ->
+                    promise.resolve(LucraMapper.lucraMatchupDetailsToMap(result.details))
+            }
         }
+    }
+
+    @ReactMethod
+    fun subscribeMatchupDetails(matchupId: String) {
+        // subscribe = true keeps firing onResult as the matchup changes on the
+        // server (live GYP scores / auto settlement). Results are forwarded to
+        // JS through the `matchupDetails` event.
+        LucraClient().getMatchupDetails(matchupId, subscribe = true) { result ->
+            val params = Arguments.createMap().apply {
+                putString("matchupId", matchupId)
+                when (result) {
+                    is GameInteractions.GetMatchupDetailsResult.Success ->
+                        putMap("details", LucraMapper.lucraMatchupDetailsToMap(result.details))
+
+                    is GameInteractions.GetMatchupDetailsResult.Failure -> {
+                        val (code, message) = lucraErrorCodeMessage(result.error)
+                        putMap("error", Arguments.createMap().apply {
+                            putString("code", code)
+                            putString("message", message)
+                        })
+                    }
+                }
+            }
+            sendEvent(context, "matchupDetails", params)
+        }
+    }
+
+    @ReactMethod
+    fun cancelMatchupDetailsSubscription() {
+        LucraClient().cancelMatchupSubscription()
+    }
+
+    private fun lucraErrorCodeMessage(error: LucraError): Pair<String, String> = when (error) {
+        is APIError -> ErrorCodes.API_ERROR to (error.message.ifNullOrBlank { "API error occurred" })
+        is LocationError -> ErrorCodes.LOCATION_ERROR to (error.message.ifNullOrBlank { "Location error occurred" })
+        UserStateError.InsufficientFunds -> ErrorCodes.INSUFFICIENT_FUNDS to "User has insufficient funds"
+        UserStateError.NotAllowed -> ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
+        UserStateError.NotInitialized -> ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
+        UserStateError.Unverified -> ErrorCodes.UNVERIFIED to "User has not been verified"
+        else -> ErrorCodes.UNKNOWN_ERROR to (error.toString().ifNullOrBlank { "Unknown error occurred" })
+    }
+
+    private fun rejectLucraError(promise: Promise, error: LucraError) {
+        val (code, message) = lucraErrorCodeMessage(error)
         promise.reject(code, message)
     }
 
@@ -832,6 +894,28 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         } else {
             promise.resolve(false)
         }
+    }
+
+    @ReactMethod
+    fun parseLucraLink(lucraLink: String, promise: Promise) {
+        val lucraFlow = LucraClient().getLucraFlowForDeeplinkUri(lucraLink)
+        if (lucraFlow != null) {
+            promise.resolve(LucraMapper.lucraFlowToMap(lucraFlow))
+        } else {
+            promise.resolve(null)
+        }
+    }
+
+    @ReactMethod
+    fun registerDeviceTokenHex(token: String, promise: Promise) {
+        LucraClient().registerForPushNotifications(token)
+        promise.resolve(null)
+    }
+
+    @ReactMethod
+    fun registerDeviceTokenBase64(token: String, promise: Promise) {
+        LucraClient().registerForPushNotifications(token)
+        promise.resolve(null)
     }
 
     @ReactMethod
@@ -937,6 +1021,23 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                     promise.resolve(LucraMapper.tournamentsMatchupToMap(result.tournament))
                 }
 
+            }
+        }
+    }
+
+    @ReactMethod
+    fun autoJoinTournaments(promise: Promise) {
+        LucraClient().autoJoinTournaments { result ->
+            when (result) {
+                is PoolTournament.AutoJoinTournamentsResult.Failure -> {
+                    rejectAutoJoinTournamentsError(promise, result)
+                }
+
+                is PoolTournament.AutoJoinTournamentsResult.AutoJoinedTournamentsOutput -> {
+                    val writableArray = Arguments.createArray()
+                    result.tournamentIds.forEach { writableArray.pushString(it) }
+                    promise.resolve(writableArray)
+                }
             }
         }
     }

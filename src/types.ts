@@ -148,6 +148,57 @@ export type PoolTournament = {
   iconUrl?: string;
   expiresAt?: string;
   potTotal: number;
+  // Reward structure (native iOS 5.5.0 / Android 6.6.0+). Additive — present
+  // when the backend supplies it. `rewardType` is the raw API category
+  // ("POOL_CASH_REWARD" | "POOL_TENANT_REWARD").
+  rewardType?: string;
+  payoutStructure?: PayoutStructure;
+};
+
+export type PayoutStructure = {
+  title: string;
+  description: string;
+  labelTitle?: string;
+  labelDescription?: string;
+  noPayout: boolean;
+  isPercentagePayout: boolean;
+  showAmount: boolean;
+  jackpotAmount?: string;
+  jackpotDescriptor?: string;
+  rewards: PayoutReward[];
+};
+
+export type PayoutReward = {
+  place?: number;
+  /** End position for tie ranges; equals `place` for a single position. */
+  endPlace?: number;
+  /** Pre-formatted place label, e.g. "1st", "4th–10th". */
+  placeLabel?: string;
+  /** Pre-formatted position label, e.g. "1st Place". */
+  positionLabel?: string;
+  /** Pre-formatted reward descriptor, e.g. "40%" or "Grand Prize". */
+  rewardLabel?: string;
+  /** Pre-formatted payout amount, e.g. "$1,000". */
+  amountLabel?: string;
+  /** Raw numeric reward value. */
+  value?: number;
+  /** Tangible reward details. Present only on reward-based (non-cash) rows. */
+  catalogReward?: CatalogReward;
+};
+
+/**
+ * Tangible reward item attached to a payout row. Intentionally excludes
+ * redemption details (discount codes, claim URLs, free-item IDs) — use
+ * `getUserTournamentRewards` for a claimed reward's redemption payload.
+ */
+export type CatalogReward = {
+  id: string;
+  type: string;
+  title: string;
+  description?: string;
+  iconUrl?: string;
+  bannerIconUrl?: string;
+  disclaimer?: string;
 };
 
 export type SportsMatchupType = {

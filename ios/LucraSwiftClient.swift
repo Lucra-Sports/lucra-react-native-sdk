@@ -69,13 +69,16 @@ private enum ErrorCode {
     let environment = LucraUtils.stringToEnvironment(
       options["environment"] as? String)
 
+    let autoJoin = options["autoJoin"] as? Bool ?? true
+
     nativeClient = LucraSDK.LucraClient(
       config: .init(
         environment: .init(
           apiKey: apiKey,
           environment: environment,
           urlScheme: urlScheme,
-          merchantID: merchantID
+          merchantID: merchantID,
+          autoJoin: autoJoin
         ),
         appearance: clientTheme
       )
@@ -427,6 +430,60 @@ private enum ErrorCode {
       }
     }
 
+    @objc public func getMatchupDetails(
+      _ matchupId: String,
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        // Annotated to pick the one-shot async overload over the AsyncStream one.
+        let result: Result<LucraMatchupDetails, GamesMatchupError> =
+          await self.nativeClient.api.getMatchupDetails(matchupId: matchupId)
+
+        switch result {
+        case .success(let details):
+          resolve(lucraMatchupDetailsToMap(details: details))
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
+    @objc public func subscribeMatchupDetails(_ matchupId: String) {
+      Task { @MainActor in
+        // The AsyncStream overload fires immediately and again on every
+        // server-side change; cancelMatchupDetailsSubscription() finishes it.
+        let stream: AsyncStream<Result<LucraMatchupDetails, GamesMatchupError>> =
+          self.nativeClient.api.getMatchupDetails(matchupId: matchupId)
+
+        for await result in stream {
+          switch result {
+          case .success(let details):
+            self.delegate?.sendEvent(
+              name: "matchupDetails",
+              result: [
+                "matchupId": matchupId,
+                "details": lucraMatchupDetailsToMap(details: details)
+              ])
+          case .failure(let error):
+            let (code, message) = self.lucraErrorCodeMessage(error)
+            self.delegate?.sendEvent(
+              name: "matchupDetails",
+              result: [
+                "matchupId": matchupId,
+                "error": ["code": code, "message": message]
+              ])
+          }
+        }
+      }
+    }
+
+    @objc public func cancelMatchupDetailsSubscription() {
+      Task { @MainActor in
+        self.nativeClient.api.cancelMatchupDetailsSubscription()
+      }
+    }
+
     @objc public func preloadGeoToken(_ context: String) {
       let tokenType: MiniGameGeoTokenType
       switch context.lowercased() {
@@ -608,7 +665,28 @@ private enum ErrorCode {
       }
     }
 
+    @objc public func getMiniGames(
+      _ resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      Task { @MainActor in
+        let result = await self.nativeClient.api.getMiniGames()
+
+        switch result {
+        case .success(let games):
+          resolve(games.map { miniGameCatalogItemToMap($0) })
+        case .failure(let error):
+          rejectLucraError(reject, error: error)
+        }
+      }
+    }
+
     private func rejectLucraError(_ reject: RCTPromiseRejectBlock, error: Error) {
+      let (code, message) = lucraErrorCodeMessage(error)
+      reject(code, message, error)
+    }
+
+    private func lucraErrorCodeMessage(_ error: Error) -> (code: String, message: String) {
       let code: String
       let message: String
 
@@ -711,7 +789,7 @@ private enum ErrorCode {
         message = extractMessage(from: error)
       }
 
-      reject(code, message, error)
+      return (code, message)
     }
 
     private func extractMessage(from error: Error) -> String {
@@ -807,6 +885,20 @@ private enum ErrorCode {
       resolve(false)
     }
 
+  }
+
+  @MainActor @objc public func parseLucraLink(
+    _ link: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let url = URL(string: link),
+      let flow = self.nativeClient.handleDeeplink(url: url)
+    else {
+      resolve(nil)
+      return
+    }
+    resolve(lucraFlowToMap(flow))
   }
 
   @objc public func registerDeviceTokenHex(
@@ -915,6 +1007,21 @@ private enum ErrorCode {
       switch result {
       case .success(let tournament):
         resolve(tournamentsMatchupToMap(tournament: tournament))
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func autoJoinTournaments(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      let result = await self.nativeClient.api.autoJoinTournaments()
+      switch result {
+      case .success(let tournamentIds):
+        resolve(tournamentIds)
       case .failure(let error):
         rejectLucraError(reject, error: error)
       }

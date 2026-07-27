@@ -14,6 +14,11 @@ export interface Spec extends TurboModule {
 
   // All types of matchups
   getMatchup(matchupId: string): Promise<Object>;
+  getMatchupDetails(matchupId: string): Promise<Object>;
+  // Live matchup-details subscription — results arrive via the `matchupDetails`
+  // event; cancel ends the native subscription.
+  subscribeMatchupDetails(matchupId: string): void;
+  cancelMatchupDetailsSubscription(): void;
 
   // Games related
   createRecreationalGame(
@@ -38,6 +43,7 @@ export interface Spec extends TurboModule {
     amount: number,
     matchupId: string
   ): Promise<Object>;
+  getMiniGames(): Promise<Object[]>;
 
   // Rewards & Achievements headless (Minigames Headless epic)
   getUserTournamentRewards(params: Object): Promise<Object[]>;
@@ -52,6 +58,7 @@ export interface Spec extends TurboModule {
   getRecommendedTournaments: (params: Object) => Promise<Object[]>;
   tournamentMatchup: (tournamentId: string) => Promise<Object>;
   joinTournament: (tournamentId: string) => Promise<void>;
+  autoJoinTournaments: () => Promise<string[]>;
 
   // Client <-> SDK listener types
   addListener: (eventType: string) => void;
@@ -59,6 +66,8 @@ export interface Spec extends TurboModule {
   emitDeepLink: (deepLink: string) => void;
   emitCreditConversion: (creditConversion: Object) => void;
   handleLucraLink: (link: string) => Promise<boolean>;
+  // Resolves a Lucra deeplink to flow info without presenting UI; null when unrecognized
+  parseLucraLink: (link: string) => Promise<Object>;
   registerDeviceTokenHex: (token: string) => Promise<void>;
   registerDeviceTokenBase64: (token: string) => Promise<void>;
   registerConvertToCreditProvider: () => void;

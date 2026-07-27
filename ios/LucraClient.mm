@@ -66,6 +66,11 @@ RCT_EXPORT_METHOD(startMiniGame : (NSString *)gameId
                       reject:reject];
 }
 
+RCT_EXPORT_METHOD(getMiniGames : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getMiniGames:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(getUserTournamentRewards : (NSDictionary *)params
                   resolve : (RCTPromiseResolveBlock)resolve
                   reject : (RCTPromiseRejectBlock)reject) {
@@ -145,6 +150,22 @@ RCT_EXPORT_METHOD(getMatchup : (NSString *)matchupId
                    reject:reject];
 }
 
+RCT_EXPORT_METHOD(getMatchupDetails : (NSString *)matchupId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getMatchupDetails:matchupId
+                         resolve:resolve
+                          reject:reject];
+}
+
+RCT_EXPORT_METHOD(subscribeMatchupDetails : (NSString *)matchupId) {
+  [swiftClient subscribeMatchupDetails:matchupId];
+}
+
+RCT_EXPORT_METHOD(cancelMatchupDetailsSubscription) {
+  [swiftClient cancelMatchupDetailsSubscription];
+}
+
 RCT_EXPORT_METHOD(present : (NSDictionary *)params
                   resolve : (RCTPromiseResolveBlock)resolve
                    reject : (RCTPromiseRejectBlock)reject) {
@@ -207,6 +228,11 @@ RCT_EXPORT_METHOD(handleLucraLink : (NSString *)link resolve : (
   [swiftClient handleLucraLink:link resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(parseLucraLink : (NSString *)link resolve : (
+    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient parseLucraLink:link resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(registerDeviceTokenHex : (NSString *)
                       deviceTokenHex resolve : (RCTPromiseResolveBlock)
                           resolve reject : (RCTPromiseRejectBlock)reject) {
@@ -232,6 +258,11 @@ RCT_EXPORT_METHOD(getRecommendedTournaments : (NSDictionary *)params resolve : (
 RCT_EXPORT_METHOD(tournamentMatchup : (NSString *)idString resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient tournamentMatchup:idString resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(autoJoinTournaments : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient autoJoinTournamentsWithResolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(joinTournament : (NSString *)idString resolve : (

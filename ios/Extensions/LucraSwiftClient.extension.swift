@@ -14,6 +14,7 @@ extension LucraSwiftClient {
     case tournamentJoined
     case tournamentsAutoJoined
     case miniGameFinished
+    case matchupDetails
     case _availableRewards
     case _claimReward
     case _viewRewards

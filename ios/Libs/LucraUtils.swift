@@ -77,7 +77,16 @@ class LucraUtils {
           userInfo: [NSLocalizedDescriptionKey: "miniGame flow requires a valid gameMode"])
       }
       return .miniGame(
-        gameId: gameId, gameMode: parsedMode, amount: amount, matchupId: matchupId)
+        gameId: gameId, gameMode: parsedMode, amount: amount, matchupId: matchupId,
+        handlePostNavigation: false)
+    case "miniGamesHome":
+      return .miniGamesHome
+    case "miniGamesProfile":
+      return .miniGamesProfile
+    case "miniGamesRewards":
+      return .miniGamesRewards
+    case "miniGamesMatchupDetails":
+      return .miniGamesMatchupDetails(matchupId: matchupId!)
     case "achievements":
       return .achievements
     default:

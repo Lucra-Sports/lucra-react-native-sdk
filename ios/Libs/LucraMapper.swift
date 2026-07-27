@@ -4,7 +4,7 @@ import LucraSDK
 public func userToMap(_ user: LucraSDK.LucraUser) -> [String: Any] {
   return [
     "id": user.id,
-    "socialConnectionId": user.id,
+    "socialConnectionId": user.socialConnectionId as Any,
     "username": user.username,
     "avatarUrl": user.avatarURL as Any,
     "loyaltyPoints": user.loyaltyPoints,
@@ -144,9 +144,11 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
         "createdAt": match.createdAt.ISO8601Format(),
         "updatedAt": match.updatedAt.ISO8601Format(),
         "creatorId": match.creatorId,
-        "status": match.status,
-        "subtype": match.subtype,
-        "type": match.type,
+        // Swift enums are not bridgeable to [String: Any]; pass the raw value or the
+        // field is silently dropped from the resolved JS object.
+        "status": match.status == .unknown ? "UNKNOWN" : match.status.rawValue,
+        "subtype": match.subtype == .unknown ? "UNKNOWN" : match.subtype.rawValue,
+        "type": match.type == .unknown ? "UNKNOWN" : match.type.rawValue,
         "isPublic": match.isPublic,
         "creator": userToMap(match.creator)
     ]
@@ -170,8 +172,14 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
                 "wager": participant.wager ?? 0.0,
                 "user": userToMap(participant.user)
             ]
-            
-            participantMap["tournamentLeaderboard"] = tournamentLeaderboardToMap(match.tournamentDetails, participant: participant)
+
+            // Only tournaments have leaderboard data; omit it elsewhere instead
+            // of emitting a placeholder (parity with Android). Checking the
+            // type, not tournamentDetails — the SDK populates tournamentDetails
+            // with an empty object even for non-tournament matchups.
+            if match.type == .tournament {
+                participantMap["tournamentLeaderboard"] = tournamentLeaderboardToMap(match.tournamentDetails, participant: participant)
+            }
 
             if let reward = participant.tenantReward {
                 participantMap["reward"] = rewardToMap(reward: reward)
@@ -254,6 +262,77 @@ public func lucraMatchupToMap(match: LucraSDK.LucraMatchup) -> [String: Any] {
 }
 
 
+public func lucraMatchupDetailsToMap(details: LucraSDK.LucraMatchupDetails) -> [String: Any] {
+    var map: [String: Any] = [
+        "matchup": lucraMatchupToMap(match: details.matchup)
+    ]
+
+    map["groups"] = details.groups.map { group in
+        var groupMap: [String: Any] = [
+            "id": group.id,
+            "outcome": {
+                switch group.outcome {
+                case .loss: return "LOSS"
+                case .tie: return "TIE"
+                case .win: return "WIN"
+                default: return "UNKNOWN"
+                }
+            }()
+        ]
+
+        if let name = group.name {
+            groupMap["name"] = name
+        }
+        if let score = group.score {
+            groupMap["score"] = score
+        }
+
+        groupMap["participants"] = group.participants.map { participant in
+            var participantMap: [String: Any] = [
+                "userId": participant.userId,
+                "username": participant.username
+            ]
+            if let avatarUrl = participant.avatarUrl {
+                participantMap["avatarUrl"] = avatarUrl
+            }
+            if let individualPayout = participant.individualPayout {
+                participantMap["individualPayout"] = Double(truncating: individualPayout as NSNumber)
+            }
+            return participantMap
+        }
+
+        return groupMap
+    }
+
+    map["participantScores"] = details.participantScores.map { score in
+        var scoreMap: [String: Any] = [:]
+        if let userId = score.userId {
+            scoreMap["userId"] = userId
+        }
+        if let username = score.username {
+            scoreMap["username"] = username
+        }
+        if let avatarUrl = score.avatarUrl {
+            scoreMap["avatarUrl"] = avatarUrl
+        }
+        if let place = score.place {
+            scoreMap["place"] = place
+        }
+        if let scoreValue = score.score {
+            scoreMap["score"] = scoreValue
+        }
+        if let finishedAt = score.finishedAt {
+            scoreMap["finishedAt"] = finishedAt.ISO8601Format()
+        }
+        if let groupId = score.groupId {
+            scoreMap["groupId"] = groupId
+        }
+        return scoreMap
+    }
+
+    return map
+}
+
 private func rewardToMap(reward: LucraSDK.LucraReward) -> [String: Any?] {
     let map: [String: Any?] = [
         "rewardId": reward.rewardId,
@@ -315,8 +394,8 @@ public func tournamentLeaderboardToMap(_ tournament: LucraSDK.TournamentsMatchup
     
     map["title"] = tournament?.title
     map["userScore"] = "" // Score is an internal only value
-    map["place"] = "\(tournamentParticipant?.place ?? 0)"
-    map["placeOverride"] = "\(tournamentParticipant?.place ?? 0)"
+    map["place"] = place
+    map["placeOverride"] = place
     map["rewardValue"] = tournamentParticipant?.rewardValue ?? 0.0
     map["rewardTierValue"] = tournament?.rewardStructure.first(where: { $0.position == Double(tournamentParticipant?.place ?? 0) })?.value ?? 0.0
     map["participantGroupId"] = tournamentParticipant?.id
@@ -352,6 +431,48 @@ public func tournamentsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> 
     "iconUrl": tournament.iconUrl as Any,
     "expiresAt": tournament.expiresAt?.ISO8601Format(),
     "potTotal": tournament.potTotal,
+    "rewardType": tournament.rewardType as Any,
+    "payoutStructure": tournament.payoutStructure.map(payoutStructureToMap) as Any,
+  ]
+}
+
+public func payoutStructureToMap(_ payout: LucraSDK.TournamentsMatchup.PayoutStructure) -> [String: Any?] {
+  return [
+    "title": payout.title,
+    "description": payout.description,
+    "labelTitle": payout.labelTitle as Any,
+    "labelDescription": payout.labelDescription as Any,
+    "noPayout": payout.noPayout,
+    "isPercentagePayout": payout.isPercentagePayout,
+    "showAmount": payout.showAmount,
+    "jackpotAmount": payout.jackpotAmount as Any,
+    "jackpotDescriptor": payout.jackpotDescriptor as Any,
+    "rewards": payout.rewards.map(payoutRewardToMap),
+  ]
+}
+
+public func payoutRewardToMap(_ reward: LucraSDK.TournamentsMatchup.PayoutReward) -> [String: Any?] {
+  return [
+    "place": reward.place as Any,
+    "endPlace": reward.endPlace as Any,
+    "placeLabel": reward.placeLabel as Any,
+    "positionLabel": reward.positionLabel as Any,
+    "rewardLabel": reward.rewardLabel as Any,
+    "amountLabel": reward.amountLabel as Any,
+    "value": reward.value as Any,
+    "catalogReward": reward.catalogReward.map(payoutCatalogRewardToMap) as Any,
+  ]
+}
+
+public func payoutCatalogRewardToMap(_ reward: LucraSDK.TournamentsMatchup.CatalogReward) -> [String: Any?] {
+  return [
+    "id": reward.id,
+    "type": reward.type,
+    "title": reward.title,
+    "description": reward.description as Any,
+    "iconUrl": reward.iconUrl as Any,
+    "bannerIconUrl": reward.bannerIconUrl as Any,
+    "disclaimer": reward.disclaimer as Any,
   ]
 }
 
@@ -538,4 +659,106 @@ public func userAchievementToMap(_ achievement: LucraSDK.UserAchievement) -> [St
     "currentProgress": achievement.currentProgress,
     "achievement": achievement.achievement.map { achievementItemToMap($0) },
   ]
+}
+
+public func miniGameCatalogConfigToMap(_ config: LucraSDK.MiniGameCatalogConfig) -> [String: Any?] {
+  return [
+    "id": config.id,
+    "gameId": config.gameId,
+    "mode": config.mode,
+    "wagerAmount": config.wagerAmount.map { NSDecimalNumber(decimal: $0).doubleValue },
+    "groupSize": config.groupSize,
+    "createdAt": config.createdAt,
+    "updatedAt": config.updatedAt,
+  ]
+}
+
+public func miniGameCatalogItemToMap(_ item: LucraSDK.MiniGameCatalogItem) -> [String: Any?] {
+  return [
+    "gameId": item.gameId,
+    "name": item.name,
+    "description": item.description,
+    "imageUrl": item.imageUrl,
+    "videoUrl": item.videoUrl,
+    "createdAt": item.createdAt,
+    "updatedAt": item.updatedAt,
+    "config": item.config.map { miniGameCatalogConfigToMap($0) },
+  ]
+}
+
+public func lucraFlowToMap(_ flow: LucraSDK.LucraFlow) -> [String: Any] {
+  switch flow {
+  case .onboarding:
+    return ["flow": "onboarding"]
+  case .verifyIdentity:
+    return ["flow": "verifyIdentity"]
+  case .addFunds:
+    return ["flow": "addFunds"]
+  case .withdrawFunds:
+    return ["flow": "withdrawFunds"]
+  case .createGamesMatchup(let gameId, let location):
+    var map: [String: Any] = ["flow": "createGamesMatchup"]
+    if let gameId { map["gameId"] = gameId }
+    if let location { map["location"] = location }
+    return map
+  case .createSportsMatchup:
+    return ["flow": "createSportsMatchup"]
+  case .profile:
+    return ["flow": "profile"]
+  case .publicFeed:
+    return ["flow": "publicFeed"]
+  case .sportsContestDetails(let matchupId):
+    return ["flow": "sportContestDetails", "matchupId": matchupId]
+  case .gamesMatchupDetails(let matchupId):
+    return ["flow": "gamesMatchupDetails", "matchupId": matchupId]
+  case .myMatchups:
+    return ["flow": "myMatchup"]
+  case .matchupDetails(let matchupId):
+    return ["flow": "matchupDetails", "matchupId": matchupId]
+  case .tournamentDetails(let matchupId):
+    return ["flow": "tournamentDetails", "matchupId": matchupId]
+  case .demographicCollection:
+    return ["flow": "demographicCollection"]
+  case .wallet:
+    return ["flow": "wallet"]
+  case .homePage(let location):
+    var map: [String: Any] = ["flow": "homePage"]
+    if let location { map["location"] = location }
+    return map
+  case .achievements:
+    return ["flow": "achievements"]
+  case .transactionHistory:
+    return ["flow": "transactionHistory"]
+  case .customerSupport:
+    return ["flow": "customerSupport"]
+  case .responsibleGaming:
+    return ["flow": "responsibleGaming"]
+  case .notifications:
+    return ["flow": "notifications"]
+  case .miniGamesHome:
+    return ["flow": "miniGamesHome"]
+  case .miniGamesProfile:
+    return ["flow": "miniGamesProfile"]
+  case .miniGamesRewards:
+    return ["flow": "miniGamesRewards"]
+  case .miniGamesMatchupDetails(let matchupId):
+    return ["flow": "miniGamesMatchupDetails", "matchupId": matchupId]
+  case .miniGame(let gameId, let gameMode, let amount, let matchupId, _):
+    // JS-facing mode strings (MiniGameMode enum), not the native rawValues
+    let modeString: String
+    switch gameMode {
+    case .practice: modeString = "practice"
+    case .oneVsOne: modeString = "1v1"
+    case .freeForAll: modeString = "free_for_all"
+    case .tournament: modeString = "tournament"
+    @unknown default: modeString = gameMode.rawValue
+    }
+    var map: [String: Any] = ["flow": "miniGame", "gameMode": modeString]
+    if let gameId { map["gameId"] = gameId }
+    if let amount { map["amount"] = NSDecimalNumber(decimal: amount) }
+    if let matchupId { map["matchupId"] = matchupId }
+    return map
+  @unknown default:
+    return ["flow": String(describing: flow)]
+  }
 }
