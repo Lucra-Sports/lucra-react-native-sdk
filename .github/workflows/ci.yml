@@ -65,6 +65,9 @@ jobs:
       ANDROID_HOME: /Users/lucra/Library/Android/sdk
 
     steps:
+      - name: Add Android SDK to PATH
+        run: echo "$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+
       - name: Checkout
         uses: actions/checkout@v4
 
