@@ -1087,6 +1087,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     companion object {
-        const val NAME = "LucraClient"
+        const val NAME = "NativeLucraClient"
     }
 }

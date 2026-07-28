@@ -1,11 +1,15 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import "LucraProfilePill.h"
 #import "RCTBridge.h"
-#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
-#import <react/renderer/components/LucraClientSpec/ComponentDescriptors.h>
-#import <react/renderer/components/LucraClientSpec/EventEmitters.h>
-#import <react/renderer/components/LucraClientSpec/Props.h>
-#import <react/renderer/components/LucraClientSpec/RCTComponentViewHelpers.h>
+#if __has_include(<lucra_react_native_sdk/lucra_react_native_sdk-Swift.h>)
+#import <lucra_react_native_sdk/lucra_react_native_sdk-Swift.h>
+#else
+#import "lucra_react_native_sdk-Swift.h"
+#endif
+#import <react/renderer/components/NativeLucraClientSpec/ComponentDescriptors.h>
+#import <react/renderer/components/NativeLucraClientSpec/EventEmitters.h>
+#import <react/renderer/components/NativeLucraClientSpec/Props.h>
+#import <react/renderer/components/NativeLucraClientSpec/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 #import "Utils.h"

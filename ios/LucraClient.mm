@@ -1,5 +1,9 @@
 #import "LucraClient.h"
-#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
+#if __has_include(<lucra_react_native_sdk/lucra_react_native_sdk-Swift.h>)
+#import <lucra_react_native_sdk/lucra_react_native_sdk-Swift.h>
+#else
+#import "lucra_react_native_sdk-Swift.h"
+#endif
 
 @interface LucraClient () <LucraClientDelegate>
 @end
@@ -9,7 +13,7 @@
 @synthesize bridge = _bridge;
 LucraSwiftClient *swiftClient;
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(NativeLucraClient)
 
 static LucraClient *_sharedInstance = nil;
 

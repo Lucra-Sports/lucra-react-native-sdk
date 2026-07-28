@@ -63,8 +63,12 @@ jobs:
       JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       GRADLE_OPTS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       ANDROID_HOME: /Users/lucra/Library/Android/sdk
+      DETOX_AVD_NAME: arm64emulator
 
     steps:
+      - name: Add Android SDK to PATH
+        run: echo "$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -80,6 +84,19 @@ jobs:
           ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           EOF
           # set -x # Re-enable logging
+
+      - name: Kill stale emulators
+        run: adb devices | grep emulator | cut -f1 | xargs -I {} adb -s {} emu kill 2>/dev/null || true
+
+      - name: Boot emulator
+        run: |
+          emulator -avd "$DETOX_AVD_NAME" -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
+          adb wait-for-device
+          # Wait for the device to fully boot
+          until adb shell getprop sys.boot_completed 2>/dev/null | grep -q '1'; do
+            sleep 2
+          done
+          echo "Emulator is ready"
 
       - name: build debug app
         run: |

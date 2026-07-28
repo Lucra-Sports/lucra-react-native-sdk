@@ -58,6 +58,7 @@
 * Added TypeScript exports for `PayoutStructure`, `PayoutReward`, and `CatalogReward` so apps can type tournament payout UI directly from the SDK response.
 * Updated both Android and iOS mappers so the new tournament payout fields are returned consistently across platforms.
 * Updated tournament headless docs with the new response fields, example payload, and type definitions.
+>>>>>>> origin/main
 
 # 5.4.1
 * Empty state profile UI/UX fix for both iOS and Android

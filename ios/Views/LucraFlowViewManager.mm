@@ -2,7 +2,11 @@
 #import <React/RCTUIManager.h>
 #import "RCTBridge.h"
 #import <React/RCTLog.h>
-#import "lucra_react_native_sdk/lucra_react_native_sdk-Swift.h"
+#if __has_include(<lucra_react_native_sdk/lucra_react_native_sdk-Swift.h>)
+#import <lucra_react_native_sdk/lucra_react_native_sdk-Swift.h>
+#else
+#import "lucra_react_native_sdk-Swift.h"
+#endif
 
 @interface LucraFlowViewManager : RCTViewManager
 @end

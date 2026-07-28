@@ -6,7 +6,8 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios --simulator=\"iPhone 16 Pro\"",
     "start": "react-native start",
-    "pods": "cd ios && rm -rf Pods && rm -rf build && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update && rm -f ios/.xcode.env.local",
+    "pods": "cd ios && rm -rf build && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update && rm -f .xcode.env.local",
+    "pods:nuke": "cd ios && rm -rf Pods && rm -rf build && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update && rm -f ios/.xcode.env.local",
     "android:logcat": "adb logcat",
     "nuke": "rm -rf $TMPDIR/react-* && watchman watch-del-all && rm -rf ios/build && rm -rf node_modules/ && rm -rf ./ios/Pods && yarn",
     "codegen": "./codegen.sh",
@@ -16,8 +17,8 @@
     "release:ios": "cd ios && bundle exec fastlane distribute --verbose",
     "e2e:build-ios": "detox build --configuration ios.sim.debug",
     "e2e:run-ios": "detox test --configuration ios.sim.debug",
-    "e2e:build-android": "detox build --configuration android.emu.debug",
-    "e2e:run-android": "detox test --configuration android.emu.debug"
+    "e2e:build-android": "bash -c 'DETOX_AVD_NAME=${DETOX_AVD_NAME:-$(emulator -list-avds | head -n 1)}; if [ -z \"$DETOX_AVD_NAME\" ]; then echo \"No Android AVD found. Set DETOX_AVD_NAME to override.\"; exit 1; fi; DETOX_AVD_NAME=\"$DETOX_AVD_NAME\" detox build --configuration android.emu.debug'",
+    "e2e:run-android": "bash -c 'DETOX_AVD_NAME=${DETOX_AVD_NAME:-$(emulator -list-avds | head -n 1)}; if [ -z \"$DETOX_AVD_NAME\" ]; then echo \"No Android AVD found. Set DETOX_AVD_NAME to override.\"; exit 1; fi; DETOX_AVD_NAME=\"$DETOX_AVD_NAME\" detox test --configuration android.emu.debug'"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.0.0",
