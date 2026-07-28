@@ -63,6 +63,7 @@ jobs:
       JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       GRADLE_OPTS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       ANDROID_HOME: /Users/lucra/Library/Android/sdk
+      DETOX_AVD_NAME: arm64emulator
 
     steps:
       - name: Add Android SDK to PATH
