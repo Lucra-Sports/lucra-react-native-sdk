@@ -14,10 +14,10 @@
 
 language: en-US
 tone_instructions: >-
-  You are reviewing a public-facing SDK consumed by external integrators.
-  Treat cross-platform (iOS/Android) parity, documentation accuracy, and
-  release-note accuracy as first-class review concerns alongside correctness.
-  Be specific: name the exact file that is out of sync.
+  You are reviewing a public-facing SDK used by external integrators.
+  Treat cross-platform (iOS/Android) parity, doc accuracy, and
+  release-note accuracy as first-class concerns alongside correctness.
+  Be specific: name the exact file out of sync.
 
 early_access: false
 
