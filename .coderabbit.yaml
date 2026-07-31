@@ -98,8 +98,9 @@ reviews:
         docs file, e.g. docs/1.2.7_lucraflows.md, docs/1.2.8_lucracomponents.md,
         docs/1.2.9_headless_interactions.md, docs/2.3_gyp_headless_functions.md,
         docs/3.3_tournaments_headless.md, docs/4.3_syw_headless_functions.md,
-        docs/5.1_mini_games_headless.md,
-        docs/5.3_rewards_achievements_headless.md (see docs/README.md for the
+        docs/5.0_achievements.md, docs/6.1_mini_games_headless.md,
+        docs/6.2_mini_game_events.md, docs/6.3_mini_games_flows.md,
+        docs/6.4_mini_games_webview.md (see docs/README.md for the
         full index). If new functionality has NO corresponding doc, flag that a
         doc must be added. Also VERIFY docs/SDK_RELEASE_NOTES.md has a
         corresponding entry. Flag and name the exact file(s) when out of sync.

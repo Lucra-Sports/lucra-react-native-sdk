@@ -58,7 +58,6 @@
 * Added TypeScript exports for `PayoutStructure`, `PayoutReward`, and `CatalogReward` so apps can type tournament payout UI directly from the SDK response.
 * Updated both Android and iOS mappers so the new tournament payout fields are returned consistently across platforms.
 * Updated tournament headless docs with the new response fields, example payload, and type definitions.
->>>>>>> origin/main
 
 # 5.4.1
 * Empty state profile UI/UX fix for both iOS and Android
@@ -66,14 +65,14 @@
 
 # 5.4.0
 * Includes the Mini Games integration surface introduced during the 5.3.0 beta:
-  * Added the `LucraSDK.startMiniGame(gameId, gameMode, amount?, matchupId?)` headless function. It starts a mini game session without presenting Lucra UI and returns a game `url`, `sessionId`, and optional `matchupId`. See [Mini Games headless functions](5.1_mini_games_headless.md).
+  * Added the `LucraSDK.startMiniGame(gameId, gameMode, amount?, matchupId?)` headless function. It starts a mini game session without presenting Lucra UI and returns a game `url`, `sessionId`, and optional `matchupId`. See [Mini Games headless functions](6.1_mini_games_headless.md).
   * Added `MiniGameMode` values for `PRACTICE`, `ONE_VS_ONE`, `FREE_FOR_ALL`, and `TOURNAMENT`.
-  * Added the exported `MiniGameWebView` component for custom mini game presentation. It renders the URL from `startMiniGame` in a full-screen modal and handles game-to-native messages, close events, duplicate close protection, haptic feedback, and game log forwarding. See [Mini Games WebView](5.2_mini_games_webview.md).
+  * Added the exported `MiniGameWebView` component for custom mini game presentation. It renders the URL from `startMiniGame` in a full-screen modal and handles game-to-native messages, close events, duplicate close protection, haptic feedback, and game log forwarding. See [Mini Games WebView](6.4_mini_games_webview.md).
   * Added Mini Games docs covering required peer dependencies: `react-native-webview >=13.0.0` and `react-native-haptic-feedback >=2.0.0`.
   * Documented `LucraSDK.preloadGeoToken(GeoComplyContext.CASH_BUY_IN)` as the recommended preload step before starting cash buy-in mini games.
   * Added the Lucra-managed `MINI_GAME` flow for teams that do not want to own the custom WebView presentation: `LucraSDK.present({ name: LucraSDK.FLOW.MINI_GAME, gameId, gameMode, amount?, matchupId? })`.
 * Mapped the latest Minigames Headless SDK surface through the React Native library (TV-1637):
-  * New headless functions: `getUserTournamentRewards`, `claimReward`, `markRewardViewed`, `getUserAchievements`, `claimAchievement`, `markAchievementViewed`. See [Rewards & Achievements headless functions](5.3_rewards_achievements_headless.md).
+  * New headless functions: `getUserTournamentRewards`, `claimReward`, `markRewardViewed`, `getUserAchievements`, `claimAchievement`, `markAchievementViewed`. See [Rewards & Achievements](5.0_achievements.md).
   * New `ACHIEVEMENTS` flow exposed via `LucraSDK.present({ name: LucraSDK.FLOW.ACHIEVEMENTS })`.
   * New `onMiniGameFinished` contest-listener callback, forwarded from the native `MiniGame.Finished` event with `{ gameId, gameMode, amount, matchupId }`.
   * Added shared types: `LucraTournamentReward`, `LucraCatalogReward`, `LucraAchievement`, `LucraAchievementDefinition` (and criteria types).
