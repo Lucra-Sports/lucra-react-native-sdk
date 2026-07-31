@@ -229,6 +229,31 @@ jobs:
           brew tap wix/brew
           brew install applesimutils
 
+      - name: Create fresh iOS simulator
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        timeout-minutes: 5
+        env:
+          DETOX_SIM_DEVICE_TYPE: iPhone 16
+          DETOX_SIM_PREFIX: ci-detox-
+        run: |
+          leftovers=$(xcrun simctl list devices 2>/dev/null \
+            | grep -oE "${DETOX_SIM_PREFIX}[A-Za-z0-9_.-]* \([0-9A-Fa-f-]{36}\)" \
+            | sed -E 's/.*\(([0-9A-Fa-f-]{36})\)/\1/' || true)
+
+          for old in $leftovers; do
+            echo "Deleting simulator left behind by an interrupted run: $old"
+            xcrun simctl shutdown "$old" 2>/dev/null || true
+            xcrun simctl delete "$old" || true
+          done
+
+          name="${DETOX_SIM_PREFIX}${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          udid=$(xcrun simctl create "$name" "$DETOX_SIM_DEVICE_TYPE")
+          echo "DETOX_SIM_UDID=$udid" >> "$GITHUB_ENV"
+          echo "Created $name ($udid)"
+
+          xcrun simctl bootstatus "$udid" -b
+          echo "Simulator booted and ready"
+
       - name: Build example for iOS
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         timeout-minutes: 25
@@ -248,3 +273,15 @@ jobs:
           path: example/metro.log
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Delete iOS simulator
+        if: always()
+        timeout-minutes: 5
+        run: |
+          if [ -z "${DETOX_SIM_UDID:-}" ]; then
+            echo "No simulator was created for this run"
+            exit 0
+          fi
+          echo "Deleting simulator $DETOX_SIM_UDID"
+          xcrun simctl shutdown "$DETOX_SIM_UDID" 2>/dev/null || true
+          xcrun simctl delete "$DETOX_SIM_UDID" || echo "::warning::Could not delete $DETOX_SIM_UDID"
