@@ -1,6 +1,7 @@
 # 5.9.0
 * Bumped iOS to [5.7.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.7.0)
 * Bumped Android to [6.8.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.8.0)
+* Added `handlePostNavigation?: boolean` to the `MINI_GAME` flow (`LucraSDK.present({ name: LucraSDK.FLOW.MINI_GAME, ... })`), matching the native iOS/Android SDKs. Defaults to `false`; when `true`, on a non-Practice/non-Tournament session end with a resolved matchup, the SDK automatically navigates to the Mini Games Matchup Details screen instead of dismissing. Previously this was silently hardcoded to `false` on iOS and omitted on Android — no behavior change for existing integrators who don't pass it. See [Mini Games Flows](6.3_mini_games_flows.md).
 
 # 5.8.0
 * Bumped iOS to [5.6.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.6.0)

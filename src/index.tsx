@@ -583,6 +583,12 @@ function present(params: {
   gameMode: MiniGameMode;
   amount?: number;
   matchupId?: string;
+  /**
+   * When true, on a non-Practice/non-Tournament session end with a resolved
+   * matchupId, the SDK automatically navigates to the Mini Games Matchup
+   * Details screen instead of dismissing. Defaults to false.
+   */
+  handlePostNavigation?: boolean;
 }): Promise<void>;
 function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
 function present(params: { name: typeof Flows.MINI_GAMES_HOME }): Promise<void>;
@@ -603,6 +609,7 @@ function present(params: {
   amount?: number;
   matchupId?: string;
   locationId?: string;
+  handlePostNavigation?: boolean;
 }): Promise<void> {
   try {
     return LucraClient.present(params);

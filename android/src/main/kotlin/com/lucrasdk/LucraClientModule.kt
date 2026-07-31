@@ -379,10 +379,18 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             } else {
                 null
             }
+            val handlePostNavigation = if (
+                args.hasKey("handlePostNavigation") && !args.isNull("handlePostNavigation")
+            ) {
+                args.getBoolean("handlePostNavigation")
+            } else {
+                false
+            }
 
             val flow =
                 LucraUtils.getLucraFlow(
-                    flowName, matchupId, teaminviteId, gameTypeId, locationId, gameMode, amount
+                    flowName, matchupId, teaminviteId, gameTypeId, locationId, gameMode, amount,
+                    handlePostNavigation
                 )
 
             val currentActivity = context.currentActivity as? FragmentActivity

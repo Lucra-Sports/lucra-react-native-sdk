@@ -37,7 +37,7 @@ class LucraUtils {
 
   static public func stringToLucraFlow(
     _ flowName: String, matchupId: String?, teamInviteId: String?, gameId: String?, location: String?,
-    gameMode: String? = nil, amount: Decimal? = nil
+    gameMode: String? = nil, amount: Decimal? = nil, handlePostNavigation: Bool = false
   ) throws -> LucraSDK.LucraFlow {
     switch flowName {
     case "profile":
@@ -78,7 +78,7 @@ class LucraUtils {
       }
       return .miniGame(
         gameId: gameId, gameMode: parsedMode, amount: amount, matchupId: matchupId,
-        handlePostNavigation: false)
+        handlePostNavigation: handlePostNavigation)
     case "miniGamesHome":
       return .miniGamesHome
     case "miniGamesProfile":

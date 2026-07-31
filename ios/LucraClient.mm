@@ -176,6 +176,7 @@ RCT_EXPORT_METHOD(present : (NSDictionary *)params
   NSString *location = params[@"locationId"];
   NSString *gameMode = params[@"gameMode"];
   NSNumber *amount = params[@"amount"];
+  NSNumber *handlePostNavigation = params[@"handlePostNavigation"];
 
   [swiftClient present:flow
              matchupId:matchupId
@@ -184,6 +185,7 @@ RCT_EXPORT_METHOD(present : (NSDictionary *)params
               location:location
               gameMode:gameMode
                 amount:amount
+  handlePostNavigation:handlePostNavigation
                resolve:resolve
                 reject:reject];
 }

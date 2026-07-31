@@ -248,6 +248,7 @@ private enum ErrorCode {
     _ flowName: String, matchupId: String?, teamInviteId: String?,
     gameId: String?, location: String?,
     gameMode: String?, amount: NSNumber?,
+    handlePostNavigation: NSNumber?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -257,7 +258,8 @@ private enum ErrorCode {
       let flow = try LucraUtils.stringToLucraFlow(
         flowName, matchupId: matchupId, teamInviteId: teamInviteId,
         gameId: gameId, location: location,
-        gameMode: gameMode, amount: amount?.decimalValue)
+        gameMode: gameMode, amount: amount?.decimalValue,
+        handlePostNavigation: handlePostNavigation?.boolValue ?? false)
 
       DispatchQueue.main.async {
         UIViewController.topViewController?.present(
