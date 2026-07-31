@@ -108,6 +108,10 @@ scripts/test-native-sdks-locally.sh
 # Locally-built native SDK artifacts (never commit)
 xcframeworks/
 
+# CI build logs
+example/metro.log
+example/android/assemble*.log
+
 # Looking at you vibe coders
 AGENTS.md
 /.cursor
