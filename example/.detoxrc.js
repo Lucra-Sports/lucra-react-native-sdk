@@ -1,7 +1,7 @@
 /** @type {Detox.DetoxConfig} */
 module.exports = {
   logger: {
-    level: process.env.DETOX_LOGLEVEL || 'error',
+    level: process.env.DETOX_LOGLEVEL || 'warn',
   },
   artifacts: {
     plugins: {
