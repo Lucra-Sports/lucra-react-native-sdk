@@ -1,6 +1,7 @@
 #!/bin/bash
 
 METRO_BUNDLER_PID=""
+METRO_PORT_IN_USE=""
 
 metro_reclaim_port() {
   local port="$1"
@@ -30,11 +31,42 @@ metro_reclaim_port() {
   fi
 }
 
+metro_signal_tree() {
+  local sig="$1" pid="$2"
+  kill "-$sig" "-$pid" 2>/dev/null || kill "-$sig" "$pid" 2>/dev/null || true
+}
+
 metro_stop() {
-  [ -z "$METRO_BUNDLER_PID" ] && return 0
-  kill "$METRO_BUNDLER_PID" 2>/dev/null || true
-  wait "$METRO_BUNDLER_PID" 2>/dev/null || true
+  local pid="${METRO_BUNDLER_PID:-}"
+  local port="${METRO_PORT_IN_USE:-}"
   METRO_BUNDLER_PID=""
+
+  if [ -n "$pid" ]; then
+    metro_signal_tree TERM "$pid"
+
+    local deadline=$((SECONDS + 15))
+    while kill -0 "$pid" 2>/dev/null; do
+      if [ "$SECONDS" -ge "$deadline" ]; then
+        echo "Metro (pid $pid) ignored SIGTERM after 15s — sending SIGKILL"
+        metro_signal_tree KILL "$pid"
+        sleep 1
+        break
+      fi
+      sleep 1
+    done
+
+    wait "$pid" 2>/dev/null || true
+  fi
+
+  if [ -n "$port" ]; then
+    local stragglers
+    stragglers=$(lsof -ti ":$port" 2>/dev/null || true)
+    if [ -n "$stragglers" ]; then
+      echo "Reaping Metro stragglers still bound to port $port: $stragglers"
+      # shellcheck disable=SC2086
+      kill -9 $stragglers 2>/dev/null || true
+    fi
+  fi
 }
 
 metro_start() {
@@ -43,8 +75,13 @@ metro_start() {
 
   metro_reclaim_port "$port" || return 1
 
+  local job_control_was_off=""
+  case "$-" in *m*) ;; *) job_control_was_off=1; set -m ;; esac
   yarn start --port "$port" > "$log" 2>&1 &
   METRO_BUNDLER_PID=$!
+  [ -n "$job_control_was_off" ] && set +m
+
+  METRO_PORT_IN_USE="$port"
   trap metro_stop EXIT
 
   local deadline=$((SECONDS + 180))
