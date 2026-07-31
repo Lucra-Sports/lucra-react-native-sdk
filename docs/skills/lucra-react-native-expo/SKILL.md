@@ -7,7 +7,7 @@ description: >
   Points to the official Lucra docs for all technical detail.
 ---
 
-# Lucra React Native — Expo Managed Workflow
+# Expo Managed Workflow
 
 **Prerequisite:** everything in `lucra-react-native-start` still applies — the GitHub Packages PAT +
 `.npmrc`, `LucraSDK.init(...)` awaited as the readiness signal, delegated auth. This skill covers only
@@ -33,10 +33,7 @@ prebuild — you don't hand-edit native files:
    the GeoComply receivers/services, the extra Maven repository, and the iOS Podfile/Info.plist/
    AppDelegate modifications.
 
-Exact snippets: [Project Setup → Expo](../../1.0.0_project_setup.md). A working reference app:
-[`example-expo/`](https://github.com/Lucra-Sports/lucra-react-native-sdk/tree/main/example-expo)
-(note its `plugins` entry uses a local `../app.plugin.js` path because it lives inside the SDK
-monorepo — a real app registers `'@lucra-sports/lucra-react-native-sdk'` instead).
+Exact snippets: [Project Setup → Expo](../../1.0.0_project_setup.md).
 
 ## What you still configure yourself
 

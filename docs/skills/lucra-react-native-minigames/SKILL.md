@@ -7,7 +7,7 @@ description: >
   initialized (`LucraSDK.init` resolved). Points to the official docs for exact signatures.
 ---
 
-# Lucra React Native — Mini Games
+# Mini Games Integration
 
 **Prerequisite:** the `lucra-react-native-start` "initialized successfully" bar is met —
 `LucraSDK.init(…)` has resolved. Sign-in is required for user-scoped actions (starting non-practice
@@ -82,12 +82,14 @@ Exact signatures + all flows: [Lucra Flows](../../1.2.7_lucraflows.md). Dismiss 
 
 The intended shape: your launcher UI (from `getMiniGames()`) → `preloadGeoToken` on mount →
 `startMiniGame` on tap → `MiniGameWebView` renders the session → on close, present the matchup details
-flow with the returned `matchupId`. **Timing matters at the seam:** after the WebView modal closes, wait
-~1000ms (`setTimeout`) before presenting the details flow — presenting immediately races the modal
-dismissal and the flow silently fails to appear ("view is not in the window hierarchy"). The WebView doc
-shows this exact pattern. **In this headless path, `onClose` is your completion signal** — the game's
+flow with the returned `matchupId` — but only when one came back, since `matchupId` is optional on
+`StartMiniGameResult` and `MINI_GAMES_MATCHUP_DETAILS` requires it. **Timing matters at the seam:**
+after the WebView modal closes, wait ~1000ms (`setTimeout`) before presenting the details flow —
+presenting immediately races the modal dismissal and the flow silently fails to appear ("view is not
+in the window hierarchy"). The WebView doc shows this exact pattern.
+**In this headless path, `onClose` is your completion signal** — the game's
 `close_game` message and a manual exit both land there and are not distinguishable. The
-`MiniGame.Finished` event (`onMiniGameFinished`) is emitted by the native-run session, so it fires for
+`onMiniGameFinished` listener is emitted by the native-run session, so it fires for
 the `MINI_GAME` UI flow — not for games rendered in your own `MiniGameWebView`. →
 [Mini Games WebView](../../5.2_mini_games_webview.md),
 [Event Listener](../../1.2.10_lucra_event_listener.md)

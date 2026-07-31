@@ -1,13 +1,17 @@
-# Integrating the Lucra React Native SDK — Start Here (LLM & Engineer Guide)
+# SDK Integration Guide
 
 This is the connective map for integrating the Lucra React Native SDK. It holds **no API reference** of its
 own — it explains how the pieces fit together and points you to the exact doc page for each detail.
 
 **If you are an LLM/agent:** read this page top to bottom, then load the section relevant
-to the user's stated goal and follow its pointers. Three companion skills go deeper:
-[`lucra-react-native-start`](skills/lucra-react-native-start/SKILL.md) (setup + troubleshooting),
-[`lucra-react-native-expo`](skills/lucra-react-native-expo/SKILL.md) (Expo managed workflow), and
-[`lucra-react-native-minigames`](skills/lucra-react-native-minigames/SKILL.md).
+to the user's stated goal and follow its pointers. Three companion
+[Agent Skills](skills/README.md) go deeper — load them by name:
+
+| Skill | Covers |
+|---|---|
+| [Setup & Troubleshooting](skills/lucra-react-native-start/SKILL.md) — `lucra-react-native-start` | Install, native setup, initialization, failure triage |
+| [Expo Managed Workflow](skills/lucra-react-native-expo/SKILL.md) — `lucra-react-native-expo` | Config plugin, prebuild, fonts, Venmo entries |
+| [Mini Games Integration](skills/lucra-react-native-minigames/SKILL.md) — `lucra-react-native-minigames` | SDK-rendered flows and the headless path |
 
 ## The one mental model
 
@@ -31,12 +35,12 @@ publishes back.
 
 | Goal | Go to |
 |---|---|
-| Add the SDK / first run / it won't build or install | [Project Setup](1.0.0_project_setup.md) → skill [`lucra-react-native-start`](skills/lucra-react-native-start/SKILL.md) |
-| Expo managed workflow (config plugin, prebuild, Expo Go) | skill [`lucra-react-native-expo`](skills/lucra-react-native-expo/SKILL.md) |
+| Add the SDK / first run / it won't build or install | [Project Setup](1.0.0_project_setup.md) → [Setup & Troubleshooting](skills/lucra-react-native-start/SKILL.md) |
+| Expo managed workflow (config plugin, prebuild, Expo Go) | [Expo Managed Workflow](skills/lucra-react-native-expo/SKILL.md) |
 | Initialize the SDK / API keys / environment | [LucraSDK Initialization](1.2.0_initialize_client.md) |
 | Know if a user is signed in / delegate auth | [Headless Functionality → User](1.2.9_headless_interactions.md) |
 | Present any SDK screen | [Lucra Flows](1.2.7_lucraflows.md) |
-| Mini Games (UI, headless, or your own WebView) | skill [`lucra-react-native-minigames`](skills/lucra-react-native-minigames/SKILL.md) + [Mini Games](5.0.0_mini_games.md) |
+| Mini Games (UI, headless, or your own WebView) | [Mini Games Integration](skills/lucra-react-native-minigames/SKILL.md) + [Mini Games](5.0.0_mini_games.md) |
 | Tournaments | [Tournaments Flows](3.1_tournaments_flows.md) |
 | React to game/user/tournament state | [Lucra Event Listener](1.2.10_lucra_event_listener.md) |
 | Handle deep links | [Deeplinks](1.2.2_deeplinks.md) |
@@ -58,7 +62,7 @@ publishes back.
   data you render yourself. Mix them: headless powers *your* lists and launchers, flows power the
   *interactive* parts. → [Flows](1.2.7_lucraflows.md) / [Headless](1.2.9_headless_interactions.md)
 - **State comes back as events**, not return values from the screen you presented — register listeners
-  for user, contest, and mini-game events. → [Event Listener](1.2.10_lucra_event_listener.md)
+  for user, contest, and mini game events. → [Event Listener](1.2.10_lucra_event_listener.md)
 
 ## Fastest path to a working integration
 
@@ -66,12 +70,11 @@ publishes back.
    empty app building on both platforms.
 2. `await LucraSDK.init({ apiKey, environment: LucraSDK.ENVIRONMENT.SANDBOX })`, present
    `ONBOARDING`, and confirm `LucraSDK.getUser()` returns a user.
-3. Only then add features. The in-repo example apps are a legitimate starting point:
-   [`example/`](https://github.com/Lucra-Sports/lucra-react-native-sdk/tree/main/example) (bare) and
-   [`example-expo/`](https://github.com/Lucra-Sports/lucra-react-native-sdk/tree/main/example-expo) (Expo prebuild).
+3. Only then add features. The in-repo example app is a legitimate starting point:
+   [`example/`](https://github.com/Lucra-Sports/lucra-react-native-sdk/tree/main/example) (bare).
 
 ## When you're stuck
 
-Go to [`lucra-react-native-start`](skills/lucra-react-native-start/SKILL.md) → Troubleshoot. It maps each
+Go to [Setup & Troubleshooting](skills/lucra-react-native-start/SKILL.md) → Troubleshoot. It maps each
 common failure (registry 401s, pod install failures, manifest merge errors, flows that no-op before init,
 key/environment mismatches) to the thing to check and the doc page to reopen.

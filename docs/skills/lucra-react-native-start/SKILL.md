@@ -7,7 +7,7 @@ description: >
   the official Lucra docs for all technical detail; contains no API reference of its own.
 ---
 
-# Lucra React Native — Starting Point
+# Setup & Troubleshooting
 
 ## Step 0 — State the goal, then route
 
@@ -43,9 +43,9 @@ stumble:
   (the SDK ships libraries that block network inspection). For the full Expo path (config plugin,
   prebuild loop, fonts, Venmo entries), use skill `lucra-react-native-expo`.
 
-Exact snippets for all of the above: [Project Setup](../../1.0.0_project_setup.md). Working reference
-apps live in the repo: [`example/`](https://github.com/Lucra-Sports/lucra-react-native-sdk/tree/main/example)
-(bare) and [`example-expo/`](https://github.com/Lucra-Sports/lucra-react-native-sdk/tree/main/example-expo).
+Exact snippets for all of the above: [Project Setup](../../1.0.0_project_setup.md). A working reference
+app lives in the repo: [`example/`](https://github.com/Lucra-Sports/lucra-react-native-sdk/tree/main/example)
+(bare).
 
 ## Initialize
 
