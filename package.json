@@ -203,5 +203,10 @@
     "languages": "kotlin-objc",
     "type": "turbo-module",
     "version": "0.50.3"
+  },
+  "dependenciesMeta": {
+    "dtrace-provider": {
+      "built": false
+    }
   }
 }
