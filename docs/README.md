@@ -1,5 +1,7 @@
 # Lucra React Native SDK Docs
 
+- Using an LLM to integrate? Start here → [SDK Integration Guide](SKILLS.md)
+
 ## Release notes
 [Release notes](SDK_RELEASE_NOTES.md)
 
