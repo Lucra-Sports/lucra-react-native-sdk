@@ -9,4 +9,9 @@ cd "$SCRIPT_DIR/../example" || exit 1
 
 metro_start "${RCT_METRO_PORT:-8082}" || exit 1
 
+set +e
 yarn e2e:run-ios
+detox_status=$?
+set -e
+echo "detox exited rc=$detox_status — tearing down Metro"
+exit "$detox_status"
