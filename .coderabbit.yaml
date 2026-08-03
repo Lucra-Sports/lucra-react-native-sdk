@@ -14,10 +14,9 @@
 
 language: en-US
 tone_instructions: >-
-  You are reviewing a public-facing SDK consumed by external integrators.
-  Treat cross-platform (iOS/Android) parity, documentation accuracy, and
-  release-note accuracy as first-class review concerns alongside correctness.
-  Be specific: name the exact file that is out of sync.
+  This is a public SDK for external integrators. Treat iOS/Android parity,
+  doc accuracy, and release-note accuracy as first-class concerns. Be
+  specific: name the exact file that is out of sync.
 
 early_access: false
 
