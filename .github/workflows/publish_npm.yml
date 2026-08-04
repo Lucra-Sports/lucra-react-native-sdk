@@ -10,9 +10,14 @@ permissions:
   id-token: write
   packages: write
 
+concurrency:
+  group: publish-npm-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   publish:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       GPR_KEY: ${{ secrets.GPR_KEY }}
     steps:

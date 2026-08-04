@@ -1,15 +1,18 @@
 #!/bin/bash
+set -euo pipefail
 set -x
 
-cd example || exit
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=scripts/metro.sh
+source "$SCRIPT_DIR/metro.sh"
 
-yarn start > metro.log 2>&1 &
-METRO_BUNDLER_PID=$!
+cd "$SCRIPT_DIR/../example" || exit 1
 
+metro_start 8081 || exit 1
+
+set +e
 yarn e2e:run-android --headless
-DETOX_EXIT_CODE=$?
-
-kill $METRO_BUNDLER_PID || true
-wait $METRO_BUNDLER_PID 2>/dev/null || true
-
-exit $DETOX_EXIT_CODE
+detox_status=$?
+set -e
+echo "detox exited rc=$detox_status — tearing down Metro"
+exit "$detox_status"

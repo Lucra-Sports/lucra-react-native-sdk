@@ -7,9 +7,14 @@ on:
 env:
   GPR_KEY: ${{ secrets.GPR_KEY }}
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,6 +27,7 @@ jobs:
 
   typecheck:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +40,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,6 +53,7 @@ jobs:
 
   build-library:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,12 +66,15 @@ jobs:
 
   test-android:
     runs-on: [self-hosted, android]
+    timeout-minutes: 60
     env:
       LUCRA_SDK_API_KEY: ${{ secrets.LUCRA_SDK_API_KEY }}
       JAVA_TOOL_OPTIONS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       GRADLE_OPTS: '-Xmx4g -XX:MaxMetaspaceSize=512m'
       ANDROID_HOME: /Users/lucra/Library/Android/sdk
       DETOX_AVD_NAME: arm64emulator
+      EMULATOR_PORT: '5554'
+      DETOX_DISABLE_POSTINSTALL: '1'
 
     steps:
       - name: Add Android SDK to PATH
@@ -73,6 +84,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup
+        timeout-minutes: 10
         uses: ./.github/actions/setup
 
       - name: Set up Firebase authentication
@@ -85,28 +97,66 @@ jobs:
           EOF
           # set -x # Re-enable logging
 
-      - name: Kill stale emulators
-        run: adb devices | grep emulator | cut -f1 | xargs -I {} adb -s {} emu kill 2>/dev/null || true
+      - name: Kill stale CI emulators
+        timeout-minutes: 3
+        run: |
+          for serial in $(adb devices | awk '/^emulator-/{print $1}'); do
+            avd=$(adb -s "$serial" emu avd name 2>/dev/null | head -n 1 | tr -d '\r') || true
+            if [ "$avd" = "$DETOX_AVD_NAME" ] || [ "$serial" = "emulator-$EMULATOR_PORT" ]; then
+              echo "Killing stale emulator $serial ($avd)"
+              adb -s "$serial" emu kill || true
+            else
+              echo "Leaving $serial ($avd) running — not owned by CI"
+            fi
+          done
 
       - name: Boot emulator
+        timeout-minutes: 10
         run: |
-          emulator -avd "$DETOX_AVD_NAME" -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
-          adb wait-for-device
-          # Wait for the device to fully boot
-          until adb shell getprop sys.boot_completed 2>/dev/null | grep -q '1'; do
+          emulator -avd "$DETOX_AVD_NAME" -port "$EMULATOR_PORT" \
+            -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
+          emulator_pid=$!
+          serial="emulator-$EMULATOR_PORT"
+          deadline=$((SECONDS + 600))
+          until [ "$(adb -s "$serial" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do
+            if ! kill -0 "$emulator_pid" 2>/dev/null; then
+              echo "::error::Emulator $DETOX_AVD_NAME exited before boot completed (port $EMULATOR_PORT may be taken)"
+              exit 1
+            fi
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::Emulator $DETOX_AVD_NAME did not finish booting within 10 minutes"
+              adb -s "$serial" emu kill || true
+              kill "$emulator_pid" 2>/dev/null || true
+              exit 1
+            fi
             sleep 2
           done
           echo "Emulator is ready"
 
       - name: build debug app
+        timeout-minutes: 25
         run: |
           ./scripts/build-android-debug.sh
 
       - name: Run e2e for Android
+        timeout-minutes: 20
         run: ./scripts/run-e2e-android.sh
 
+      - name: Upload Android build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-logs
+          path: |
+            example/android/assembleDebug.log
+            example/android/assembleAndroidTest.log
+            example/metro.log
+          if-no-files-found: ignore
+          retention-days: 7
+
   test-ios:
-    runs-on: self-hosted
+    runs-on: [self-hosted, ios]
+    timeout-minutes: 60
     env:
       GPR_KEY: ${{ secrets.GPR_KEY }}
       LUCRA_SDK_API_KEY: ${{ secrets.LUCRA_SDK_API_KEY }}
@@ -115,11 +165,15 @@ jobs:
       APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
       APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
       APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
+      RCT_METRO_PORT: '8082'
+      RCT_NO_LAUNCH_PACKAGER: '1'
+      DETOX_LOGLEVEL: info
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup
+        timeout-minutes: 10
         uses: ./.github/actions/setup
 
       - name: Cache cocoapods
@@ -132,46 +186,105 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cocoapods-
 
-      - name: Help cocoapods get unstuck
-        run: pod repo remove trunk && pod cache clean --all
-
       - name: Set up Fastlane
+        timeout-minutes: 10
         run: |
           cd example
           gem install bundler:2.4.7
           bundle install
 
       - name: Install cocoapods
+        timeout-minutes: 10
         run: |
           gem install cocoapods
 
+      - name: Help cocoapods get unstuck
+        continue-on-error: true
+        timeout-minutes: 3
+        run: pod repo remove trunk || true
+
       - name: Validate Podfile.lock consistency
+        working-directory: example/ios
         run: |
-          if ! cmp -s Podfile.lock Pods/Manifest.lock; then
-            cd example/ios
-            echo "Podfile.lock is out of sync, requiring pod install"
-            rm -rf Pods/
-            pod cache clean --all
-            echo "pod_install_required=1" >> $GITHUB_ENV
+          if [ ! -f Pods/Manifest.lock ]; then
+            echo "DIAG: Pods/Manifest.lock is ABSENT — the restored cache did not contain it"
+          else
+            echo "DIAG: Manifest.lock present ($(wc -c < Pods/Manifest.lock) bytes vs Podfile.lock $(wc -c < Podfile.lock) bytes)"
+            diff Podfile.lock Pods/Manifest.lock | head -30 || true
           fi
 
-      - name: Install cocoapods
+          if ! cmp -s Podfile.lock Pods/Manifest.lock; then
+            echo "Podfile.lock is out of sync, requiring pod install"
+            rm -rf Pods/
+            echo "pod_install_required=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install pods
         if: steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1'
+        timeout-minutes: 20
         run: |
-          pod repo update
           pod install --repo-update
         working-directory: example/ios
 
       - name: Install Detox Dependencies
+        timeout-minutes: 10
         run: |
           brew tap wix/brew
           brew install applesimutils
 
+      - name: Create fresh iOS simulator
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        timeout-minutes: 5
+        env:
+          DETOX_SIM_DEVICE_TYPE: iPhone 16
+          DETOX_SIM_PREFIX: ci-detox-
+        run: |
+          leftovers=$(xcrun simctl list devices 2>/dev/null \
+            | grep -oE "${DETOX_SIM_PREFIX}[A-Za-z0-9_.-]* \([0-9A-Fa-f-]{36}\)" \
+            | sed -E 's/.*\(([0-9A-Fa-f-]{36})\)/\1/' || true)
+
+          for old in $leftovers; do
+            echo "Deleting simulator left behind by an interrupted run: $old"
+            xcrun simctl shutdown "$old" 2>/dev/null || true
+            xcrun simctl delete "$old" || true
+          done
+
+          name="${DETOX_SIM_PREFIX}${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          udid=$(xcrun simctl create "$name" "$DETOX_SIM_DEVICE_TYPE")
+          echo "DETOX_SIM_UDID=$udid" >> "$GITHUB_ENV"
+          echo "Created $name ($udid)"
+
+          xcrun simctl bootstatus "$udid" -b
+          echo "Simulator booted and ready"
+
       - name: Build example for iOS
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        timeout-minutes: 25
         run: |
           yarn e2e:build-ios
 
       - name: Run e2e for iOS
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        timeout-minutes: 20
         run: bash ${{ github.workspace }}/scripts/run-e2e-ios.sh
+
+      - name: Upload iOS logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-logs
+          path: example/metro.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Delete iOS simulator
+        if: always()
+        timeout-minutes: 5
+        run: |
+          if [ -z "${DETOX_SIM_UDID:-}" ]; then
+            echo "No simulator was created for this run"
+            exit 0
+          fi
+          echo "Deleting simulator $DETOX_SIM_UDID"
+          xcrun simctl shutdown "$DETOX_SIM_UDID" 2>/dev/null || true
+          xcrun simctl delete "$DETOX_SIM_UDID" || echo "::warning::Could not delete $DETOX_SIM_UDID"

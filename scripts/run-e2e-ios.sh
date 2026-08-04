@@ -1,24 +1,17 @@
 #!/bin/bash
+set -euo pipefail
 
-cd example || exit
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=scripts/metro.sh
+source "$SCRIPT_DIR/metro.sh"
 
-if lsof -i :8081 >/dev/null; then
-    echo "Metro bundler already running on port 8081"
-    METRO_BUNDLER_PID=""
-else
-    yarn start &
-    METRO_BUNDLER_PID=$!
-fi
+cd "$SCRIPT_DIR/../example" || exit 1
 
+metro_start "${RCT_METRO_PORT:-8082}" || exit 1
+
+set +e
 yarn e2e:run-ios
-
-DETOX_EXIT_CODE=$?
-
-if [ -n "$METRO_BUNDLER_PID" ]; then
-    echo "Metro bundler was started by this script, killing it now..."
-    kill $METRO_BUNDLER_PID
-else
-    echo "Metro bundler was not started by this script, not killing it."
-fi
-
-exit $DETOX_EXIT_CODE
+detox_status=$?
+set -e
+echo "detox exited rc=$detox_status — tearing down Metro"
+exit "$detox_status"
