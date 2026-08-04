@@ -1,4 +1,4 @@
-# SDK Integration Guide
+# Integrating the Lucra RN SDK — Start Here (LLM & Engineer Guide)
 
 This is the connective map for integrating the Lucra React Native SDK. It holds **no API reference** of its
 own — it explains how the pieces fit together and points you to the exact doc page for each detail.
