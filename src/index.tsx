@@ -207,6 +207,12 @@ export type LucraSDKParams = {
   urlScheme?: string;
   merchantID?: string;
   autoJoin?: boolean;
+  /**
+   * When `true` (default), the SDK automatically shows its "you've won a
+   * reward!" bottom sheet when the user has unclaimed rewards. Set to
+   * `false` to globally suppress it. See [Reward Sheet](1.2.11_reward_sheet.md).
+   */
+  allowRewardSheetToDisplay?: boolean;
 };
 
 export type MatchupStatus =
@@ -502,7 +508,7 @@ type LucraContestListeners = {
   onGamesMatchupCanceled?: (id: string) => void;
   onGamesMatchupStarted?: (id: string) => void;
   onGamesMatchupStartedActive?: (id: string) => void;
-  onTournamentJoined?: (id: string) => void;
+  onTournamentJoined?: (id: string, gameId?: string) => void;
   onAutoJoinedTournaments?: (tournamentIds: string[]) => void;
   onMiniGameFinished?: (event: MiniGameFinishedEvent) => void;
 };
@@ -742,7 +748,7 @@ export const LucraSDK = {
     const tournamentJoinedEmitter = eventEmitter.addListener(
       'tournamentJoined',
       (data) => {
-        listenerMap.onTournamentJoined?.(data.id);
+        listenerMap.onTournamentJoined?.(data.id, data.gameId);
       }
     );
 
@@ -794,11 +800,17 @@ export const LucraSDK = {
   createRecreationalGame: (
     gameTypeId: string,
     atStake: object, // RewardType
-    playStyle: string
+    playStyle: string,
+    minigameEnabled: boolean = false
   ): Promise<{
     matchupId: string;
   }> => {
-    return LucraClient.createRecreationalGame(gameTypeId, atStake, playStyle);
+    return LucraClient.createRecreationalGame(
+      gameTypeId,
+      atStake,
+      playStyle,
+      minigameEnabled
+    );
   },
   acceptVersusRecreationalGame: (
     matchupId: string,

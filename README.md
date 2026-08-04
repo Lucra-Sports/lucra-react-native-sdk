@@ -2,7 +2,7 @@
 
 # Documentation
 
-Start here for the new, structured docs: [docs/README.md](docs/README.md)
+Start here for the new, structured docs: [docs/0.0.0_SDK_README.md](docs/0.0.0_SDK_README.md)
 
 # For Maintainers
 

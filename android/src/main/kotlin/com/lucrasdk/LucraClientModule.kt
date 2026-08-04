@@ -125,6 +125,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         }
 
         val autoJoin = if (options.hasKey("autoJoin")) options.getBoolean("autoJoin") else true
+        val allowRewardSheetToDisplay =
+            if (options.hasKey("allowRewardSheetToDisplay")) options.getBoolean("allowRewardSheetToDisplay") else true
 
         try {
             LucraClient.initialize(
@@ -134,6 +136,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 environment = LucraUtils.getLucraEnvironment(environment),
                 clientTheme = clientTheme,
                 autoJoin = autoJoin,
+                allowRewardSheetToDisplay = allowRewardSheetToDisplay,
                 customLogger = object : LucraLogger.Logger {
                     override fun logNonFatalException(exception: Throwable) {
                         Log.e("LucraClient RN", exception.message, exception)
@@ -245,7 +248,10 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                                         context,
                                         "tournamentJoined",
                                         Arguments.makeNativeMap(
-                                            bundleOf("id" to event.tournamentId)
+                                            bundleOf(
+                                                "id" to event.tournamentId,
+                                                "gameId" to event.gameId
+                                            )
                                         )
                                     )
 
@@ -415,6 +421,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         gameTypeId: String,
         atStake: ReadableMap,
         playStyle: String,
+        minigameEnabled: Boolean,
         promise: Promise
     ) {
         val parsedAtStake = try {
@@ -453,7 +460,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             }
         }
 
-        LucraClient().createRecreationalGame(gameTypeId, parsedAtStake, parsedPlayStyle) {
+        LucraClient().createRecreationalGame(gameTypeId, parsedAtStake, parsedPlayStyle, minigameEnabled) {
             when (it) {
                 is RecreationalGameInteractions.CreateGamesMatchupResult.Failure -> rejectLucraError(
                     promise,

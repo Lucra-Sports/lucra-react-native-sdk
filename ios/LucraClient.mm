@@ -115,11 +115,13 @@ RCT_EXPORT_METHOD(configureUser : (NSDictionary *)user resolve : (
 RCT_EXPORT_METHOD(createRecreationalGame : (NSString *)gameTypeId
                   atStake : (NSDictionary *)atStake
                   playStyle : (NSString *)playStyle
+                  minigameEnabled : (BOOL)minigameEnabled
                   resolve : (RCTPromiseResolveBlock)resolve
                   reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient createRecreationalGame:gameTypeId
                               atStake:atStake
                             playStyle:playStyle
+                      minigameEnabled:minigameEnabled
                               resolve:resolve
                                reject:reject];
 }

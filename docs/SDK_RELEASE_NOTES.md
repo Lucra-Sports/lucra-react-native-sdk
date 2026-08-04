@@ -1,3 +1,8 @@
+# Unreleased
+* **Fix:** `onTournamentJoined` now also receives `gameId` (as a second, optional argument): `onTournamentJoined?: (id: string, gameId?: string) => void`. The native `tournamentJoined` event has always carried `gameId` alongside the tournament id, but the iOS and Android bridges were silently dropping it before it reached JS. No breaking change — existing single-argument listeners keep working.
+* Added `allowRewardSheetToDisplay?: boolean` to `LucraSDKParams` (optional, defaults to `true`, matching native defaults). Controls the SDK's automatic "you've won a reward!" bottom sheet; set to `false` to globally suppress it. See [Reward Sheet](1.2.11_reward_sheet.md).
+* Added `minigameEnabled?: boolean` to `LucraSDK.createRecreationalGame(gameTypeId, atStake, playStyle, minigameEnabled?)` (optional, defaults to `false`), matching the native iOS/Android SDKs. Pass `true` to apply the minigame-specific geo-compliance context instead of the standard games context.
+
 # 5.9.0
 * Bumped iOS to [5.7.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/5.7.0)
 * Bumped Android to [6.8.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/6.8.0)
