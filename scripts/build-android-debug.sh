@@ -1,19 +1,15 @@
 #!/bin/bash
+set -euo pipefail
 set -x
 
-cd example
+cd "$(dirname "$0")/../example/android"
 
-cd android
+./gradlew --stop || true
 
-# Run assembleDebug and capture logs
-if ! ./gradlew assembleDebug --max-workers=1 > assembleDebug.log 2>&1; then
-  echo "❌ Error: Failed to assemble debug build"
-  cat assembleDebug.log
-  exit 1
-fi
+./gradlew assembleDebug --max-workers=1 --console=plain 2>&1 | tee assembleDebug.log
 
 echo "🟦 Assemble debug done!"
 
-./gradlew assembleAndroidTest -DtestBuildType=debug
+./gradlew assembleAndroidTest -DtestBuildType=debug --console=plain 2>&1 | tee assembleAndroidTest.log
 
 echo "🟦 Assemble android test done!"

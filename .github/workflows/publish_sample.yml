@@ -8,9 +8,14 @@ env:
   GPR_KEY: ${{ secrets.GPR_KEY }}
   LUCRA_SDK_API_KEY: ${{ secrets.LUCRA_SDK_API_KEY }}
 
+concurrency:
+  group: publish-sample-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release-android:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,11 +66,13 @@ jobs:
           yarn run release:android
 
   release-ios:
-    runs-on: self-hosted
+    runs-on: [self-hosted, ios]
+    timeout-minutes: 60
     env:
       APP_STORE_CONNECT_API_KEY_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ID}}
       APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID}}
       APP_STORE_CONNECT_API_KEY_CONTENT: ${{secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
+      RCT_NO_LAUNCH_PACKAGER: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,32 +91,41 @@ jobs:
             ${{ runner.os }}-cocoapods-
 
       - name: Set up Fastlane
+        timeout-minutes: 15
         run: |
           cd example
           gem install bundler:2.4.7
           bundle install
 
       - name: Install cocoapods
+        timeout-minutes: 15
         run: |
           gem install cocoapods
 
       - name: Validate Podfile.lock consistency
+        working-directory: example/ios
         run: |
-          if ! cmp -s Podfile.lock Pods/Manifest.lock; then
-            cd example/ios
-            echo "Podfile.lock is out of sync, requiring pod install"
-            rm -rf Pods/
-            pod cache clean --all
-            echo "pod_install_required=1" >> $GITHUB_ENV
+          if [ ! -f Pods/Manifest.lock ]; then
+            echo "DIAG: Pods/Manifest.lock is ABSENT — the restored cache did not contain it"
+          else
+            echo "DIAG: Manifest.lock present ($(wc -c < Pods/Manifest.lock) bytes vs Podfile.lock $(wc -c < Podfile.lock) bytes)"
+            diff Podfile.lock Pods/Manifest.lock | head -30 || true
           fi
 
-      - name: Install cocoapods
+          if ! cmp -s Podfile.lock Pods/Manifest.lock; then
+            echo "Podfile.lock is out of sync, requiring pod install"
+            rm -rf Pods/
+            echo "pod_install_required=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install pods
         if: steps.cocoapods-cache.outputs.cache-hit != 'true' || env.pod_install_required == '1'
+        timeout-minutes: 30
         run: |
-          pod repo update
           pod install --repo-update
         working-directory: example/ios
 
       - name: Release example for iOS
+        timeout-minutes: 45
         run: |
           yarn run release:ios

@@ -2956,6 +2956,9 @@ __metadata:
     react-native: "*"
     react-native-haptic-feedback: ">=2.0.0"
     react-native-webview: ">=13.0.0"
+  dependenciesMeta:
+    dtrace-provider:
+      built: false
   languageName: unknown
   linkType: soft
 

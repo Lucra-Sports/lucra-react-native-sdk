@@ -1,7 +1,7 @@
 /** @type {Detox.DetoxConfig} */
 module.exports = {
   logger: {
-    level: 'error',
+    level: process.env.DETOX_LOGLEVEL || 'warn',
   },
   artifacts: {
     plugins: {
@@ -43,9 +43,9 @@ module.exports = {
   devices: {
     simulator: {
       type: 'ios.simulator',
-      device: {
-        type: 'iPhone 16',
-      },
+      device: process.env.DETOX_SIM_UDID
+        ? { id: process.env.DETOX_SIM_UDID }
+        : { type: 'iPhone 16' },
     },
     emulator: {
       type: 'android.emulator',
