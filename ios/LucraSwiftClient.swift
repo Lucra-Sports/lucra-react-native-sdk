@@ -70,6 +70,8 @@ private enum ErrorCode {
       options["environment"] as? String)
 
     let autoJoin = options["autoJoin"] as? Bool ?? true
+    let allowRewardSheetToDisplay =
+      options["allowRewardSheetToDisplay"] as? Bool ?? true
 
     nativeClient = LucraSDK.LucraClient(
       config: .init(
@@ -78,7 +80,8 @@ private enum ErrorCode {
           environment: environment,
           urlScheme: urlScheme,
           merchantID: merchantID,
-          autoJoin: autoJoin
+          autoJoin: autoJoin,
+          allowRewardSheetToDisplay: allowRewardSheetToDisplay
         ),
         appearance: clientTheme
       )
@@ -114,9 +117,9 @@ private enum ErrorCode {
       case .sportsMatchupCanceled(let id):
         self.delegate?.sendEvent(
           name: "sportsMatchupCanceled", result: ["id": id])
-      case .tournamentJoined(let id):
+      case .tournamentJoined(let id, let gameId):
         self.delegate?.sendEvent(
-          name: "tournamentJoined", result: ["id": id])
+          name: "tournamentJoined", result: ["id": id, "gameId": gameId as Any])
       case .autoJoinedTournaments(let tournamentIds):
         self.delegate?.sendEvent(
           name: "tournamentsAutoJoined", result: ["tournamentIds": tournamentIds])
@@ -248,6 +251,7 @@ private enum ErrorCode {
     _ flowName: String, matchupId: String?, teamInviteId: String?,
     gameId: String?, location: String?,
     gameMode: String?, amount: NSNumber?,
+    handlePostNavigation: NSNumber?,
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
@@ -257,7 +261,8 @@ private enum ErrorCode {
       let flow = try LucraUtils.stringToLucraFlow(
         flowName, matchupId: matchupId, teamInviteId: teamInviteId,
         gameId: gameId, location: location,
-        gameMode: gameMode, amount: amount?.decimalValue)
+        gameMode: gameMode, amount: amount?.decimalValue,
+        handlePostNavigation: handlePostNavigation?.boolValue ?? false)
 
       DispatchQueue.main.async {
         UIViewController.topViewController?.present(
@@ -277,6 +282,7 @@ private enum ErrorCode {
       _ gameTypeId: String,
       atStake: NSDictionary,
       playStyle: String,
+      minigameEnabled: Bool,
       resolve: @escaping RCTPromiseResolveBlock,
       reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -339,7 +345,8 @@ private enum ErrorCode {
         let result = await self.nativeClient.api.createRecreationalGame(
           gameTypeId: gameTypeId,
           atStake: rewardType,
-          playStyle: parsedPlayStyle
+          playStyle: parsedPlayStyle,
+          minigameEnabled: minigameEnabled
         )
 
         switch result {

@@ -207,6 +207,12 @@ export type LucraSDKParams = {
   urlScheme?: string;
   merchantID?: string;
   autoJoin?: boolean;
+  /**
+   * When `true` (default), the SDK automatically shows its "you've won a
+   * reward!" bottom sheet when the user has unclaimed rewards. Set to
+   * `false` to globally suppress it. See [Reward Sheet](1.2.11_reward_sheet.md).
+   */
+  allowRewardSheetToDisplay?: boolean;
 };
 
 export type MatchupStatus =
@@ -502,7 +508,7 @@ type LucraContestListeners = {
   onGamesMatchupCanceled?: (id: string) => void;
   onGamesMatchupStarted?: (id: string) => void;
   onGamesMatchupStartedActive?: (id: string) => void;
-  onTournamentJoined?: (id: string) => void;
+  onTournamentJoined?: (id: string, gameId?: string) => void;
   onAutoJoinedTournaments?: (tournamentIds: string[]) => void;
   onMiniGameFinished?: (event: MiniGameFinishedEvent) => void;
 };
@@ -583,6 +589,12 @@ function present(params: {
   gameMode: MiniGameMode;
   amount?: number;
   matchupId?: string;
+  /**
+   * When true, on a non-Practice/non-Tournament session end with a resolved
+   * matchupId, the SDK automatically navigates to the Mini Games Matchup
+   * Details screen instead of dismissing. Defaults to false.
+   */
+  handlePostNavigation?: boolean;
 }): Promise<void>;
 function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
 function present(params: { name: typeof Flows.MINI_GAMES_HOME }): Promise<void>;
@@ -603,6 +615,7 @@ function present(params: {
   amount?: number;
   matchupId?: string;
   locationId?: string;
+  handlePostNavigation?: boolean;
 }): Promise<void> {
   try {
     return LucraClient.present(params);
@@ -735,7 +748,7 @@ export const LucraSDK = {
     const tournamentJoinedEmitter = eventEmitter.addListener(
       'tournamentJoined',
       (data) => {
-        listenerMap.onTournamentJoined?.(data.id);
+        listenerMap.onTournamentJoined?.(data.id, data.gameId);
       }
     );
 
@@ -787,11 +800,17 @@ export const LucraSDK = {
   createRecreationalGame: (
     gameTypeId: string,
     atStake: object, // RewardType
-    playStyle: string
+    playStyle: string,
+    minigameEnabled: boolean = false
   ): Promise<{
     matchupId: string;
   }> => {
-    return LucraClient.createRecreationalGame(gameTypeId, atStake, playStyle);
+    return LucraClient.createRecreationalGame(
+      gameTypeId,
+      atStake,
+      playStyle,
+      minigameEnabled
+    );
   },
   acceptVersusRecreationalGame: (
     matchupId: string,

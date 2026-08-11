@@ -24,7 +24,8 @@ export interface Spec extends TurboModule {
   createRecreationalGame(
     gameTypeId: string,
     atStake: Object,
-    playStyle: string
+    playStyle: string,
+    minigameEnabled: boolean
   ): Promise<{
     matchupId: string;
   }>;

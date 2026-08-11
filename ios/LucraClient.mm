@@ -115,11 +115,13 @@ RCT_EXPORT_METHOD(configureUser : (NSDictionary *)user resolve : (
 RCT_EXPORT_METHOD(createRecreationalGame : (NSString *)gameTypeId
                   atStake : (NSDictionary *)atStake
                   playStyle : (NSString *)playStyle
+                  minigameEnabled : (BOOL)minigameEnabled
                   resolve : (RCTPromiseResolveBlock)resolve
                   reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient createRecreationalGame:gameTypeId
                               atStake:atStake
                             playStyle:playStyle
+                      minigameEnabled:minigameEnabled
                               resolve:resolve
                                reject:reject];
 }
@@ -176,6 +178,7 @@ RCT_EXPORT_METHOD(present : (NSDictionary *)params
   NSString *location = params[@"locationId"];
   NSString *gameMode = params[@"gameMode"];
   NSNumber *amount = params[@"amount"];
+  NSNumber *handlePostNavigation = params[@"handlePostNavigation"];
 
   [swiftClient present:flow
              matchupId:matchupId
@@ -184,6 +187,7 @@ RCT_EXPORT_METHOD(present : (NSDictionary *)params
               location:location
               gameMode:gameMode
                 amount:amount
+  handlePostNavigation:handlePostNavigation
                resolve:resolve
                 reject:reject];
 }

@@ -27,7 +27,8 @@ class LucraUtils {
             gameTypeId: String?,
             locationId: String?,
             gameMode: String? = null,
-            amount: Double? = null
+            amount: Double? = null,
+            handlePostNavigation: Boolean = false
         ): LucraUiProvider.LucraFlow {
             return when (flow) {
                 // TODO ios uses onboarding, Android uses Login
@@ -69,6 +70,7 @@ class LucraUtils {
                         gameMode = parsedMode,
                         amount = amount,
                         matchupId = matchupId,
+                        handlePostNavigation = handlePostNavigation,
                     )
                 }
                 "miniGamesHome" -> LucraUiProvider.LucraFlow.MinigamesHome
