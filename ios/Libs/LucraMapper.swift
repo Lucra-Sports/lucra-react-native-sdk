@@ -508,13 +508,17 @@ public func sdkUserToMap(user: LucraSDK.SDKUser) -> [String: Any] {
   return userMap
 }
 
+private func mapToDynamicColorSet(_ colors: [String: Any]) -> LucraSDK.DynamicColorSet {
+  DynamicColorSet(
+    primary: colors["primary"] as? String,
+    secondary: colors["secondary"] as? String,
+    tertiary: colors["tertiary"] as? String,
+    onPrimary: colors["onPrimary"] as? String,
+    onSecondary: colors["onSecondary"] as? String,
+    onTertiary: colors["onTertiary"] as? String)
+}
+
 public func mapToClientTheme(theme: [String: Any]) -> LucraSDK.ClientTheme {
-  let primary = theme["primary"] as? String
-  let secondary = theme["secondary"] as? String
-  let tertiary = theme["tertiary"] as? String
-  let onPrimary = theme["onPrimary"] as? String
-  let onSecondary = theme["onSecondary"] as? String
-  let onTertiary = theme["onTertiary"] as? String
   var fontFamily: FontFamily? = nil
 
   if let fontDict = theme["fontFamily"] as? [String: Any] {
@@ -540,20 +544,29 @@ public func mapToClientTheme(theme: [String: Any]) -> LucraSDK.ClientTheme {
     )
   }
 
+  // `LucraSDK.init` normalizes the JS theme into `light` / `dark` palettes. A
+  // caller reaching the native module directly can still pass the flat shape,
+  // which means a single dark palette — how the SDK behaved before light mode.
+  let light = (theme["light"] as? [String: Any]).map(mapToDynamicColorSet)
+  let dark = (theme["dark"] as? [String: Any]).map(mapToDynamicColorSet)
+
+  if let light = light, let dark = dark {
+    // Both palettes: follows the device appearance, re-resolving as it changes.
+    return ClientTheme(lightTheme: light, darkTheme: dark, fontFamily: fontFamily)
+  }
+
+  if let light = light {
+    // Locks the SDK to light.
+    return ClientTheme(lightTheme: light, fontFamily: fontFamily)
+  }
+
+  // `universalTheme:` locks the SDK to dark; there is no dark-only initializer.
+  if let dark = dark {
+    return ClientTheme(universalTheme: dark, fontFamily: fontFamily)
+  }
+
   return ClientTheme(
-    universalTheme: DynamicColorSet(
-      background: nil,
-      surface: nil,
-      primary: primary,
-      secondary: secondary,
-      tertiary: tertiary,
-      onBackground: nil,
-      onSurface: nil,
-      onPrimary: onPrimary,
-      onSecondary: onSecondary,
-      onTertiary: onTertiary),
-    fontFamily: fontFamily
-  )
+    universalTheme: mapToDynamicColorSet(theme), fontFamily: fontFamily)
 }
 
 public func mapToSDKUser(user: [String: Any]) -> LucraSDK.SDKUser {

@@ -50,7 +50,6 @@ import com.lucrasports.sdk.core.reward.LucraRewardProvider
 import com.lucrasports.sdk.core.reward.RewardInteractions
 import com.lucrasports.sdk.core.achievement.AchievementInteractions
 import com.lucrasports.sdk.core.style_guide.ClientTheme
-import com.lucrasports.sdk.core.style_guide.FontFamily
 import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.user.SDKUser
@@ -110,19 +109,25 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             options.getString("environment")
                 ?: throw Exception("LucraSDK no environment passed to constructor")
 
+        // The SDK derives its appearance from which palettes it gets: supplying
+        // both means follow the device, one alone locks to that appearance.
         val theme = options.getMap("theme")
-        var clientTheme = ClientTheme()
-        var fontFamily: FontFamily? = null
-        if (theme != null) {
-            val colorStyle = readableMapToColorStyle(theme)
+        val clientTheme =
+            if (theme == null) {
+                ClientTheme(lightColorStyle = null, darkColorStyle = null, fontFamily = null)
+            } else {
+                val light = theme.getMap("light")?.let { readableMapToColorStyle(it) }
+                val dark = theme.getMap("dark")?.let { readableMapToColorStyle(it) }
 
-            val fontFamilyObj = theme.getMap("fontFamily")
-            if (fontFamilyObj != null) {
-                fontFamily = readableMapToFontFamily(fontFamilyObj)
+                val resolvedDark =
+                    if (light == null && dark == null) readableMapToColorStyle(theme) else dark
+
+                ClientTheme(
+                    lightColorStyle = light,
+                    darkColorStyle = resolvedDark,
+                    fontFamily = theme.getMap("fontFamily")?.let { readableMapToFontFamily(it) }
+                )
             }
-
-            clientTheme = ClientTheme(colorStyle, fontFamily)
-        }
 
         val autoJoin = if (options.hasKey("autoJoin")) options.getBoolean("autoJoin") else true
         val allowRewardSheetToDisplay =

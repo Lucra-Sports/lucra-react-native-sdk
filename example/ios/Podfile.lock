@@ -96,11 +96,11 @@ PODS:
   - hermes-engine (0.79.2):
     - hermes-engine/Pre-built (= 0.79.2)
   - hermes-engine/Pre-built (0.79.2)
-  - lucra-react-native-sdk (5.9.0):
+  - lucra-react-native-sdk (5.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
-    - LucraSDK (= 5.7.0)
+    - LucraSDK (= 5.8.1)
     - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
     - RCTTypeSafety
@@ -121,7 +121,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - LucraSDK (5.7.0)
+  - LucraSDK (5.8.1)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -2199,7 +2199,7 @@ DEPENDENCIES:
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
@@ -2408,8 +2408,8 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleUtilities: 766ace00c6b10d8148408f329d10c4f051931850
   hermes-engine: 314be5250afa5692b57b4dd1705959e1973a8ebe
-  lucra-react-native-sdk: ac5b11194d2aad1a19b9a3bf7dac7d45ff762202
-  LucraSDK: 3cc7f44cb02aeb52d711c8c7e263acd11872b922
+  lucra-react-native-sdk: 8b392ad03f1b3f16181472a9cd3ad65423a14019
+  LucraSDK: 4fa87330b464b9b0132e894eb6119be63069014a
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
@@ -2493,4 +2493,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 057413d3ec6fc9cc94d5ef21a76854377931b31f
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

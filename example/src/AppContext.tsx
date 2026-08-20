@@ -9,10 +9,11 @@ import React, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { FC } from 'react';
 
-import { type Theme } from './theme';
+import { type Theme, type ThemeAppearance } from './theme';
 import {
   appConfigReducer,
   initialAppConfig,
+  migrateAppConfig,
   type AppConfig,
   type AppConfigAction,
 } from './AppConfig';
@@ -21,7 +22,11 @@ type ContextValue = {
   state: AppConfig;
   ready: boolean;
   dispatch: React.Dispatch<AppConfigAction>;
-  setThemeValue: (key: keyof Theme, value: string) => void;
+  setThemeValue: (
+    appearance: ThemeAppearance,
+    key: keyof Theme,
+    value: string
+  ) => void;
 };
 
 export const AppContext = React.createContext<ContextValue | null>(null);
@@ -32,10 +37,10 @@ export const AppContextProvider: FC<{ children: React.ReactNode }> = ({
   const [state, dispatch] = useReducer(appConfigReducer, initialAppConfig);
   const [ready, setReady] = useState(false);
   const setThemeValue = useCallback(
-    (key: keyof Theme, value: string) => {
-      dispatch({ type: 'SET_THEME', theme: { ...state.theme, [key]: value } });
+    (appearance: ThemeAppearance, key: keyof Theme, value: string) => {
+      dispatch({ type: 'SET_THEME_COLOR', appearance, key, value });
     },
-    [state.theme]
+    []
   );
 
   useEffect(() => {
@@ -54,7 +59,7 @@ export const AppContextProvider: FC<{ children: React.ReactNode }> = ({
       }
       dispatch({
         type: 'SET_CONFIG',
-        config: JSON.parse(savedConfig) as AppConfig,
+        config: migrateAppConfig(JSON.parse(savedConfig) as AppConfig),
       });
       setReady(true);
     };

@@ -60,15 +60,18 @@ object LucraMapper {
             timeZone = TimeZone.getTimeZone("UTC")
         }
 
+    /**
+     * Builds a [ColorStyle] from one palette's worth of hex strings.
+     *
+     * `background`, `surface`, `onBackground` and `onSurface` are omitted on
+     * purpose: they are Lucra-owned, `ColorStyle.toLucraColorStyle()` drops them,
+     * and naming them here would only raise deprecation warnings.
+     */
     fun readableMapToColorStyle(params: ReadableMap): ColorStyle {
         return ColorStyle(
-            background = null,
-            surface = null,
             primary = params.getString("primary"),
             secondary = params.getString("secondary"),
             tertiary = params.getString("tertiary"),
-            onBackground = null,
-            onSurface = null,
             onPrimary = params.getString("onPrimary"),
             onSecondary = params.getString("onSecondary"),
             onTertiary = params.getString("onTertiary")

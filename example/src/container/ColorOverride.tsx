@@ -1,9 +1,5 @@
 import { useState, type FC } from 'react';
-import ColorPicker, {
-  Panel5,
-  OpacitySlider,
-  HueSlider,
-} from 'reanimated-color-picker';
+import ColorPicker, { Panel5, HueSlider } from 'reanimated-color-picker';
 import {
   Modal,
   View,
@@ -11,9 +7,10 @@ import {
   TouchableOpacity,
   Button,
   SafeAreaView,
+  useColorScheme,
 } from 'react-native';
 
-import { DEFAULT, CHAOS, T1, DUPR, PSF } from '../theme';
+import { BRANDS, COLOR_KEYS, type ThemeAppearance } from '../theme';
 import { useAppContext } from '../AppContext';
 
 type ColorOptionProps = {
@@ -28,6 +25,8 @@ type ThemePillProps = {
   onPress: () => void;
 };
 
+const APPEARANCES: ThemeAppearance[] = ['light', 'dark'];
+
 const ThemePill: FC<ThemePillProps> = ({ title, onPress }) => {
   return (
     <TouchableOpacity
@@ -36,6 +35,27 @@ const ThemePill: FC<ThemePillProps> = ({ title, onPress }) => {
     >
       <Text className="text-white font-bold">{title}</Text>
     </TouchableOpacity>
+  );
+};
+
+const AppearanceToggle: FC<{
+  value: ThemeAppearance;
+  onChange: (appearance: ThemeAppearance) => void;
+}> = ({ value, onChange }) => {
+  return (
+    <View className="flex-row rounded-full bg-indigo-900 p-1">
+      {APPEARANCES.map((appearance) => (
+        <TouchableOpacity
+          key={appearance}
+          onPress={() => onChange(appearance)}
+          className={`flex-1 items-center rounded-full py-1 ${
+            value === appearance ? 'bg-indigo-600' : ''
+          }`}
+        >
+          <Text className="text-white font-bold capitalize">{appearance}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
   );
 };
 
@@ -64,12 +84,14 @@ const ColorOption: FC<ColorOptionProps> = ({
           <ColorPicker
             value={value}
             onComplete={(v) => {
-              onUpdate(v.hex);
+              // Lucra's theme tokens are opaque, and both native SDKs read
+              // 8-digit hex as #AARRGGBB rather than CSS's #RRGGBBAA, so keep
+              // this to six digits instead of forwarding an alpha channel.
+              onUpdate(v.hex.slice(0, 7));
             }}
           >
             <Panel5 />
             <HueSlider />
-            <OpacitySlider />
           </ColorPicker>
         </SafeAreaView>
 
@@ -86,87 +108,52 @@ export function ColorOverride() {
     setThemeValue,
     dispatch,
   } = useAppContext();
+  const deviceScheme = useColorScheme();
+  const [editing, setEditing] = useState<ThemeAppearance>(
+    deviceScheme === 'light' ? 'light' : 'dark'
+  );
+
   if (!ready) {
     return null;
   }
+
+  const palette = theme[editing];
+
   return (
     <>
       <View className="flex-row justify-between py-4 gap-2">
-        <ThemePill
-          title="DEFAULT"
-          onPress={() => {
-            dispatch({ type: 'SET_THEME', theme: DEFAULT });
-          }}
-        />
-        <ThemePill
-          title="CHAOS"
-          onPress={() => {
-            dispatch({ type: 'SET_THEME', theme: CHAOS });
-          }}
-        />
-        <ThemePill
-          title="T1"
-          onPress={() => {
-            dispatch({ type: 'SET_THEME', theme: T1 });
-          }}
-        />
-        <ThemePill
-          title="DUPR"
-          onPress={() => {
-            dispatch({ type: 'SET_THEME', theme: DUPR });
-          }}
-        />
-        <ThemePill
-          title="PSF"
-          onPress={() => {
-            dispatch({ type: 'SET_THEME', theme: PSF });
-          }}
-        />
+        {BRANDS.map(({ name, theme: brandTheme }) => (
+          <ThemePill
+            key={name}
+            title={name}
+            onPress={() => {
+              dispatch({ type: 'SET_THEME', theme: brandTheme });
+            }}
+          />
+        ))}
       </View>
+
+      <AppearanceToggle value={editing} onChange={setEditing} />
+
+      <Text className="text-neutral-400 py-2">
+        Editing the {editing} palette — the device is currently{' '}
+        {deviceScheme ?? 'unknown'}. Both palettes are sent, so Lucra screens
+        follow the device appearance. The SDK reads the theme once at init, so
+        restart the app to pick up edits.
+      </Text>
+
       <View className="gap-0.5">
-        <ColorOption
-          name="Primary"
-          value={theme.primary}
-          onUpdate={(value: string) => {
-            setThemeValue('primary', value);
-          }}
-        />
-        <ColorOption
-          name="Secondary"
-          value={theme.secondary}
-          onUpdate={(value: string) => {
-            setThemeValue('secondary', value);
-          }}
-        />
-        <ColorOption
-          name="Tertiary"
-          value={theme.tertiary}
-          onUpdate={(value: string) => {
-            setThemeValue('tertiary', value);
-          }}
-        />
-        <ColorOption
-          name="On Primary"
-          value={theme.onPrimary}
-          onUpdate={(value: string) => {
-            setThemeValue('onPrimary', value);
-          }}
-        />
-        <ColorOption
-          name="On Secondary"
-          value={theme.onSecondary}
-          onUpdate={(value: string) => {
-            setThemeValue('onSecondary', value);
-          }}
-        />
-        <ColorOption
-          name="On Tertiary"
-          value={theme.onTertiary}
-          onUpdate={(value: string) => {
-            setThemeValue('onTertiary', value);
-          }}
-          className="rounded-b-xl"
-        />
+        {COLOR_KEYS.map(({ key, label }, index) => (
+          <ColorOption
+            key={key}
+            name={label}
+            value={palette[key]}
+            onUpdate={(value: string) => {
+              setThemeValue(editing, key, value);
+            }}
+            className={index === COLOR_KEYS.length - 1 ? 'rounded-b-xl' : ''}
+          />
+        ))}
       </View>
     </>
   );
