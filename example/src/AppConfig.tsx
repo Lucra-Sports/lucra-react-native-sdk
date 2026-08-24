@@ -2,7 +2,12 @@ import {
   LucraEnvironment,
   LucraSDK,
 } from '@lucra-sports/lucra-react-native-sdk';
-import { DEFAULT, type Theme } from './theme';
+import {
+  DEFAULT,
+  type AppTheme,
+  type Theme,
+  type ThemeAppearance,
+} from './theme';
 
 export interface AppConfig {
   environment: LucraEnvironment;
@@ -10,7 +15,7 @@ export interface AppConfig {
   urlScheme: string;
   merchantId: string;
   deeplinksEnabled: boolean;
-  theme: Theme;
+  theme: AppTheme;
   dirty: boolean;
 }
 
@@ -19,7 +24,13 @@ const envApiKey = (process.env.LUCRA_SDK_API_KEY ?? '').trim();
 export type AppConfigAction =
   | { type: 'SET_CONFIG'; config: AppConfig }
   | { type: 'SET_FIELD'; field: keyof AppConfig; value: string }
-  | { type: 'SET_THEME'; theme: Theme }
+  | { type: 'SET_THEME'; theme: AppTheme }
+  | {
+      type: 'SET_THEME_COLOR';
+      appearance: ThemeAppearance;
+      key: keyof Theme;
+      value: string;
+    }
   | { type: 'SET_TOGGLE'; field: 'deeplinksEnabled'; value: boolean };
 
 export const defaultAppConfig: AppConfig = {
@@ -41,6 +52,24 @@ export const initialAppConfig: AppConfig = {
   theme: DEFAULT,
   dirty: false,
 };
+
+/**
+ * Configs persisted before light/dark support stored a single flat palette.
+ * Reuse it for both appearances so an upgraded install still renders.
+ */
+export function migrateAppConfig(config: AppConfig): AppConfig {
+  const theme: unknown = config.theme;
+  if (
+    theme &&
+    typeof theme === 'object' &&
+    'light' in theme &&
+    'dark' in theme
+  ) {
+    return config;
+  }
+  const flat = { ...DEFAULT.dark, ...(theme as Partial<Theme> | null) };
+  return { ...config, theme: { light: flat, dark: flat } };
+}
 
 export function appConfigReducer(
   state: AppConfig,
@@ -65,6 +94,18 @@ export function appConfigReducer(
       return { ...state, deeplinksEnabled: action.value, dirty: true };
     case 'SET_THEME':
       return { ...state, theme: action.theme, dirty: true };
+    case 'SET_THEME_COLOR':
+      return {
+        ...state,
+        theme: {
+          ...state.theme,
+          [action.appearance]: {
+            ...state.theme[action.appearance],
+            [action.key]: action.value,
+          },
+        },
+        dirty: true,
+      };
     default:
       return state;
   }

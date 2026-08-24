@@ -38,6 +38,12 @@ export {
   type LucraAchievementCriteriaType,
   type LucraAchievementCriteriaConfig,
 } from './types';
+import { normalizeTheme, type LucraTheme } from './theme';
+export {
+  type LucraTheme,
+  type LucraColorSet,
+  type LucraFontFamily,
+} from './theme';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
 
@@ -188,22 +194,7 @@ export enum LucraEnvironment {
 export type LucraSDKParams = {
   apiKey: string;
   environment: LucraEnvironment;
-  theme?: {
-    primary?: string;
-    secondary?: string;
-    tertiary?: string;
-    onPrimary?: string;
-    onSecondary?: string;
-    onTertiary?: string;
-    fontFamily?:
-      | {
-          bold?: string;
-          semibold?: string;
-          normal?: string;
-          medium?: string;
-        }
-      | string;
-  };
+  theme?: LucraTheme;
   urlScheme?: string;
   merchantID?: string;
   autoJoin?: boolean;
@@ -629,7 +620,8 @@ export const LucraSDK = {
   ENVIRONMENT: LucraEnvironment,
   FLOW: Flows,
   init: async (options: LucraSDKParams): Promise<void> => {
-    await LucraClient.initialize(options);
+    const theme = normalizeTheme(options.theme);
+    await LucraClient.initialize(theme ? { ...options, theme } : options);
     deepLinkSubscription?.remove();
     deepLinkSubscription = eventEmitter.addListener(
       '_deepLink',

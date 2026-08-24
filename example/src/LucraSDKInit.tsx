@@ -35,14 +35,8 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
       environment,
       urlScheme: defaultAppConfig.urlScheme,
       theme: {
-        primary: state.theme?.primary ?? defaultAppConfig.theme.primary,
-        secondary: state.theme?.secondary ?? defaultAppConfig.theme.secondary,
-        tertiary: state.theme?.tertiary ?? defaultAppConfig.theme.tertiary,
-        onPrimary: state.theme?.onPrimary ?? defaultAppConfig.theme.onPrimary,
-        onSecondary:
-          state.theme?.onSecondary ?? defaultAppConfig.theme.onSecondary,
-        onTertiary:
-          state.theme?.onTertiary ?? defaultAppConfig.theme.onTertiary,
+        light: state.theme?.light ?? defaultAppConfig.theme.light,
+        dark: state.theme?.dark ?? defaultAppConfig.theme.dark,
         fontFamily: {
           normal:
             Platform.OS === 'ios' ? 'Inter Regular' : 'fonts/Inter-Regular.ttf',
