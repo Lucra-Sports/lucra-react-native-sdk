@@ -938,7 +938,12 @@ export const LucraSDK = {
     );
     gamesMatchupFeeListener = subscription;
     LucraClient.subscribeGamesMatchupFee();
+    let disposed = false;
     return () => {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
       subscription.remove();
       if (generation === gamesMatchupFeeGeneration) {
         gamesMatchupFeeListener = null;
