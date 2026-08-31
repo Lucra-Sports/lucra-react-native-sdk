@@ -22,6 +22,9 @@ import com.lucrasports.sdk.core.contest.tournament.Participant
 import com.lucrasports.sdk.core.contest.tournament.PayoutReward
 import com.lucrasports.sdk.core.contest.tournament.PayoutStructure
 import com.lucrasports.sdk.core.contest.tournament.Tournament
+import com.lucrasports.sdk.core.contest.tournament.TournamentDetails
+import com.lucrasports.sdk.core.contest.tournament.TournamentDetailsAttemptData
+import com.lucrasports.sdk.core.contest.tournament.TournamentDetailsLeaderboardRow
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
 import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
 import com.lucrasports.sdk.core.ui.LucraUiProvider
@@ -763,6 +766,122 @@ object LucraMapper {
         reward.disclaimer?.let { map.putString("disclaimer", it) }
         return map
     }
+
+    fun tournamentDetailsToMap(details: TournamentDetails): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("id", details.id)
+        map.putString("title", details.title)
+        details.description?.let { map.putString("description", it) }
+        details.imageUrl?.let { map.putString("imageUrl", it) }
+        map.putBoolean("isPrivate", details.isPrivate)
+        map.putBoolean("isCompleted", details.isCompleted)
+        map.putBoolean("isNotStarted", details.isNotStarted)
+        map.putBoolean("isExpired", details.isExpired)
+        map.putBoolean("freeBuyIn", details.freeBuyIn)
+        details.buyInAmount?.let { map.putDouble("buyInAmount", it) }
+        map.putString("status", details.status)
+        map.putString("visibilityLevel", details.visibilityLevel)
+        map.putInt("maxParticipants", details.maxParticipants)
+        map.putInt("totalParticipants", details.totalParticipants)
+        details.rewardType?.let { map.putString("rewardType", it) }
+        details.gameId?.let { map.putString("gameId", it) }
+        map.putBoolean("minigameEnabled", details.minigameEnabled)
+
+        val howToPlay = Arguments.createArray()
+        details.howToPlay.forEach {
+            howToPlay.pushMap(Arguments.createMap().apply {
+                putInt("step", it.step)
+                putString("text", it.text)
+            })
+        }
+        map.putArray("howToPlay", howToPlay)
+
+        val earnedRewards = Arguments.createArray()
+        details.earnedRewards.forEach { earned ->
+            earnedRewards.pushMap(Arguments.createMap().apply {
+                putString("id", earned.id)
+                putInt("place", earned.place)
+                earned.reward?.let { putMap("reward", payoutCatalogRewardToMap(it)) }
+            })
+        }
+        map.putArray("earnedRewards", earnedRewards)
+
+        details.timer?.let {
+            map.putMap("timer", Arguments.createMap().apply {
+                putString("caption", it.caption)
+                putString("state", it.state)
+            })
+        }
+        details.attemptData?.let {
+            map.putMap("attemptData", tournamentDetailsAttemptDataToMap(it))
+        }
+        details.payoutStructure?.let { map.putMap("payoutStructure", payoutStructureToMap(it)) }
+        details.leaderboard?.let { board ->
+            map.putMap("leaderboard", Arguments.createMap().apply {
+                val columns = Arguments.createArray()
+                board.columns.forEach {
+                    columns.pushMap(Arguments.createMap().apply {
+                        putString("name", it.name)
+                        putString("label", it.label)
+                    })
+                }
+                putArray("columns", columns)
+                val rows = Arguments.createArray()
+                board.rows.forEach { rows.pushMap(tournamentDetailsLeaderboardRowToMap(it)) }
+                putArray("rows", rows)
+                putMap("pagination", Arguments.createMap().apply {
+                    putInt("totalCount", board.pagination.totalCount)
+                    putInt("offset", board.pagination.offset)
+                    putInt("limit", board.pagination.limit)
+                })
+            })
+        }
+        details.userLeaderboardRow?.let {
+            map.putMap("userLeaderboardRow", tournamentDetailsLeaderboardRowToMap(it))
+        }
+
+        val terms = Arguments.createArray()
+        details.terms.forEach {
+            terms.pushMap(Arguments.createMap().apply {
+                putString("title", it.title)
+                putString("description", it.description)
+            })
+        }
+        map.putArray("terms", terms)
+        return map
+    }
+
+    private fun tournamentDetailsAttemptDataToMap(data: TournamentDetailsAttemptData): WritableMap =
+        Arguments.createMap().apply {
+            putBoolean("canJoinTournament", data.canJoinTournament)
+            putBoolean("isReplayable", data.isReplayable)
+            putBoolean("isUserPresent", data.isUserPresent)
+            putBoolean("presentToUser", data.presentToUser)
+            putInt("attemptsRemaining", data.attemptsRemaining)
+            data.rankVariation?.let { putInt("rankVariation", it) }
+            putString("modalTitleText", data.modalTitleText)
+            putString("playAgainRecommendationTitle", data.playAgainRecommendationTitle)
+            putString("playAgainRecommendationText", data.playAgainRecommendationText)
+            putString("iconType", data.iconType)
+            val scores = Arguments.createArray()
+            data.scores.forEach { score ->
+                scores.pushMap(Arguments.createMap().apply {
+                    putInt("attempt", score.attempt)
+                    putString("score", score.score)
+                    putBoolean("isBest", score.isBest)
+                })
+            }
+            putArray("scores", scores)
+        }
+
+    private fun tournamentDetailsLeaderboardRowToMap(row: TournamentDetailsLeaderboardRow): WritableMap =
+        Arguments.createMap().apply {
+            putString("userId", row.userId)
+            putString("name", row.name)
+            row.rank?.let { putInt("rank", it) }
+            row.points?.let { putString("points", it) }
+            putString("payout", row.payout)
+        }
 
     fun writableNativeMapToLucraReward(map: WritableNativeMap): LucraReward {
         return LucraReward(

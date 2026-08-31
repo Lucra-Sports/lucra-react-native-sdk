@@ -69,6 +69,13 @@ object ErrorMapper {
         mapTournamentFailure(promise, error.failure)
     }
 
+    fun rejectRetrieveTournamentDetailsError(
+        promise: Promise,
+        error: PoolTournament.RetrieveTournamentDetailsResult.Failure
+    ) {
+        mapTournamentFailure(promise, error.failure)
+    }
+
     fun rejectRecommendedTournamentsError(
         promise: Promise,
         error: PoolTournament.QueryRecommendedTournamentsResult.Failure
@@ -79,6 +86,13 @@ object ErrorMapper {
     fun rejectAutoJoinTournamentsError(
         promise: Promise,
         error: PoolTournament.AutoJoinTournamentsResult.Failure
+    ) {
+        mapTournamentFailure(promise, error.failure)
+    }
+
+    fun rejectSubmitTournamentScoreError(
+        promise: Promise,
+        error: PoolTournament.SubmitTournamentScoreResult.Failure
     ) {
         mapTournamentFailure(promise, error.failure)
     }

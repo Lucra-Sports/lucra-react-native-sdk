@@ -476,6 +476,164 @@ public func payoutCatalogRewardToMap(_ reward: LucraSDK.TournamentsMatchup.Catal
   ]
 }
 
+// MARK: - Tournament details (ui_tournament_details)
+
+public func tournamentDetailsToMap(_ details: LucraSDK.TournamentUI, tournamentId: String)
+  -> [String: Any?]
+{
+  return [
+    // TournamentUI carries no id; echo the requested one for parity with Android.
+    "id": tournamentId,
+    "title": details.title,
+    "description": details.description,
+    "imageUrl": details.imageUrl as Any,
+    "isPrivate": details.isPrivate,
+    "isCompleted": details.isCompleted,
+    "isNotStarted": details.isNotStarted,
+    "isExpired": details.isExpired,
+    "freeBuyIn": details.freeBuyIn,
+    "buyInAmount": details.buyInAmount as Any,
+    "maxParticipants": details.maxParticipants as Any,
+    "totalParticipants": details.totalParticipants as Any,
+    "rewardType": details.rewardType as Any,
+    "gameId": details.game?.id as Any,
+    "minigameEnabled": details.game?.minigameEnabled as Any,
+    "howToPlay": (details.howToPlay ?? []).map { ["step": $0.step, "text": $0.text] },
+    "earnedRewards": details.earnedRewards.map {
+      [
+        "id": $0.id,
+        "place": $0.place,
+        "reward": rewardItemToCatalogRewardMap($0.reward),
+      ]
+    },
+    "timer": details.timer.map {
+      [
+        "caption": $0.caption,
+        "state": tournamentTimerStateString($0.state),
+      ]
+    } as Any,
+    "attemptData": details.attemptData.map(tournamentDetailsAttemptDataToMap) as Any,
+    "payoutStructure": details.payoutStructure.map(tournamentUIPayoutStructureToMap) as Any,
+    "leaderboard": details.leaderboard.map(tournamentDetailsLeaderboardToMap) as Any,
+    "userLeaderboardRow": details.userLeaderboardRow.map(tournamentDetailsLeaderboardRowToMap)
+      as Any,
+    "terms": details.terms.map { ["title": $0.title, "description": $0.description] },
+    "expiresAt": details.expiresAt?.ISO8601Format(),
+    "startsAt": details.startsAt?.ISO8601Format(),
+  ]
+}
+
+private func tournamentTimerStateString(_ state: LucraSDK.TournamentUI.TournamentState) -> String {
+  switch state {
+  case .before:
+    return "NOT_STARTED"
+  case .ongoing:
+    return "STARTED"
+  case .ended:
+    return "ENDED"
+  @unknown default:
+    return "UNKNOWN"
+  }
+}
+
+private func tournamentDetailsAttemptDataToMap(_ data: LucraSDK.TournamentUI.AttemptData)
+  -> [String: Any?]
+{
+  return [
+    "canJoinTournament": data.canJoinTournament,
+    "isReplayable": data.isReplayable,
+    "isUserPresent": data.userPresent,
+    "presentToUser": data.presentToUser,
+    "attemptsRemaining": data.attemptsRemaining as Any,
+    "rankVariation": data.rankVariation as Any,
+    "modalTitleText": data.modalTitleText as Any,
+    // The SDK misspells this property; expose the corrected name.
+    "playAgainRecommendationTitle": data.playAgainRecommendataionTitle as Any,
+    "playAgainRecommendationText": data.playAgainRecommendationText as Any,
+    "remainingAttemptsText": data.remainingAttemptsText as Any,
+    "iconType": data.iconType as Any,
+    "scores": data.scores.map {
+      [
+        "attempt": $0.attempt,
+        "score": $0.score.map(String.init) as Any,
+        "isBest": $0.isBest as Any,
+      ]
+    },
+  ]
+}
+
+private func tournamentDetailsLeaderboardToMap(_ board: LucraSDK.TournamentUI.Leaderboard)
+  -> [String: Any?]
+{
+  return [
+    "columns": board.columns.map { ["name": $0.name as Any, "label": $0.label as Any] },
+    "rows": board.rows.map(tournamentDetailsLeaderboardRowToMap),
+    "pagination": [
+      "totalCount": board.pagination.totalCount,
+      "offset": board.pagination.offset,
+      "limit": board.pagination.limit,
+    ],
+  ]
+}
+
+private func tournamentDetailsLeaderboardRowToMap(_ row: LucraSDK.TournamentUI.Leaderboard.Row)
+  -> [String: Any?]
+{
+  return [
+    "userId": row.userId,
+    "name": row.name,
+    "rank": row.rank as Any,
+    "points": row.points as Any,
+    "payout": row.payout as Any,
+  ]
+}
+
+private func tournamentUIPayoutStructureToMap(_ payout: LucraSDK.TournamentUI.PayoutStructure)
+  -> [String: Any?]
+{
+  return [
+    "title": payout.title,
+    "description": payout.description,
+    "labelTitle": payout.labelTitle as Any,
+    "labelDescription": payout.labelDescription as Any,
+    "noPayout": payout.noPayout,
+    "isPercentagePayout": payout.isPercentagePayout,
+    "showAmount": payout.showAmount,
+    "jackpotAmount": payout.jackpotAmount as Any,
+    "jackpotDescriptor": payout.jackpotDescriptor as Any,
+    "rewards": payout.rewards.map(tournamentUIPayoutRewardToMap),
+  ]
+}
+
+private func tournamentUIPayoutRewardToMap(_ reward: LucraSDK.TournamentUI.PayoutReward)
+  -> [String: Any?]
+{
+  return [
+    "place": reward.place as Any,
+    "endPlace": reward.endPlace as Any,
+    "placeLabel": reward.placeLabel as Any,
+    "positionLabel": reward.positionLabel as Any,
+    "rewardLabel": reward.rewardLabel as Any,
+    "amountLabel": reward.amountLabel as Any,
+    "value": (reward.valueNumeric ?? reward.value.map(Double.init)) as Any,
+    "catalogReward": reward.catalogReward.map(rewardItemToCatalogRewardMap) as Any,
+  ]
+}
+
+// Reduces a RewardItem to the cross-platform CatalogReward shape, deliberately
+// excluding redemption details (discount codes, claim URLs, free-item IDs).
+private func rewardItemToCatalogRewardMap(_ item: LucraSDK.RewardItem) -> [String: Any?] {
+  return [
+    "id": item.id,
+    "type": item.type as Any,
+    "title": item.title,
+    "description": item.descriptor as Any,
+    "iconUrl": item.iconURL as Any,
+    "bannerIconUrl": item.bannerIconURL as Any,
+    "disclaimer": item.disclaimer as Any,
+  ]
+}
+
 public func sdkUserToMap(user: LucraSDK.SDKUser) -> [String: Any] {
   var addressMap: [String: String?]? = nil
   if let address = user.address {

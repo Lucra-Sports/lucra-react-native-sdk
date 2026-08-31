@@ -112,6 +112,54 @@ RCT_EXPORT_METHOD(configureUser : (NSDictionary *)user resolve : (
   [swiftClient configureUser:user resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(uploadUserAvatar : (NSString *)imageUri
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient uploadUserAvatar:imageUri resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getUserKycStatus : (NSString *)userId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getUserKycStatus:userId resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(updateUsername : (NSString *)username
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient updateUsername:username resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(submitPhoneNumber : (NSString *)phoneNumber
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient submitPhoneNumber:phoneNumber resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(submitVerificationCode : (NSString *)code
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient submitVerificationCode:code resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(resendCode : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient resendCodeWithResolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getGamesMatchupFee : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getGamesMatchupFeeWithResolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(subscribeGamesMatchupFee) {
+  [swiftClient subscribeGamesMatchupFee];
+}
+
+RCT_EXPORT_METHOD(cancelGamesMatchupFeeSubscription) {
+  [swiftClient cancelGamesMatchupFeeSubscription];
+}
+
 RCT_EXPORT_METHOD(createRecreationalGame : (NSString *)gameTypeId
                   atStake : (NSDictionary *)atStake
                   playStyle : (NSString *)playStyle
@@ -264,6 +312,16 @@ RCT_EXPORT_METHOD(tournamentMatchup : (NSString *)idString resolve : (
   [swiftClient tournamentMatchup:idString resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(getTournamentDetails : (NSString *)tournamentId
+                  params : (NSDictionary *)params
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient getTournamentDetails:tournamentId
+                             params:params
+                            resolve:resolve
+                             reject:reject];
+}
+
 RCT_EXPORT_METHOD(autoJoinTournaments : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient autoJoinTournamentsWithResolve:resolve reject:reject];
@@ -272,6 +330,20 @@ RCT_EXPORT_METHOD(autoJoinTournaments : (RCTPromiseResolveBlock)
 RCT_EXPORT_METHOD(joinTournament : (NSString *)idString resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient joinTournament:idString resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(submitUserScore : (double)score
+                  tournamentId : (NSString *)tournamentId
+                  metadata : (NSDictionary *)metadata
+                  isFinal : (BOOL)isFinal
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient submitUserScore:score
+                  tournamentId:tournamentId
+                      metadata:metadata
+                       isFinal:isFinal
+                       resolve:resolve
+                        reject:reject];
 }
 
 #if RCT_NEW_ARCH_ENABLED

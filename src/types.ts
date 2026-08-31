@@ -201,6 +201,122 @@ export type CatalogReward = {
   disclaimer?: string;
 };
 
+export type TournamentDetailsHowToPlayStep = {
+  step: number;
+  text: string;
+};
+
+export type TournamentDetailsEarnedReward = {
+  id: string;
+  place: number;
+  /**
+   * Tangible reward details. Intentionally excludes redemption details —
+   * use `getUserTournamentRewards` for a claimed reward's redemption payload.
+   */
+  reward?: CatalogReward;
+};
+
+export type TournamentDetailsTimer = {
+  /** Pre-formatted countdown caption, e.g. "Ends in 2h 15m". */
+  caption: string;
+  state: 'NOT_STARTED' | 'STARTED' | 'ENDED';
+};
+
+export type TournamentDetailsAttemptScore = {
+  attempt: number;
+  score?: string;
+  isBest?: boolean;
+};
+
+export type TournamentDetailsAttemptData = {
+  canJoinTournament: boolean;
+  isReplayable: boolean;
+  isUserPresent?: boolean;
+  attemptsRemaining?: number;
+  /** Rank change since the previous attempt. */
+  rankVariation?: number;
+  presentToUser?: boolean;
+  modalTitleText?: string;
+  playAgainRecommendationTitle?: string;
+  playAgainRecommendationText?: string;
+  /** iOS only. */
+  remainingAttemptsText?: string;
+  iconType?: string;
+  scores: TournamentDetailsAttemptScore[];
+};
+
+export type TournamentDetailsLeaderboardColumn = {
+  name?: string;
+  label?: string;
+};
+
+export type TournamentDetailsLeaderboardRow = {
+  userId: string;
+  name: string;
+  rank?: number;
+  /** Pre-formatted points/score label. */
+  points?: string;
+  /** Pre-formatted payout label. */
+  payout?: string;
+};
+
+export type TournamentDetailsLeaderboard = {
+  columns: TournamentDetailsLeaderboardColumn[];
+  rows: TournamentDetailsLeaderboardRow[];
+  pagination: {
+    totalCount: number;
+    offset: number;
+    limit: number;
+  };
+};
+
+export type TournamentDetailsTerm = {
+  title: string;
+  description: string;
+};
+
+/**
+ * Lightweight tournament details payload backed by the `ui_tournament_details`
+ * API — the same response that powers Lucra's in-app tournament details
+ * screen. Headless counterpart of the heavier `tournamentMatchup` response.
+ * Fields marked platform-only are absent on the other platform.
+ */
+export type TournamentDetails = {
+  id: string;
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  isPrivate: boolean;
+  isCompleted: boolean;
+  isNotStarted: boolean;
+  isExpired: boolean;
+  freeBuyIn: boolean;
+  buyInAmount?: number;
+  /** Android only. */
+  status?: string;
+  /** Android only: 'PUBLIC' | 'PRIVATE_VIEWABLE' | 'PRIVATE_HIDDEN'. */
+  visibilityLevel?: string;
+  maxParticipants?: number;
+  totalParticipants?: number;
+  /** Raw API reward category, e.g. "POOL_CASH_REWARD" | "POOL_TENANT_REWARD". */
+  rewardType?: string;
+  gameId?: string;
+  minigameEnabled?: boolean;
+  howToPlay: TournamentDetailsHowToPlayStep[];
+  earnedRewards: TournamentDetailsEarnedReward[];
+  timer?: TournamentDetailsTimer;
+  attemptData?: TournamentDetailsAttemptData;
+  payoutStructure?: PayoutStructure;
+  leaderboard?: TournamentDetailsLeaderboard;
+  /** The current user's row, when they participate in the tournament. */
+  userLeaderboardRow?: TournamentDetailsLeaderboardRow;
+  terms: TournamentDetailsTerm[];
+  /** iOS only (ISO 8601). */
+  expiresAt?: string;
+  /** iOS only (ISO 8601). */
+  startsAt?: string;
+};
+
 export type SportsMatchupType = {
   id: string;
   status: string;

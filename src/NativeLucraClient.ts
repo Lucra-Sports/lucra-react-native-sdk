@@ -11,6 +11,16 @@ export interface Spec extends TurboModule {
   configureUser(user: Object): Promise<void>;
   logout: () => Promise<void>;
   getUser: () => Promise<Object>;
+  uploadUserAvatar(imageUri: string): Promise<void>;
+  // Android only — the iOS SDK has no headless KYC-status API yet and rejects
+  // with code `unsupported`.
+  getUserKycStatus(userId: string): Promise<boolean>;
+  updateUsername(username: string): Promise<Object>;
+
+  // Phone-auth headless flow
+  submitPhoneNumber(phoneNumber: string): Promise<void>;
+  submitVerificationCode(code: string): Promise<Object>;
+  resendCode(): Promise<void>;
 
   // All types of matchups
   getMatchup(matchupId: string): Promise<Object>;
@@ -36,6 +46,12 @@ export interface Spec extends TurboModule {
   acceptFreeForAllRecreationalGame(matchupId: string): Promise<void>;
   cancelGamesMatchup(matchupId: string): Promise<void>;
 
+  // Games matchup service fee. Live updates arrive via the `gamesMatchupFee`
+  // event; cancel ends the native subscription.
+  getGamesMatchupFee(): Promise<number>;
+  subscribeGamesMatchupFee(): void;
+  cancelGamesMatchupFeeSubscription(): void;
+
   // Mini Games
   preloadGeoToken: (context: string) => void;
   startMiniGame(
@@ -58,8 +74,17 @@ export interface Spec extends TurboModule {
   // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
   getRecommendedTournaments: (params: Object) => Promise<Object[]>;
   tournamentMatchup: (tournamentId: string) => Promise<Object>;
+  // Lightweight ui_tournament_details payload; params carries the
+  // Android-only leaderboard pagination options.
+  getTournamentDetails(tournamentId: string, params: Object): Promise<Object>;
   joinTournament: (tournamentId: string) => Promise<void>;
   autoJoinTournaments: () => Promise<string[]>;
+  submitUserScore(
+    score: number,
+    tournamentId: string,
+    metadata: Object,
+    isFinal: boolean
+  ): Promise<Object>;
 
   // Client <-> SDK listener types
   addListener: (eventType: string) => void;
