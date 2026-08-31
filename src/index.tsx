@@ -1179,6 +1179,9 @@ export const LucraSDK = {
     if (!tournamentId) {
       throw new Error('tournamentId is required');
     }
+    if (!Number.isFinite(score)) {
+      throw new Error('score must be a finite number');
+    }
     return (
       ((await LucraClient.submitUserScore(
         score,

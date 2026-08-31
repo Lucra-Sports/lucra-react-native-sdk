@@ -73,6 +73,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -1051,19 +1052,52 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 imageUri.startsWith("data:") -> {
                     val base64 = imageUri.substringAfter(',', "")
                     val bytes = Base64.decode(base64, Base64.DEFAULT)
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+                    val options = BitmapFactory.Options().apply {
+                        inSampleSize = avatarSampleSize(bounds.outWidth, bounds.outHeight)
+                    }
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                 }
 
-                imageUri.startsWith("file://") || imageUri.startsWith("content://") ->
-                    context.contentResolver.openInputStream(Uri.parse(imageUri))?.use {
-                        BitmapFactory.decodeStream(it)
+                imageUri.startsWith("file://") || imageUri.startsWith("content://") -> {
+                    val uri = Uri.parse(imageUri)
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    context.contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it, null, bounds)
                     }
+                    val options = BitmapFactory.Options().apply {
+                        inSampleSize = avatarSampleSize(bounds.outWidth, bounds.outHeight)
+                    }
+                    context.contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it, null, options)
+                    }
+                }
 
-                else -> BitmapFactory.decodeFile(imageUri)
+                else -> {
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    BitmapFactory.decodeFile(imageUri, bounds)
+                    val options = BitmapFactory.Options().apply {
+                        inSampleSize = avatarSampleSize(bounds.outWidth, bounds.outHeight)
+                    }
+                    BitmapFactory.decodeFile(imageUri, options)
+                }
             }
         } catch (e: Exception) {
             null
+        } catch (e: OutOfMemoryError) {
+            null
         }
+    }
+
+    private fun avatarSampleSize(width: Int, height: Int): Int {
+        var sampleSize = 1
+        while (width / sampleSize > MAX_AVATAR_DIMENSION ||
+            height / sampleSize > MAX_AVATAR_DIMENSION
+        ) {
+            sampleSize *= 2
+        }
+        return sampleSize
     }
 
     private fun rejectAvatarUploadError(
@@ -1237,6 +1271,17 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         putDouble("fee", fee)
                     })
                 }
+                .catch { e ->
+                    sendEvent(context, "gamesMatchupFee", Arguments.createMap().apply {
+                        putMap("error", Arguments.createMap().apply {
+                            putString("code", ErrorCodes.UNKNOWN_ERROR)
+                            putString(
+                                "message",
+                                e.message.ifNullOrBlank { "Games matchup fee subscription failed" }
+                            )
+                        })
+                    })
+                }
                 .launchIn(moduleScope)
         } catch (e: Exception) {
             sendEvent(context, "gamesMatchupFee", Arguments.createMap().apply {
@@ -1315,9 +1360,17 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     @ReactMethod
     fun getTournamentDetails(tournamentId: String, params: ReadableMap, promise: Promise) {
         val leaderboardLimit =
-            if (params.hasKey("leaderboardLimit")) params.getInt("leaderboardLimit") else null
+            if (params.hasKey("leaderboardLimit") && !params.isNull("leaderboardLimit")) {
+                params.getInt("leaderboardLimit")
+            } else {
+                null
+            }
         val leaderboardOffset =
-            if (params.hasKey("leaderboardOffset")) params.getInt("leaderboardOffset") else null
+            if (params.hasKey("leaderboardOffset") && !params.isNull("leaderboardOffset")) {
+                params.getInt("leaderboardOffset")
+            } else {
+                null
+            }
         LucraClient().retrieveTournamentDetails(
             tournamentId = tournamentId,
             leaderboardLimit = leaderboardLimit,
@@ -1425,5 +1478,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     companion object {
         const val NAME = "NativeLucraClient"
+        private const val MAX_AVATAR_DIMENSION = 1024
     }
 }

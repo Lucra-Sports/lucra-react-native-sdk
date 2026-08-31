@@ -354,6 +354,7 @@ RCT_EXPORT_METHOD(submitUserScore : (double)score
 #endif
 
 - (void)invalidate {
+  [swiftClient cancelGamesMatchupFeeSubscription];
   [super invalidate];
 }
 

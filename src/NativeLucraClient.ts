@@ -79,6 +79,7 @@ export interface Spec extends TurboModule {
   getTournamentDetails(tournamentId: string, params: Object): Promise<Object>;
   joinTournament: (tournamentId: string) => Promise<void>;
   autoJoinTournaments: () => Promise<string[]>;
+  // Resolves null when the native SDK returns no updated tournament (iOS)
   submitUserScore(
     score: number,
     tournamentId: string,

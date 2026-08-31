@@ -532,7 +532,11 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
             className="border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
             onPress={async () => {
               const score = Number(tournamentScore);
-              if (!tournamentId || Number.isNaN(score)) {
+              if (
+                !tournamentId ||
+                !tournamentScore.trim() ||
+                Number.isNaN(score)
+              ) {
                 Alert.alert('Error', 'Enter a tournament id and numeric score');
                 return;
               }

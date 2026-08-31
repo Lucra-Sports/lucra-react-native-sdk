@@ -1096,10 +1096,16 @@ private enum PhoneAuthErrorCode {
     reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
+      // The iOS SDK accepts whole-number scores only; Int(exactly:) also
+      // rejects NaN/infinite/out-of-range values instead of trapping.
+      guard let intScore = Int(exactly: score.rounded()) else {
+        reject("invalidScore", "score must be a finite number", nil)
+        return
+      }
+
       let stringMetadata = metadata.mapValues { "\($0)" }
-      // The iOS SDK accepts whole-number scores only.
       let result = await self.nativeClient.api.submitUserScore(
-        Int(score.rounded()),
+        intScore,
         tournamentID: tournamentId,
         metadata: stringMetadata,
         isFinal: isFinal
@@ -1265,29 +1271,43 @@ private enum PhoneAuthErrorCode {
     }
   }
 
+  // Codes and messages mirror Android's rejectPhoneAuthError so integrators
+  // see identical rejections on both platforms.
   private func rejectPhoneAuthError(
     _ reject: RCTPromiseRejectBlock, error: PhoneAuthError
   ) {
     let code: String
+    let message: String
     switch error {
     case .notInitialized:
       code = ErrorCode.notInitialized
+      message = "SDK has not been initialized"
     case .invalidPhoneNumber:
       code = PhoneAuthErrorCode.invalidPhoneNumber
+      message = "The phone number provided is not a valid US phone number"
     case .phoneNumberNotSubmitted:
       code = PhoneAuthErrorCode.phoneNumberNotSubmitted
+      message = "Submit a phone number before verifying or resending a code"
     case .invalidCode:
       code = PhoneAuthErrorCode.invalidCode
+      message = "The verification code is invalid or incorrect"
     case .alreadyLoggedIn:
       code = PhoneAuthErrorCode.alreadyLoggedIn
-    case .networkError:
+      message = "The user is already logged in. Log out before starting phone authentication"
+    case .networkError(let details):
       code = PhoneAuthErrorCode.networkError
+      message =
+        details.isEmpty
+        ? "A network error occurred during authentication" : details
     case .unknown:
       code = ErrorCode.unknownError
+      message = "An unexpected error occurred during authentication"
     @unknown default:
       code = ErrorCode.unknownError
+      message =
+        error.errorDescription ?? "An unexpected error occurred during authentication"
     }
-    reject(code, error.errorDescription ?? "Phone authentication failed", error)
+    reject(code, message, error)
   }
 
   // MARK: - Games matchup fee
