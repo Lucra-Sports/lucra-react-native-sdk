@@ -1244,7 +1244,15 @@ export type LucraSDKError = {
     | 'apiError'
     | 'missingDemographicInformation'
     | 'locationError'
-    | 'unknownError';
+    | 'unknownError'
+    /** Android-only: the feature isn't enabled for this tenant (tournament calls). */
+    | 'featureDisabled'
+    /** The function has no native implementation on this platform (e.g. `getUserKycStatus` on iOS). */
+    | 'unsupported'
+    /** `uploadUserAvatar`: the provided uri could not be decoded into an image. */
+    | 'invalidImage'
+    /** iOS-only `submitUserScore` backstop for a non-finite score. */
+    | 'invalidScore';
 } & Error;
 
 /**
