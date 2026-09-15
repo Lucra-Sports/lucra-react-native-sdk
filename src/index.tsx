@@ -5,6 +5,7 @@ export { MiniGameWebView } from './MiniGameWebView';
 import { default as LucraProfilePillNative } from './LucraProfilePillNativeComponent';
 import { default as LucraCreateContestButtonNative } from './LucraCreateContestButtonNativeComponent';
 import {
+  Platform,
   StyleSheet,
   type ViewProps,
   type NativeEventSubscription,
@@ -17,18 +18,31 @@ export { default as LucraContestCard } from './LucraContestCardNativeComponent';
 import {
   type LucraReward,
   type PoolTournament,
+  type TournamentDetails,
   type LucraTournamentReward,
   type LucraAchievement,
 } from './types';
 import NativeLucraClient from './NativeLucraClient';
 import { extractLucraDeeplink } from './pushPayload';
 export { extractLucraDeeplink } from './pushPayload';
+import { formatUsPhoneNumber } from './phone';
+export { formatUsPhoneNumber } from './phone';
 export {
   type LucraReward,
   type PoolTournament,
   type PayoutStructure,
   type PayoutReward,
   type CatalogReward,
+  type TournamentDetails,
+  type TournamentDetailsHowToPlayStep,
+  type TournamentDetailsEarnedReward,
+  type TournamentDetailsTimer,
+  type TournamentDetailsAttemptScore,
+  type TournamentDetailsAttemptData,
+  type TournamentDetailsLeaderboardColumn,
+  type TournamentDetailsLeaderboardRow,
+  type TournamentDetailsLeaderboard,
+  type TournamentDetailsTerm,
   type LucraTournamentReward,
   type LucraCatalogReward,
   type LucraDiscountCodeConfig,
@@ -489,6 +503,8 @@ let lucraFlowDismissedSubscription: NativeEventSubscription;
 let lucraFlowDismissedCallback: ((flow: string) => void) | null = null;
 let matchupDetailsListener: NativeEventSubscription | null = null;
 let matchupDetailsGeneration = 0;
+let gamesMatchupFeeListener: NativeEventSubscription | null = null;
+let gamesMatchupFeeGeneration = 0;
 
 type LucraContestListeners = {
   onGamesMatchupCreated?: (id: string) => void;
@@ -785,6 +801,70 @@ export const LucraSDK = {
     let object = (await LucraClient.getUser()) as any;
     return object.user as LucraUser;
   },
+  /**
+   * Uploads a new avatar image for the current user. The native SDK scales
+   * the image, uploads it, and updates the user's `avatarURL` — the `user`
+   * listener emits the updated user once the upload completes.
+   *
+   * Accepts a local `file://` URI (e.g. from an image picker), an absolute
+   * file path, or a base64 `data:` URI.
+   */
+  uploadUserAvatar: (imageUri: string): Promise<void> => {
+    return LucraClient.uploadUserAvatar(imageUri);
+  },
+  /**
+   * Resolves `true` when the given user has passed KYC verification.
+   *
+   * Android only — the iOS Lucra SDK has no headless KYC-status API yet and
+   * rejects with code `unsupported`. On iOS, read `accountStatus` from
+   * `LucraSDK.getUser()` for the current user instead.
+   */
+  getUserKycStatus: (userId: string): Promise<boolean> => {
+    return LucraClient.getUserKycStatus(userId);
+  },
+  /**
+   * Updates only the username of the current user and resolves with the
+   * updated user. Rejects with `invalid_username` when the username is
+   * rejected or unchanged, and `not_logged_in` when no user is configured.
+   */
+  updateUsername: async (username: string): Promise<LucraUser> => {
+    const object = (await LucraClient.updateUsername(username)) as any;
+    return object.user as LucraUser;
+  },
+  /**
+   * Starts phone-based passwordless authentication by sending an SMS
+   * verification code. Follow up with `submitVerificationCode`, and use
+   * `resendCode` to re-send.
+   *
+   * Accepts common US formats (`5551234567`, `+1 555 123 4567`,
+   * `(555) 123-4567`); the number is normalized per platform before it is
+   * handed to the native SDK. Rejections use `LucraPhoneAuthError` codes.
+   */
+  submitPhoneNumber: (phoneNumber: string): Promise<void> => {
+    return LucraClient.submitPhoneNumber(
+      formatUsPhoneNumber(
+        phoneNumber,
+        Platform.OS === 'ios' ? 'formatted' : 'digits'
+      )
+    );
+  },
+  /**
+   * Completes phone-based authentication by verifying the SMS code and
+   * resolves with the authenticated user. Requires a prior successful
+   * `submitPhoneNumber` call. Rejections use `LucraPhoneAuthError` codes.
+   */
+  submitVerificationCode: async (code: string): Promise<LucraUser> => {
+    const object = (await LucraClient.submitVerificationCode(code)) as any;
+    return object.user as LucraUser;
+  },
+  /**
+   * Re-sends the SMS verification code to the phone number previously
+   * submitted via `submitPhoneNumber`. Rejections use `LucraPhoneAuthError`
+   * codes.
+   */
+  resendCode: (): Promise<void> => {
+    return LucraClient.resendCode();
+  },
   closeFullScreenLucraFlows: (): Promise<void> => {
     return LucraClient.closeFullScreenLucraFlows();
   },
@@ -815,6 +895,61 @@ export const LucraSDK = {
   },
   cancelGamesMatchup: (gameId: string): Promise<void> => {
     return LucraClient.cancelGamesMatchup(gameId);
+  },
+  /**
+   * Resolves the platform service fee applied to games matchups
+   * (e.g. `0.05` = 5%). The fee comes from remote configuration, so prefer
+   * reading it at point-of-use (or via `subscribeToGamesMatchupFee`) rather
+   * than caching an early read.
+   */
+  getGamesMatchupFee: (): Promise<number> => {
+    return LucraClient.getGamesMatchupFee();
+  },
+  /**
+   * Subscribes to the games matchup service fee. `onChange` fires immediately
+   * with the current fee and again whenever it changes.
+   *
+   * On iOS the native SDK exposes no fee observation yet, so the bridge polls
+   * for changes; updates still arrive, just not instantaneously.
+   *
+   * Returns an unsubscribe function. Only one fee subscription is active at a
+   * time; subscribing again replaces the previous one. The returned function
+   * is safe to call more than once, and a stale unsubscribe never cancels a
+   * subscription that has since replaced it.
+   */
+  subscribeToGamesMatchupFee: (
+    onChange: (fee: number) => void,
+    onError?: (error: { code: string; message: string }) => void
+  ): (() => void) => {
+    gamesMatchupFeeListener?.remove();
+    const generation = ++gamesMatchupFeeGeneration;
+    const subscription = eventEmitter.addListener(
+      'gamesMatchupFee',
+      (payload: {
+        fee?: number;
+        error?: { code: string; message: string };
+      }) => {
+        if (payload.error) {
+          onError?.(payload.error);
+        } else if (typeof payload.fee === 'number') {
+          onChange(payload.fee);
+        }
+      }
+    );
+    gamesMatchupFeeListener = subscription;
+    LucraClient.subscribeGamesMatchupFee();
+    let disposed = false;
+    return () => {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      subscription.remove();
+      if (generation === gamesMatchupFeeGeneration) {
+        gamesMatchupFeeListener = null;
+        LucraClient.cancelGamesMatchupFeeSubscription();
+      }
+    };
   },
   preloadGeoToken: (context: GeoComplyContext): void => {
     LucraClient.preloadGeoToken(context);
@@ -999,11 +1134,67 @@ export const LucraSDK = {
       tournamentId
     )) as PoolTournament;
   },
+  /**
+   * Fetches the lightweight tournament details backed by the
+   * `ui_tournament_details` API — the same response that powers Lucra's
+   * in-app tournament details screen (leaderboard, payout structure, attempt
+   * data, how-to-play steps). Prefer this over `tournamentMatchup` for
+   * headless tournament UIs; the native SDKs deprecate the heavier call.
+   *
+   * `leaderboardLimit`/`leaderboardOffset` page the leaderboard section on
+   * Android; the iOS SDK does not support leaderboard pagination yet and
+   * always returns the first page.
+   */
+  getTournamentDetails: async (
+    tournamentId: string,
+    options: { leaderboardLimit?: number; leaderboardOffset?: number } = {}
+  ): Promise<TournamentDetails> => {
+    if (!tournamentId) {
+      throw new Error('tournamentId is required');
+    }
+    return (await LucraClient.getTournamentDetails(
+      tournamentId,
+      options
+    )) as TournamentDetails;
+  },
   joinTournament: async (tournamentId: string) => {
     return await LucraClient.joinTournament(tournamentId);
   },
   autoJoinTournaments: async (): Promise<string[]> => {
     return await LucraClient.autoJoinTournaments();
+  },
+  /**
+   * Submits the user's score for a tournament and resolves with the updated
+   * tournament, or `null` when the native SDK returns none (iOS).
+   *
+   * Note: the iOS SDK accepts whole-number scores only, so the score is
+   * rounded to the nearest integer on iOS.
+   */
+  submitUserScore: async ({
+    tournamentId,
+    score,
+    isFinal,
+    metadata = {},
+  }: {
+    tournamentId: string;
+    score: number;
+    isFinal: boolean;
+    metadata?: Record<string, string>;
+  }): Promise<PoolTournament | null> => {
+    if (!tournamentId) {
+      throw new Error('tournamentId is required');
+    }
+    if (!Number.isFinite(score)) {
+      throw new Error('score must be a finite number');
+    }
+    return (
+      ((await LucraClient.submitUserScore(
+        score,
+        tournamentId,
+        metadata,
+        isFinal
+      )) as PoolTournament) ?? null
+    );
   },
 };
 
@@ -1053,5 +1244,28 @@ export type LucraSDKError = {
     | 'apiError'
     | 'missingDemographicInformation'
     | 'locationError'
+    | 'unknownError'
+    /** Android-only: the feature isn't enabled for this tenant (tournament calls). */
+    | 'featureDisabled'
+    /** The function has no native implementation on this platform (e.g. `getUserKycStatus` on iOS). */
+    | 'unsupported'
+    /** `uploadUserAvatar`: the provided uri could not be decoded into an image. */
+    | 'invalidImage'
+    /** iOS-only `submitUserScore` backstop for a non-finite score. */
+    | 'invalidScore';
+} & Error;
+
+/**
+ * Rejection shape for the phone-auth headless flow (`submitPhoneNumber`,
+ * `submitVerificationCode`, `resendCode`).
+ */
+export type LucraPhoneAuthError = {
+  code:
+    | 'notInitialized'
+    | 'invalidPhoneNumber'
+    | 'phoneNumberNotSubmitted'
+    | 'invalidCode'
+    | 'alreadyLoggedIn'
+    | 'networkError'
     | 'unknownError';
 } & Error;

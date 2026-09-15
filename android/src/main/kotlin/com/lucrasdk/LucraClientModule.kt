@@ -3,8 +3,14 @@ package com.lucrasdk
 import ErrorMapper.rejectAutoJoinTournamentsError
 import ErrorMapper.rejectJoinTournamentError
 import ErrorMapper.rejectRecommendedTournamentsError
+import ErrorMapper.rejectRetrieveTournamentDetailsError
 import ErrorMapper.rejectRetrieveTournamentError
+import ErrorMapper.rejectSubmitTournamentScoreError
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Base64
 import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -31,6 +37,10 @@ import com.lucrasdk.Libs.LucraUtils
 import com.lucrasports.logger.LucraLogger
 import com.lucrasports.logger.model.AnalyticEvent
 import com.lucrasports.sdk.core.LucraClient
+import com.lucrasports.sdk.core.auth.PhoneAuthError
+import com.lucrasports.sdk.core.auth.ResendCodeResult
+import com.lucrasports.sdk.core.auth.SubmitPhoneNumberResult
+import com.lucrasports.sdk.core.auth.SubmitVerificationCodeResult
 import com.lucrasports.sdk.core.contest.APIError
 import com.lucrasports.sdk.core.contest.GameInteractions
 import com.lucrasports.sdk.core.contest.LocationError
@@ -43,6 +53,7 @@ import com.lucrasports.sdk.core.minigames.LucraGeoTokenType
 import com.lucrasports.sdk.core.contest.tournament.PoolTournament
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditProvider
 import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
+import com.lucrasports.sdk.core.profile.ProfileInteractions
 import com.lucrasports.sdk.core.events.LucraEvent
 import com.lucrasports.sdk.core.events.LucraEventListener
 import com.lucrasports.sdk.core.reward.LucraReward
@@ -55,8 +66,18 @@ import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sdk.core.user.SDKUserResult
 import com.lucrasports.sdk.ui.LucraUi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 @ReactModule(name = LucraClientModule.NAME)
 class LucraClientModule(private val context: ReactApplicationContext) :
@@ -71,6 +92,17 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         const val UNVERIFIED = "unverified"
         const val UNKNOWN_ERROR = "unknownError"
     }
+
+    private object PhoneAuthErrorCodes {
+        const val INVALID_PHONE_NUMBER = "invalidPhoneNumber"
+        const val PHONE_NUMBER_NOT_SUBMITTED = "phoneNumberNotSubmitted"
+        const val INVALID_CODE = "invalidCode"
+        const val ALREADY_LOGGED_IN = "alreadyLoggedIn"
+        const val NETWORK_ERROR = "networkError"
+    }
+
+    private val moduleScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var gamesMatchupFeeJob: Job? = null
 
     private var fullAppFlowDialogFragment: DialogFragment? = null
 
@@ -999,6 +1031,286 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun uploadUserAvatar(imageUri: String, promise: Promise) {
+        val bitmap = decodeImage(imageUri)
+        if (bitmap == null) {
+            promise.reject("invalidImage", "Could not load an image from the provided uri")
+            return
+        }
+        LucraClient().uploadUserAvatar(bitmap) { result ->
+            when (result) {
+                is ProfileInteractions.UploadAvatarResult.Success -> promise.resolve(null)
+                is ProfileInteractions.UploadAvatarResult.Failure ->
+                    rejectAvatarUploadError(promise, result.failure)
+            }
+        }
+    }
+
+    private fun decodeImage(imageUri: String): Bitmap? {
+        return try {
+            when {
+                imageUri.startsWith("data:") -> {
+                    val base64 = imageUri.substringAfter(',', "")
+                    val bytes = Base64.decode(base64, Base64.DEFAULT)
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+                    val options = BitmapFactory.Options().apply {
+                        inSampleSize = avatarSampleSize(bounds.outWidth, bounds.outHeight)
+                    }
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                }
+
+                imageUri.startsWith("file://") || imageUri.startsWith("content://") -> {
+                    val uri = Uri.parse(imageUri)
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    context.contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it, null, bounds)
+                    }
+                    val options = BitmapFactory.Options().apply {
+                        inSampleSize = avatarSampleSize(bounds.outWidth, bounds.outHeight)
+                    }
+                    context.contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it, null, options)
+                    }
+                }
+
+                else -> {
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    BitmapFactory.decodeFile(imageUri, bounds)
+                    val options = BitmapFactory.Options().apply {
+                        inSampleSize = avatarSampleSize(bounds.outWidth, bounds.outHeight)
+                    }
+                    BitmapFactory.decodeFile(imageUri, options)
+                }
+            }
+        } catch (e: Exception) {
+            null
+        } catch (e: OutOfMemoryError) {
+            null
+        }
+    }
+
+    private fun avatarSampleSize(width: Int, height: Int): Int {
+        var sampleSize = 1
+        while (width / sampleSize > MAX_AVATAR_DIMENSION ||
+            height / sampleSize > MAX_AVATAR_DIMENSION
+        ) {
+            sampleSize *= 2
+        }
+        return sampleSize
+    }
+
+    private fun rejectAvatarUploadError(
+        promise: Promise,
+        failure: ProfileInteractions.FailedAvatarUpload
+    ) {
+        val (code, message) = when (failure) {
+            is ProfileInteractions.FailedAvatarUpload.User -> when (failure.error) {
+                ProfileInteractions.FailedUserMatchupsCall.UserStateError.NotInitialized ->
+                    ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
+
+                ProfileInteractions.FailedUserMatchupsCall.UserStateError.NotAllowed ->
+                    ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
+            }
+
+            is ProfileInteractions.FailedAvatarUpload.CustomError ->
+                ErrorCodes.API_ERROR to failure.message.ifNullOrBlank { "API error occurred" }
+
+            ProfileInteractions.FailedAvatarUpload.Unknown ->
+                ErrorCodes.UNKNOWN_ERROR to "An unknown error occurred"
+        }
+        promise.reject(code, message)
+    }
+
+    @ReactMethod
+    fun getUserKycStatus(userId: String, promise: Promise) {
+        LucraClient().checkUsersKYCStatus(
+            userId,
+            object : LucraClient.LucraKYCStatusListener {
+                override fun onKYCStatusAvailable(isVerified: Boolean) {
+                    promise.resolve(isVerified)
+                }
+
+                override fun onKYCStatusCheckFailed(exception: Exception) {
+                    promise.reject(
+                        ErrorCodes.API_ERROR,
+                        exception.message.ifNullOrBlank { "KYC status check failed" }
+                    )
+                }
+            }
+        )
+    }
+
+    @ReactMethod
+    fun updateUsername(username: String, promise: Promise) {
+        LucraClient().getSDKUser { userResult ->
+            when (userResult) {
+                is SDKUserResult.Success ->
+                    LucraClient().updateUsername(userResult.sdkUser, username) { result ->
+                        when (result) {
+                            is SDKUserResult.Success ->
+                                promise.resolve(sdkUserToMap(result.sdkUser))
+
+                            SDKUserResult.InvalidUsername ->
+                                promise.reject("invalid_username", "username is not valid")
+
+                            SDKUserResult.NotLoggedIn ->
+                                promise.reject("not_logged_in", "not logged in")
+
+                            is SDKUserResult.Error ->
+                                promise.reject("unknown_error", result.error)
+
+                            SDKUserResult.Loading, SDKUserResult.WaitingForLogin -> {
+                                // intentionally blank
+                            }
+                        }
+                    }
+
+                SDKUserResult.NotLoggedIn -> promise.reject("not_logged_in", "not logged in")
+                is SDKUserResult.Error -> promise.reject("not_logged_in", userResult.error)
+                SDKUserResult.InvalidUsername ->
+                    promise.reject("invalid_username", "username is not valid")
+
+                SDKUserResult.Loading -> promise.reject("loading", "User is still loading")
+                SDKUserResult.WaitingForLogin -> {
+                    // intentionally blank
+                }
+            }
+        }
+    }
+
+    @ReactMethod
+    fun submitPhoneNumber(phoneNumber: String, promise: Promise) {
+        LucraClient().submitPhoneNumber(phoneNumber) { result ->
+            when (result) {
+                SubmitPhoneNumberResult.Success -> promise.resolve(null)
+                is SubmitPhoneNumberResult.Failure -> rejectPhoneAuthError(promise, result.error)
+            }
+        }
+    }
+
+    @ReactMethod
+    fun submitVerificationCode(code: String, promise: Promise) {
+        LucraClient().submitVerificationCode(code) { result ->
+            when (result) {
+                is SubmitVerificationCodeResult.Success ->
+                    promise.resolve(sdkUserToMap(result.sdkUser))
+
+                is SubmitVerificationCodeResult.Failure ->
+                    rejectPhoneAuthError(promise, result.error)
+            }
+        }
+    }
+
+    @ReactMethod
+    fun resendCode(promise: Promise) {
+        LucraClient().resendCode { result ->
+            when (result) {
+                ResendCodeResult.Success -> promise.resolve(null)
+                is ResendCodeResult.Failure -> rejectPhoneAuthError(promise, result.error)
+            }
+        }
+    }
+
+    private fun rejectPhoneAuthError(promise: Promise, error: PhoneAuthError) {
+        val (code, message) = when (error) {
+            PhoneAuthError.NotInitialized ->
+                ErrorCodes.NOT_INITIALIZED to "SDK has not been initialized"
+
+            PhoneAuthError.InvalidPhoneNumber ->
+                PhoneAuthErrorCodes.INVALID_PHONE_NUMBER to
+                    "The phone number provided is not a valid US phone number"
+
+            PhoneAuthError.PhoneNumberNotSubmitted ->
+                PhoneAuthErrorCodes.PHONE_NUMBER_NOT_SUBMITTED to
+                    "Submit a phone number before verifying or resending a code"
+
+            PhoneAuthError.InvalidCode ->
+                PhoneAuthErrorCodes.INVALID_CODE to "The verification code is invalid or incorrect"
+
+            PhoneAuthError.AlreadyLoggedIn ->
+                PhoneAuthErrorCodes.ALREADY_LOGGED_IN to
+                    "The user is already logged in. Log out before starting phone authentication"
+
+            is PhoneAuthError.NetworkError ->
+                PhoneAuthErrorCodes.NETWORK_ERROR to
+                    error.message.ifNullOrBlank { "A network error occurred during authentication" }
+
+            PhoneAuthError.Unknown ->
+                ErrorCodes.UNKNOWN_ERROR to "An unexpected error occurred during authentication"
+        }
+        promise.reject(code, message)
+    }
+
+    @ReactMethod
+    fun getGamesMatchupFee(promise: Promise) {
+        moduleScope.launch {
+            try {
+                promise.resolve(LucraClient().observeGamesMatchupFee().first())
+            } catch (e: IllegalStateException) {
+                promise.reject(
+                    ErrorCodes.NOT_INITIALIZED,
+                    e.message.ifNullOrBlank { "LucraSDK has not been initialized" }
+                )
+            } catch (e: Exception) {
+                promise.reject(
+                    ErrorCodes.UNKNOWN_ERROR,
+                    e.message.ifNullOrBlank { "Unknown error occurred" }
+                )
+            }
+        }
+    }
+
+    @ReactMethod
+    fun subscribeGamesMatchupFee() {
+        gamesMatchupFeeJob?.cancel()
+        gamesMatchupFeeJob = try {
+            LucraClient().observeGamesMatchupFee()
+                .onEach { fee ->
+                    sendEvent(context, "gamesMatchupFee", Arguments.createMap().apply {
+                        putDouble("fee", fee)
+                    })
+                }
+                .catch { e ->
+                    sendEvent(context, "gamesMatchupFee", Arguments.createMap().apply {
+                        putMap("error", Arguments.createMap().apply {
+                            putString("code", ErrorCodes.UNKNOWN_ERROR)
+                            putString(
+                                "message",
+                                e.message.ifNullOrBlank { "Games matchup fee subscription failed" }
+                            )
+                        })
+                    })
+                }
+                .launchIn(moduleScope)
+        } catch (e: Exception) {
+            sendEvent(context, "gamesMatchupFee", Arguments.createMap().apply {
+                putMap("error", Arguments.createMap().apply {
+                    putString("code", ErrorCodes.NOT_INITIALIZED)
+                    putString(
+                        "message",
+                        e.message.ifNullOrBlank { "LucraSDK has not been initialized" }
+                    )
+                })
+            })
+            null
+        }
+    }
+
+    @ReactMethod
+    fun cancelGamesMatchupFeeSubscription() {
+        gamesMatchupFeeJob?.cancel()
+        gamesMatchupFeeJob = null
+    }
+
+    override fun invalidate() {
+        gamesMatchupFeeJob?.cancel()
+        gamesMatchupFeeJob = null
+        moduleScope.cancel()
+        super.invalidate()
+    }
+
+    @ReactMethod
     fun getRecommendedTournaments(params: ReadableMap, promise: Promise) {
         val includeClosed = params.getBoolean("includeClosed")
         val limit = params.getInt(
@@ -1046,6 +1358,37 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun getTournamentDetails(tournamentId: String, params: ReadableMap, promise: Promise) {
+        val leaderboardLimit =
+            if (params.hasKey("leaderboardLimit") && !params.isNull("leaderboardLimit")) {
+                params.getInt("leaderboardLimit")
+            } else {
+                null
+            }
+        val leaderboardOffset =
+            if (params.hasKey("leaderboardOffset") && !params.isNull("leaderboardOffset")) {
+                params.getInt("leaderboardOffset")
+            } else {
+                null
+            }
+        LucraClient().retrieveTournamentDetails(
+            tournamentId = tournamentId,
+            leaderboardLimit = leaderboardLimit,
+            leaderboardOffset = leaderboardOffset
+        ) { result ->
+            when (result) {
+                is PoolTournament.RetrieveTournamentDetailsResult.Failure -> {
+                    rejectRetrieveTournamentDetailsError(promise, result)
+                }
+
+                is PoolTournament.RetrieveTournamentDetailsResult.TournamentDetailsOutput -> {
+                    promise.resolve(LucraMapper.tournamentDetailsToMap(result.details))
+                }
+            }
+        }
+    }
+
+    @ReactMethod
     fun autoJoinTournaments(promise: Promise) {
         LucraClient().autoJoinTournaments { result ->
             when (result) {
@@ -1072,6 +1415,33 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
                 is PoolTournament.JoinTournamentResult.Success -> {
                     promise.resolve(null)
+                }
+            }
+        }
+    }
+
+    @ReactMethod
+    fun submitUserScore(
+        score: Double,
+        tournamentId: String,
+        metadata: ReadableMap,
+        isFinal: Boolean,
+        promise: Promise
+    ) {
+        val parsedMetadata = metadata.toHashMap().mapValues { it.value.toString() }
+        LucraClient().submitUserScore(
+            score = score,
+            tournamentId = tournamentId,
+            metadata = parsedMetadata,
+            isFinal = isFinal
+        ) { result ->
+            when (result) {
+                is PoolTournament.SubmitTournamentScoreResult.Failure -> {
+                    rejectSubmitTournamentScoreError(promise, result)
+                }
+
+                is PoolTournament.SubmitTournamentScoreResult.SubmitTournamentsScoreOutput -> {
+                    promise.resolve(LucraMapper.tournamentsMatchupToMap(result.tournament))
                 }
             }
         }
@@ -1108,5 +1478,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
     companion object {
         const val NAME = "NativeLucraClient"
+        private const val MAX_AVATAR_DIMENSION = 1024
     }
 }

@@ -131,10 +131,18 @@ function handleLucraSDKError(e: LucraSDKError) {
   }
 }
 
+// 1x1 red PNG — enough to exercise the avatar upload end-to-end.
+const SAMPLE_AVATAR_DATA_URI =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
 export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   const [tournamentId, setTournamentId] = React.useState('');
+  const [tournamentScore, setTournamentScore] = React.useState('');
   const [matchupId, setMatchupId] = React.useState('');
   const [opponentTeamId, setOpponentTeamId] = React.useState('');
+  const [newUsername, setNewUsername] = React.useState('');
+  const [phoneNumber, setPhoneNumber] = React.useState('');
+  const [verificationCode, setVerificationCode] = React.useState('');
   const [recommendTournamets, setRecommendedTournaments] = React.useState<
     PoolTournament[]
   >([]);
@@ -142,7 +150,9 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   const [resultTitle, setResultTitle] = React.useState('Result');
   const [copied, setCopied] = React.useState(false);
   const [isSubscribed, setIsSubscribed] = React.useState(false);
+  const [isFeeSubscribed, setIsFeeSubscribed] = React.useState(false);
   const unsubscribeRef = React.useRef<(() => void) | null>(null);
+  const feeUnsubscribeRef = React.useRef<(() => void) | null>(null);
 
   const showResult = React.useCallback((title: string, data: unknown) => {
     setResultTitle(title);
@@ -156,8 +166,19 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
     setIsSubscribed(false);
   }, []);
 
-  // Always tear down the live subscription when leaving the screen.
-  React.useEffect(() => stopSubscription, [stopSubscription]);
+  const stopFeeSubscription = React.useCallback(() => {
+    feeUnsubscribeRef.current?.();
+    feeUnsubscribeRef.current = null;
+    setIsFeeSubscribed(false);
+  }, []);
+
+  // Always tear down the live subscriptions when leaving the screen.
+  React.useEffect(() => {
+    return () => {
+      stopSubscription();
+      stopFeeSubscription();
+    };
+  }, [stopSubscription, stopFeeSubscription]);
 
   const copyResult = React.useCallback(() => {
     Clipboard.setString(fullMatchupInfo);
@@ -401,6 +422,46 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <Text className="text-white">Cancel Matchup</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              const fee = await LucraSDK.getGamesMatchupFee();
+              showResult('Games Matchup Fee', { fee });
+            } catch (e) {
+              Alert.alert('Error', String(e));
+            }
+          }}
+        >
+          <Text className="text-white">Get Games Matchup Fee</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 p-4 items-center justify-center rounded-lg"
+          style={isFeeSubscribed ? Styles.copiedButton : Styles.actionButton}
+          onPress={() => {
+            if (isFeeSubscribed) {
+              stopFeeSubscription();
+              return;
+            }
+            feeUnsubscribeRef.current = LucraSDK.subscribeToGamesMatchupFee(
+              (fee) => showResult('Games Matchup Fee (live)', { fee }),
+              (error) =>
+                Alert.alert(
+                  'Fee subscription error',
+                  `${error.code}: ${error.message}`
+                )
+            );
+            setIsFeeSubscribed(true);
+          }}
+        >
+          <Text className="text-white">
+            {isFeeSubscribed
+              ? '● Unsubscribe Fee (live)'
+              : 'Subscribe to Games Matchup Fee'}
+          </Text>
+        </TouchableOpacity>
+
         <View className="h-1 w-full border-t border-indigo-400" />
 
         <TouchableOpacity
@@ -432,6 +493,19 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              const details = await LucraSDK.getTournamentDetails(tournamentId);
+              showResult('Tournament Details', details);
+            } catch (e) {
+              Alert.alert('Error', String(e));
+            }
+          }}
+        >
+          <Text className="text-white">Get Tournament Details</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={() => {
             LucraSDK.joinTournament(tournamentId)
               .then(() => {
@@ -445,6 +519,42 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         >
           <Text className="text-white">Join Current Tournament</Text>
         </TouchableOpacity>
+        <View className="flex-row items-center gap-2">
+          <TextInput
+            value={tournamentScore}
+            onChangeText={setTournamentScore}
+            placeholder="Score"
+            placeholderTextColor={'#CCC'}
+            keyboardType="numeric"
+            className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
+          />
+          <TouchableOpacity
+            className="border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+            onPress={async () => {
+              const score = Number(tournamentScore);
+              if (
+                !tournamentId ||
+                !tournamentScore.trim() ||
+                Number.isNaN(score)
+              ) {
+                Alert.alert('Error', 'Enter a tournament id and numeric score');
+                return;
+              }
+              try {
+                const updated = await LucraSDK.submitUserScore({
+                  tournamentId,
+                  score,
+                  isFinal: false,
+                });
+                showResult('Submit User Score', updated);
+              } catch (e) {
+                handleLucraSDKError(e as LucraSDKError);
+              }
+            }}
+          >
+            <Text className="text-white">Submit User Score</Text>
+          </TouchableOpacity>
+        </View>
         <TextInput
           value={tournamentId}
           onChangeText={setTournamentId}
@@ -470,6 +580,124 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white">{tournament.title}</Text>
           </TouchableOpacity>
         ))}
+
+        <View className="h-1 w-full border-t border-indigo-400" />
+
+        <View className="flex-row items-center gap-2">
+          <TextInput
+            value={newUsername}
+            onChangeText={setNewUsername}
+            placeholder="New Username"
+            placeholderTextColor={'#CCC'}
+            autoCapitalize="none"
+            className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
+          />
+          <TouchableOpacity
+            className="border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+            onPress={async () => {
+              try {
+                const user = await LucraSDK.updateUsername(newUsername);
+                showResult('Update Username', user);
+              } catch (e) {
+                Alert.alert('Error', String(e));
+              }
+            }}
+          >
+            <Text className="text-white">Update Username</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              const user = await LucraSDK.getUser();
+              const isVerified = await LucraSDK.getUserKycStatus(user.id!);
+              showResult('KYC Status', { userId: user.id, isVerified });
+            } catch (e) {
+              Alert.alert('Error', String(e));
+            }
+          }}
+        >
+          <Text className="text-white">Get My KYC Status</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              await LucraSDK.uploadUserAvatar(SAMPLE_AVATAR_DATA_URI);
+              Alert.alert('Success', 'Avatar uploaded');
+            } catch (e) {
+              Alert.alert('Error', String(e));
+            }
+          }}
+        >
+          <Text className="text-white">Upload Avatar (sample image)</Text>
+        </TouchableOpacity>
+
+        <View className="flex-row items-center gap-2">
+          <TextInput
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            placeholder="Phone Number"
+            placeholderTextColor={'#CCC'}
+            keyboardType="phone-pad"
+            className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
+          />
+          <TouchableOpacity
+            className="border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+            onPress={async () => {
+              try {
+                await LucraSDK.submitPhoneNumber(phoneNumber);
+                Alert.alert('Success', 'Verification code sent');
+              } catch (e) {
+                Alert.alert('Error', String(e));
+              }
+            }}
+          >
+            <Text className="text-white">Submit Phone</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="flex-row items-center gap-2">
+          <TextInput
+            value={verificationCode}
+            onChangeText={setVerificationCode}
+            placeholder="Verification Code"
+            placeholderTextColor={'#CCC'}
+            keyboardType="number-pad"
+            className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
+          />
+          <TouchableOpacity
+            className="border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+            onPress={async () => {
+              try {
+                const user =
+                  await LucraSDK.submitVerificationCode(verificationCode);
+                showResult('Phone Auth User', user);
+              } catch (e) {
+                Alert.alert('Error', String(e));
+              }
+            }}
+          >
+            <Text className="text-white">Verify Code</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              await LucraSDK.resendCode();
+              Alert.alert('Success', 'Verification code re-sent');
+            } catch (e) {
+              Alert.alert('Error', String(e));
+            }
+          }}
+        >
+          <Text className="text-white">Resend Code</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

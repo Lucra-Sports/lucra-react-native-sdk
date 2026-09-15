@@ -10,6 +10,15 @@ private enum ErrorCode {
   static let unverified = "unverified"
   static let missingDemographicInformation = "missingDemographicInformation"
   static let unknownError = "unknownError"
+  static let unsupported = "unsupported"
+}
+
+private enum PhoneAuthErrorCode {
+  static let invalidPhoneNumber = "invalidPhoneNumber"
+  static let phoneNumberNotSubmitted = "phoneNumberNotSubmitted"
+  static let invalidCode = "invalidCode"
+  static let alreadyLoggedIn = "alreadyLoggedIn"
+  static let networkError = "networkError"
 }
 
 @objc public protocol LucraClientDelegate {
@@ -29,6 +38,8 @@ private enum ErrorCode {
   public let rewardEmitter = PassthroughSubject<[[String: Any]], Never>()
   private var rewardProvider: RewardProvider!
   private var conversionProvider: ConversionProvider!
+  private var gamesMatchupFeeTimer: Timer?
+  private var lastEmittedGamesMatchupFee: Decimal?
 
   static public var shared = LucraSwiftClient()
 
@@ -1053,5 +1064,311 @@ private enum ErrorCode {
         rejectLucraError(reject, error: error)
       }
     }
+  }
+
+  @objc public func getTournamentDetails(
+    _ tournamentId: String,
+    params: [String: Any],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      // params carries Android-only leaderboard pagination options; the iOS
+      // SDK always returns the first leaderboard page.
+      let result = await self.nativeClient.api.retrieveTournamentDetails(
+        for: tournamentId)
+
+      switch result {
+      case .success(let details):
+        resolve(tournamentDetailsToMap(details, tournamentId: tournamentId))
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func submitUserScore(
+    _ score: Double,
+    tournamentId: String,
+    metadata: [String: Any],
+    isFinal: Bool,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      // The iOS SDK accepts whole-number scores only; Int(exactly:) also
+      // rejects NaN/infinite/out-of-range values instead of trapping.
+      guard let intScore = Int(exactly: score.rounded()) else {
+        reject("invalidScore", "score must be a finite number", nil)
+        return
+      }
+
+      let stringMetadata = metadata.mapValues { "\($0)" }
+      let result = await self.nativeClient.api.submitUserScore(
+        intScore,
+        tournamentID: tournamentId,
+        metadata: stringMetadata,
+        isFinal: isFinal
+      )
+
+      switch result {
+      case .success(let tournament):
+        if let tournament = tournament {
+          resolve(tournamentsMatchupToMap(tournament: tournament))
+        } else {
+          resolve(nil)
+        }
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
+      }
+    }
+  }
+
+  // MARK: - User headless (avatar, KYC status, username)
+
+  @objc public func uploadUserAvatar(
+    _ imageUri: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      guard let image = Self.loadImage(fromUri: imageUri) else {
+        reject(
+          "invalidImage",
+          "Could not load an image from the provided uri",
+          nil
+        )
+        return
+      }
+
+      let result = await self.nativeClient.api.uploadAvatar(image: image)
+
+      switch result {
+      case .success:
+        resolve(nil)
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func getUserKycStatus(
+    _ userId: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    reject(
+      ErrorCode.unsupported,
+      "getUserKycStatus is not supported by the Lucra iOS SDK yet. "
+        + "Read accountStatus from LucraSDK.getUser() for the current user instead.",
+      nil
+    )
+  }
+
+  @objc public func updateUsername(
+    _ username: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task {
+      guard let current = self.nativeClient.user else {
+        reject("not_logged_in", "not logged in", nil)
+        return
+      }
+      guard current.username != username else {
+        reject("invalid_username", "username is not valid", nil)
+        return
+      }
+
+      // The iOS SDK has no dedicated username update, so reconfigure the
+      // current user with only the username changed.
+      let updated = SDKUser(
+        username: username,
+        avatarURL: current.avatarURL,
+        phoneNumber: current.phoneNumber,
+        email: current.email,
+        firstName: current.firstName,
+        lastName: current.lastName,
+        address: current.address,
+        dateOfBirth: current.dateOfBirth,
+        metadata: current.metadata
+      )
+
+      do {
+        try await self.nativeClient.configure(user: updated)
+        resolve(sdkUserToMap(user: self.nativeClient.user ?? updated))
+      } catch {
+        ErrorMapper.reject(reject, error: error)
+      }
+    }
+  }
+
+  private static func loadImage(fromUri uri: String) -> UIImage? {
+    if uri.hasPrefix("data:") {
+      guard let commaIndex = uri.firstIndex(of: ","),
+        let data = Data(
+          base64Encoded: String(uri[uri.index(after: commaIndex)...]))
+      else {
+        return nil
+      }
+      return UIImage(data: data)
+    }
+    if let url = URL(string: uri), url.isFileURL {
+      return UIImage(contentsOfFile: url.path)
+    }
+    return UIImage(contentsOfFile: uri)
+  }
+
+  // MARK: - Phone auth headless
+
+  @objc public func submitPhoneNumber(
+    _ phoneNumber: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task {
+      let result = await self.nativeClient.api.submitPhoneNumber(phoneNumber)
+
+      switch result {
+      case .success:
+        resolve(nil)
+      case .failure(let error):
+        self.rejectPhoneAuthError(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func submitVerificationCode(
+    _ code: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task {
+      let result = await self.nativeClient.api.submitVerificationCode(code)
+
+      switch result {
+      case .success(let user):
+        resolve(sdkUserToMap(user: user))
+      case .failure(let error):
+        self.rejectPhoneAuthError(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func resendCode(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task {
+      let result = await self.nativeClient.api.resendCode()
+
+      switch result {
+      case .success:
+        resolve(nil)
+      case .failure(let error):
+        self.rejectPhoneAuthError(reject, error: error)
+      }
+    }
+  }
+
+  // Codes and messages mirror Android's rejectPhoneAuthError so integrators
+  // see identical rejections on both platforms.
+  private func rejectPhoneAuthError(
+    _ reject: RCTPromiseRejectBlock, error: PhoneAuthError
+  ) {
+    let code: String
+    let message: String
+    switch error {
+    case .notInitialized:
+      code = ErrorCode.notInitialized
+      message = "SDK has not been initialized"
+    case .invalidPhoneNumber:
+      code = PhoneAuthErrorCode.invalidPhoneNumber
+      message = "The phone number provided is not a valid US phone number"
+    case .phoneNumberNotSubmitted:
+      code = PhoneAuthErrorCode.phoneNumberNotSubmitted
+      message = "Submit a phone number before verifying or resending a code"
+    case .invalidCode:
+      code = PhoneAuthErrorCode.invalidCode
+      message = "The verification code is invalid or incorrect"
+    case .alreadyLoggedIn:
+      code = PhoneAuthErrorCode.alreadyLoggedIn
+      message = "The user is already logged in. Log out before starting phone authentication"
+    case .networkError(let details):
+      code = PhoneAuthErrorCode.networkError
+      message =
+        details.isEmpty
+        ? "A network error occurred during authentication" : details
+    case .unknown:
+      code = ErrorCode.unknownError
+      message = "An unexpected error occurred during authentication"
+    @unknown default:
+      code = ErrorCode.unknownError
+      message =
+        error.errorDescription ?? "An unexpected error occurred during authentication"
+    }
+    reject(code, message, error)
+  }
+
+  // MARK: - Games matchup fee
+
+  @objc public func getGamesMatchupFee(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    DispatchQueue.main.async {
+      guard self.nativeClient != nil else {
+        reject(
+          ErrorCode.notInitialized, "LucraSDK has not been initialized", nil)
+        return
+      }
+      resolve(
+        (self.nativeClient.api.gamesMatchupFee as NSDecimalNumber).doubleValue)
+    }
+  }
+
+  @objc public func subscribeGamesMatchupFee() {
+    DispatchQueue.main.async {
+      self.gamesMatchupFeeTimer?.invalidate()
+      self.lastEmittedGamesMatchupFee = nil
+
+      guard self.nativeClient != nil else {
+        self.delegate?.sendEvent(
+          name: "gamesMatchupFee",
+          result: [
+            "error": [
+              "code": ErrorCode.notInitialized,
+              "message": "LucraSDK has not been initialized",
+            ]
+          ])
+        return
+      }
+
+      self.emitGamesMatchupFeeIfChanged()
+      // The iOS SDK exposes the fee only as a one-shot property (no
+      // publisher), so poll for remote-config changes until cancelled.
+      self.gamesMatchupFeeTimer = Timer.scheduledTimer(
+        withTimeInterval: 2.0, repeats: true
+      ) { [weak self] _ in
+        self?.emitGamesMatchupFeeIfChanged()
+      }
+    }
+  }
+
+  @objc public func cancelGamesMatchupFeeSubscription() {
+    DispatchQueue.main.async {
+      self.gamesMatchupFeeTimer?.invalidate()
+      self.gamesMatchupFeeTimer = nil
+      self.lastEmittedGamesMatchupFee = nil
+    }
+  }
+
+  private func emitGamesMatchupFeeIfChanged() {
+    let fee = nativeClient.api.gamesMatchupFee
+    guard fee != lastEmittedGamesMatchupFee else { return }
+    lastEmittedGamesMatchupFee = fee
+    delegate?.sendEvent(
+      name: "gamesMatchupFee",
+      result: ["fee": (fee as NSDecimalNumber).doubleValue])
   }
 }
