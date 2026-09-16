@@ -159,12 +159,20 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
             <Text className="text-white">Event Viewer</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-indigo-700 p-4 rounded-b-xl"
+            className="bg-indigo-700 p-4"
             onPress={() => {
               navigation.navigate('PushDeeplinkTester');
             }}
           >
             <Text className="text-white">Push / Deeplink Tester</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-indigo-700 p-4 rounded-b-xl"
+            onPress={() => {
+              navigation.navigate('TelemetryDiagnostics');
+            }}
+          >
+            <Text className="text-white">Telemetry Diagnostics</Text>
           </TouchableOpacity>
         </View>
 

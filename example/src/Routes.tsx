@@ -12,6 +12,7 @@ import { GamesYouPlay } from './container/APIExample/GamesYouPlay';
 import { MiniGameLauncher } from './container/MiniGameLauncher';
 import { RewardsAchievements } from './container/RewardsAchievements';
 import { PushDeeplinkTester } from './container/PushDeeplinkTester';
+import { TelemetryDiagnostics } from './container/TelemetryDiagnostics';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -26,6 +27,7 @@ export type RootStackParamList = {
   MiniGameLauncher: undefined;
   RewardsAchievements: undefined;
   PushDeeplinkTester: undefined;
+  TelemetryDiagnostics: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -119,6 +121,13 @@ export const Routes: FC = () => {
       <Stack.Screen
         name="PushDeeplinkTester"
         component={PushDeeplinkTester}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="TelemetryDiagnostics"
+        component={TelemetryDiagnostics}
         options={{
           headerShown: false,
         }}

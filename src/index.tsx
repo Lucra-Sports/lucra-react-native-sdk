@@ -865,6 +865,31 @@ export const LucraSDK = {
   resendCode: (): Promise<void> => {
     return LucraClient.resendCode();
   },
+  /**
+   * Records a diagnostic through the native Lucra SDK's own telemetry, the
+   * same logger fan-out the SDK's code reports through. `info` and `warning`
+   * record breadcrumbs that attach to the next error event; `error` records a
+   * non-fatal error event, which creates a Sentry issue and triggers alerts.
+   * Nothing reaches your own Sentry project: records go to Lucra's SDK Sentry
+   * project for the platform, using the DSN compiled into the native SDK.
+   *
+   * iOS tags the record with `category`; Android has no category field, so
+   * the category is prefixed to the message as `[category] message`.
+   */
+  logTelemetry: ({
+    level,
+    message,
+    category = 'Lucra',
+  }: {
+    level: LucraTelemetryLevel;
+    message: string;
+    category?: string;
+  }): Promise<void> => {
+    if (!message.trim()) {
+      throw new Error('message is required');
+    }
+    return LucraClient.logTelemetry(level, message, category);
+  },
   closeFullScreenLucraFlows: (): Promise<void> => {
     return LucraClient.closeFullScreenLucraFlows();
   },
@@ -1142,8 +1167,7 @@ export const LucraSDK = {
    * headless tournament UIs; the native SDKs deprecate the heavier call.
    *
    * `leaderboardLimit`/`leaderboardOffset` page the leaderboard section on
-   * Android; the iOS SDK does not support leaderboard pagination yet and
-   * always returns the first page.
+   * both platforms; omit them for the native SDK's default first page.
    */
   getTournamentDetails: async (
     tournamentId: string,
@@ -1166,9 +1190,6 @@ export const LucraSDK = {
   /**
    * Submits the user's score for a tournament and resolves with the updated
    * tournament, or `null` when the native SDK returns none (iOS).
-   *
-   * Note: the iOS SDK accepts whole-number scores only, so the score is
-   * rounded to the nearest integer on iOS.
    */
   submitUserScore: async ({
     tournamentId,
@@ -1256,6 +1277,12 @@ export type LucraSDKError = {
 } & Error;
 
 /**
+ * Severity for `logTelemetry`: `info` and `warning` are breadcrumbs, `error`
+ * is a non-fatal error event.
+ */
+export type LucraTelemetryLevel = 'info' | 'warning' | 'error';
+
+/**
  * Rejection shape for the phone-auth headless flow (`submitPhoneNumber`,
  * `submitVerificationCode`, `resendCode`).
  */
@@ -1266,6 +1293,12 @@ export type LucraPhoneAuthError = {
     | 'phoneNumberNotSubmitted'
     | 'invalidCode'
     | 'alreadyLoggedIn'
+    /** The user texted STOP to Lucra's verification sender; codes cannot be delivered until they reply START or UNSTOP. */
+    | 'messagingDisabled'
+    /** The SMS provider could not deliver the verification text to this number. */
+    | 'smsNotDelivered'
+    /** Too many send or verify attempts; the user must wait before retrying. */
+    | 'tooManyAttempts'
     | 'networkError'
     | 'unknownError';
 } & Error;

@@ -18,7 +18,15 @@ private enum PhoneAuthErrorCode {
   static let phoneNumberNotSubmitted = "phoneNumberNotSubmitted"
   static let invalidCode = "invalidCode"
   static let alreadyLoggedIn = "alreadyLoggedIn"
+  static let messagingDisabled = "messagingDisabled"
+  static let smsNotDelivered = "smsNotDelivered"
+  static let tooManyAttempts = "tooManyAttempts"
   static let networkError = "networkError"
+}
+
+private struct TelemetryDiagnosticError: LocalizedError {
+  let message: String
+  var errorDescription: String? { "TelemetryDiagnosticError: \(message)" }
 }
 
 @objc public protocol LucraClientDelegate {
@@ -950,15 +958,16 @@ private enum PhoneAuthErrorCode {
     do {
       let nativeFlow = try LucraUtils.stringToLucraFlow(
         flow, matchupId: nil, teamInviteId: nil, gameId: nil, location: nil)
-      return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
+      return self.nativeClient.ui.flowViewController(nativeFlow, hideCloseButton: true)
     } catch {
       print("There was an error getting the native flow \(error)")
-      return self.nativeClient.ui.flow(.profile, hideCloseButton: true)
+      return self.nativeClient.ui.flowViewController(.profile, hideCloseButton: true)
     }
   }
 
   @objc public func getProfilePill() -> UIView {
-    return self.nativeClient.ui.component(.userProfilePill)
+    return self.nativeClient.ui.component(
+      .userProfilePill, parentUIViewController: UIViewController())
   }
 
   @objc public func getMiniFeed(
@@ -973,11 +982,13 @@ private enum PhoneAuthErrorCode {
   }
 
   @objc public func getCreateContestButton() -> UIView {
-    return self.nativeClient.ui.component(.createContestButton)
+    return self.nativeClient.ui.component(
+      .createContestButton, parentUIViewController: UIViewController())
   }
 
   @objc public func getRecommendedMatchup() -> UIView {
-    return self.nativeClient.ui.component(.recommendedMatchup)
+    return self.nativeClient.ui.component(
+      .recommendedMatchup, parentUIViewController: UIViewController())
   }
 
   @objc public func getContestCard(
@@ -1072,11 +1083,14 @@ private enum PhoneAuthErrorCode {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    let leaderboardLimit = params["leaderboardLimit"] as? Int
+    let leaderboardOffset = params["leaderboardOffset"] as? Int
+
     Task { @MainActor in
-      // params carries Android-only leaderboard pagination options; the iOS
-      // SDK always returns the first leaderboard page.
       let result = await self.nativeClient.api.retrieveTournamentDetails(
-        for: tournamentId)
+        for: tournamentId,
+        leaderboardLimit: leaderboardLimit ?? 10,
+        leaderboardOffset: leaderboardOffset ?? 0)
 
       switch result {
       case .success(let details):
@@ -1096,16 +1110,14 @@ private enum PhoneAuthErrorCode {
     reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
-      // The iOS SDK accepts whole-number scores only; Int(exactly:) also
-      // rejects NaN/infinite/out-of-range values instead of trapping.
-      guard let intScore = Int(exactly: score.rounded()) else {
+      guard score.isFinite else {
         reject("invalidScore", "score must be a finite number", nil)
         return
       }
 
       let stringMetadata = metadata.mapValues { "\($0)" }
       let result = await self.nativeClient.api.submitUserScore(
-        intScore,
+        score,
         tournamentID: tournamentId,
         metadata: stringMetadata,
         isFinal: isFinal
@@ -1294,6 +1306,15 @@ private enum PhoneAuthErrorCode {
     case .alreadyLoggedIn:
       code = PhoneAuthErrorCode.alreadyLoggedIn
       message = "The user is already logged in. Log out before starting phone authentication"
+    case .messagingDisabled:
+      code = PhoneAuthErrorCode.messagingDisabled
+      message = "SMS messages from Lucra are disabled for this number. Reply START or UNSTOP to the verification sender, then try again"
+    case .smsNotDelivered:
+      code = PhoneAuthErrorCode.smsNotDelivered
+      message = "The verification code could not be delivered to this phone number"
+    case .tooManyAttempts:
+      code = PhoneAuthErrorCode.tooManyAttempts
+      message = "Too many attempts. Wait a few minutes before trying again"
     case .networkError(let details):
       code = PhoneAuthErrorCode.networkError
       message =
@@ -1308,6 +1329,36 @@ private enum PhoneAuthErrorCode {
         error.errorDescription ?? "An unexpected error occurred during authentication"
     }
     reject(code, message, error)
+  }
+
+  // MARK: - Telemetry diagnostics
+
+  @objc public func logTelemetry(
+    _ level: String,
+    message: String,
+    category: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "LucraSDK has not been initialized", nil)
+      return
+    }
+    let log = LucraSDK.Resolver.resolve(LoggingService.self)
+    switch level {
+    case "info":
+      log.info(message, category: category)
+    case "warning":
+      log.errorBreadcrumb(message, category: category)
+    case "error":
+      log.error(
+        message, category: category,
+        error: TelemetryDiagnosticError(message: message))
+    default:
+      reject("invalidTelemetryLevel", "Unknown telemetry level: \(level)", nil)
+      return
+    }
+    resolve(nil)
   }
 
   // MARK: - Games matchup fee

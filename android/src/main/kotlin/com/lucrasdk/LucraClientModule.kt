@@ -98,6 +98,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         const val PHONE_NUMBER_NOT_SUBMITTED = "phoneNumberNotSubmitted"
         const val INVALID_CODE = "invalidCode"
         const val ALREADY_LOGGED_IN = "alreadyLoggedIn"
+        const val MESSAGING_DISABLED = "messagingDisabled"
+        const val SMS_NOT_DELIVERED = "smsNotDelivered"
+        const val TOO_MANY_ATTEMPTS = "tooManyAttempts"
         const val NETWORK_ERROR = "networkError"
     }
 
@@ -1212,6 +1215,28 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         }
     }
 
+    @ReactMethod
+    fun logTelemetry(level: String, message: String, category: String, promise: Promise) {
+        val logger = LucraClient().getSdkGraphOrNull()?.lucraLogger
+        if (logger == null) {
+            promise.reject(ErrorCodes.NOT_INITIALIZED, "LucraSDK has not been initialized")
+            return
+        }
+        val line = "[$category] $message"
+        when (level) {
+            "info" -> logger.info(line)
+            "warning" -> logger.warning(line)
+            "error" -> logger.logNonFatalException(TelemetryDiagnosticException(line), line)
+            else -> {
+                promise.reject("invalidTelemetryLevel", "Unknown telemetry level: $level")
+                return
+            }
+        }
+        promise.resolve(null)
+    }
+
+    private class TelemetryDiagnosticException(message: String) : Exception(message)
+
     private fun rejectPhoneAuthError(promise: Promise, error: PhoneAuthError) {
         val (code, message) = when (error) {
             PhoneAuthError.NotInitialized ->
@@ -1231,6 +1256,18 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             PhoneAuthError.AlreadyLoggedIn ->
                 PhoneAuthErrorCodes.ALREADY_LOGGED_IN to
                     "The user is already logged in. Log out before starting phone authentication"
+
+            PhoneAuthError.MessagingDisabled ->
+                PhoneAuthErrorCodes.MESSAGING_DISABLED to
+                    "SMS messages from Lucra are disabled for this number. Reply START or UNSTOP to the verification sender, then try again"
+
+            PhoneAuthError.SmsNotDelivered ->
+                PhoneAuthErrorCodes.SMS_NOT_DELIVERED to
+                    "The verification code could not be delivered to this phone number"
+
+            PhoneAuthError.TooManyAttempts ->
+                PhoneAuthErrorCodes.TOO_MANY_ATTEMPTS to
+                    "Too many attempts. Wait a few minutes before trying again"
 
             is PhoneAuthError.NetworkError ->
                 PhoneAuthErrorCodes.NETWORK_ERROR to

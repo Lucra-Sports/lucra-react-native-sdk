@@ -848,6 +848,8 @@ object LucraMapper {
             })
         }
         map.putArray("terms", terms)
+        details.expiresAt?.let { map.putString("expiresAt", isoUtcDf.format(it)) }
+        details.startsAt?.let { map.putString("startsAt", isoUtcDf.format(it)) }
         return map
     }
 

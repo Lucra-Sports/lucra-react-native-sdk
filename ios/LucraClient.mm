@@ -147,6 +147,18 @@ RCT_EXPORT_METHOD(resendCode : (RCTPromiseResolveBlock)
   [swiftClient resendCodeWithResolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(logTelemetry : (NSString *)level
+                  message : (NSString *)message
+                  category : (NSString *)category
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient logTelemetry:level
+                    message:message
+                   category:category
+                    resolve:resolve
+                     reject:reject];
+}
+
 RCT_EXPORT_METHOD(getGamesMatchupFee : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient getGamesMatchupFeeWithResolve:resolve reject:reject];
