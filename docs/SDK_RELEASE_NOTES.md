@@ -1,5 +1,5 @@
 # 6.0.0
-* Bumped iOS to [6.0.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/6.0.0)
+* Bumped iOS to [6.0.1](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/6.0.1)
 * Bumped Android to [7.0.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/7.0.0)
 * **Breaking (iOS, CocoaPods):** the Lucra iOS SDK now links Sentry's dynamic framework for its own diagnostics, and the wrapper's podspec declares the `Sentry` pod (8.58.4 or newer within 8.x). Apps on `use_frameworks! linkage: :static` build but die at launch with `dyld: Library not loaded: @rpath/Sentry.framework/Sentry` — build only the Sentry pod dynamically with the `pre_install` snippet in Getting Started, or switch to dynamic linkage. Apps that already use Sentry (e.g. `@sentry/react-native`) must align to `sentry-cocoa` 8.58.4+ within 8.x. See [Getting Started](1.0.0_project_setup.md#sentry-framework-linkage).
 * **Android:** the Lucra Android SDK now depends on `io.sentry:sentry` 8.54.0. Apps that also use Sentry must resolve every `io.sentry:*` artifact to 8.54.0 or newer, or risk a launch crash (`Sentry SDK has detected a mix of versions`). See [Getting Started](1.0.0_project_setup.md#sentry-version-alignment-if-your-app-uses-sentry).
