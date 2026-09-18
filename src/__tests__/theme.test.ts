@@ -98,4 +98,18 @@ describe('normalizeTheme', () => {
       light: { primary: '#aabbcc' },
     });
   });
+
+  it('carries themeMode through alongside the palettes', () => {
+    expect(normalizeTheme({ light, dark, themeMode: 'auto' })).toEqual({
+      light,
+      dark,
+      themeMode: 'auto',
+    });
+  });
+
+  it('forwards themeMode on its own, with no palette to infer from', () => {
+    expect(normalizeTheme({ themeMode: 'light' })).toEqual({
+      themeMode: 'light',
+    });
+  });
 });

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios --simulator=\"iPhone 16 Pro\"",
+    "ios": "react-native run-ios ${IOS_SIMULATOR:+--simulator \"$IOS_SIMULATOR\"}",
     "start": "react-native start",
     "pods": "cd ios && rm -rf build && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update && rm -f .xcode.env.local",
     "pods:nuke": "cd ios && rm -rf Pods && rm -rf build && rm -f Podfile.lock && USE_FRAMEWORKS=static bundle exec pod install --repo-update && rm -f ios/.xcode.env.local",

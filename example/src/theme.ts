@@ -1,3 +1,5 @@
+import type { LucraThemeMode } from '@lucra-sports/lucra-react-native-sdk';
+
 export type Theme = {
   primary: string;
   secondary: string;
@@ -9,6 +11,12 @@ export type Theme = {
 
 /** Which of a brand's two palettes is being referred to. */
 export type ThemeAppearance = 'light' | 'dark';
+
+/**
+ * `inferred` sends no `themeMode`, leaving the SDK to derive its appearance
+ * from the palettes it was given — the behavior before `themeMode` existed.
+ */
+export type ThemeModeSetting = 'inferred' | LucraThemeMode;
 
 /**
  * A brand's palettes. Passing both to `LucraSDK.init` makes the SDK follow the
@@ -121,6 +129,13 @@ export const BRANDS: { name: string; theme: AppTheme }[] = [
   { name: 'T1', theme: T1 },
   { name: 'DUPR', theme: DUPR },
   { name: 'PSF', theme: PSF },
+];
+
+export const THEME_MODES: { value: ThemeModeSetting; label: string }[] = [
+  { value: 'inferred', label: 'Inferred' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'auto', label: 'Auto' },
 ];
 
 export const COLOR_KEYS: { key: keyof Theme; label: string }[] = [

@@ -523,9 +523,9 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           <TextInput
             value={tournamentScore}
             onChangeText={setTournamentScore}
-            placeholder="Score"
+            placeholder="Score (fractions allowed)"
             placeholderTextColor={'#CCC'}
-            keyboardType="numeric"
+            keyboardType="decimal-pad"
             className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
           />
           <TouchableOpacity

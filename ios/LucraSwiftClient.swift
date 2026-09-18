@@ -13,6 +13,15 @@ private enum ErrorCode {
   static let unsupported = "unsupported"
 }
 
+private enum HandshakeAuthErrorCode {
+  static let noProviderRegistered = "noProviderRegistered"
+  static let providerTimedOut = "providerTimedOut"
+  static let providerFailed = "providerFailed"
+  static let exchangeFailed = "exchangeFailed"
+  static let tosNotAccepted = "tosNotAccepted"
+  static let tenantIdUnavailable = "tenantIdUnavailable"
+}
+
 private enum PhoneAuthErrorCode {
   static let invalidPhoneNumber = "invalidPhoneNumber"
   static let phoneNumberNotSubmitted = "phoneNumberNotSubmitted"
@@ -40,6 +49,9 @@ private struct TelemetryDiagnosticError: LocalizedError {
   private var userSinkCancellable: AnyCancellable?
   private var eventSinkCancellable: AnyCancellable?
   private let deepLinkEmitter = PassthroughSubject<String, Never>()
+  private let handshakeAuthTokenEmitter = PassthroughSubject<[String: Any], Never>()
+  private var handshakeAuthInFlightCancellable: AnyCancellable?
+  private var handshakeAuthErrorCancellable: AnyCancellable?
   public let creditConversionEmitter = PassthroughSubject<
     [String: Any], Never
   >()
@@ -80,9 +92,11 @@ private struct TelemetryDiagnosticError: LocalizedError {
     let urlScheme = options["urlScheme"] as? String ?? ""
 
     var clientTheme = ClientTheme()
+    var themeMode: LucraThemeMode?
 
     if let theme = options["theme"] as? [String: Any] {
       clientTheme = mapToClientTheme(theme: theme)
+      themeMode = LucraUtils.stringToThemeMode(theme["themeMode"] as? String)
     }
 
     let environment = LucraUtils.stringToEnvironment(
@@ -102,7 +116,8 @@ private struct TelemetryDiagnosticError: LocalizedError {
           autoJoin: autoJoin,
           allowRewardSheetToDisplay: allowRewardSheetToDisplay
         ),
-        appearance: clientTheme
+        appearance: clientTheme,
+        themeMode: themeMode
       )
     )
 
@@ -165,6 +180,30 @@ private struct TelemetryDiagnosticError: LocalizedError {
       }
 
       self.delegate?.sendEvent(name: "user", result: sdkUserToMap(user: user))
+    }
+
+    handshakeAuthInFlightCancellable = nativeClient.$isHandshakeAuthInFlight.sink { inFlight in
+      self.delegate?.sendEvent(
+        name: "handshakeAuthInFlight", result: ["inFlight": inFlight])
+    }
+
+    handshakeAuthErrorCancellable = nativeClient.$handshakeAuthError.sink { error in
+      guard let error = error else {
+        self.delegate?.sendEvent(
+          name: "handshakeAuthError", result: ["error": NSNull()])
+        return
+      }
+
+      let failure = self.handshakeAuthFailure(error)
+      self.delegate?.sendEvent(
+        name: "handshakeAuthError",
+        result: [
+          "error": [
+            "code": failure.code,
+            "message": failure.message,
+            "recoverySuggestion": failure.recoverySuggestion,
+          ]
+        ])
     }
 
     nativeClient.registerDeeplinkProvider { lucraDeepLink in
@@ -1359,6 +1398,118 @@ private struct TelemetryDiagnosticError: LocalizedError {
       return
     }
     resolve(nil)
+  }
+
+  // MARK: - Handshake auth
+
+  @objc public func registerHandshakeAuthTokenProvider(_ options: [String: Any]) {
+    guard options["registered"] as? Bool == true else {
+      self.nativeClient.registerHandshakeAuthTokenProvider(nil)
+      return
+    }
+
+    let bypassTosAgreement = options["bypassTosAgreement"] as? Bool ?? false
+    self.nativeClient.registerHandshakeAuthTokenProvider(
+      { [weak self] in
+        guard let self else { throw HandshakeAuthError.noProviderRegistered }
+        return try await self.handshakeAuthToken()
+      }, bypassTosAgreement: bypassTosAgreement)
+  }
+
+  @objc public func emitHandshakeAuthToken(_ response: [String: Any]) {
+    handshakeAuthTokenEmitter.send(response)
+  }
+
+  /// Suspends until JS answers `_handshakeAuthToken` with the same requestId.
+  ///
+  /// The SDK allows the provider 5 seconds and cancels it on expiry, so the wait also
+  /// resolves on cancellation — a JS answer arriving after that belongs to nobody, and
+  /// the requestId is what keeps it from satisfying the next request instead.
+  private func handshakeAuthToken() async throws -> String {
+    let requestId = UUID().uuidString
+    let pending = PendingHandshakeToken()
+
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        pending.cancellable = handshakeAuthTokenEmitter.sink { response in
+          guard response["requestId"] as? String == requestId else { return }
+
+          if let token = response["token"] as? String, token.isEmpty == false {
+            pending.finish(.success(token))
+          } else {
+            pending.finish(
+              .failure(
+                HandshakeAuthTokenProviderError(
+                  message: response["error"] as? String
+                    ?? "The handshake auth token provider returned no token")))
+          }
+        }
+        pending.attach(continuation)
+        delegate?.sendEvent(name: "_handshakeAuthToken", result: ["requestId": requestId])
+      }
+    } onCancel: {
+      pending.finish(.failure(CancellationError()))
+    }
+  }
+
+  @objc public func signInWithHandshakeAuth(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task { @MainActor in
+      do {
+        try await self.nativeClient.signInWithHandshakeAuth()
+        // The SDK waits for the profile before returning, so the user is readable here.
+        if let user = self.nativeClient.user {
+          resolve(sdkUserToMap(user: user))
+        } else {
+          resolve(nil)
+        }
+      } catch {
+        let failure = self.handshakeAuthFailure(error)
+        reject(
+          failure.code, failure.message,
+          NSError(
+            domain: "LucraHandshakeAuth", code: 0,
+            userInfo: ["recoverySuggestion": failure.recoverySuggestion]))
+      }
+    }
+  }
+
+  // Codes and copy mirror Android's handshake mapping so integrators see identical
+  // failures on both platforms. iOS has no counterpart to Android's profileTimedOut.
+  private func handshakeAuthFailure(_ error: Error)
+    -> (code: String, message: String, recoverySuggestion: String)
+  {
+    guard let handshakeError = error as? HandshakeAuthError else {
+      return (
+        ErrorCode.unknownError, extractMessage(from: error), ""
+      )
+    }
+
+    let code: String
+    switch handshakeError {
+    case .noProviderRegistered:
+      code = HandshakeAuthErrorCode.noProviderRegistered
+    case .providerTimedOut:
+      code = HandshakeAuthErrorCode.providerTimedOut
+    case .providerFailed:
+      code = HandshakeAuthErrorCode.providerFailed
+    case .exchangeFailed:
+      code = HandshakeAuthErrorCode.exchangeFailed
+    case .tenantIdUnavailable:
+      code = HandshakeAuthErrorCode.tenantIdUnavailable
+    case .tosNotAccepted:
+      code = HandshakeAuthErrorCode.tosNotAccepted
+    @unknown default:
+      code = ErrorCode.unknownError
+    }
+
+    return (
+      code,
+      handshakeError.errorDescription ?? "Handshake authentication failed",
+      handshakeError.recoverySuggestion ?? ""
+    )
   }
 
   // MARK: - Games matchup fee

@@ -10,7 +10,13 @@ import {
   useColorScheme,
 } from 'react-native';
 
-import { BRANDS, COLOR_KEYS, type ThemeAppearance } from '../theme';
+import {
+  BRANDS,
+  COLOR_KEYS,
+  THEME_MODES,
+  type ThemeAppearance,
+  type ThemeModeSetting,
+} from '../theme';
 import { useAppContext } from '../AppContext';
 
 type ColorOptionProps = {
@@ -53,6 +59,27 @@ const AppearanceToggle: FC<{
           }`}
         >
           <Text className="text-white font-bold capitalize">{appearance}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
+
+const ThemeModeToggle: FC<{
+  value: ThemeModeSetting;
+  onChange: (themeMode: ThemeModeSetting) => void;
+}> = ({ value, onChange }) => {
+  return (
+    <View className="flex-row rounded-full bg-indigo-900 p-1">
+      {THEME_MODES.map(({ value: mode, label }) => (
+        <TouchableOpacity
+          key={mode}
+          onPress={() => onChange(mode)}
+          className={`flex-1 items-center rounded-full py-1 ${
+            value === mode ? 'bg-indigo-600' : ''
+          }`}
+        >
+          <Text className="text-white font-bold">{label}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -103,7 +130,7 @@ const ColorOption: FC<ColorOptionProps> = ({
 
 export function ColorOverride() {
   const {
-    state: { theme },
+    state: { theme, themeMode },
     ready,
     setThemeValue,
     dispatch,
@@ -140,6 +167,18 @@ export function ColorOverride() {
         {deviceScheme ?? 'unknown'}. Both palettes are sent, so Lucra screens
         follow the device appearance. The SDK reads the theme once at init, so
         restart the app to pick up edits.
+      </Text>
+
+      <ThemeModeToggle
+        value={themeMode}
+        onChange={(mode) =>
+          dispatch({ type: 'SET_THEME_MODE', themeMode: mode })
+        }
+      />
+
+      <Text className="text-neutral-400 py-2">
+        Theme mode forces the appearance regardless of the palettes above.
+        Inferred sends none, which is what every release before 6.0.0 did.
       </Text>
 
       <View className="gap-0.5">

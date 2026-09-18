@@ -22,6 +22,15 @@ export interface Spec extends TurboModule {
   submitVerificationCode(code: string): Promise<Object>;
   resendCode(): Promise<void>;
 
+  // Handshake auth. The provider lives in JS, so the native token request goes
+  // out as a `_handshakeAuthToken` event carrying a requestId and comes back
+  // through `emitHandshakeAuthToken`. Failures and in-flight state arrive via
+  // the `handshakeAuthError` / `handshakeAuthInFlight` events.
+  registerHandshakeAuthTokenProvider(options: Object): void;
+  emitHandshakeAuthToken(response: Object): void;
+  // Resolves { user } once the profile has loaded; null when there is none.
+  signInWithHandshakeAuth(): Promise<Object>;
+
   // Records a breadcrumb or non-fatal error through the native SDK's own
   // telemetry fan-out (Lucra's SDK Sentry project for the platform).
   logTelemetry(level: string, message: string, category: string): Promise<void>;

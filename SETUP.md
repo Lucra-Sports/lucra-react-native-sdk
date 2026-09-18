@@ -53,6 +53,8 @@ For the Cocoapods dependencies, my recommended way is that you go into the `exam
 
 Once everything is done and said, you can run the app. Got to the `example` folder and run `npx react-native start --reset-cache` to start the Metro bundler and development server. Then on a separate terminal in the same `example` folder, start the iOS or Android apps via `yarn ios` or `yarn android`.
 
+`yarn ios` does not pin a simulator: React Native runs on whichever simulator you already have booted, or the first available one if none is booted. To target a specific device, set `IOS_SIMULATOR` — for example `IOS_SIMULATOR="iPhone 17 Pro" yarn ios`.
+
 If you see any erros that resembles `CocoaPods could not find compatible versions for pod "LucraSDK"` check the `example/ios/Podfile.lock` to see if correct SDK version is defined. If not, run `pod update` from the example folder, or if that does not work, delete the `Podfile.lock` as well as pod folder in the `example/ios` then run `npx pod-install` from the example folder.
 
 ## Local Integration Mode

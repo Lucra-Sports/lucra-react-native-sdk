@@ -20,6 +20,9 @@ extension LucraSwiftClient {
     case _claimReward
     case _viewRewards
     case lucraFlowDismissed
+    case _handshakeAuthToken
+    case handshakeAuthError
+    case handshakeAuthInFlight
   }
 
   @objc

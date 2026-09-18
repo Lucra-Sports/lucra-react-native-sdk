@@ -29,6 +29,12 @@ export type LucraFontFamily =
   | string;
 
 /**
+ * Forces the appearance every Lucra screen renders in, instead of letting the
+ * SDK infer it from the palettes you supplied.
+ */
+export type LucraThemeMode = 'light' | 'dark' | 'auto';
+
+/**
  * Theme passed to `LucraSDK.init`.
  *
  * The SDK's appearance is derived from which palettes you supply:
@@ -44,11 +50,16 @@ export type LucraFontFamily =
  * you only have to repeat the tokens that actually differ between appearances.
  * On their own they mean a single dark palette, which is how the SDK has always
  * behaved.
+ *
+ * `themeMode` overrides that inference: `'light'` and `'dark'` lock the SDK to
+ * one appearance and `'auto'` follows the device. Omit it to keep the inferred
+ * behavior.
  */
 export type LucraTheme = LucraColorSet & {
   light?: LucraColorSet;
   dark?: LucraColorSet;
   fontFamily?: LucraFontFamily;
+  themeMode?: LucraThemeMode;
 };
 
 /**
@@ -60,6 +71,7 @@ export type NormalizedLucraTheme = {
   light?: LucraColorSet;
   dark?: LucraColorSet;
   fontFamily?: LucraFontFamily;
+  themeMode?: LucraThemeMode;
 };
 
 const COLOR_KEYS = [
@@ -165,6 +177,9 @@ export function normalizeTheme(
   const normalized: NormalizedLucraTheme = {};
   if (theme.fontFamily !== undefined) {
     normalized.fontFamily = theme.fontFamily;
+  }
+  if (theme.themeMode !== undefined) {
+    normalized.themeMode = theme.themeMode;
   }
 
   if (light || dark) {

@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -28,7 +29,9 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
   );
 
   const [matchupId, setMatchupId] = React.useState('');
+  const [tournamentId, setTournamentId] = React.useState('');
   const [locationId, setLocationId] = React.useState('');
+  const [deeplink, setDeeplink] = React.useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -36,6 +39,31 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
       setProfilePillKey(keyPill);
     }, [])
   );
+
+  // The documented round trip: every flow the deeplink parser can return is
+  // presentable, so its output can be handed straight to present().
+  const presentFromDeeplink = async () => {
+    const link = deeplink.trim();
+    if (!link) {
+      Alert.alert('Error', 'Paste a Lucra deeplink first');
+      return;
+    }
+    const info = await LucraSDK.parseLucraLink(link);
+    if (!info) {
+      Alert.alert('Not a Lucra link', 'parseLucraLink resolved null');
+      return;
+    }
+    try {
+      await LucraSDK.present({
+        name: info.flow,
+        matchupId: info.matchupId,
+        gameId: info.gameId,
+        locationId: info.location,
+      } as Parameters<typeof LucraSDK.present>[0]);
+    } catch (e) {
+      Alert.alert('present() rejected', JSON.stringify(e));
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-indigo-900 pt-8">
@@ -230,6 +258,79 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
               onChangeText={setLocationId}
               placeholder="Set Location ID (optional)"
               placeholderTextColor={'#CCC'}
+              className="border border-indigo-400 p-4 rounded-lg text-white"
+            />
+
+            <TouchableOpacity
+              className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+              onPress={() => {
+                LucraSDK.present({
+                  name: LucraSDK.FLOW.TOURNAMENT_DETAILS,
+                  matchupId: tournamentId,
+                });
+              }}
+            >
+              <Text className="text-white">Tournament Details</Text>
+            </TouchableOpacity>
+            <TextInput
+              value={tournamentId}
+              onChangeText={setTournamentId}
+              placeholder="Set Tournament ID"
+              placeholderTextColor={'#CCC'}
+              className="border border-indigo-400 p-4 rounded-lg text-white"
+            />
+
+            <TouchableOpacity
+              className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+              onPress={() =>
+                LucraSDK.present({ name: LucraSDK.FLOW.NOTIFICATIONS })
+              }
+            >
+              <Text className="font-bold text-white">Notifications</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+              onPress={() =>
+                LucraSDK.present({ name: LucraSDK.FLOW.TRANSACTION_HISTORY })
+              }
+            >
+              <Text className="font-bold text-white">Transaction History</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+              onPress={() =>
+                LucraSDK.present({ name: LucraSDK.FLOW.CUSTOMER_SUPPORT })
+              }
+            >
+              <Text className="font-bold text-white">Customer Support</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+              onPress={() =>
+                LucraSDK.present({ name: LucraSDK.FLOW.RESPONSIBLE_GAMING })
+              }
+            >
+              <Text className="font-bold text-white">Responsible Gaming</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+              onPress={presentFromDeeplink}
+            >
+              <Text className="text-white">
+                Present from deeplink (parse → present)
+              </Text>
+            </TouchableOpacity>
+            <TextInput
+              value={deeplink}
+              onChangeText={setDeeplink}
+              placeholder="Lucra deeplink URL"
+              placeholderTextColor={'#CCC'}
+              autoCapitalize="none"
+              autoCorrect={false}
               className="border border-indigo-400 p-4 rounded-lg text-white"
             />
 

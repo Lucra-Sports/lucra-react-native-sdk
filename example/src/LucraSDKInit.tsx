@@ -27,6 +27,7 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
     setInitialized(true);
     const apiKey = state.apiKey || defaultAppConfig.apiKey;
     const environment = state.environment || defaultAppConfig.environment;
+    const themeMode = state.themeMode ?? defaultAppConfig.themeMode;
 
     console.log('[LucraSDK] init', { apiKey, environment });
 
@@ -37,6 +38,9 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
       theme: {
         light: state.theme?.light ?? defaultAppConfig.theme.light,
         dark: state.theme?.dark ?? defaultAppConfig.theme.dark,
+        // Omitted when 'inferred', so the SDK keeps deriving the appearance
+        // from the palettes above.
+        ...(themeMode === 'inferred' ? {} : { themeMode }),
         fontFamily: {
           normal:
             Platform.OS === 'ios' ? 'Inter Regular' : 'fonts/Inter-Regular.ttf',
