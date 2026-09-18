@@ -19,6 +19,20 @@ class LucraUtils {
     return nativeEnvironment
   }
 
+  /// `nil` keeps the SDK's inferred appearance, which is what omitting `themeMode` means.
+  static public func stringToThemeMode(_ themeMode: String?) -> LucraSDK.LucraThemeMode? {
+    switch themeMode {
+    case "light":
+      return .light
+    case "dark":
+      return .dark
+    case "auto":
+      return .system
+    default:
+      return nil
+    }
+  }
+
   static public func stringToVerificationProcedure(_ procedure: String) throws
     -> LucraSDK.LucraIDVerificationProcedure
   {
@@ -62,6 +76,13 @@ class LucraUtils {
       return .gamesMatchupDetails(matchupId: matchupId!)
     case "matchupDetails":
       return .matchupDetails(matchupId: matchupId!)
+    case "tournamentDetails":
+      guard let matchupId else {
+        throw NSError(
+          domain: "InvalidTournamentDetailsFlow", code: 0,
+          userInfo: [NSLocalizedDescriptionKey: "tournamentDetails flow requires a matchupId"])
+      }
+      return .tournamentDetails(matchupId: matchupId)
     case "sportContestDetails":
       return .sportsContestDetails(matchupId: matchupId!)
     case "myMatchup":
@@ -70,6 +91,14 @@ class LucraUtils {
       return .wallet
     case "homePage":
       return .homePage(location: location)
+    case "notifications":
+      return .notifications
+    case "transactionHistory":
+      return .transactionHistory
+    case "customerSupport":
+      return .customerSupport
+    case "responsibleGaming":
+      return .responsibleGaming
     case "miniGame":
       guard let gameMode, let parsedMode = MiniGameMode(rawValue: gameMode) else {
         throw NSError(
@@ -89,8 +118,14 @@ class LucraUtils {
       return .miniGamesMatchupDetails(matchupId: matchupId!)
     case "achievements":
       return .achievements
+    case "handshakeTOS":
+      return .handshakeTOS
     default:
-      fatalError("Unimplemented lucra flow \(flowName)")
+      // Throwing instead of trapping: the deeplink parser hands JS flow names, so an
+      // unrecognized one has to reject the promise rather than kill the host app.
+      throw NSError(
+        domain: "InvalidLucraFlow", code: 0,
+        userInfo: [NSLocalizedDescriptionKey: "Unimplemented lucra flow \(flowName)"])
     }
   }
 }

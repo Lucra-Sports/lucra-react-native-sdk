@@ -57,6 +57,7 @@ export {
   type LucraTheme,
   type LucraColorSet,
   type LucraFontFamily,
+  type LucraThemeMode,
 } from './theme';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
@@ -505,6 +506,8 @@ let matchupDetailsListener: NativeEventSubscription | null = null;
 let matchupDetailsGeneration = 0;
 let gamesMatchupFeeListener: NativeEventSubscription | null = null;
 let gamesMatchupFeeGeneration = 0;
+let handshakeAuthTokenSubscription: NativeEventSubscription;
+let handshakeAuthTokenProvider: (() => Promise<string>) | null = null;
 
 type LucraContestListeners = {
   onGamesMatchupCreated?: (id: string) => void;
@@ -548,6 +551,7 @@ const Flows = {
   MY_MATCHUP: 'myMatchup',
   GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
   MATCHUP_DETAILS: 'matchupDetails',
+  TOURNAMENT_DETAILS: 'tournamentDetails',
   DEMOGRAPHIC_COLLECTION: 'demographicCollection',
   WALLET: 'wallet',
   HOME_PAGE: 'homePage',
@@ -557,6 +561,16 @@ const Flows = {
   MINI_GAMES_REWARDS: 'miniGamesRewards',
   MINI_GAMES_MATCHUP_DETAILS: 'miniGamesMatchupDetails',
   ACHIEVEMENTS: 'achievements',
+  NOTIFICATIONS: 'notifications',
+  TRANSACTION_HISTORY: 'transactionHistory',
+  CUSTOMER_SUPPORT: 'customerSupport',
+  RESPONSIBLE_GAMING: 'responsibleGaming',
+  /**
+   * Captures Terms of Service acceptance and completes a handshake sign-in.
+   * Present it only in response to a `tosNotAccepted` rejection from
+   * `signInWithHandshakeAuth` — it is not an entry point.
+   */
+  HANDSHAKE_TOS: 'handshakeTOS',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -573,7 +587,10 @@ function present(params: {
 }): Promise<void>;
 
 function present(params: {
-  name: typeof Flows.GAMES_CONTEST_DETAILS | typeof Flows.MATCHUP_DETAILS;
+  name:
+    | typeof Flows.GAMES_CONTEST_DETAILS
+    | typeof Flows.MATCHUP_DETAILS
+    | typeof Flows.TOURNAMENT_DETAILS;
   matchupId: string;
 }): Promise<void>;
 
@@ -604,6 +621,17 @@ function present(params: {
   handlePostNavigation?: boolean;
 }): Promise<void>;
 function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
+function present(params: { name: typeof Flows.NOTIFICATIONS }): Promise<void>;
+function present(params: {
+  name: typeof Flows.TRANSACTION_HISTORY;
+}): Promise<void>;
+function present(params: {
+  name: typeof Flows.CUSTOMER_SUPPORT;
+}): Promise<void>;
+function present(params: {
+  name: typeof Flows.RESPONSIBLE_GAMING;
+}): Promise<void>;
+function present(params: { name: typeof Flows.HANDSHAKE_TOS }): Promise<void>;
 function present(params: { name: typeof Flows.MINI_GAMES_HOME }): Promise<void>;
 function present(params: {
   name: typeof Flows.MINI_GAMES_PROFILE;
@@ -629,6 +657,25 @@ function present(params: {
   } catch (error) {
     return Promise.reject(error);
   }
+}
+
+/**
+ * Both bridges carry the recovery suggestion in the rejection's `userInfo`;
+ * flatten it onto the error so JS sees one shape.
+ */
+function toHandshakeAuthError(error: unknown): LucraHandshakeAuthError {
+  const native = error as {
+    code?: LucraHandshakeAuthErrorCode;
+    message?: string;
+    userInfo?: { recoverySuggestion?: string } | null;
+  } | null;
+  const handshakeError = new Error(
+    native?.message || 'Handshake authentication failed'
+  ) as LucraHandshakeAuthError;
+  handshakeError.code = native?.code ?? 'unknownError';
+  handshakeError.recoverySuggestion =
+    native?.userInfo?.recoverySuggestion ?? '';
+  return handshakeError;
 }
 
 export const LucraSDK = {
@@ -692,6 +739,37 @@ export const LucraSDK = {
       (data) => {
         if (lucraFlowDismissedCallback) {
           lucraFlowDismissedCallback(data.lucraFlow);
+        }
+      }
+    );
+    handshakeAuthTokenSubscription?.remove();
+    handshakeAuthTokenSubscription = eventEmitter.addListener(
+      '_handshakeAuthToken',
+      async (data) => {
+        // The native provider is bounded by a 5s timeout, so echo the
+        // requestId back: without it a late answer would satisfy whichever
+        // request is outstanding by then.
+        const requestId = data.requestId as string;
+        if (!handshakeAuthTokenProvider) {
+          LucraClient.emitHandshakeAuthToken({
+            requestId,
+            error: 'No handshake auth token provider is registered',
+          });
+          return;
+        }
+        try {
+          LucraClient.emitHandshakeAuthToken({
+            requestId,
+            token: await handshakeAuthTokenProvider(),
+          });
+        } catch (error) {
+          LucraClient.emitHandshakeAuthToken({
+            requestId,
+            error:
+              error instanceof Error
+                ? error.message
+                : 'The handshake auth token provider threw',
+          });
         }
       }
     );
@@ -1097,6 +1175,89 @@ export const LucraSDK = {
   registerDeepLinkProvider: (provider: (url: string) => Promise<string>) => {
     deepLinkEmitter = provider;
   },
+  /**
+   * Registers a provider returning a partner-signed JWT for the current user,
+   * letting Lucra sign them in with no Lucra login UI. Pass `null` to clear it,
+   * which sends Lucra flows back to phone auth.
+   *
+   * The provider should call *your* backend with *your* session — Lucra never
+   * sees it — and has 5 seconds to answer. Tokens are single use, so it is
+   * called again every time a token is needed; do not cache one.
+   *
+   * Registering signs nobody in and is safe to call repeatedly. Call
+   * `signInWithHandshakeAuth` when you want the sign-in to happen, or leave it
+   * out and let Lucra run the handshake wherever it would have shown phone
+   * auth. Must be called after `LucraSDK.init`.
+   *
+   * `bypassTosAgreement` asks Lucra to skip Terms of Service capture for new
+   * users, and is honored only where your tenant's configuration allows it.
+   * See [Handshake Authentication](1.2.12_handshake_authentication.md).
+   */
+  registerHandshakeAuthTokenProvider: (
+    provider: (() => Promise<string>) | null,
+    options: { bypassTosAgreement?: boolean } = {}
+  ) => {
+    handshakeAuthTokenProvider = provider;
+    LucraClient.registerHandshakeAuthTokenProvider({
+      registered: provider != null,
+      bypassTosAgreement: options.bypassTosAgreement ?? false,
+    });
+  },
+  /**
+   * Signs the user in with the registered handshake provider and resolves once
+   * their profile has loaded, so the returned user is immediately usable.
+   * Resolves `null` if the session lands without a profile.
+   *
+   * An existing session wins: called while a user is signed in — or while a
+   * stored session is still restoring — it reports that user and runs no
+   * exchange, so it is safe to call unconditionally at launch. Log out first to
+   * sign in a different user.
+   *
+   * Rejects with `LucraHandshakeAuthError`. Every code except `tosNotAccepted`
+   * leaves phone auth as a working fallback; `tosNotAccepted` means the user is
+   * new to Lucra and needs `FLOW.HANDSHAKE_TOS`, which captures the agreement
+   * and completes the sign-in itself.
+   */
+  signInWithHandshakeAuth: async (): Promise<LucraUser | null> => {
+    try {
+      const object = (await LucraClient.signInWithHandshakeAuth()) as {
+        user?: LucraUser;
+      } | null;
+      return object?.user ?? null;
+    } catch (error) {
+      throw toHandshakeAuthError(error);
+    }
+  },
+  /**
+   * Subscribes to handshake auth state. `onError` fires with the latest failure
+   * and with `null` when a new attempt clears it; `onInFlightChange` fires while
+   * an exchange runs, which is when Lucra suppresses its own login UI.
+   *
+   * Handshake failures fall back to phone auth silently, so this is how a
+   * broken integration is told apart from a genuinely signed-out user.
+   *
+   * Returns a single unsubscribe function for both listeners.
+   */
+  addHandshakeAuthListener: (listenerMap: LucraHandshakeAuthListeners) => {
+    const handshakeAuthErrorEmitter = eventEmitter.addListener(
+      'handshakeAuthError',
+      (data) => {
+        listenerMap.onError?.(data.error ?? null);
+      }
+    );
+
+    const handshakeAuthInFlightEmitter = eventEmitter.addListener(
+      'handshakeAuthInFlight',
+      (data) => {
+        listenerMap.onInFlightChange?.(data.inFlight);
+      }
+    );
+
+    return () => {
+      handshakeAuthErrorEmitter.remove();
+      handshakeAuthInFlightEmitter.remove();
+    };
+  },
   registerCreditConversionProvider: (
     provider: (cashAmount: number) => Promise<LucraConvertCreditResponse>
   ) => {
@@ -1273,7 +1434,9 @@ export type LucraSDKError = {
     /** `uploadUserAvatar`: the provided uri could not be decoded into an image. */
     | 'invalidImage'
     /** iOS-only `submitUserScore` backstop for a non-finite score. */
-    | 'invalidScore';
+    | 'invalidScore'
+    /** `logTelemetry` received a level other than `info`, `warning` or `error`. */
+    | 'invalidTelemetryLevel';
 } & Error;
 
 /**
@@ -1302,3 +1465,43 @@ export type LucraPhoneAuthError = {
     | 'networkError'
     | 'unknownError';
 } & Error;
+
+export type LucraHandshakeAuthErrorCode =
+  /** `signInWithHandshakeAuth` ran with no provider registered. */
+  | 'noProviderRegistered'
+  /** The provider did not answer within 5 seconds. */
+  | 'providerTimedOut'
+  /** The provider threw. */
+  | 'providerFailed'
+  /** Lucra rejected the token. Check its signature, freshness, and claims. */
+  | 'exchangeFailed'
+  /**
+   * The user is new to Lucra and has not accepted the Terms of Service. The one
+   * code that is not a phone-auth fallback: present `FLOW.HANDSHAKE_TOS`.
+   */
+  | 'tosNotAccepted'
+  /** Initialization never produced a tenant, so the exchange can't be scoped. */
+  | 'tenantIdUnavailable'
+  /** Android-only: the session landed but the profile never arrived. Retryable. */
+  | 'profileTimedOut'
+  /** Android-only: a concurrent sign-out superseded the attempt, or it failed unexpectedly. */
+  | 'unknownError';
+
+/**
+ * A handshake auth failure. Both SDKs populate `message` and
+ * `recoverySuggestion`, which names what to go look at.
+ */
+export type LucraHandshakeAuthFailure = {
+  code: LucraHandshakeAuthErrorCode;
+  message: string;
+  recoverySuggestion: string;
+};
+
+/** Rejection shape for `signInWithHandshakeAuth`. */
+export type LucraHandshakeAuthError = LucraHandshakeAuthFailure & Error;
+
+export type LucraHandshakeAuthListeners = {
+  /** The latest failure, or `null` once a new attempt clears it. */
+  onError?: (error: LucraHandshakeAuthFailure | null) => void;
+  onInFlightChange?: (inFlight: boolean) => void;
+};

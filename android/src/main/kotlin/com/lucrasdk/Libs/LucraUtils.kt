@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.lucrasports.sdk.core.LucraClient
 import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
+import com.lucrasports.sdk.core.style_guide.ThemeMode
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 
 class LucraUtils {
@@ -17,6 +18,16 @@ class LucraUtils {
                 "develop" -> LucraClient.Companion.Environment.DEVELOPMENT
                 "sandbox" -> LucraClient.Companion.Environment.SANDBOX
                 else -> throw IllegalArgumentException("Invalid environment: $environment")
+            }
+        }
+
+        /** `null` keeps the SDK's inferred appearance, which is what omitting `themeMode` means. */
+        fun getThemeMode(themeMode: String?): ThemeMode? {
+            return when (themeMode) {
+                "light" -> ThemeMode.LIGHT
+                "dark" -> ThemeMode.DARK
+                "auto" -> ThemeMode.AUTO
+                else -> null
             }
         }
 
@@ -51,9 +62,19 @@ class LucraUtils {
                 "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
                 "gamesMatchupDetails" -> LucraUiProvider.LucraFlow.GamesMatchupDetails(matchupId!!)
                 "matchupDetails" -> LucraUiProvider.LucraFlow.MatchupDetails(matchupId!!)
+                "tournamentDetails" -> LucraUiProvider.LucraFlow.TournamentDetails(
+                    matchupId ?: throw IllegalArgumentException(
+                        "tournamentDetails flow requires a matchupId"
+                    )
+                )
+
                 "demographicCollection" -> LucraUiProvider.LucraFlow.DemographicForm
                 "wallet" -> LucraUiProvider.LucraFlow.Wallet
                 "homePage" -> LucraUiProvider.LucraFlow.HomePage(locationId)
+                "notifications" -> LucraUiProvider.LucraFlow.Notifications
+                "transactionHistory" -> LucraUiProvider.LucraFlow.TransactionHistory
+                "customerSupport" -> LucraUiProvider.LucraFlow.CustomerSupport
+                "responsibleGaming" -> LucraUiProvider.LucraFlow.ResponsibleGaming
                 "miniGame" -> {
                     val parsedMode = when (gameMode?.lowercase()) {
                         "practice" -> LucraMiniGameMode.Practice
@@ -78,6 +99,7 @@ class LucraUtils {
                 "miniGamesRewards" -> LucraUiProvider.LucraFlow.MinigamesRewards
                 "miniGamesMatchupDetails" -> LucraUiProvider.LucraFlow.MinigameMatchupDetails(matchupId!!)
                 "achievements" -> LucraUiProvider.LucraFlow.Achievements
+                "handshakeTOS" -> LucraUiProvider.LucraFlow.HandshakeTOS
                 // TODO not yet publicly available within Android SDK
 //        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails
                 else -> throw IllegalArgumentException("Invalid flow: $flow")

@@ -147,6 +147,19 @@ RCT_EXPORT_METHOD(resendCode : (RCTPromiseResolveBlock)
   [swiftClient resendCodeWithResolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(registerHandshakeAuthTokenProvider : (NSDictionary *)options) {
+  [swiftClient registerHandshakeAuthTokenProvider:options];
+}
+
+RCT_EXPORT_METHOD(emitHandshakeAuthToken : (NSDictionary *)response) {
+  [swiftClient emitHandshakeAuthToken:response];
+}
+
+RCT_EXPORT_METHOD(signInWithHandshakeAuth : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient signInWithHandshakeAuthWithResolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(logTelemetry : (NSString *)level
                   message : (NSString *)message
                   category : (NSString *)category

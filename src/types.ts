@@ -311,9 +311,12 @@ export type TournamentDetails = {
   /** The current user's row, when they participate in the tournament. */
   userLeaderboardRow?: TournamentDetailsLeaderboardRow;
   terms: TournamentDetailsTerm[];
-  /** ISO 8601. */
+  /**
+   * When the tournament stops accepting entries (ISO 8601). Scores can still be
+   * submitted afterwards, so read `isCompleted` to tell whether it is over.
+   */
   expiresAt?: string;
-  /** ISO 8601. */
+  /** When the tournament begins (ISO 8601). */
   startsAt?: string;
 };
 
