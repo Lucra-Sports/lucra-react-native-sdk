@@ -1411,7 +1411,7 @@ private struct TelemetryDiagnosticError: LocalizedError {
     let bypassTosAgreement = options["bypassTosAgreement"] as? Bool ?? false
     self.nativeClient.registerHandshakeAuthTokenProvider(
       { [weak self] in
-        guard let self = self else { throw HandshakeAuthError.noProviderRegistered }
+        guard let self else { throw HandshakeAuthError.noProviderRegistered }
         return try await self.handshakeAuthToken()
       }, bypassTosAgreement: bypassTosAgreement)
   }

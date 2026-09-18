@@ -39,6 +39,7 @@ publishes back.
 | Expo managed workflow (config plugin, prebuild, Expo Go) | [Expo Managed Workflow](skills/lucra-react-native-expo/SKILL.md) |
 | Initialize the SDK / API keys / environment | [LucraSDK Initialization](1.2.0_initialize_client.md) |
 | Know if a user is signed in / delegate auth | [Headless Functionality → User](1.2.9_headless_interactions.md) |
+| Sign a user in from your own session, without Lucra's login UI | [Handshake Authentication](1.2.12_handshake_authentication.md) |
 | Present any SDK screen | [Lucra Flows](1.2.7_lucraflows.md) |
 | Mini Games (UI, headless, or your own WebView) | [Mini Games Integration](skills/lucra-react-native-minigames/SKILL.md) + [Mini Games](5.0.0_mini_games.md) |
 | Tournaments | [Tournaments Flows](3.1_tournaments_flows.md) |
@@ -58,6 +59,9 @@ publishes back.
   via `LucraSDK.getUser()` or the `'user'` listener; sign out with `LucraSDK.logout()`.
   (`LucraSDK.configureUser(…)` is a separate path for passing your app's known user properties — it queues
   until login completes.) → [Headless Functionality](1.2.9_headless_interactions.md)
+- **Or skip the login UI entirely.** If your app already has the user signed in, register a handshake auth
+  token provider and Lucra resolves a session from a token your backend signs, with phone auth still the
+  fallback. Needs Lucra-side provisioning. → [Handshake Authentication](1.2.12_handshake_authentication.md)
 - **Flows vs Headless.** `LucraSDK.present({ name: … })` shows a full Lucra screen; headless calls return
   data you render yourself. Mix them: headless powers *your* lists and launchers, flows power the
   *interactive* parts. → [Flows](1.2.7_lucraflows.md) / [Headless](1.2.9_headless_interactions.md)

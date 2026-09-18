@@ -1,4 +1,5 @@
 import Combine
+import Foundation
 
 /// One in-flight handshake token request, resumed exactly once — by whichever of the JS
 /// answer and the SDK's 5s provider timeout gets there first — and dropping its
