@@ -100,7 +100,7 @@ PODS:
     - DoubleConversion
     - glog
     - hermes-engine
-    - LucraSDK (= 6.0.0)
+    - LucraSDK (= 6.0.1)
     - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
     - RCTTypeSafety
@@ -122,7 +122,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - Sentry (< 9.0, >= 8.58.4)
     - Yoga
-  - LucraSDK (6.0.0)
+  - LucraSDK (6.0.1):
+    - Sentry (~> 8.58)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -2413,8 +2414,8 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleUtilities: 4e0c2ad9fa0d0d18b5c4df8bf57b461cba35b0bb
   hermes-engine: 314be5250afa5692b57b4dd1705959e1973a8ebe
-  lucra-react-native-sdk: 347546e4b9ee2c1ce8437d5a5d23db319ec29f5f
-  LucraSDK: 7367f2f764665aca146d012484edde66fbded352
+  lucra-react-native-sdk: 09dce1d5af615aaa30ae54fa83b3514c9704165f
+  LucraSDK: 4b537be528e343f16f2a87a8460715a241bb4997
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
@@ -2499,4 +2500,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: a3edc74284bda2a64a62b3197a46f20267959f39
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
