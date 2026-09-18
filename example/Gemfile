@@ -13,6 +13,11 @@ gem 'bigdecimal'
 gem 'logger'
 gem 'benchmark'
 gem 'mutex_m'
+# Ruby 3.4 moved kconv out of the stdlib into the nkf gem. CFPropertyList
+# (pulled in by xcodeproj) still does `require 'kconv'`, so without this
+# declaration `bundle exec pod install` dies with LoadError partway through
+# generating target support files.
+gem 'nkf'
 gem 'fastlane'
 
 plugins_path = File.join(File.dirname(__FILE__), 'android', 'fastlane', 'Pluginfile')
