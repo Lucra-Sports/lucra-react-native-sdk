@@ -433,6 +433,10 @@ public func tournamentsMatchupToMap(tournament: LucraSDK.TournamentsMatchup) -> 
     "potTotal": tournament.potTotal,
     "rewardType": tournament.rewardType as Any,
     "payoutStructure": tournament.payoutStructure.map(payoutStructureToMap) as Any,
+    // `participants` can hold only a subset on large tournaments, so this is
+    // the number to display. Android's headless model has no equivalent.
+    "totalParticipants": tournament.totalParticipants,
+    "isPrivate": tournament.isPrivate,
   ]
 }
 
@@ -676,6 +680,19 @@ private func mapToDynamicColorSet(_ colors: [String: Any]) -> LucraSDK.DynamicCo
     onTertiary: colors["onTertiary"] as? String)
 }
 
+/// Maps the JS `theme.themeMode` string onto the SDK's forced-appearance enum.
+///
+/// An unrecognised value returns `nil`, which keeps the appearance derived from
+/// whichever palettes were supplied — the behavior before `themeMode` existed.
+public func mapToThemeMode(_ raw: Any?) -> LucraSDK.LucraThemeMode? {
+  switch (raw as? String)?.lowercased() {
+  case "light": return .light
+  case "dark": return .dark
+  case "system": return .system
+  default: return nil
+  }
+}
+
 public func mapToClientTheme(theme: [String: Any]) -> LucraSDK.ClientTheme {
   var fontFamily: FontFamily? = nil
 
@@ -914,6 +931,8 @@ public func lucraFlowToMap(_ flow: LucraSDK.LucraFlow) -> [String: Any] {
     return ["flow": "miniGamesRewards"]
   case .miniGamesMatchupDetails(let matchupId):
     return ["flow": "miniGamesMatchupDetails", "matchupId": matchupId]
+  case .handshakeTOS:
+    return ["flow": "handshakeTOS"]
   case .miniGame(let gameId, let gameMode, let amount, let matchupId, _):
     // JS-facing mode strings (MiniGameMode enum), not the native rawValues
     let modeString: String

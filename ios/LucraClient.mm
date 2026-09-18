@@ -39,6 +39,17 @@ RCT_EXPORT_METHOD(initialize : (NSDictionary *)options resolve : (
   return swiftClient;
 }
 
+// `swiftClient` is only assigned inside `initialize`. Messaging a nil object in
+// Objective-C is a silent no-op, so a pre-init call would leave its JS promise
+// pending forever. Falling back to the shared instance lets the Swift side
+// reject with `notInitialized` instead of hanging.
+static LucraSwiftClient *LucraSharedSwiftClient(void) {
+  if (swiftClient == nil) {
+    swiftClient = [LucraSwiftClient getShared];
+  }
+  return swiftClient;
+}
+
 - (NSArray<NSString *> *)supportedEvents {
   return [LucraSwiftClient supportedEvents];
 }
@@ -145,6 +156,49 @@ RCT_EXPORT_METHOD(submitVerificationCode : (NSString *)code
 RCT_EXPORT_METHOD(resendCode : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient resendCodeWithResolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(registerHandshakeAuthTokenProvider : (BOOL)registered
+                  bypassTosAgreement : (BOOL)bypassTosAgreement
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [LucraSharedSwiftClient() registerHandshakeAuthTokenProvider:registered
+                                            bypassTosAgreement:bypassTosAgreement
+                                                       resolve:resolve
+                                                        reject:reject];
+}
+
+RCT_EXPORT_METHOD(signInWithHandshakeAuth : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [LucraSharedSwiftClient() signInWithHandshakeAuthWithResolve:resolve
+                                                        reject:reject];
+}
+
+RCT_EXPORT_METHOD(resolveHandshakeAuthToken : (NSString *)requestId
+                  token : (NSString *)token) {
+  [LucraSharedSwiftClient() resolveHandshakeAuthToken:requestId token:token];
+}
+
+RCT_EXPORT_METHOD(rejectHandshakeAuthToken : (NSString *)requestId
+                  message : (NSString *)message) {
+  [LucraSharedSwiftClient() rejectHandshakeAuthToken:requestId message:message];
+}
+
+RCT_EXPORT_METHOD(getAuthState : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [LucraSharedSwiftClient() getAuthStateWithResolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(logTelemetry : (NSString *)level
+                  message : (NSString *)message
+                  category : (NSString *)category
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient logTelemetry:level
+                    message:message
+                   category:category
+                    resolve:resolve
+                     reject:reject];
 }
 
 RCT_EXPORT_METHOD(getGamesMatchupFee : (RCTPromiseResolveBlock)

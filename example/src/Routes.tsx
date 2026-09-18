@@ -12,6 +12,8 @@ import { GamesYouPlay } from './container/APIExample/GamesYouPlay';
 import { MiniGameLauncher } from './container/MiniGameLauncher';
 import { RewardsAchievements } from './container/RewardsAchievements';
 import { PushDeeplinkTester } from './container/PushDeeplinkTester';
+import { TelemetryDiagnostics } from './container/TelemetryDiagnostics';
+import { HandshakeAuth } from './container/HandshakeAuth';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -26,6 +28,8 @@ export type RootStackParamList = {
   MiniGameLauncher: undefined;
   RewardsAchievements: undefined;
   PushDeeplinkTester: undefined;
+  TelemetryDiagnostics: undefined;
+  HandshakeAuth: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -119,6 +123,20 @@ export const Routes: FC = () => {
       <Stack.Screen
         name="PushDeeplinkTester"
         component={PushDeeplinkTester}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="TelemetryDiagnostics"
+        component={TelemetryDiagnostics}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="HandshakeAuth"
+        component={HandshakeAuth}
         options={{
           headerShown: false,
         }}

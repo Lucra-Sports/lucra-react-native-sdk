@@ -11,6 +11,29 @@ export type Theme = {
 export type ThemeAppearance = 'light' | 'dark';
 
 /**
+ * Forced SDK appearance. `default` means *don't send `themeMode` at all*, so
+ * the SDK keeps deriving the appearance from which palettes it gets — the
+ * behavior before forced modes existed, and worth being able to compare against.
+ */
+export type AppThemeMode = 'default' | 'light' | 'dark' | 'system';
+
+export const THEME_MODES: AppThemeMode[] = [
+  'default',
+  'light',
+  'dark',
+  'system',
+];
+
+/**
+ * Which palettes to hand `LucraSDK.init`. Sending only one is what makes the
+ * SDK reuse it for the other appearance, which is the case the cross-fill
+ * warning is about — unreachable here unless it can be selected.
+ */
+export type AppPaletteMode = 'both' | 'light' | 'dark';
+
+export const PALETTE_MODES: AppPaletteMode[] = ['both', 'light', 'dark'];
+
+/**
  * A brand's palettes. Passing both to `LucraSDK.init` makes the SDK follow the
  * device appearance; the light palettes here are deliberately different from the
  * dark ones so the switch is obvious on screen.

@@ -89,6 +89,8 @@ class LucraUtils {
       return .miniGamesMatchupDetails(matchupId: matchupId!)
     case "achievements":
       return .achievements
+    case "handshakeTOS":
+      return .handshakeTOS
     default:
       fatalError("Unimplemented lucra flow \(flowName)")
     }

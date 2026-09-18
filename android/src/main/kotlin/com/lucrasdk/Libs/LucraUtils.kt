@@ -78,6 +78,7 @@ class LucraUtils {
                 "miniGamesRewards" -> LucraUiProvider.LucraFlow.MinigamesRewards
                 "miniGamesMatchupDetails" -> LucraUiProvider.LucraFlow.MinigameMatchupDetails(matchupId!!)
                 "achievements" -> LucraUiProvider.LucraFlow.Achievements
+                "handshakeTOS" -> LucraUiProvider.LucraFlow.HandshakeTOS
                 // TODO not yet publicly available within Android SDK
 //        "sportsContestDetails" -> LucraUiProvider.LucraFlow.SportsContestDetails
                 else -> throw IllegalArgumentException("Invalid flow: $flow")

@@ -20,6 +20,10 @@ extension LucraSwiftClient {
     case _claimReward
     case _viewRewards
     case lucraFlowDismissed
+    /// Native asking JS for a handshake token, correlated by `requestId`.
+    case _handshakeAuthToken
+    /// Handshake in-flight / last error / auth-state resolution, as one payload.
+    case authState
   }
 
   @objc

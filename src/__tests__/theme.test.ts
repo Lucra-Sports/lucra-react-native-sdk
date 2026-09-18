@@ -99,3 +99,113 @@ describe('normalizeTheme', () => {
     });
   });
 });
+
+describe('normalizeTheme themeMode', () => {
+  const light = { primary: '#1A73E8', onPrimary: '#FFFFFF' };
+  const dark = { primary: '#8AB4F8', onPrimary: '#0B1220' };
+
+  let warn: jest.SpyInstance;
+  beforeEach(() => {
+    warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    warn.mockRestore();
+  });
+
+  it('reaches native on a theme that carries nothing else', () => {
+    // The "Lucra's own colors, forced light" config. It has to survive the
+    // palette branches, which it only does because themeMode is set first.
+    expect(normalizeTheme({ themeMode: 'light' })).toEqual({
+      themeMode: 'light',
+    });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('rides alongside both palettes', () => {
+    expect(normalizeTheme({ light, dark, themeMode: 'dark' })).toEqual({
+      light,
+      dark,
+      themeMode: 'dark',
+    });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('passes "system" through unmapped — JS never emits Android\'s AUTO', () => {
+    expect(
+      normalizeTheme({ light, dark, themeMode: 'system' })?.themeMode
+    ).toBe('system');
+  });
+
+  it('lowercases a mode that came in capitalised', () => {
+    expect(
+      normalizeTheme({ light, dark, themeMode: 'Light' as any })?.themeMode
+    ).toBe('light');
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('rejects Android\'s "auto" spelling and names "system" instead', () => {
+    expect(
+      normalizeTheme({ light, dark, themeMode: 'auto' as any })?.themeMode
+    ).toBeUndefined();
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain('"system"');
+  });
+
+  it('drops an unparseable mode with a warning', () => {
+    expect(
+      normalizeTheme({ light, dark, themeMode: 42 as any })?.themeMode
+    ).toBeUndefined();
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it('never leaks themeMode into a palette', () => {
+    const normalized = normalizeTheme({
+      themeMode: 'light',
+      primary: '#09E35F',
+    });
+    expect(normalized).toEqual({
+      dark: { primary: '#09E35F' },
+      themeMode: 'light',
+    });
+    expect(normalized?.dark).not.toHaveProperty('themeMode');
+  });
+
+  describe('cross-fill warning', () => {
+    it('warns when a forced light mode has only a dark palette', () => {
+      normalizeTheme({ dark, themeMode: 'light' });
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('"light"');
+    });
+
+    it('warns when a forced dark mode has only a light palette', () => {
+      normalizeTheme({ light, themeMode: 'dark' });
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('"dark"');
+    });
+
+    it('warns for "system" with only one palette — it reuses it for the other', () => {
+      normalizeTheme({ dark, themeMode: 'system' });
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('warns for flat-only colors, which resolve to a dark palette', () => {
+      normalizeTheme({ primary: '#09E35F', themeMode: 'light' });
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('stays quiet when both palettes are supplied', () => {
+      normalizeTheme({ light, dark, themeMode: 'light' });
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('stays quiet with no palettes — Lucra owns both appearances then', () => {
+      normalizeTheme({ themeMode: 'light' });
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('stays quiet when no mode is forced, however lopsided the palettes', () => {
+      normalizeTheme({ dark });
+      expect(warn).not.toHaveBeenCalled();
+    });
+  });
+});
