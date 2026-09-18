@@ -39,6 +39,7 @@ publishes back.
 | Expo managed workflow (config plugin, prebuild, Expo Go) | [Expo Managed Workflow](skills/lucra-react-native-expo/SKILL.md) |
 | Initialize the SDK / API keys / environment | [LucraSDK Initialization](1.2.0_initialize_client.md) |
 | Know if a user is signed in / delegate auth | [Headless Functionality → User](1.2.9_headless_interactions.md) |
+| Sign users in from your own session, with no Lucra login screen (SSO-style) | [Handshake Authentication](1.2.12_handshake_authentication.md) |
 | Present any SDK screen | [Lucra Flows](1.2.7_lucraflows.md) |
 | Mini Games (UI, headless, or your own WebView) | [Mini Games Integration](skills/lucra-react-native-minigames/SKILL.md) + [Mini Games](5.0.0_mini_games.md) |
 | Tournaments | [Tournaments Flows](3.1_tournaments_flows.md) |

@@ -10,7 +10,15 @@ import {
   useColorScheme,
 } from 'react-native';
 
-import { BRANDS, COLOR_KEYS, type ThemeAppearance } from '../theme';
+import {
+  BRANDS,
+  COLOR_KEYS,
+  PALETTE_MODES,
+  THEME_MODES,
+  type AppPaletteMode,
+  type AppThemeMode,
+  type ThemeAppearance,
+} from '../theme';
 import { useAppContext } from '../AppContext';
 
 type ColorOptionProps = {
@@ -38,26 +46,38 @@ const ThemePill: FC<ThemePillProps> = ({ title, onPress }) => {
   );
 };
 
-const AppearanceToggle: FC<{
-  value: ThemeAppearance;
-  onChange: (appearance: ThemeAppearance) => void;
-}> = ({ value, onChange }) => {
+function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: readonly T[];
+  value: T;
+  onChange: (value: T) => void;
+}) {
   return (
     <View className="flex-row rounded-full bg-indigo-900 p-1">
-      {APPEARANCES.map((appearance) => (
+      {options.map((option) => (
         <TouchableOpacity
-          key={appearance}
-          onPress={() => onChange(appearance)}
+          key={option}
+          onPress={() => onChange(option)}
           className={`flex-1 items-center rounded-full py-1 ${
-            value === appearance ? 'bg-indigo-600' : ''
+            value === option ? 'bg-indigo-600' : ''
           }`}
         >
-          <Text className="text-white font-bold capitalize">{appearance}</Text>
+          <Text className="text-white font-bold capitalize">{option}</Text>
         </TouchableOpacity>
       ))}
     </View>
   );
-};
+}
+
+const AppearanceToggle: FC<{
+  value: ThemeAppearance;
+  onChange: (appearance: ThemeAppearance) => void;
+}> = ({ value, onChange }) => (
+  <Segmented options={APPEARANCES} value={value} onChange={onChange} />
+);
 
 const ColorOption: FC<ColorOptionProps> = ({
   name,
@@ -103,7 +123,7 @@ const ColorOption: FC<ColorOptionProps> = ({
 
 export function ColorOverride() {
   const {
-    state: { theme },
+    state: { theme, themeMode, paletteMode },
     ready,
     setThemeValue,
     dispatch,
@@ -133,12 +153,40 @@ export function ColorOverride() {
         ))}
       </View>
 
+      <Text className="text-white font-bold pt-4 pb-1">Forced theme mode</Text>
+      <Segmented<AppThemeMode>
+        options={THEME_MODES}
+        value={themeMode ?? 'default'}
+        onChange={(mode) =>
+          dispatch({ type: 'SET_THEME_MODE', themeMode: mode })
+        }
+      />
+      <Text className="text-neutral-400 py-2">
+        What the SDK renders. <Text className="font-bold">default</Text> sends
+        no themeMode, so the appearance is derived from which palettes you send
+        below. The others pin every Lucra screen, ignoring the palette rule.
+      </Text>
+
+      <Text className="text-white font-bold pt-2 pb-1">Palettes sent</Text>
+      <Segmented<AppPaletteMode>
+        options={PALETTE_MODES}
+        value={paletteMode ?? 'both'}
+        onChange={(mode) =>
+          dispatch({ type: 'SET_PALETTE_MODE', paletteMode: mode })
+        }
+      />
+      <Text className="text-neutral-400 py-2">
+        Which palettes reach `LucraSDK.init`. Sending only one makes the SDK
+        reuse it for the other appearance — pair that with a forced mode to see
+        the cross-fill warning in Metro.
+      </Text>
+
+      <Text className="text-white font-bold pt-2 pb-1">Editing palette</Text>
       <AppearanceToggle value={editing} onChange={setEditing} />
 
       <Text className="text-neutral-400 py-2">
-        Editing the {editing} palette — the device is currently{' '}
-        {deviceScheme ?? 'unknown'}. Both palettes are sent, so Lucra screens
-        follow the device appearance. The SDK reads the theme once at init, so
+        Which palette the color pickers below edit — the device is currently{' '}
+        {deviceScheme ?? 'unknown'}. The SDK reads the theme once at init, so
         restart the app to pick up edits.
       </Text>
 

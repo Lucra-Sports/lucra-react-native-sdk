@@ -215,6 +215,20 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
+              className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
+              onPress={() =>
+                LucraSDK.present({ name: LucraSDK.FLOW.HANDSHAKE_TOS })
+              }
+            >
+              <Text className="font-bold text-white">Handshake TOS</Text>
+              <Text className="text-indigo-200 text-xs text-center pt-1">
+                Present this only in response to a tosNotAccepted handshake
+                failure — see the Handshake Auth screen. It is not an entry
+                point.
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
               onPress={() => {
                 LucraSDK.present({
