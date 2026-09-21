@@ -1599,10 +1599,14 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         val limit = params.getInt(
             "limit"
         )
+        val includePrivateViewable =
+            params.hasKey("includePrivateViewableTournaments") &&
+                params.getBoolean("includePrivateViewableTournaments")
         LucraClient().queryRecommendedTournaments(
             limit = limit,
             offset = 0,
-            includeCompletedTournaments = includeClosed
+            includeCompletedTournaments = includeClosed,
+            includePrivateViewableTournaments = includePrivateViewable
         ) { result ->
             when (result) {
                 is PoolTournament.QueryRecommendedTournamentsResult.Failure -> {

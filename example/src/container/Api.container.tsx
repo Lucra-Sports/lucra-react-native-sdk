@@ -492,10 +492,6 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
             includePrivateViewable: {String(includePrivateViewable)}
           </Text>
           <Text className="text-indigo-200 text-xs text-center pt-1">
-            iOS only. Also returns private tournaments that are viewable without
-            a join code — a code is still needed to join, so check isPrivate.
-            Android ignores the flag and leaves isPrivate/totalParticipants
-            undefined.
           </Text>
         </TouchableOpacity>
 

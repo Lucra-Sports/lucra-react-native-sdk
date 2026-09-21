@@ -749,6 +749,8 @@ object LucraMapper {
         map.putDouble("potNetAmount", matchup.potNetAmount)
         matchup.rewardType?.let { map.putString("rewardType", it) }
         matchup.payoutStructure?.let { map.putMap("payoutStructure", payoutStructureToMap(it)) }
+        map.putInt("totalParticipants", matchup.totalParticipants)
+        map.putBoolean("isPrivate", matchup.isPrivate)
 
         return map
     }
