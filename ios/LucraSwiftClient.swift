@@ -1122,10 +1122,22 @@ private struct TelemetryDiagnosticError: LocalizedError {
     let leaderboardOffset = params["leaderboardOffset"] as? Int
 
     Task { @MainActor in
-      let result = await self.nativeClient.api.retrieveTournamentDetails(
-        for: tournamentId,
-        leaderboardLimit: leaderboardLimit ?? 10,
-        leaderboardOffset: leaderboardOffset ?? 0)
+      let api = self.nativeClient.api
+      // Paging arguments the caller omitted are left off the native call so the SDK's own
+      // defaults apply, rather than being restated here where they could drift out of step.
+      let result: Result<LucraSDK.TournamentUI, TournamentError>
+      if let limit = leaderboardLimit, let offset = leaderboardOffset {
+        result = await api.retrieveTournamentDetails(
+          for: tournamentId, leaderboardLimit: limit, leaderboardOffset: offset)
+      } else if let limit = leaderboardLimit {
+        result = await api.retrieveTournamentDetails(
+          for: tournamentId, leaderboardLimit: limit)
+      } else if let offset = leaderboardOffset {
+        result = await api.retrieveTournamentDetails(
+          for: tournamentId, leaderboardOffset: offset)
+      } else {
+        result = await api.retrieveTournamentDetails(for: tournamentId)
+      }
 
       switch result {
       case .success(let details):
