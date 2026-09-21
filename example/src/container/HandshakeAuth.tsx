@@ -267,22 +267,12 @@ export const HandshakeAuth: React.FC<Props> = ({ navigation }) => {
           </View>
         ) : null}
 
-        <View className="flex-row gap-0.5">
-          <TouchableOpacity
-            className="flex-1 p-4 rounded-l-xl bg-indigo-900"
-            onPress={presentTos}
-          >
-            <Text className="text-white text-center text-xs">
-              Present HANDSHAKE_TOS
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-1 p-4 rounded-r-xl bg-indigo-900"
-            onPress={logout}
-          >
-            <Text className="text-white text-center text-xs">Logout</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          className="p-4 rounded-xl bg-indigo-900"
+          onPress={logout}
+        >
+          <Text className="text-white text-center text-xs">Logout</Text>
+        </TouchableOpacity>
         <Text className="text-indigo-200 text-xs">
           An existing session wins, so without logging out every later sign-in
           short-circuits to the cached user and none of the failure modes run.

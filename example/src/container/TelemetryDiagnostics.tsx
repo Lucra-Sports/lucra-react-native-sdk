@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -30,19 +30,19 @@ const KINDS: Record<
     title: 'Info',
     action: 'Add info breadcrumb',
     explanation:
-      'Info breadcrumb. Stays on the device until the next error event carries it along. No Sentry alert.',
+      'Info breadcrumb. Stays on the device until the next error event carries it along. Creates no Sentry issue on its own.',
   },
   warning: {
     title: 'Warning',
     action: 'Add warning breadcrumb',
     explanation:
-      'Warning breadcrumb. Same as info, shown at warning level in the trail. No Sentry alert.',
+      'Warning breadcrumb. Same as info, shown at warning level in the trail. Creates no Sentry issue on its own.',
   },
   error: {
     title: 'Error',
-    action: 'Send error event (alerts)',
+    action: 'Send error event',
     explanation:
-      "Non-fatal error event. Creates an issue in the Lucra SDK's Sentry project for this platform and triggers Sentry alert emails.",
+      "Non-fatal error event. Creates an issue in the Lucra SDK's Sentry project for this platform, so it counts against the org's error quota.",
   },
 };
 
@@ -52,8 +52,11 @@ export const TelemetryDiagnostics: React.FC<Props> = ({ navigation }) => {
   const [level, setLevel] = useState<LucraTelemetryLevel>('info');
   const [message, setMessage] = useState('Manual test message from RN Example');
   const [sent, setSent] = useState<SentEntry[]>([]);
+  const [isSending, setIsSending] = useState(false);
   const kind = KINDS[level];
   const trimmed = message.trim();
+  const canSend = !!trimmed && !isSending;
+  const sendingRef = useRef(false);
 
   const record = (line: string) => {
     const stamp = new Date().toLocaleTimeString();
@@ -64,9 +67,14 @@ export const TelemetryDiagnostics: React.FC<Props> = ({ navigation }) => {
   };
 
   const send = async () => {
-    if (!trimmed) {
+    // A second tap in the same frame lands before `isSending` has re-rendered the button into
+    // its disabled state, and every error event it would send costs the org another of its
+    // finite error quota, so the ref is what actually holds the line.
+    if (!trimmed || sendingRef.current) {
       return;
     }
+    sendingRef.current = true;
+    setIsSending(true);
     try {
       await LucraSDK.logTelemetry({
         level,
@@ -80,6 +88,9 @@ export const TelemetryDiagnostics: React.FC<Props> = ({ navigation }) => {
           ? `${(e as Error & { code?: string }).code ?? e.name}: ${e.message}`
           : JSON.stringify(e);
       record(`${kind.title} failed: ${detail}`);
+    } finally {
+      sendingRef.current = false;
+      setIsSending(false);
     }
   };
 
@@ -125,12 +136,14 @@ export const TelemetryDiagnostics: React.FC<Props> = ({ navigation }) => {
 
         <TouchableOpacity
           className={`p-4 rounded-xl ${
-            trimmed ? 'bg-indigo-700' : 'bg-indigo-900'
+            canSend ? 'bg-indigo-700' : 'bg-indigo-900'
           }`}
-          disabled={!trimmed}
+          disabled={!canSend}
           onPress={send}
         >
-          <Text className="text-white">{kind.action}</Text>
+          <Text className="text-white">
+            {isSending ? 'Sending…' : kind.action}
+          </Text>
         </TouchableOpacity>
 
         <Text className="text-white">Sent this session</Text>
@@ -152,8 +165,9 @@ export const TelemetryDiagnostics: React.FC<Props> = ({ navigation }) => {
           {CATEGORY} on iOS and prefixed as [{CATEGORY}] on Android, with this
           app's bundle id, environment and the signed-in user id. Breadcrumbs
           are stored on the device and attach to the next error event; only an
-          error creates an event and an alert email. Nothing shows in the Sentry
-          UI while the org error quota is exhausted; the on-disk envelope cache
+          error creates an event, and whether that event notifies anyone is up
+          to the Sentry project's alert rules. Nothing shows in the Sentry UI
+          while the org error quota is exhausted; the on-disk envelope cache
           still fills.
         </Text>
       </ScrollView>
