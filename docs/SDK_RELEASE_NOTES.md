@@ -1,5 +1,5 @@
 # 6.0.0
-* Bumped iOS to [6.0.1](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/6.0.1)
+* Bumped iOS to [6.0.2](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/6.0.2)
 * Bumped Android to [7.0.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/7.0.0)
 * Added **handshake authentication** — signs your user into Lucra from a token your own backend signs, with no Lucra login screen. Phone auth remains the fallback. See [Handshake Authentication](1.2.12_handshake_authentication.md).
   * `LucraSDK.registerHandshakeAuthTokenProvider(provider, { bypassTosAgreement? })` registers an async function returning a partner-signed HS256 JWT; pass `null` to clear it. Safe to call before `init()` resolves — the registration is applied once initialization completes. **Never ship the signing key in the app**; the callback exists so you can fetch an already-signed token from your authenticated API.
