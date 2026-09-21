@@ -1375,10 +1375,9 @@ export const LucraSDK = {
    * without a join code — a code is still required to *join* them, so check
    * `isPrivate` on each result before offering a one-tap join.
    *
-   * **iOS only.** The Android SDK exposes the flag only on a lighter query that
-   * returns a different payload (no `participants[].rewardValue`), so the
-   * bridge ignores it there rather than regressing the response shape. Android
-   * likewise leaves `isPrivate` and `totalParticipants` undefined.
+   * On Android the flag, `isPrivate`, and `totalParticipants` require Lucra
+   * Android SDK 7.0.1 or newer. Older Android SDKs ignore the flag and leave
+   * both fields undefined.
    */
   getRecomendedTournaments: async ({
     includeClosed = true,
