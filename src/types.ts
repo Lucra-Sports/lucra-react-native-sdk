@@ -153,17 +153,7 @@ export type PoolTournament = {
   // ("POOL_CASH_REWARD" | "POOL_TENANT_REWARD").
   rewardType?: string;
   payoutStructure?: PayoutStructure;
-  /**
-   * True when a join code is required to enter — the tournament is visible but
-   * private. **iOS only**; Android's headless tournament model carries no
-   * visibility level, so this is `undefined` there.
-   */
   isPrivate?: boolean;
-  /**
-   * The tournament's true entrant count. Prefer this over `participants.length`,
-   * which can hold only a subset on large tournaments. **iOS only**; `undefined`
-   * on Android.
-   */
   totalParticipants?: number;
 };
 
