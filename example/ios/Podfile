@@ -16,17 +16,6 @@ prepare_react_native_project!
 use_frameworks! :linkage => :static
 $RNFirebaseAsStaticFramework = true
 
-# LucraSDK links Sentry's dynamic framework; a static Sentry pod builds but
-# fails at launch with `dyld: Library not loaded: @rpath/Sentry.framework/Sentry`.
-pre_install do |installer|
-  installer.pod_targets.each do |pod|
-    next unless pod.name == 'Sentry'
-    def pod.build_type
-      Pod::BuildType.dynamic_framework
-    end
-  end
-end
-
 target 'LucrasdkExample' do
   config = use_native_modules!
   
@@ -45,20 +34,6 @@ target 'LucrasdkExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
-
-    # `react_native_post_install` raises the deployment target on pod targets but
-    # not on the *resource bundle* targets CocoaPods generates alongside them
-    # (the `*_Privacy` / `*_resources` ones). Those keep whatever their podspec
-    # declared — 9.0 for PromisesObjC, 11.0 for Sentry and Resolver, 12.x for
-    # the Firebase and Google pods — and Xcode 26 rejects anything below 15.0
-    # outright, failing the build before a line of app code is compiled.
-    installer.target_installation_results.pod_target_installation_results.each do |_, result|
-      result.resource_bundle_targets.each do |bundle_target|
-        bundle_target.build_configurations.each do |config|
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
-        end
-      end
-    end
 
     # fmt 11.0.2 (via RCT-Folly / RN 0.79) fails to compile under newer Clang
     # (Xcode 16.3+/26) with "call to consteval function ... is not a constant
