@@ -749,6 +749,9 @@ object LucraMapper {
         map.putDouble("potNetAmount", matchup.potNetAmount)
         matchup.rewardType?.let { map.putString("rewardType", it) }
         matchup.payoutStructure?.let { map.putMap("payoutStructure", payoutStructureToMap(it)) }
+        // `participants` is capped by the leaderboard page size, so this is the number to display.
+        map.putInt("totalParticipants", matchup.totalParticipants)
+        map.putBoolean("isPrivate", matchup.isPrivate)
 
         return map
     }
