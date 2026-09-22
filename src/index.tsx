@@ -57,6 +57,7 @@ export {
   type LucraTheme,
   type LucraColorSet,
   type LucraFontFamily,
+  type LucraThemeMode,
 } from './theme';
 
 const eventEmitter = new NativeEventEmitter(LucraClient);
@@ -506,6 +507,21 @@ let matchupDetailsGeneration = 0;
 let gamesMatchupFeeListener: NativeEventSubscription | null = null;
 let gamesMatchupFeeGeneration = 0;
 
+// Handshake auth. These listeners are installed lazily and deliberately never
+// removed: `init()` tears its own subscriptions down and re-adds them, and a
+// token request stranded across a re-init costs the user the native SDK's full
+// 5s provider timeout.
+let handshakeTokenProvider: (() => Promise<string>) | null = null;
+let handshakeTokenSubscription: NativeEventSubscription | null = null;
+let handshakeBypassTosAgreement = false;
+/** Set once `init()` resolves; gates installing the provider natively. */
+let sdkInitialized = false;
+/** A registration made before `init()` resolved, applied when it does. */
+let pendingHandshakeRegistration = false;
+let authStateSubscription: NativeEventSubscription | null = null;
+let lastAuthState: LucraAuthState | null = null;
+const authStateSubscribers = new Set<(state: LucraAuthState) => void>();
+
 type LucraContestListeners = {
   onGamesMatchupCreated?: (id: string) => void;
   onSportsMatchupCreated?: (id: string) => void;
@@ -557,6 +573,13 @@ const Flows = {
   MINI_GAMES_REWARDS: 'miniGamesRewards',
   MINI_GAMES_MATCHUP_DETAILS: 'miniGamesMatchupDetails',
   ACHIEVEMENTS: 'achievements',
+  /**
+   * Captures Terms of Service acceptance and completes a handshake sign-in.
+   * Present it **only** in response to a `tosNotAccepted` handshake failure —
+   * it is not a general entry point. See
+   * [Handshake Authentication](1.2.12_handshake_authentication.md).
+   */
+  HANDSHAKE_TOS: 'handshakeTOS',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
 } as const;
 
@@ -604,6 +627,7 @@ function present(params: {
   handlePostNavigation?: boolean;
 }): Promise<void>;
 function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
+function present(params: { name: typeof Flows.HANDSHAKE_TOS }): Promise<void>;
 function present(params: { name: typeof Flows.MINI_GAMES_HOME }): Promise<void>;
 function present(params: {
   name: typeof Flows.MINI_GAMES_PROFILE;
@@ -631,6 +655,111 @@ function present(params: {
   }
 }
 
+/**
+ * Lift the native `recoverySuggestion` out of the rejection's `userInfo` onto
+ * the error itself, so `LucraHandshakeAuthError` has one shape on both
+ * platforms.
+ */
+function normalizeHandshakeRejection(error: any): any {
+  const suggestion = error?.userInfo?.recoverySuggestion;
+  if (typeof suggestion === 'string' && suggestion.length > 0) {
+    error.recoverySuggestion = suggestion;
+  }
+  return error;
+}
+
+/**
+ * Answer the native SDK's request for a handshake token.
+ *
+ * Correlated by `requestId`, and with a real rejection path: a JS provider that
+ * throws is reported back so the native SDK surfaces `providerFailed` carrying
+ * the message, rather than leaving the exchange to time out.
+ *
+ * Deliberately no JS timeout — the native SDKs already bound the provider at 5s
+ * and cancel it, and a second timer racing theirs would turn a genuine
+ * `providerTimedOut` into a misleading `providerFailed`.
+ */
+function ensureHandshakeTokenListener() {
+  if (handshakeTokenSubscription) {
+    return;
+  }
+  handshakeTokenSubscription = eventEmitter.addListener(
+    '_handshakeAuthToken',
+    async (data: { requestId: string }) => {
+      const requestId = data?.requestId;
+      if (!requestId) {
+        return;
+      }
+      const provider = handshakeTokenProvider;
+      if (!provider) {
+        LucraClient.rejectHandshakeAuthToken(
+          requestId,
+          'No handshake auth token provider is registered in JavaScript.'
+        );
+        return;
+      }
+      try {
+        const token = await provider();
+        if (typeof token !== 'string' || token.length === 0) {
+          LucraClient.rejectHandshakeAuthToken(
+            requestId,
+            'The handshake auth token provider returned no token.'
+          );
+          return;
+        }
+        LucraClient.resolveHandshakeAuthToken(requestId, token);
+      } catch (e: any) {
+        const message =
+          (typeof e?.message === 'string' && e.message.trim()) ||
+          String(e) ||
+          'The handshake auth token provider threw.';
+        LucraClient.rejectHandshakeAuthToken(requestId, message);
+      }
+    }
+  );
+}
+
+/**
+ * Cache and fan out the always-on `authState` event.
+ *
+ * Native starts emitting at `initialize` and never stops, so unlike the fee and
+ * matchup-details subscriptions there is nothing to start or cancel — and
+ * because unsubscribing is a `Set.delete`, a stale unsubscribe can never cancel
+ * a subscription that replaced it.
+ */
+function ensureAuthStateListener() {
+  if (authStateSubscription) {
+    return;
+  }
+  authStateSubscription = eventEmitter.addListener(
+    'authState',
+    (state: LucraAuthState) => {
+      lastAuthState = {
+        isHandshakeAuthInFlight: !!state?.isHandshakeAuthInFlight,
+        handshakeAuthError: state?.handshakeAuthError ?? null,
+        isResolvingAuthState:
+          typeof state?.isResolvingAuthState === 'boolean'
+            ? state.isResolvingAuthState
+            : null,
+      };
+      authStateSubscribers.forEach((subscriber) => subscriber(lastAuthState!));
+    }
+  );
+}
+
+/** Install the JS provider natively. No-op until `init()` has resolved. */
+function applyHandshakeRegistration(): Promise<void> {
+  if (!sdkInitialized) {
+    pendingHandshakeRegistration = true;
+    return Promise.resolve();
+  }
+  pendingHandshakeRegistration = false;
+  return LucraClient.registerHandshakeAuthTokenProvider(
+    handshakeTokenProvider !== null,
+    handshakeBypassTosAgreement
+  );
+}
+
 export const LucraSDK = {
   ready: false,
   ENVIRONMENT: LucraEnvironment,
@@ -638,6 +767,16 @@ export const LucraSDK = {
   init: async (options: LucraSDKParams): Promise<void> => {
     const theme = normalizeTheme(options.theme);
     await LucraClient.initialize(theme ? { ...options, theme } : options);
+    sdkInitialized = true;
+    // Installed outside the teardown/re-add block below so a re-init can never
+    // strand an in-flight token request or drop the auth-state cache.
+    ensureAuthStateListener();
+    // Re-apply on every init, not just a staged one: Android rebuilds its SDK
+    // graph on initialize, so a provider registered before a re-init would
+    // otherwise be dropped natively while JS still believed it was installed.
+    if (pendingHandshakeRegistration || handshakeTokenProvider) {
+      await applyHandshakeRegistration();
+    }
     deepLinkSubscription?.remove();
     deepLinkSubscription = eventEmitter.addListener(
       '_deepLink',
@@ -864,6 +1003,121 @@ export const LucraSDK = {
    */
   resendCode: (): Promise<void> => {
     return LucraClient.resendCode();
+  },
+  /**
+   * Registers the async function Lucra calls to get a partner-signed handshake
+   * token for the current user, so the user is signed in without Lucra's phone
+   * entry screen. Pass `null` to clear it and fall back to phone auth.
+   *
+   * The function should call **your** backend with **your** session and return
+   * the signed JWT. Lucra never sees your credentials, the token is used once
+   * per call, and the native SDKs bound the call at 5 seconds. Never ship the
+   * signing key in the app — that is the whole reason this is a callback.
+   *
+   * If your function rejects, the failure is reported as `providerFailed`
+   * carrying your error's message, so a broken token endpoint is diagnosable
+   * rather than looking like a timeout.
+   *
+   * Registering only stores the function: it signs nobody in and is safe to
+   * call more than once. Calling it before `LucraSDK.init()` resolves is fine —
+   * the registration is applied as soon as initialization completes.
+   *
+   * `bypassTosAgreement` requests that Terms of Service capture be skipped. It
+   * is honored only where your tenant's configuration allows it, carries a
+   * legal obligation you are taking on, and should be discussed with Lucra
+   * first. See [Handshake Authentication](1.2.12_handshake_authentication.md).
+   */
+  registerHandshakeAuthTokenProvider: (
+    provider: (() => Promise<string>) | null,
+    options?: { bypassTosAgreement?: boolean }
+  ): Promise<void> => {
+    handshakeTokenProvider = provider;
+    handshakeBypassTosAgreement = options?.bypassTosAgreement ?? false;
+    if (provider) {
+      ensureHandshakeTokenListener();
+    }
+    return applyHandshakeRegistration();
+  },
+  /**
+   * Signs the user in with the registered handshake token provider and resolves
+   * with the authenticated user. Rejects with `LucraHandshakeAuthError` codes.
+   *
+   * An existing session wins: if the user is already signed in — including a
+   * stored session still being restored at launch — this reports that user and
+   * runs no exchange, so it is safe to call unconditionally at app start. To
+   * sign a different user in, call `logout()` first.
+   *
+   * With a provider registered you generally do not need to call this at all:
+   * presenting a Lucra flow or tapping auth-gated content runs the handshake
+   * itself, behind a loading state.
+   *
+   * Handle `tosNotAccepted` by presenting `LucraSDK.FLOW.HANDSHAKE_TOS` — it is
+   * the one failure that must **not** fall back to phone auth, which cannot
+   * create the account either. The flow captures the agreement and resubmits
+   * the sign-in itself, so watch the `user` listener rather than this promise.
+   */
+  signInWithHandshakeAuth: async (): Promise<LucraUser> => {
+    try {
+      const object = (await LucraClient.signInWithHandshakeAuth()) as any;
+      return object.user as LucraUser;
+    } catch (e) {
+      throw normalizeHandshakeRejection(e);
+    }
+  },
+  /**
+   * Reads the current auth state once. Prefer `subscribeToAuthState` —
+   * `isResolvingAuthState` in particular is `true` for a window right after
+   * init and can flip back mid-session, so a single read is easy to misread.
+   */
+  getAuthState: async (): Promise<LucraAuthState> => {
+    const state = (await LucraClient.getAuthState()) as LucraAuthState;
+    lastAuthState = state;
+    return state;
+  },
+  /**
+   * Subscribes to auth state. `onChange` fires immediately with the last known
+   * state when one is cached, and again on every change.
+   *
+   * Returns an unsubscribe function. Unlike the other subscription helpers this
+   * one supports any number of concurrent subscribers, and a stale unsubscribe
+   * never cancels a subscription that replaced it.
+   */
+  subscribeToAuthState: (
+    onChange: (state: LucraAuthState) => void
+  ): (() => void) => {
+    ensureAuthStateListener();
+    authStateSubscribers.add(onChange);
+    if (lastAuthState) {
+      onChange(lastAuthState);
+    }
+    return () => {
+      authStateSubscribers.delete(onChange);
+    };
+  },
+  /**
+   * Records a diagnostic through the native Lucra SDK's own telemetry, the
+   * same logger fan-out the SDK's code reports through. `info` and `warning`
+   * record breadcrumbs that attach to the next error event; `error` records a
+   * non-fatal error event, which creates a Sentry issue and triggers alerts.
+   * Nothing reaches your own Sentry project: records go to Lucra's SDK Sentry
+   * project for the platform, using the DSN compiled into the native SDK.
+   *
+   * iOS tags the record with `category`; Android has no category field, so
+   * the category is prefixed to the message as `[category] message`.
+   */
+  logTelemetry: ({
+    level,
+    message,
+    category = 'Lucra',
+  }: {
+    level: LucraTelemetryLevel;
+    message: string;
+    category?: string;
+  }): Promise<void> => {
+    if (!message.trim()) {
+      throw new Error('message is required');
+    }
+    return LucraClient.logTelemetry(level, message, category);
   },
   closeFullScreenLucraFlows: (): Promise<void> => {
     return LucraClient.closeFullScreenLucraFlows();
@@ -1114,16 +1368,26 @@ export const LucraSDK = {
   },
   // Pool tournaments
   // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
+  /**
+   * Fetches the tournaments Lucra recommends for the current user.
+   *
+   * `includePrivateViewable` also returns private tournaments that are viewable
+   * without a join code — a code is still required to *join* them, so check
+   * `isPrivate` on each result before offering a one-tap join.
+   */
   getRecomendedTournaments: async ({
     includeClosed = true,
     limit = 50,
+    includePrivateViewable = false,
   }: {
     includeClosed?: boolean;
     limit?: number;
+    includePrivateViewable?: boolean;
   }): Promise<PoolTournament[]> => {
     return (await LucraClient.getRecommendedTournaments({
       includeClosed,
       limit,
+      includePrivateViewableTournaments: includePrivateViewable,
     })) as PoolTournament[];
   },
   tournamentMatchup: async (tournamentId: string): Promise<PoolTournament> => {
@@ -1142,8 +1406,7 @@ export const LucraSDK = {
    * headless tournament UIs; the native SDKs deprecate the heavier call.
    *
    * `leaderboardLimit`/`leaderboardOffset` page the leaderboard section on
-   * Android; the iOS SDK does not support leaderboard pagination yet and
-   * always returns the first page.
+   * both platforms; omit them for the native SDK's default first page.
    */
   getTournamentDetails: async (
     tournamentId: string,
@@ -1166,9 +1429,6 @@ export const LucraSDK = {
   /**
    * Submits the user's score for a tournament and resolves with the updated
    * tournament, or `null` when the native SDK returns none (iOS).
-   *
-   * Note: the iOS SDK accepts whole-number scores only, so the score is
-   * rounded to the nearest integer on iOS.
    */
   submitUserScore: async ({
     tournamentId,
@@ -1206,6 +1466,31 @@ export const LucraSDK = {
  *
  * Pass `undefined` to stay idle (e.g. while the matchup id is still loading).
  */
+/**
+ * Subscribes to Lucra's auth state for the lifetime of a component.
+ *
+ * Returns `isHandshakeAuthInFlight` (show your own spinner while a handshake
+ * runs), the last `handshakeAuthError`, and `isResolvingAuthState` — which is
+ * `null` on Android, so a falsy check does the right thing on both platforms
+ * without a `Platform.OS` branch.
+ */
+export function useAuthState(): LucraAuthState {
+  const [state, setState] = React.useState<LucraAuthState>(
+    () =>
+      lastAuthState ?? {
+        isHandshakeAuthInFlight: false,
+        handshakeAuthError: null,
+        isResolvingAuthState: null,
+      }
+  );
+
+  React.useEffect(() => {
+    return LucraSDK.subscribeToAuthState(setState);
+  }, []);
+
+  return state;
+}
+
 export function useMatchupDetails(matchupId: string | undefined): {
   details: MatchupDetails | null;
   error: { code: string; message: string } | null;
@@ -1256,9 +1541,81 @@ export type LucraSDKError = {
 } & Error;
 
 /**
+ * Severity for `logTelemetry`: `info` and `warning` are breadcrumbs, `error`
+ * is a non-fatal error event.
+ */
+export type LucraTelemetryLevel = 'info' | 'warning' | 'error';
+
+/**
  * Rejection shape for the phone-auth headless flow (`submitPhoneNumber`,
  * `submitVerificationCode`, `resendCode`).
  */
+/**
+ * Rejection shape for the handshake-auth calls (`signInWithHandshakeAuth`,
+ * `registerHandshakeAuthTokenProvider`), and the `code` carried by
+ * `LucraAuthState.handshakeAuthError`.
+ *
+ * Every failure except `tosNotAccepted` is a fallback case: fall back to phone
+ * auth rather than dead-ending the user. `tosNotAccepted` is the one phone auth
+ * cannot fix — present `LucraSDK.FLOW.HANDSHAKE_TOS` instead.
+ */
+export type LucraHandshakeAuthErrorCode =
+  /** `signInWithHandshakeAuth` was called with no provider registered. */
+  | 'noProviderRegistered'
+  /** Your provider did not return within the native SDK's 5s budget. */
+  | 'providerTimedOut'
+  /** Your provider rejected; `message` carries its error message. */
+  | 'providerFailed'
+  /** Lucra rejected the token. Check the signing key, `iat` freshness and the claim shape. */
+  | 'exchangeFailed'
+  /** SDK initialization never produced a tenant — check your API key. */
+  | 'tenantIdUnavailable'
+  /**
+   * The user is new to Lucra and has not accepted the Terms of Service. Present
+   * `LucraSDK.FLOW.HANDSHAKE_TOS`, which captures the agreement and resubmits
+   * the sign-in itself. Do **not** fall back to phone auth — it cannot create
+   * the account either.
+   */
+  | 'tosNotAccepted'
+  /** Android only: the session landed but the profile did not. Retryable. */
+  | 'profileTimedOut'
+  /** `LucraSDK.init()` has not resolved yet. */
+  | 'notInitialized'
+  | 'unknownError';
+
+export type LucraHandshakeAuthError = {
+  code: LucraHandshakeAuthErrorCode;
+  /** The native SDK's recovery suggestion — what to actually go look at. */
+  recoverySuggestion?: string;
+} & Error;
+
+/**
+ * Auth state published by the native SDK, delivered by
+ * `LucraSDK.subscribeToAuthState` / `LucraSDK.getAuthState` / `useAuthState`.
+ */
+export type LucraAuthState = {
+  /** True while a handshake token exchange is running. */
+  isHandshakeAuthInFlight: boolean;
+  /**
+   * The **last** handshake failure, cleared when the next exchange starts — not
+   * an assertion that something is failing right now. Because handshake
+   * failures fall back to phone auth silently, this is how a working fallback
+   * is told apart from a broken integration.
+   */
+  handshakeAuthError: {
+    code: LucraHandshakeAuthErrorCode;
+    message: string;
+    recoverySuggestion?: string;
+  } | null;
+  /**
+   * True while the SDK is still resolving auth state. Can flip back to `true`
+   * mid-session during a sign-in, so prefer subscribing over a one-shot read.
+   *
+   * **iOS only** — `null` on Android, whose SDK exposes no public equivalent.
+   */
+  isResolvingAuthState: boolean | null;
+};
+
 export type LucraPhoneAuthError = {
   code:
     | 'notInitialized'
@@ -1266,6 +1623,12 @@ export type LucraPhoneAuthError = {
     | 'phoneNumberNotSubmitted'
     | 'invalidCode'
     | 'alreadyLoggedIn'
+    /** The user texted STOP to Lucra's verification sender; codes cannot be delivered until they reply START or UNSTOP. */
+    | 'messagingDisabled'
+    /** The SMS provider could not deliver the verification text to this number. */
+    | 'smsNotDelivered'
+    /** Too many send or verify attempts; the user must wait before retrying. */
+    | 'tooManyAttempts'
     | 'networkError'
     | 'unknownError';
 } & Error;

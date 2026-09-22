@@ -153,6 +153,8 @@ export type PoolTournament = {
   // ("POOL_CASH_REWARD" | "POOL_TENANT_REWARD").
   rewardType?: string;
   payoutStructure?: PayoutStructure;
+  isPrivate?: boolean;
+  totalParticipants?: number;
 };
 
 export type PayoutStructure = {
@@ -311,9 +313,9 @@ export type TournamentDetails = {
   /** The current user's row, when they participate in the tournament. */
   userLeaderboardRow?: TournamentDetailsLeaderboardRow;
   terms: TournamentDetailsTerm[];
-  /** iOS only (ISO 8601). */
+  /** ISO 8601. */
   expiresAt?: string;
-  /** iOS only (ISO 8601). */
+  /** ISO 8601. */
   startsAt?: string;
 };
 

@@ -16,6 +16,17 @@ prepare_react_native_project!
 use_frameworks! :linkage => :static
 $RNFirebaseAsStaticFramework = true
 
+# LucraSDK links Sentry's dynamic framework; a static Sentry pod builds but
+# fails at launch with `dyld: Library not loaded: @rpath/Sentry.framework/Sentry`.
+pre_install do |installer|
+  installer.pod_targets.each do |pod|
+    next unless pod.name == 'Sentry'
+    def pod.build_type
+      Pod::BuildType.dynamic_framework
+    end
+  end
+end
+
 target 'LucrasdkExample' do
   config = use_native_modules!
   

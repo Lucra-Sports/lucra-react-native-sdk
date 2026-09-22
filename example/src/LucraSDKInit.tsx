@@ -30,13 +30,22 @@ const LucraSDKInit: React.FC<LucraSDKInitProps> = ({ onStateChange }) => {
 
     console.log('[LucraSDK] init', { apiKey, environment });
 
+    const paletteMode = state.paletteMode ?? 'both';
+    const themeMode = state.themeMode ?? 'default';
+    const light = state.theme?.light ?? defaultAppConfig.theme.light;
+    const dark = state.theme?.dark ?? defaultAppConfig.theme.dark;
+
     LucraSDK.init({
       apiKey,
       environment,
       urlScheme: defaultAppConfig.urlScheme,
       theme: {
-        light: state.theme?.light ?? defaultAppConfig.theme.light,
-        dark: state.theme?.dark ?? defaultAppConfig.theme.dark,
+        // Sending only one palette is what makes the SDK reuse it for the other
+        // appearance — the case the cross-fill warning covers.
+        ...(paletteMode === 'dark' ? {} : { light }),
+        ...(paletteMode === 'light' ? {} : { dark }),
+        // 'default' means omit it, so the derive-from-palettes rule still applies.
+        ...(themeMode === 'default' ? {} : { themeMode }),
         fontFamily: {
           normal:
             Platform.OS === 'ios' ? 'Inter Regular' : 'fonts/Inter-Regular.ttf',

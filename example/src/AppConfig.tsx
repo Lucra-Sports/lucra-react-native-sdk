@@ -4,7 +4,9 @@ import {
 } from '@lucra-sports/lucra-react-native-sdk';
 import {
   DEFAULT,
+  type AppPaletteMode,
   type AppTheme,
+  type AppThemeMode,
   type Theme,
   type ThemeAppearance,
 } from './theme';
@@ -16,6 +18,10 @@ export interface AppConfig {
   merchantId: string;
   deeplinksEnabled: boolean;
   theme: AppTheme;
+  /** `default` omits themeMode entirely, keeping the derive-from-palettes rule. */
+  themeMode: AppThemeMode;
+  /** Which palettes get sent, so the one-palette cross-fill case is reachable. */
+  paletteMode: AppPaletteMode;
   dirty: boolean;
 }
 
@@ -31,6 +37,8 @@ export type AppConfigAction =
       key: keyof Theme;
       value: string;
     }
+  | { type: 'SET_THEME_MODE'; themeMode: AppThemeMode }
+  | { type: 'SET_PALETTE_MODE'; paletteMode: AppPaletteMode }
   | { type: 'SET_TOGGLE'; field: 'deeplinksEnabled'; value: boolean };
 
 export const defaultAppConfig: AppConfig = {
@@ -40,6 +48,8 @@ export const defaultAppConfig: AppConfig = {
   merchantId: 'required.for.apple.pay',
   deeplinksEnabled: true,
   theme: DEFAULT,
+  themeMode: 'default',
+  paletteMode: 'both',
   dirty: false,
 };
 
@@ -50,6 +60,8 @@ export const initialAppConfig: AppConfig = {
   merchantId: '',
   deeplinksEnabled: false,
   theme: DEFAULT,
+  themeMode: 'default',
+  paletteMode: 'both',
   dirty: false,
 };
 
@@ -58,17 +70,24 @@ export const initialAppConfig: AppConfig = {
  * Reuse it for both appearances so an upgraded install still renders.
  */
 export function migrateAppConfig(config: AppConfig): AppConfig {
-  const theme: unknown = config.theme;
+  // Configs persisted before forced modes existed have neither key.
+  const withModes: AppConfig = {
+    ...config,
+    themeMode: config.themeMode ?? 'default',
+    paletteMode: config.paletteMode ?? 'both',
+  };
+
+  const theme: unknown = withModes.theme;
   if (
     theme &&
     typeof theme === 'object' &&
     'light' in theme &&
     'dark' in theme
   ) {
-    return config;
+    return withModes;
   }
   const flat = { ...DEFAULT.dark, ...(theme as Partial<Theme> | null) };
-  return { ...config, theme: { light: flat, dark: flat } };
+  return { ...withModes, theme: { light: flat, dark: flat } };
 }
 
 export function appConfigReducer(
@@ -94,6 +113,10 @@ export function appConfigReducer(
       return { ...state, deeplinksEnabled: action.value, dirty: true };
     case 'SET_THEME':
       return { ...state, theme: action.theme, dirty: true };
+    case 'SET_THEME_MODE':
+      return { ...state, themeMode: action.themeMode, dirty: true };
+    case 'SET_PALETTE_MODE':
+      return { ...state, paletteMode: action.paletteMode, dirty: true };
     case 'SET_THEME_COLOR':
       return {
         ...state,

@@ -38,6 +38,7 @@ import com.lucrasports.sdk.core.achievement.LucraAchievementDefinition
 import com.lucrasports.sdk.core.achievement.LucraAchievementCriteriaType
 import com.lucrasports.sdk.core.achievement.LucraAchievementCriteriaConfig
 import com.lucrasports.sdk.core.style_guide.ColorStyle
+import com.lucrasports.sdk.core.style_guide.ThemeMode
 import com.lucrasports.sdk.core.style_guide.Font
 import com.lucrasports.sdk.core.style_guide.FontFamily
 import com.lucrasports.sdk.core.user.SDKUser
@@ -79,6 +80,30 @@ object LucraMapper {
             onSecondary = params.getString("onSecondary"),
             onTertiary = params.getString("onTertiary")
         )
+    }
+
+    /** The six color tokens a `ColorStyle` is built from. */
+    private val COLOR_KEYS = listOf(
+        "primary", "secondary", "tertiary", "onPrimary", "onSecondary", "onTertiary"
+    )
+
+    /** True when the theme map carries at least one color token. */
+    fun ReadableMap.hasAnyColorKey(): Boolean = COLOR_KEYS.any { hasKey(it) }
+
+    /**
+     * Maps the JS `theme.themeMode` string onto the SDK's forced-appearance enum.
+     *
+     * JS speaks iOS's (and React Native's) vocabulary, so `system` maps to
+     * [ThemeMode.AUTO]. An unrecognised value returns null, which keeps the
+     * appearance derived from whichever palettes were supplied.
+     */
+    fun readableMapToThemeMode(params: ReadableMap): ThemeMode? {
+        return when (params.getString("themeMode")?.lowercase()) {
+            "light" -> ThemeMode.LIGHT
+            "dark" -> ThemeMode.DARK
+            "system" -> ThemeMode.AUTO
+            else -> null
+        }
     }
 
     fun readableMapToFontFamily(params: ReadableMap): FontFamily {
@@ -200,6 +225,9 @@ object LucraMapper {
             is LucraUiProvider.LucraFlow.ResponsibleGaming ->
                 map.putString("flow", "responsibleGaming")
             is LucraUiProvider.LucraFlow.Notifications -> map.putString("flow", "notifications")
+            // Explicit on purpose: the `else` below would emit toString()
+            // ("HandshakeTOS"), which `present` does not accept.
+            is LucraUiProvider.LucraFlow.HandshakeTOS -> map.putString("flow", "handshakeTOS")
             is LucraUiProvider.LucraFlow.Tournaments -> map.putString("flow", "tournaments")
             is LucraUiProvider.LucraFlow.ClaimRewards -> map.putString("flow", "claimRewards")
             is LucraUiProvider.LucraFlow.ClaimAchievementRewards ->
@@ -721,6 +749,8 @@ object LucraMapper {
         map.putDouble("potNetAmount", matchup.potNetAmount)
         matchup.rewardType?.let { map.putString("rewardType", it) }
         matchup.payoutStructure?.let { map.putMap("payoutStructure", payoutStructureToMap(it)) }
+        map.putInt("totalParticipants", matchup.totalParticipants)
+        map.putBoolean("isPrivate", matchup.isPrivate)
 
         return map
     }
@@ -848,6 +878,8 @@ object LucraMapper {
             })
         }
         map.putArray("terms", terms)
+        details.expiresAt?.let { map.putString("expiresAt", isoUtcDf.format(it)) }
+        details.startsAt?.let { map.putString("startsAt", isoUtcDf.format(it)) }
         return map
     }
 

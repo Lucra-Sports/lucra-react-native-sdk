@@ -18,7 +18,24 @@ private enum PhoneAuthErrorCode {
   static let phoneNumberNotSubmitted = "phoneNumberNotSubmitted"
   static let invalidCode = "invalidCode"
   static let alreadyLoggedIn = "alreadyLoggedIn"
+  static let messagingDisabled = "messagingDisabled"
+  static let smsNotDelivered = "smsNotDelivered"
+  static let tooManyAttempts = "tooManyAttempts"
   static let networkError = "networkError"
+}
+
+private enum HandshakeAuthErrorCode {
+  static let noProviderRegistered = "noProviderRegistered"
+  static let providerTimedOut = "providerTimedOut"
+  static let providerFailed = "providerFailed"
+  static let exchangeFailed = "exchangeFailed"
+  static let tenantIdUnavailable = "tenantIdUnavailable"
+  static let tosNotAccepted = "tosNotAccepted"
+}
+
+private struct TelemetryDiagnosticError: LocalizedError {
+  let message: String
+  var errorDescription: String? { "TelemetryDiagnosticError: \(message)" }
 }
 
 @objc public protocol LucraClientDelegate {
@@ -40,6 +57,8 @@ private enum PhoneAuthErrorCode {
   private var conversionProvider: ConversionProvider!
   private var gamesMatchupFeeTimer: Timer?
   private var lastEmittedGamesMatchupFee: Decimal?
+  private let handshakeTokenBridge = HandshakeTokenBridge()
+  private var authStateCancellable: AnyCancellable?
 
   static public var shared = LucraSwiftClient()
 
@@ -72,9 +91,11 @@ private enum PhoneAuthErrorCode {
     let urlScheme = options["urlScheme"] as? String ?? ""
 
     var clientTheme = ClientTheme()
+    var themeMode: LucraSDK.LucraThemeMode? = nil
 
     if let theme = options["theme"] as? [String: Any] {
       clientTheme = mapToClientTheme(theme: theme)
+      themeMode = mapToThemeMode(theme["themeMode"])
     }
 
     let environment = LucraUtils.stringToEnvironment(
@@ -94,9 +115,28 @@ private enum PhoneAuthErrorCode {
           autoJoin: autoJoin,
           allowRewardSheetToDisplay: allowRewardSheetToDisplay
         ),
-        appearance: clientTheme
+        appearance: clientTheme,
+        themeMode: themeMode
       )
     )
+
+    // Handshake in-flight, the last handshake failure, and auth-state
+    // resolution ride one payload so a consumer can never see the in-flight
+    // flag drop before the error that caused it. `@Published` replays on
+    // subscribe, so this also seeds the JS-side cache immediately.
+    authStateCancellable = Publishers.CombineLatest3(
+      nativeClient.$isHandshakeAuthInFlight,
+      nativeClient.$handshakeAuthError,
+      nativeClient.$isResolvingAuthState
+    )
+    .receive(on: RunLoop.main)
+    .sink { [weak self] inFlight, handshakeError, isResolving in
+      guard let self else { return }
+      self.delegate?.sendEvent(
+        name: "authState",
+        result: self.authStateMap(
+          inFlight: inFlight, error: handshakeError, isResolving: isResolving))
+    }
 
     eventSinkCancellable = nativeClient.$event.sink { event in
       guard let event = event else { return }
@@ -950,15 +990,16 @@ private enum PhoneAuthErrorCode {
     do {
       let nativeFlow = try LucraUtils.stringToLucraFlow(
         flow, matchupId: nil, teamInviteId: nil, gameId: nil, location: nil)
-      return self.nativeClient.ui.flow(nativeFlow, hideCloseButton: true)
+      return self.nativeClient.ui.flowViewController(nativeFlow, hideCloseButton: true)
     } catch {
       print("There was an error getting the native flow \(error)")
-      return self.nativeClient.ui.flow(.profile, hideCloseButton: true)
+      return self.nativeClient.ui.flowViewController(.profile, hideCloseButton: true)
     }
   }
 
   @objc public func getProfilePill() -> UIView {
-    return self.nativeClient.ui.component(.userProfilePill)
+    return self.nativeClient.ui.component(
+      .userProfilePill, parentUIViewController: UIViewController())
   }
 
   @objc public func getMiniFeed(
@@ -973,11 +1014,13 @@ private enum PhoneAuthErrorCode {
   }
 
   @objc public func getCreateContestButton() -> UIView {
-    return self.nativeClient.ui.component(.createContestButton)
+    return self.nativeClient.ui.component(
+      .createContestButton, parentUIViewController: UIViewController())
   }
 
   @objc public func getRecommendedMatchup() -> UIView {
-    return self.nativeClient.ui.component(.recommendedMatchup)
+    return self.nativeClient.ui.component(
+      .recommendedMatchup, parentUIViewController: UIViewController())
   }
 
   @objc public func getContestCard(
@@ -1001,10 +1044,13 @@ private enum PhoneAuthErrorCode {
   ) {
     let includeClosed: Bool = params["includeClosed"] as? Bool ?? true
     let limit: Int = params["limit"] as? Int ?? 50
+    let includePrivateViewable: Bool =
+      params["includePrivateViewableTournaments"] as? Bool ?? false
 
     Task { @MainActor in
       let result = await self.nativeClient.api.getRecommendedTournaments(
-        includeClosed: includeClosed, limit: limit
+        includeClosed: includeClosed, limit: limit,
+        includePrivateViewableTournaments: includePrivateViewable
       )
 
       switch result {
@@ -1072,11 +1118,14 @@ private enum PhoneAuthErrorCode {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    let leaderboardLimit = params["leaderboardLimit"] as? Int
+    let leaderboardOffset = params["leaderboardOffset"] as? Int
+
     Task { @MainActor in
-      // params carries Android-only leaderboard pagination options; the iOS
-      // SDK always returns the first leaderboard page.
       let result = await self.nativeClient.api.retrieveTournamentDetails(
-        for: tournamentId)
+        for: tournamentId,
+        leaderboardLimit: leaderboardLimit ?? 10,
+        leaderboardOffset: leaderboardOffset ?? 0)
 
       switch result {
       case .success(let details):
@@ -1096,16 +1145,14 @@ private enum PhoneAuthErrorCode {
     reject: @escaping RCTPromiseRejectBlock
   ) {
     Task { @MainActor in
-      // The iOS SDK accepts whole-number scores only; Int(exactly:) also
-      // rejects NaN/infinite/out-of-range values instead of trapping.
-      guard let intScore = Int(exactly: score.rounded()) else {
+      guard score.isFinite else {
         reject("invalidScore", "score must be a finite number", nil)
         return
       }
 
       let stringMetadata = metadata.mapValues { "\($0)" }
       let result = await self.nativeClient.api.submitUserScore(
-        intScore,
+        score,
         tournamentID: tournamentId,
         metadata: stringMetadata,
         isFinal: isFinal
@@ -1271,6 +1318,167 @@ private enum PhoneAuthErrorCode {
     }
   }
 
+  // MARK: - Handshake authentication
+
+  /// Installs (or clears) the handshake token provider.
+  ///
+  /// A JS function can't cross the bridge, so `registered` says whether one
+  /// exists and the closure below round-trips through the event bus for each
+  /// token. Requires `initialize` to have run — `nativeClient` is built there.
+  @objc public func registerHandshakeAuthTokenProvider(
+    _ registered: Bool,
+    bypassTosAgreement: Bool,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
+
+    if registered {
+      handshakeTokenBridge.client = self
+      nativeClient.registerHandshakeAuthTokenProvider(
+        { [weak self] in
+          guard let self else {
+            throw HandshakeProviderJSError(
+              message: "The Lucra React Native bridge was torn down.")
+          }
+          return try await self.handshakeTokenBridge.requestToken()
+        }, bypassTosAgreement: bypassTosAgreement)
+    } else {
+      nativeClient.registerHandshakeAuthTokenProvider(nil)
+    }
+    resolve(nil)
+  }
+
+  /// Signs in with the registered provider and resolves the authenticated user.
+  ///
+  /// The native call returns `Void`, but only once the profile has loaded, so
+  /// reading `user` straight after is safe. Resolving `["user": ...]` keeps the
+  /// payload identical to `submitVerificationCode`.
+  @objc public func signInWithHandshakeAuth(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
+
+    Task { @MainActor in
+      do {
+        try await self.nativeClient.signInWithHandshakeAuth()
+        guard let user = self.nativeClient.user else {
+          // The SDK waits for the profile before returning, so this is a
+          // backstop rather than an expected outcome.
+          reject(
+            ErrorCode.unknownError,
+            "Handshake sign-in completed but no user was available", nil)
+          return
+        }
+        resolve(sdkUserToMap(user: user))
+      } catch {
+        self.rejectHandshakeAuthError(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func resolveHandshakeAuthToken(_ requestId: String, token: String) {
+    handshakeTokenBridge.resolve(requestId: requestId, token: token)
+  }
+
+  @objc public func rejectHandshakeAuthToken(_ requestId: String, message: String) {
+    handshakeTokenBridge.reject(requestId: requestId, message: message)
+  }
+
+  @objc public func getAuthState(
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
+
+    Task { @MainActor in
+      resolve(
+        self.authStateMap(
+          inFlight: self.nativeClient.isHandshakeAuthInFlight,
+          error: self.nativeClient.handshakeAuthError,
+          isResolving: self.nativeClient.isResolvingAuthState))
+    }
+  }
+
+  private func authStateMap(
+    inFlight: Bool, error: HandshakeAuthError?, isResolving: Bool
+  ) -> [String: Any] {
+    var map: [String: Any] = [
+      "isHandshakeAuthInFlight": inFlight,
+      "isResolvingAuthState": isResolving,
+    ]
+    if let error {
+      let parts = handshakeAuthErrorParts(error)
+      map["error"] = [
+        "code": parts.code,
+        "message": parts.message,
+        "recoverySuggestion": parts.recoverySuggestion,
+      ]
+    } else {
+      map["error"] = NSNull()
+    }
+    return map
+  }
+
+  // Codes mirror Android's rejectHandshakeAuthError so integrators see
+  // identical rejections on both platforms. Android additionally has
+  // `profileTimedOut`, which iOS's enum has no case for.
+  private func rejectHandshakeAuthError(
+    _ reject: RCTPromiseRejectBlock, error: Error
+  ) {
+    guard let handshake = error as? HandshakeAuthError else {
+      reject(ErrorCode.unknownError, error.localizedDescription, error)
+      return
+    }
+    let parts = handshakeAuthErrorParts(handshake)
+    reject(
+      parts.code, parts.message,
+      NSError(
+        domain: "LucraHandshakeAuth", code: 0,
+        userInfo: [
+          NSLocalizedDescriptionKey: parts.message,
+          NSLocalizedRecoverySuggestionErrorKey: parts.recoverySuggestion,
+          "recoverySuggestion": parts.recoverySuggestion,
+        ]))
+  }
+
+  private func handshakeAuthErrorParts(
+    _ error: HandshakeAuthError
+  ) -> (code: String, message: String, recoverySuggestion: String) {
+    let code: String
+    switch error {
+    case .noProviderRegistered:
+      code = HandshakeAuthErrorCode.noProviderRegistered
+    case .providerTimedOut:
+      code = HandshakeAuthErrorCode.providerTimedOut
+    case .providerFailed:
+      code = HandshakeAuthErrorCode.providerFailed
+    case .exchangeFailed:
+      code = HandshakeAuthErrorCode.exchangeFailed
+    case .tenantIdUnavailable:
+      code = HandshakeAuthErrorCode.tenantIdUnavailable
+    case .tosNotAccepted:
+      code = HandshakeAuthErrorCode.tosNotAccepted
+    @unknown default:
+      code = ErrorCode.unknownError
+    }
+    return (
+      code,
+      error.errorDescription ?? "Handshake sign-in failed",
+      error.recoverySuggestion ?? ""
+    )
+  }
+
   // Codes and messages mirror Android's rejectPhoneAuthError so integrators
   // see identical rejections on both platforms.
   private func rejectPhoneAuthError(
@@ -1294,6 +1502,15 @@ private enum PhoneAuthErrorCode {
     case .alreadyLoggedIn:
       code = PhoneAuthErrorCode.alreadyLoggedIn
       message = "The user is already logged in. Log out before starting phone authentication"
+    case .messagingDisabled:
+      code = PhoneAuthErrorCode.messagingDisabled
+      message = "SMS messages from Lucra are disabled for this number. Reply START or UNSTOP to the verification sender, then try again"
+    case .smsNotDelivered:
+      code = PhoneAuthErrorCode.smsNotDelivered
+      message = "The verification code could not be delivered to this phone number"
+    case .tooManyAttempts:
+      code = PhoneAuthErrorCode.tooManyAttempts
+      message = "Too many attempts. Wait a few minutes before trying again"
     case .networkError(let details):
       code = PhoneAuthErrorCode.networkError
       message =
@@ -1308,6 +1525,36 @@ private enum PhoneAuthErrorCode {
         error.errorDescription ?? "An unexpected error occurred during authentication"
     }
     reject(code, message, error)
+  }
+
+  // MARK: - Telemetry diagnostics
+
+  @objc public func logTelemetry(
+    _ level: String,
+    message: String,
+    category: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "LucraSDK has not been initialized", nil)
+      return
+    }
+    let log = LucraSDK.Resolver.resolve(LoggingService.self)
+    switch level {
+    case "info":
+      log.info(message, category: category)
+    case "warning":
+      log.errorBreadcrumb(message, category: category)
+    case "error":
+      log.error(
+        message, category: category,
+        error: TelemetryDiagnosticError(message: message))
+    default:
+      reject("invalidTelemetryLevel", "Unknown telemetry level: \(level)", nil)
+      return
+    }
+    resolve(nil)
   }
 
   // MARK: - Games matchup fee

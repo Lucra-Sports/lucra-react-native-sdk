@@ -146,6 +146,8 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   const [recommendTournamets, setRecommendedTournaments] = React.useState<
     PoolTournament[]
   >([]);
+  const [includePrivateViewable, setIncludePrivateViewable] =
+    React.useState(false);
   const [fullMatchupInfo, setFullMatchupInfo] = React.useState('');
   const [resultTitle, setResultTitle] = React.useState('Result');
   const [copied, setCopied] = React.useState(false);
@@ -468,14 +470,31 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
             try {
-              let tournaments = await LucraSDK.getRecomendedTournaments({});
+              let tournaments = await LucraSDK.getRecomendedTournaments({
+                includePrivateViewable,
+              });
               setRecommendedTournaments(tournaments);
+              showResult('Recommended Tournaments', tournaments);
             } catch (e) {
               console.error(e);
             }
           }}
         >
           <Text className="text-white">Get Recommended Tournaments</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className={`w-full border border-indigo-400 p-4 items-center justify-center rounded-lg ${
+            includePrivateViewable ? 'bg-indigo-700' : 'bg-indigo-900'
+          }`}
+          onPress={() => setIncludePrivateViewable((value) => !value)}
+        >
+          <Text className="text-white">
+            includePrivateViewable: {String(includePrivateViewable)}
+          </Text>
+          <Text className="text-indigo-200 text-xs text-center pt-1">
+            Also returns private tournaments that are viewable without a join
+            code — a code is still needed to join, so check isPrivate.
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -578,6 +597,11 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
             }}
           >
             <Text className="text-white">{tournament.title}</Text>
+            <Text className="text-indigo-200 text-xs">
+              isPrivate: {String(tournament.isPrivate)} · totalParticipants:{' '}
+              {String(tournament.totalParticipants)} · participants:{' '}
+              {tournament.participants?.length ?? 0}
+            </Text>
           </TouchableOpacity>
         ))}
 

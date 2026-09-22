@@ -27,6 +27,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.lucrasdk.Libs.LucraMapper
+import com.lucrasdk.Libs.LucraMapper.hasAnyColorKey
 import com.lucrasdk.Libs.LucraMapper.readableMapToColorStyle
 import com.lucrasdk.Libs.LucraMapper.readableMapToFontFamily
 import com.lucrasdk.Libs.LucraMapper.rewardToMap
@@ -37,7 +38,9 @@ import com.lucrasdk.Libs.LucraUtils
 import com.lucrasports.logger.LucraLogger
 import com.lucrasports.logger.model.AnalyticEvent
 import com.lucrasports.sdk.core.LucraClient
+import com.lucrasports.sdk.core.auth.HandshakeAuthError
 import com.lucrasports.sdk.core.auth.PhoneAuthError
+import com.lucrasports.sdk.core.auth.SignInWithHandshakeAuthResult
 import com.lucrasports.sdk.core.auth.ResendCodeResult
 import com.lucrasports.sdk.core.auth.SubmitPhoneNumberResult
 import com.lucrasports.sdk.core.auth.SubmitVerificationCodeResult
@@ -61,11 +64,14 @@ import com.lucrasports.sdk.core.reward.LucraRewardProvider
 import com.lucrasports.sdk.core.reward.RewardInteractions
 import com.lucrasports.sdk.core.achievement.AchievementInteractions
 import com.lucrasports.sdk.core.style_guide.ClientTheme
+import com.lucrasports.sdk.core.style_guide.ThemeMode
 import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sdk.core.user.SDKUserResult
 import com.lucrasports.sdk.ui.LucraUi
+import com.lucrasdk.Libs.LucraMapper.readableMapToThemeMode
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -74,10 +80,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 @ReactModule(name = LucraClientModule.NAME)
 class LucraClientModule(private val context: ReactApplicationContext) :
@@ -98,11 +108,37 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         const val PHONE_NUMBER_NOT_SUBMITTED = "phoneNumberNotSubmitted"
         const val INVALID_CODE = "invalidCode"
         const val ALREADY_LOGGED_IN = "alreadyLoggedIn"
+        const val MESSAGING_DISABLED = "messagingDisabled"
+        const val SMS_NOT_DELIVERED = "smsNotDelivered"
+        const val TOO_MANY_ATTEMPTS = "tooManyAttempts"
         const val NETWORK_ERROR = "networkError"
+    }
+
+    private object HandshakeAuthErrorCodes {
+        const val NO_PROVIDER_REGISTERED = "noProviderRegistered"
+        const val PROVIDER_TIMED_OUT = "providerTimedOut"
+        const val PROVIDER_FAILED = "providerFailed"
+        const val EXCHANGE_FAILED = "exchangeFailed"
+        const val TENANT_ID_UNAVAILABLE = "tenantIdUnavailable"
+        const val TOS_NOT_ACCEPTED = "tosNotAccepted"
+        const val PROFILE_TIMED_OUT = "profileTimedOut"
     }
 
     private val moduleScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var gamesMatchupFeeJob: Job? = null
+    private var authStateJob: Job? = null
+
+    /**
+     * In-flight handshake token requests, keyed by the id sent to JS.
+     *
+     * A correlated map rather than the FIFO channels the other providers use,
+     * because a token request needs both a reply address and an error path: a
+     * JS provider that throws must surface as [HandshakeAuthError.ProviderFailed]
+     * carrying its message, not as a timeout.
+     */
+    private val pendingHandshakeTokens = ConcurrentHashMap<String, CompletableDeferred<String>>()
+
+    private class HandshakeProviderJsException(message: String) : Exception(message)
 
     private var fullAppFlowDialogFragment: DialogFragment? = null
 
@@ -151,13 +187,24 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 val light = theme.getMap("light")?.let { readableMapToColorStyle(it) }
                 val dark = theme.getMap("dark")?.let { readableMapToColorStyle(it) }
 
+                // Only fall back to the flat keys when at least one is actually
+                // present. readableMapToColorStyle always returns a non-null
+                // ColorStyle, so building one from a theme that carries no colors
+                // (say `{ themeMode: 'light' }`) would make the SDK believe a dark
+                // palette was supplied and log a "reusing your palette" warning
+                // for a palette nobody supplied.
                 val resolvedDark =
-                    if (light == null && dark == null) readableMapToColorStyle(theme) else dark
+                    if (light == null && dark == null && theme.hasAnyColorKey()) {
+                        readableMapToColorStyle(theme)
+                    } else {
+                        dark
+                    }
 
                 ClientTheme(
                     lightColorStyle = light,
                     darkColorStyle = resolvedDark,
-                    fontFamily = theme.getMap("fontFamily")?.let { readableMapToFontFamily(it) }
+                    fontFamily = theme.getMap("fontFamily")?.let { readableMapToFontFamily(it) },
+                    themeMode = readableMapToThemeMode(theme)
                 )
             }
 
@@ -330,6 +377,30 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                         }
                     }
                 )
+
+            // Handshake in-flight and the last handshake failure ride one payload
+            // so a consumer can never see the in-flight flag drop before the
+            // error that caused it. Both are StateFlow-backed, so `combine`
+            // emits an initial snapshot and seeds the JS-side cache.
+            authStateJob?.cancel()
+            authStateJob = combine(
+                LucraClient().isHandshakeAuthInFlight,
+                LucraClient().handshakeAuthError
+            ) { inFlight, error -> inFlight to error }
+                .onEach { (inFlight, error) ->
+                    sendEvent(context, "authState", authStateToMap(inFlight, error))
+                }
+                .catch { e ->
+                    val res = Arguments.createMap()
+                    res.putBoolean("isHandshakeAuthInFlight", false)
+                    res.putNull("isResolvingAuthState")
+                    val errorMap = Arguments.createMap()
+                    errorMap.putString("code", ErrorCodes.UNKNOWN_ERROR)
+                    errorMap.putString("message", e.message ?: "Failed to observe auth state")
+                    res.putMap("error", errorMap)
+                    sendEvent(context, "authState", res)
+                }
+                .launchIn(moduleScope)
 
             LucraClient().observeSDKUser { user ->
                 when (user) {
@@ -1212,6 +1283,196 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         }
     }
 
+    // region Handshake authentication
+
+    /**
+     * Asks JS for a handshake token and suspends until it answers.
+     *
+     * Correlated by a fresh request id, with a real error path: a JS provider
+     * that throws completes this exceptionally, so the SDK reports
+     * [HandshakeAuthError.ProviderFailed] carrying the message instead of
+     * waiting out its timeout.
+     *
+     * No timeout of its own — the SDK already bounds the provider at 5s and
+     * cancels this lambda, which cancels [CompletableDeferred.await] and lets
+     * the `finally` reap the map entry. A second timer would race the SDK's and
+     * turn a real `ProviderTimedOut` into a misleading `ProviderFailed`.
+     */
+    private suspend fun requestHandshakeTokenFromJs(): String {
+        val requestId = UUID.randomUUID().toString()
+        val deferred = CompletableDeferred<String>()
+        pendingHandshakeTokens[requestId] = deferred
+        return try {
+            // The SDK runs this on a background dispatcher, but RCTDeviceEventEmitter
+            // needs a live React context on the main thread.
+            withContext(Dispatchers.Main) {
+                if (!context.hasActiveReactInstance()) {
+                    throw HandshakeProviderJsException(
+                        "The Lucra React Native bridge has no active JavaScript instance."
+                    )
+                }
+                sendEvent(
+                    context,
+                    "_handshakeAuthToken",
+                    Arguments.createMap().apply { putString("requestId", requestId) }
+                )
+            }
+            deferred.await()
+        } finally {
+            pendingHandshakeTokens.remove(requestId)
+        }
+    }
+
+    @ReactMethod
+    fun registerHandshakeAuthTokenProvider(
+        registered: Boolean,
+        bypassTosAgreement: Boolean,
+        promise: Promise
+    ) {
+        try {
+            if (registered) {
+                LucraClient().registerHandshakeAuthTokenProvider(bypassTosAgreement) {
+                    requestHandshakeTokenFromJs()
+                }
+            } else {
+                LucraClient().registerHandshakeAuthTokenProvider(provider = null)
+            }
+            promise.resolve(null)
+        } catch (e: IllegalStateException) {
+            promise.reject(
+                ErrorCodes.NOT_INITIALIZED,
+                e.message ?: "LucraSDK has not been initialized"
+            )
+        }
+    }
+
+    @ReactMethod
+    fun signInWithHandshakeAuth(promise: Promise) {
+        try {
+            LucraClient().signInWithHandshakeAuth { result ->
+                when (result) {
+                    is SignInWithHandshakeAuthResult.Success ->
+                        promise.resolve(sdkUserToMap(result.sdkUser))
+
+                    is SignInWithHandshakeAuthResult.Failure ->
+                        rejectHandshakeAuthError(promise, result.error)
+                }
+            }
+        } catch (e: IllegalStateException) {
+            promise.reject(
+                ErrorCodes.NOT_INITIALIZED,
+                e.message ?: "LucraSDK has not been initialized"
+            )
+        }
+    }
+
+    @ReactMethod
+    fun resolveHandshakeAuthToken(requestId: String, token: String) {
+        // remove() is atomic, so a duplicate reply can't double-complete.
+        pendingHandshakeTokens.remove(requestId)?.complete(token)
+    }
+
+    @ReactMethod
+    fun rejectHandshakeAuthToken(requestId: String, message: String) {
+        pendingHandshakeTokens.remove(requestId)
+            ?.completeExceptionally(HandshakeProviderJsException(message))
+    }
+
+    @ReactMethod
+    fun getAuthState(promise: Promise) {
+        moduleScope.launch {
+            try {
+                promise.resolve(
+                    authStateToMap(
+                        LucraClient().isHandshakeAuthInFlight.value,
+                        LucraClient().handshakeAuthError.first()
+                    )
+                )
+            } catch (e: Exception) {
+                promise.reject(
+                    ErrorCodes.NOT_INITIALIZED,
+                    e.message ?: "LucraSDK has not been initialized"
+                )
+            }
+        }
+    }
+
+    private fun authStateToMap(inFlight: Boolean, error: HandshakeAuthError?): WritableMap {
+        val map = Arguments.createMap()
+        map.putBoolean("isHandshakeAuthInFlight", inFlight)
+        // The Android SDK exposes no public isResolvingAuthState equivalent.
+        // Null rather than a synthesized guess, so JS can tell "not supported
+        // here" apart from "resolved".
+        map.putNull("isResolvingAuthState")
+        if (error == null) {
+            map.putNull("error")
+        } else {
+            map.putMap("error", handshakeAuthErrorToMap(error))
+        }
+        return map
+    }
+
+    private fun handshakeAuthErrorToMap(error: HandshakeAuthError): WritableMap {
+        val map = Arguments.createMap()
+        map.putString("code", handshakeAuthErrorCode(error))
+        map.putString("message", error.message.ifBlank { "Handshake sign-in failed" })
+        map.putString("recoverySuggestion", error.recoverySuggestion)
+        return map
+    }
+
+    // Codes mirror the iOS bridge so integrators see identical rejections on
+    // both platforms. ProfileTimedOut has no iOS counterpart; Unknown shares
+    // the cross-platform unknownError so it lands on the same branch as iOS's
+    // `@unknown default`.
+    private fun handshakeAuthErrorCode(error: HandshakeAuthError): String = when (error) {
+        is HandshakeAuthError.NoProviderRegistered ->
+            HandshakeAuthErrorCodes.NO_PROVIDER_REGISTERED
+
+        is HandshakeAuthError.ProviderTimedOut -> HandshakeAuthErrorCodes.PROVIDER_TIMED_OUT
+        is HandshakeAuthError.ProviderFailed -> HandshakeAuthErrorCodes.PROVIDER_FAILED
+        is HandshakeAuthError.ExchangeFailed -> HandshakeAuthErrorCodes.EXCHANGE_FAILED
+        is HandshakeAuthError.TosNotAccepted -> HandshakeAuthErrorCodes.TOS_NOT_ACCEPTED
+        is HandshakeAuthError.TenantIdUnavailable ->
+            HandshakeAuthErrorCodes.TENANT_ID_UNAVAILABLE
+
+        is HandshakeAuthError.ProfileTimedOut -> HandshakeAuthErrorCodes.PROFILE_TIMED_OUT
+        is HandshakeAuthError.Unknown -> ErrorCodes.UNKNOWN_ERROR
+    }
+
+    private fun rejectHandshakeAuthError(promise: Promise, error: HandshakeAuthError) {
+        promise.reject(
+            handshakeAuthErrorCode(error),
+            error.message.ifBlank { "Handshake sign-in failed" },
+            Arguments.createMap().apply {
+                putString("recoverySuggestion", error.recoverySuggestion)
+            }
+        )
+    }
+
+    // endregion
+
+    @ReactMethod
+    fun logTelemetry(level: String, message: String, category: String, promise: Promise) {
+        val logger = LucraClient().getSdkGraphOrNull()?.lucraLogger
+        if (logger == null) {
+            promise.reject(ErrorCodes.NOT_INITIALIZED, "LucraSDK has not been initialized")
+            return
+        }
+        val line = "[$category] $message"
+        when (level) {
+            "info" -> logger.info(line)
+            "warning" -> logger.warning(line)
+            "error" -> logger.logNonFatalException(TelemetryDiagnosticException(line), line)
+            else -> {
+                promise.reject("invalidTelemetryLevel", "Unknown telemetry level: $level")
+                return
+            }
+        }
+        promise.resolve(null)
+    }
+
+    private class TelemetryDiagnosticException(message: String) : Exception(message)
+
     private fun rejectPhoneAuthError(promise: Promise, error: PhoneAuthError) {
         val (code, message) = when (error) {
             PhoneAuthError.NotInitialized ->
@@ -1231,6 +1492,18 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             PhoneAuthError.AlreadyLoggedIn ->
                 PhoneAuthErrorCodes.ALREADY_LOGGED_IN to
                     "The user is already logged in. Log out before starting phone authentication"
+
+            PhoneAuthError.MessagingDisabled ->
+                PhoneAuthErrorCodes.MESSAGING_DISABLED to
+                    "SMS messages from Lucra are disabled for this number. Reply START or UNSTOP to the verification sender, then try again"
+
+            PhoneAuthError.SmsNotDelivered ->
+                PhoneAuthErrorCodes.SMS_NOT_DELIVERED to
+                    "The verification code could not be delivered to this phone number"
+
+            PhoneAuthError.TooManyAttempts ->
+                PhoneAuthErrorCodes.TOO_MANY_ATTEMPTS to
+                    "Too many attempts. Wait a few minutes before trying again"
 
             is PhoneAuthError.NetworkError ->
                 PhoneAuthErrorCodes.NETWORK_ERROR to
@@ -1306,6 +1579,16 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     override fun invalidate() {
         gamesMatchupFeeJob?.cancel()
         gamesMatchupFeeJob = null
+        authStateJob?.cancel()
+        authStateJob = null
+        // Nothing can answer these once the bridge is gone, so fail them rather
+        // than leaving a native sign-in waiting out its timeout.
+        pendingHandshakeTokens.values.forEach {
+            it.completeExceptionally(
+                HandshakeProviderJsException("The Lucra React Native bridge was torn down.")
+            )
+        }
+        pendingHandshakeTokens.clear()
         moduleScope.cancel()
         super.invalidate()
     }
@@ -1316,10 +1599,14 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         val limit = params.getInt(
             "limit"
         )
+        val includePrivateViewable =
+            params.hasKey("includePrivateViewableTournaments") &&
+                params.getBoolean("includePrivateViewableTournaments")
         LucraClient().queryRecommendedTournaments(
             limit = limit,
             offset = 0,
-            includeCompletedTournaments = includeClosed
+            includeCompletedTournaments = includeClosed,
+            includePrivateViewableTournaments = includePrivateViewable
         ) { result ->
             when (result) {
                 is PoolTournament.QueryRecommendedTournamentsResult.Failure -> {
