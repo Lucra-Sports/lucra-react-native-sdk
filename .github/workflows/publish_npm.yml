@@ -23,6 +23,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # Full history and tags: the Linear sync below resolves the previous
+          # release tag to bound its commit scan.
+          fetch-depth: 0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -56,3 +60,54 @@ jobs:
           release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: ${{ steps.release-type.outputs.is_beta == 'true' }}
+
+      # Stamps the release that has been accumulating issues since the last tag
+      # (see linear-sync-main.yml) with this version, then completes it.
+      #
+      # Betas are skipped deliberately. A version can only be written once, so
+      # stamping the open release with 5.4.2-beta.1 would consume it: the real
+      # 5.4.2 could never claim it and would start from an empty bucket, filing
+      # everything that had accumulated under a prerelease. Work in a beta stays
+      # in the bucket and lands in the next real release, which is where it
+      # actually ships to consumers on the "latest" tag.
+      - name: Resolve previous tag for the Linear scan
+        id: prev_tag
+        if: steps.release-type.outputs.is_beta == 'false'
+        env:
+          # Through env, never interpolated into the script: git allows $ and
+          # parens in tag names, so a crafted tag would otherwise execute here.
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          # Tags here carry no "v" prefix. Betas are excluded from the baseline
+          # on purpose: they record nothing in Linear, so the last real release
+          # is the correct lower bound.
+          # grep exits 1 when it filters every tag out, which would kill the
+          # pipeline under pipefail on the very first release.
+          PREV_TAG=$( { git tag --merged HEAD --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' || true; } \
+            | awk -v v="$TAG" '$0 == v { found = 1; next } found { print; exit }')
+          echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
+          echo "Release $TAG; scanning commits after ${PREV_TAG:-<none>}"
+
+      - name: Stamp the Linear release with this version
+        if: steps.release-type.outputs.is_beta == 'false'
+        uses: linear/linear-release-action@v0
+        with:
+          access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+          version: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          base_ref: ${{ steps.prev_tag.outputs.prev_tag }}
+          links: |
+            https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+
+      - name: Complete the Linear release
+        if: steps.release-type.outputs.is_beta == 'false'
+        uses: linear/linear-release-action@v0
+        with:
+          access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+          command: complete
+          version: ${{ github.ref_name }}
+          # Re-applied here: a push to main landing between the two steps would
+          # rename this release back to "Next release" and it would complete
+          # under the wrong label. complete targets by exact version.
+          name: ${{ github.ref_name }}

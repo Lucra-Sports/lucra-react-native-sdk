@@ -10,6 +10,20 @@ Start here for the new, structured docs: [docs/0.0.0_SDK_README.md](docs/0.0.0_S
 
 Publishing the package can be automatically be done for you via GitHub action, just push a tag with a SEMVER format (e.g. `3.1.2`) and the CI will automatically publish that commit with the tag version.
 
+### Release tracking in Linear
+
+Releases are mirrored into the Linear **RN** pipeline:
+
+| Event | In Linear |
+| --- | --- |
+| PR merged to `main` | Its issues attach to an open, unversioned release named **Next release** |
+| Non-beta tag pushed | That same release is stamped with the tag and moved to **Released** |
+| **Beta** tag pushed (e.g. `5.4.2-beta.1`) | **Nothing.** The work stays in the open release and ships with the next real version |
+
+Betas are skipped on purpose: a release version can only be written once, so stamping the open release with a beta would consume it and the real version could never claim it.
+
+Linear finds issues through the pull request as well as the commit subject, so a PR linked to a Linear issue is picked up even when its branch and title carry no identifier.
+
 ## Contributing
 
 For contributors, to test your local changes in an expo app: create a new expo project next to the repo folder and declare your dependency as:

@@ -1,0 +1,62 @@
+name: Linear - Sync Main
+
+# Attaches issues merged to main to the unversioned release in the Linear "RN"
+# pipeline, so a ticket shows up at merge rather than at release.
+#
+# Runs with no version on purpose: the version does not exist until a tag is
+# pushed, and a version is write-once -- asking for a different one later forks
+# a new release and orphans this one's issues. publish_npm.yml stamps this same
+# release in place when a non-beta tag is published.
+#
+# Kept separate from publish_sample.yml, which also runs on push to main: that
+# workflow has 60-minute Fastlane jobs, and "this ships in the next release" is
+# true at merge whether or not the sample app built.
+#
+# No issue_pattern is needed. PRs land either squash-merged with "(#N)" or as
+# "Merge pull request #N from <branch>", and the CLI reads the PR number and
+# branch name from both. Linear resolves the PR number back to whatever issue
+# is linked to it, which covers PRs whose subject carries no identifier.
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  sync_main:
+    name: Accumulate merges into the open Linear release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve scan base
+        id: base
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          # Pin the range rather than relying on the CLI's implicit baseline,
+          # which is the previous release's commit. github.event.before is
+          # all-zeros on a branch's first push and can name a dropped commit
+          # after a force-push, so fall back to letting the CLI choose.
+          if [ -n "$BEFORE" ] \
+             && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            echo "base_ref=$BEFORE" >> "$GITHUB_OUTPUT"
+            echo "Scanning ${BEFORE}..HEAD"
+          else
+            echo "base_ref=" >> "$GITHUB_OUTPUT"
+            echo "No usable github.event.before; letting the CLI choose its baseline"
+          fi
+
+      - name: Accumulate into the open release
+        uses: linear/linear-release-action@v0
+        with:
+          access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+          name: Next release
+          base_ref: ${{ steps.base.outputs.base_ref }}
