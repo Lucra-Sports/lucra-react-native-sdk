@@ -5,7 +5,7 @@ const pkg = require('../package.json');
 
 const root = path.resolve(__dirname, '..');
 const envFilePath = path.resolve(__dirname, '.env');
-const lucraEnvKeys = ['LUCRA_SDK_API_KEY'];
+const lucraEnvKeys = ['LUCRA_SDK_API_KEY', 'HOST_SENTRY_DSN'];
 
 const parseEnvFile = (filePath) => {
   if (!fs.existsSync(filePath)) {

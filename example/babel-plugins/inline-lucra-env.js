@@ -1,4 +1,4 @@
-const lucraEnvKeys = ['LUCRA_SDK_API_KEY'];
+const lucraEnvKeys = ['LUCRA_SDK_API_KEY', 'HOST_SENTRY_DSN'];
 
 module.exports = function inlineLucraEnv({ types: t }) {
   return {

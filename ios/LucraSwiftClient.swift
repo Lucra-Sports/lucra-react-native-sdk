@@ -723,6 +723,20 @@ private struct TelemetryDiagnosticError: LocalizedError {
       }
     }
 
+    @objc public func presentRewardsSheetIfAvailable(
+      resolve: @escaping RCTPromiseResolveBlock,
+      reject: @escaping RCTPromiseRejectBlock
+    ) {
+      guard nativeClient != nil else {
+        reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+        return
+      }
+      Task { @MainActor in
+        self.nativeClient.presentRewardsSheetIfAvailable()
+        resolve(nil)
+      }
+    }
+
     @objc public func getMiniGames(
       _ resolve: @escaping RCTPromiseResolveBlock,
       reject: @escaping RCTPromiseRejectBlock

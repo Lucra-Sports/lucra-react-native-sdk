@@ -64,8 +64,6 @@ class LucraUtils {
       return .matchupDetails(matchupId: matchupId!)
     case "sportContestDetails":
       return .sportsContestDetails(matchupId: matchupId!)
-    case "myMatchup":
-      return .myMatchups
     case "wallet":
       return .wallet
     case "homePage":

@@ -206,15 +206,6 @@ export const UIFlowContainer: React.FC<Props> = ({ navigation }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="w-full border border-indigo-500 bg-indigo-700 p-4 items-center justify-center rounded-lg "
-              onPress={() =>
-                LucraSDK.present({ name: LucraSDK.FLOW.MY_MATCHUP })
-              }
-            >
-              <Text className="font-bold text-white">My Matchups</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
               className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
               onPress={() => {
                 LucraSDK.present({

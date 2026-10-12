@@ -406,5 +406,9 @@ export type LucraAchievement = {
   viewedAt?: string;
   claimedAt?: string;
   currentProgress: number;
+  /** Android only: the user's raw progress toward the goal, e.g. a best score of `261`. Absent on iOS. */
+  currentValue?: number;
+  /** Android only: the goal the criteria sets, e.g. `700`; `0` when it could not be resolved. Absent on iOS. */
+  targetValue?: number;
   achievement?: LucraAchievementDefinition;
 };

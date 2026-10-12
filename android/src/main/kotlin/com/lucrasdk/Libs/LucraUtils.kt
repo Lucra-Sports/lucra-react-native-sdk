@@ -48,7 +48,6 @@ class LucraUtils {
                 "createSportsMatchup" -> LucraUiProvider.LucraFlow.CreateSportsMatchup
                 "withdrawFunds" -> LucraUiProvider.LucraFlow.WithdrawFunds
                 "publicFeed" -> LucraUiProvider.LucraFlow.PublicFeed
-                "myMatchup" -> LucraUiProvider.LucraFlow.MyMatchup
                 "gamesMatchupDetails" -> LucraUiProvider.LucraFlow.GamesMatchupDetails(matchupId!!)
                 "matchupDetails" -> LucraUiProvider.LucraFlow.MatchupDetails(matchupId!!)
                 "demographicCollection" -> LucraUiProvider.LucraFlow.DemographicForm
