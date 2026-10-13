@@ -7,7 +7,6 @@ import {
 import {
   withIosBuildProperties,
   withIosInfoPlist,
-  withIosSentryDynamicFramework,
   withIosVenmoLinkHandler,
 } from './ios';
 import {
@@ -26,7 +25,6 @@ export const withLucraSDKConfig: ConfigPlugin<
 > = (config, pluginConfig) => {
   // iOS
   config = withIosBuildProperties(config);
-  config = withIosSentryDynamicFramework(config);
   config = withIosInfoPlist(config, pluginConfig);
   config = withIosVenmoLinkHandler(config);
 

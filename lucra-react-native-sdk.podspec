@@ -44,12 +44,13 @@ Pod::Spec.new do |s|
     
     # Dependencies required by LucraSDK.xcframework
     s.dependency 'Auth0'
+    # The telemetry adapter the published LucraSDK pod compiles through its Telemetry subspec
+    s.source_files = "ios/**/*.{h,mm,swift}", "xcframeworks/LucraTelemetry/**/*.swift"
+    s.dependency 'Sentry', '>= 8.58.0', '< 9.0'
   else
     s.source = { :git => "https://github.com/Lucra-Sports/lucra-react-native-sdk", :tag => "#{s.version}" }
     s.dependency 'LucraSDK', '7.0.1'
   end
-
-  s.dependency 'Sentry', '~> 8.58'
 
   if fabric_enabled
     install_modules_dependencies(s)
