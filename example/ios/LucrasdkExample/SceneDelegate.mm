@@ -49,11 +49,6 @@
 - (void)scene:(UIScene *)scene
     continueUserActivity:(NSUserActivity *)userActivity {
   UIApplication *application = UIApplication.sharedApplication;
-  if (![application.delegate
-          respondsToSelector:@selector(application:
-                                 continueUserActivity:restorationHandler:)]) {
-    return;
-  }
   [application.delegate application:application
                continueUserActivity:userActivity
                  restorationHandler:^(NSArray<id<UIUserActivityRestoring>>
