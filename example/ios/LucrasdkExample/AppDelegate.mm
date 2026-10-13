@@ -11,6 +11,7 @@
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   self.moduleName = @"LucrasdkExample";
   self.dependencyProvider = [RCTAppDependencyProvider new];
+  self.automaticallyLoadReactNativeWindow = NO;
 
   [FIRApp configure];
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1339B41510FBA5D1009EC58F /* SceneDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3C43617A7950FEF9A8694BE9 /* SceneDelegate.mm */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -35,6 +36,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = LucrasdkExample/main.m; sourceTree = "<group>"; };
 		3255C0686D4B42D38038C1BD /* Inter-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.ttf"; path = "../assets/fonts/Inter-Regular.ttf"; sourceTree = "<group>"; };
 		3556A6E84BC943C3ADF5B381 /* Inter-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBold.ttf"; path = "../assets/fonts/Inter-ExtraBold.ttf"; sourceTree = "<group>"; };
+		3C43617A7950FEF9A8694BE9 /* SceneDelegate.mm */ = {isa = PBXFileReference; name = SceneDelegate.mm; path = LucrasdkExample/SceneDelegate.mm; sourceTree = "<group>"; };
 		5B2B67C32CCB4A0A006CA9D0 /* LucrasdkExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = LucrasdkExample.entitlements; path = LucrasdkExample/LucrasdkExample.entitlements; sourceTree = "<group>"; };
 		5B2B67C42CCB4CC4006CA9D0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		668E3390796140588141CD6D /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.ttf"; path = "../assets/fonts/Inter-ExtraLight.ttf"; sourceTree = "<group>"; };
@@ -49,6 +51,7 @@
 		B1B102E40FDF4B7894CF5F5B /* Inter-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Black.ttf"; path = "../assets/fonts/Inter-Black.ttf"; sourceTree = "<group>"; };
 		BE684234CF3842F980AC2C5C /* Inter-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.ttf"; path = "../assets/fonts/Inter-Light.ttf"; sourceTree = "<group>"; };
 		C9C2A9B48B254D158DF5124D /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
+		D12808D88794800F453317CD /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneDelegate.h; path = LucrasdkExample/SceneDelegate.h; sourceTree = "<group>"; };
 		DFBB301667EA40C2A256D5C6 /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,6 +79,8 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				8DDA5389320FEF63EB75428A /* PrivacyInfo.xcprivacy */,
 				7C896E5262446D5BFE7B273A /* noop.swift */,
+				D12808D88794800F453317CD /* SceneDelegate.h */,
+				3C43617A7950FEF9A8694BE9 /* SceneDelegate.mm */,
 			);
 			name = LucrasdkExample;
 			sourceTree = "<group>";
@@ -339,6 +344,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				BB0EC6E5BD30007BDF33F270 /* noop.swift in Sources */,
+				1339B41510FBA5D1009EC58F /* SceneDelegate.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
