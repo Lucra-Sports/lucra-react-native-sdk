@@ -9,6 +9,7 @@ import LucraSDKInit from './LucraSDKInit';
 import { EventsContextProvider } from './EventsContext';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { DeepLinkManager } from './DeepLinkManager';
+import { startHostSentrySmokeListener } from './HostSentry';
 
 LucraSDK.addListener('user', (user) => {
   console.log(`✅ Received user callback: ${JSON.stringify(user)}`);
@@ -16,6 +17,8 @@ LucraSDK.addListener('user', (user) => {
 
 export default function App() {
   const [isReady, setIsReady] = React.useState(false);
+
+  useEffect(startHostSentrySmokeListener, []);
 
   useEffect(() => {
     // Lucra requires location permissions for compliance when creating a new match or game, so Android location permissions are requested as early as possible.

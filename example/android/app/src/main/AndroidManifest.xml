@@ -52,7 +52,7 @@
       </activity>
       <!--    Geocomply requirements-->
       <receiver android:name="com.geocomply.client.GeoComplyClientBootBroadcastReceiver"
-          android:enabled="true" android:exported="true">
+          android:enabled="true" android:exported="false">
           <intent-filter>
               <action android:name="android.intent.action.BOOT_COMPLETED" />
               <action android:name="android.intent.action.QUICKBOOT_POWERON" />

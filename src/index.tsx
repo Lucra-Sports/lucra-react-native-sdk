@@ -561,7 +561,6 @@ const Flows = {
   CREATE_SPORTS_MATCHUP: 'createSportsMatchup',
   WITHDRAW_FUNDS: 'withdrawFunds',
   PUBLIC_FEED: 'publicFeed',
-  MY_MATCHUP: 'myMatchup',
   GAMES_CONTEST_DETAILS: 'gamesMatchupDetails',
   MATCHUP_DETAILS: 'matchupDetails',
   DEMOGRAPHIC_COLLECTION: 'demographicCollection',
@@ -609,7 +608,6 @@ function present(params: {
 }): Promise<void>;
 function present(params: { name: typeof Flows.WITHDRAW_FUNDS }): Promise<void>;
 function present(params: { name: typeof Flows.PUBLIC_FEED }): Promise<void>;
-function present(params: { name: typeof Flows.MY_MATCHUP }): Promise<void>;
 function present(params: {
   name: typeof Flows.DEMOGRAPHIC_COLLECTION;
 }): Promise<void>;
@@ -1263,6 +1261,19 @@ export const LucraSDK = {
   },
   markAchievementViewed: (userAchievementId: string): Promise<void> => {
     return LucraClient.markAchievementViewed(userAchievementId);
+  },
+  /**
+   * Checks for rewards the signed-in user has not seen (tournament prizes,
+   * achievement rewards and promotions such as a deposit bonus) and presents
+   * the reward sheet when there are some. The SDK already runs this check on
+   * sign-in, on account changes and when a Lucra flow opens; call it after an
+   * event the SDK cannot observe, such as a game ending in a headless
+   * integration. Does nothing when `allowRewardSheetToDisplay` is `false` or
+   * no user is signed in. Resolves once the check is handed to the native SDK,
+   * not when the sheet is shown. See [Reward Sheet](1.2.11_reward_sheet.md).
+   */
+  presentRewardsSheetIfAvailable: (): Promise<void> => {
+    return LucraClient.presentRewardsSheetIfAvailable();
   },
   /** Lists every mini game enabled for the current tenant, each with the tenant's subscribed config options. */
   getMiniGames: async (): Promise<MiniGameCatalogItem[]> => {

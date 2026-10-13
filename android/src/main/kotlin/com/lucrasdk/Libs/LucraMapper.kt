@@ -190,7 +190,6 @@ object LucraMapper {
                 map.putString("flow", "createSportsMatchup")
             is LucraUiProvider.LucraFlow.WithdrawFunds -> map.putString("flow", "withdrawFunds")
             is LucraUiProvider.LucraFlow.PublicFeed -> map.putString("flow", "publicFeed")
-            is LucraUiProvider.LucraFlow.MyMatchup -> map.putString("flow", "myMatchup")
             is LucraUiProvider.LucraFlow.GamesMatchupDetails -> {
                 map.putString("flow", "gamesMatchupDetails")
                 map.putString("matchupId", flow.matchupId)
@@ -339,6 +338,8 @@ object LucraMapper {
         map.putString("viewedAt", achievement.viewedAt?.let { isoUtcDf.format(it) })
         map.putString("claimedAt", achievement.claimedAt?.let { isoUtcDf.format(it) })
         map.putInt("currentProgress", achievement.currentProgress)
+        map.putDouble("currentValue", achievement.currentValue)
+        map.putDouble("targetValue", achievement.targetValue)
         achievement.achievement?.let { map.putMap("achievement", achievementDefinitionToMap(it)) }
         return map
     }

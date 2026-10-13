@@ -807,6 +807,19 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         }
     }
 
+    @ReactMethod
+    fun presentRewardsSheetIfAvailable(promise: Promise) {
+        try {
+            LucraClient().presentRewardsSheetIfAvailable()
+            promise.resolve(null)
+        } catch (e: IllegalStateException) {
+            promise.reject(
+                ErrorCodes.NOT_INITIALIZED,
+                e.message ?: "LucraSDK has not been initialized"
+            )
+        }
+    }
+
     private fun ReadableMap.optionalBoolean(key: String): Boolean? =
         if (hasKey(key) && !isNull(key)) getBoolean(key) else null
 

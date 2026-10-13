@@ -71,6 +71,18 @@ android {
     
 }
 
+// The Lucra Android SDK depends on io.sentry:sentry 8.54.0 while @sentry/react-native
+// brings older sentry-android artifacts; a mix crashes at process start
+// (NoClassDefFoundError: io.sentry.util.runtime.IRuntimeManager). Pin every
+// io.sentry artifact to one version. sentry-native-ndk is versioned separately.
+configurations.all {
+  resolutionStrategy.eachDependency { details ->
+    if (details.requested.group == 'io.sentry' && details.requested.name != 'sentry-native-ndk') {
+      details.useVersion '8.54.0'
+    }
+  }
+}
+
 dependencies {
 
   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")

@@ -64,8 +64,6 @@ class LucraUtils {
       return .matchupDetails(matchupId: matchupId!)
     case "sportContestDetails":
       return .sportsContestDetails(matchupId: matchupId!)
-    case "myMatchup":
-      return .myMatchups
     case "wallet":
       return .wallet
     case "homePage":
@@ -92,7 +90,9 @@ class LucraUtils {
     case "handshakeTOS":
       return .handshakeTOS
     default:
-      fatalError("Unimplemented lucra flow \(flowName)")
+      throw NSError(
+        domain: "InvalidFlow", code: 0,
+        userInfo: [NSLocalizedDescriptionKey: "Invalid flow: \(flowName)"])
     }
   }
 }

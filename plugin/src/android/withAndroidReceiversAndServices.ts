@@ -14,7 +14,7 @@ export function withAndroidReceiversAndServices(
         'android:name':
           'com.geocomply.client.GeoComplyClientBootBroadcastReceiver',
         'android:enabled': 'true',
-        'android:exported': 'true',
+        'android:exported': 'false',
       },
       'intent-filter': [
         {

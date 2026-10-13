@@ -88,6 +88,8 @@ export interface Spec extends TurboModule {
   getUserAchievements(params: Object): Promise<Object[]>;
   claimAchievement(userAchievementId: string): Promise<void>;
   markAchievementViewed(userAchievementId: string): Promise<void>;
+  // Presents the reward sheet when the signed-in user has unseen rewards.
+  presentRewardsSheetIfAvailable(): Promise<void>;
 
   // Pool tournaments
   // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments

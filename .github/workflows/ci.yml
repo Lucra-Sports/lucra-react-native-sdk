@@ -168,9 +168,34 @@ jobs:
       RCT_METRO_PORT: '8082'
       RCT_NO_LAUNCH_PACKAGER: '1'
       DETOX_LOGLEVEL: info
+      XCODE_VERSION: '26.6'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Select Xcode
+        timeout-minutes: 2
+        run: |
+          for app in /Applications/Xcode*.app; do
+            version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app/Contents/Info.plist" 2>/dev/null || true)
+            echo "Found $app ($version)"
+            if [ "$version" = "$XCODE_VERSION" ]; then
+              echo "DEVELOPER_DIR=$app/Contents/Developer" >> "$GITHUB_ENV"
+              selected=1
+            fi
+          done
+          if [ -z "${selected:-}" ]; then
+            echo "::error::Xcode $XCODE_VERSION is not installed on this runner"
+            exit 1
+          fi
+
+      - name: Print toolchain
+        timeout-minutes: 2
+        run: |
+          xcode-select -p
+          xcodebuild -version
+          xcrun swift --version
+          test "$(xcodebuild -version | head -1)" = "Xcode $XCODE_VERSION"
 
       - name: Setup
         timeout-minutes: 10

@@ -118,6 +118,12 @@ RCT_EXPORT_METHOD(markAchievementViewed : (NSString *)userAchievementId
   [swiftClient markAchievementViewed:userAchievementId resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(presentRewardsSheetIfAvailable : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject) {
+  [LucraSharedSwiftClient() presentRewardsSheetIfAvailableWithResolve:resolve
+                                                               reject:reject];
+}
+
 RCT_EXPORT_METHOD(configureUser : (NSDictionary *)user resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient configureUser:user resolve:resolve reject:reject];

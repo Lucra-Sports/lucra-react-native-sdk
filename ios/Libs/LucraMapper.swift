@@ -899,8 +899,6 @@ public func lucraFlowToMap(_ flow: LucraSDK.LucraFlow) -> [String: Any] {
     return ["flow": "sportContestDetails", "matchupId": matchupId]
   case .gamesMatchupDetails(let matchupId):
     return ["flow": "gamesMatchupDetails", "matchupId": matchupId]
-  case .myMatchups:
-    return ["flow": "myMatchup"]
   case .matchupDetails(let matchupId):
     return ["flow": "matchupDetails", "matchupId": matchupId]
   case .tournamentDetails(let matchupId):

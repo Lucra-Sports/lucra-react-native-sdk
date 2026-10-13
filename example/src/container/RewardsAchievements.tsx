@@ -111,6 +111,14 @@ export const RewardsAchievements: React.FC<Props> = ({ navigation }) => {
       setRewardId(rewards[0]?.id ?? '');
     });
 
+  const presentRewardsSheet = () =>
+    run('rewards:sheet', async () => {
+      await LucraSDK.presentRewardsSheetIfAvailable();
+      setRewardsResult(
+        'Reward sheet check requested ✓ — it presents only when there are unseen rewards.'
+      );
+    });
+
   const claimReward = () =>
     run('reward:claim', async () => {
       if (!rewardId.trim()) {
@@ -188,6 +196,12 @@ export const RewardsAchievements: React.FC<Props> = ({ navigation }) => {
           label="Fetch Tournament/Minigame Rewards"
           onPress={fetchRewards}
           busy={busy === 'rewards:fetch'}
+        />
+        <ActionButton
+          label="Present Rewards Sheet If Available"
+          onPress={presentRewardsSheet}
+          busy={busy === 'rewards:sheet'}
+          variant="secondary"
         />
         <Text className="text-white">Reward ID</Text>
         <TextInput
