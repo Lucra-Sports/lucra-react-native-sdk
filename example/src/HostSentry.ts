@@ -56,13 +56,18 @@ export function runHostSentrySmoke(kind: SmokeKind) {
 }
 
 export function startHostSentrySmokeListener(): () => void {
+  if (!hostSentryEnabled) {
+    return () => {};
+  }
   const handle = (url: string | null) => {
     const kind = smokeKindFromUrl(url);
     if (kind) {
       runHostSentrySmoke(kind);
     }
   };
-  Linking.getInitialURL().then(handle);
+  Linking.getInitialURL()
+    .then(handle)
+    .catch(() => {});
   const subscription = Linking.addEventListener('url', ({ url }) =>
     handle(url)
   );
