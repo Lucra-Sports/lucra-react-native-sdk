@@ -5,6 +5,7 @@ import ErrorMapper.rejectJoinTournamentError
 import ErrorMapper.rejectRecommendedTournamentsError
 import ErrorMapper.rejectRetrieveTournamentDetailsError
 import ErrorMapper.rejectRetrieveTournamentError
+import ErrorMapper.rejectSubmitDemographicFormError
 import ErrorMapper.rejectSubmitTournamentScoreError
 import android.app.Application
 import android.graphics.Bitmap
@@ -35,6 +36,7 @@ import com.lucrasdk.Libs.LucraMapper.sdkUserToMap
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraConvertToCreditWithdrawMethod
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraReward
 import com.lucrasdk.Libs.LucraUtils
+import com.lucrasports.data.demographic.DemographicInteractions
 import com.lucrasports.logger.LucraLogger
 import com.lucrasports.logger.model.AnalyticEvent
 import com.lucrasports.sdk.core.LucraClient
@@ -823,6 +825,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     private fun ReadableMap.optionalBoolean(key: String): Boolean? =
         if (hasKey(key) && !isNull(key)) getBoolean(key) else null
 
+    private fun ReadableMap.optionalString(key: String): String? =
+        if (hasKey(key) && !isNull(key)) getString(key)?.takeIf { it.isNotBlank() } else null
+
     private fun miniGameModeToString(mode: LucraMiniGameMode?): String? = when (mode) {
         LucraMiniGameMode.Practice -> "practice"
         LucraMiniGameMode.OneVsOne -> "1v1"
@@ -1259,6 +1264,32 @@ class LucraClientModule(private val context: ReactApplicationContext) :
                 SDKUserResult.WaitingForLogin -> {
                     // intentionally blank
                 }
+            }
+        }
+    }
+
+    @ReactMethod
+    fun submitDemographics(params: ReadableMap, promise: Promise) {
+        val dobDay = params.getInt("dobDay")
+        val dobMonth = params.getInt("dobMonth")
+        val dobYear = params.getInt("dobYear")
+        val email = params.getString("email").orEmpty()
+
+        LucraClient().submitDemographicForm(
+            dobDay = dobDay,
+            dobMonth = dobMonth,
+            dobYear = dobYear,
+            email = email,
+            zip = params.optionalString("zip"),
+            firstName = params.optionalString("firstName"),
+            lastName = params.optionalString("lastName"),
+        ) { result ->
+            when (result) {
+                DemographicInteractions.SubmitDemographicFormResult.Success ->
+                    promise.resolve(null)
+
+                is DemographicInteractions.SubmitDemographicFormResult.Failure ->
+                    rejectSubmitDemographicFormError(promise, result)
             }
         }
     }

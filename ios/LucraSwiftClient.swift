@@ -9,6 +9,7 @@ private enum ErrorCode {
   static let notInitialized = "notInitialized"
   static let unverified = "unverified"
   static let missingDemographicInformation = "missingDemographicInformation"
+  static let invalidDateOfBirth = "invalidDateOfBirth"
   static let unknownError = "unknownError"
   static let unsupported = "unsupported"
 }
@@ -847,6 +848,21 @@ private struct TelemetryDiagnosticError: LocalizedError {
           code = ErrorCode.unknownError
           message = extractMessage(from: achievementError)
         }
+      case let demographicError as DemographicError:
+        switch demographicError {
+        case .user(let userError):
+          code = codeForUserStateError(userError)
+          message = messageForUserStateError(userError)
+        case .submissionFailed(let messageString):
+          code = ErrorCode.apiError
+          message = messageString
+        case .unknown:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: demographicError)
+        @unknown default:
+          code = ErrorCode.unknownError
+          message = extractMessage(from: demographicError)
+        }
       case let apiError as APIError:
         code = ErrorCode.apiError
         message = extractMessage(from: apiError)
@@ -1262,6 +1278,77 @@ private struct TelemetryDiagnosticError: LocalizedError {
         ErrorMapper.reject(reject, error: error)
       }
     }
+  }
+
+  // MARK: - Demographics headless
+
+  @objc public func submitDemographics(
+    _ params: [String: Any],
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
+    Task { @MainActor in
+      guard let dobDay = params["dobDay"] as? Int,
+        let dobMonth = params["dobMonth"] as? Int,
+        let dobYear = params["dobYear"] as? Int,
+        let email = params["email"] as? String
+      else {
+        reject(
+          ErrorCode.apiError,
+          "dobDay, dobMonth, dobYear and email are required",
+          nil
+        )
+        return
+      }
+
+      // The native SDK folds an invalid date into `.submissionFailed`, which
+      // maps to `apiError`. Android surfaces a dedicated `InvalidDateOfBirth`
+      // case, so validate here to keep the rejection code the same on both.
+      var components = DateComponents()
+      components.day = dobDay
+      components.month = dobMonth
+      components.year = dobYear
+      guard components.isValidDate(in: Calendar.current) else {
+        reject(
+          ErrorCode.invalidDateOfBirth,
+          "Date of birth is not a valid calendar date",
+          nil
+        )
+        return
+      }
+
+      let result = await self.nativeClient.api.submitDemographics(
+        dobDay: dobDay,
+        dobMonth: dobMonth,
+        dobYear: dobYear,
+        email: email,
+        zip: Self.nonBlank(params["zip"]),
+        firstName: Self.nonBlank(params["firstName"]),
+        lastName: Self.nonBlank(params["lastName"])
+      )
+
+      switch result {
+      case .success:
+        resolve(nil)
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
+      }
+    }
+  }
+
+  /// Treats a missing, null or blank bridge value as "omitted", matching the
+  /// Android bridge so an empty text field means the same thing on both.
+  private static func nonBlank(_ value: Any?) -> String? {
+    guard let string = value as? String,
+      string.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+    else {
+      return nil
+    }
+    return string
   }
 
   private static func loadImage(fromUri uri: String) -> UIImage? {

@@ -16,6 +16,9 @@ export interface Spec extends TurboModule {
   // with code `unsupported`.
   getUserKycStatus(userId: string): Promise<boolean>;
   updateUsername(username: string): Promise<Object>;
+  // Demographics headless. params carries dobDay/dobMonth/dobYear/email plus
+  // the optional zip/firstName/lastName.
+  submitDemographics(params: Object): Promise<void>;
 
   // Phone-auth headless flow
   submitPhoneNumber(phoneNumber: string): Promise<void>;
