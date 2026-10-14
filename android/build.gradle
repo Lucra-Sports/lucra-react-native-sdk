@@ -114,6 +114,11 @@ dependencies {
   implementation("com.lucrasports.sdk:sdk-core:8.0.0")
   implementation("com.lucrasports.sdk:sdk-ui:8.0.0")
   compileOnly("com.lucrasports.sdk:core-navigation:8.0.0")
+  // DemographicInteractions.SubmitDemographicFormResult leaks into
+  // LucraClient.submitDemographicForm's signature, but sdk-core depends on
+  // core-data with `implementation`, so it is not on our compile classpath.
+  // It is already present at runtime through sdk-core.
+  compileOnly("com.lucrasports.sdk:core-data:8.0.0")
   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
   implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 

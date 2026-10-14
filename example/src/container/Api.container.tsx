@@ -141,6 +141,15 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
   const [matchupId, setMatchupId] = React.useState('');
   const [opponentTeamId, setOpponentTeamId] = React.useState('');
   const [newUsername, setNewUsername] = React.useState('');
+  const [demographics, setDemographics] = React.useState({
+    dobDay: '',
+    dobMonth: '',
+    dobYear: '',
+    email: '',
+    zip: '',
+    firstName: '',
+    lastName: '',
+  });
   const [phoneNumber, setPhoneNumber] = React.useState('');
   const [verificationCode, setVerificationCode] = React.useState('');
   const [recommendTournamets, setRecommendedTournaments] = React.useState<
@@ -659,6 +668,62 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
         >
           <Text className="text-white">Upload Avatar (sample image)</Text>
         </TouchableOpacity>
+
+        <View className="w-full gap-2">
+          <View className="flex-row gap-2">
+            {(['dobMonth', 'dobDay', 'dobYear'] as const).map((key) => (
+              <TextInput
+                key={key}
+                value={demographics[key]}
+                onChangeText={(text) =>
+                  setDemographics((prev) => ({ ...prev, [key]: text }))
+                }
+                placeholder={key === 'dobYear' ? 'YYYY' : key.slice(3)}
+                placeholderTextColor={'#CCC'}
+                keyboardType="number-pad"
+                className="border border-indigo-400 p-4 rounded-lg text-white flex-1"
+              />
+            ))}
+          </View>
+          {(['email', 'zip', 'firstName', 'lastName'] as const).map((key) => (
+            <TextInput
+              key={key}
+              value={demographics[key]}
+              onChangeText={(text) =>
+                setDemographics((prev) => ({ ...prev, [key]: text }))
+              }
+              placeholder={key === 'email' ? 'Email (required)' : key}
+              placeholderTextColor={'#CCC'}
+              autoCapitalize={key === 'email' ? 'none' : 'words'}
+              keyboardType={key === 'email' ? 'email-address' : 'default'}
+              className="border border-indigo-400 p-4 rounded-lg text-white"
+            />
+          ))}
+          <TouchableOpacity
+            className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+            onPress={async () => {
+              try {
+                await LucraSDK.submitDemographics({
+                  dobDay: Number(demographics.dobDay),
+                  dobMonth: Number(demographics.dobMonth),
+                  dobYear: Number(demographics.dobYear),
+                  email: demographics.email,
+                  zip: demographics.zip,
+                  firstName: demographics.firstName,
+                  lastName: demographics.lastName,
+                });
+                Alert.alert('Success', 'Demographics submitted');
+              } catch (e) {
+                Alert.alert(
+                  'Error',
+                  `${(e as LucraSDKError).code ?? 'error'}: ${String(e)}`
+                );
+              }
+            }}
+          >
+            <Text className="text-white">Submit Demographics</Text>
+          </TouchableOpacity>
+        </View>
 
         <View className="flex-row items-center gap-2">
           <TextInput

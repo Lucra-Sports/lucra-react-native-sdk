@@ -1,4 +1,5 @@
 import com.facebook.react.bridge.Promise
+import com.lucrasports.data.demographic.DemographicInteractions
 import com.lucrasports.sdk.core.contest.tournament.PoolTournament
 import com.lucrasports.sdk.core.contest.tournament.PoolTournament.FailedTournamentCall
 
@@ -12,6 +13,7 @@ object ErrorMapper {
         const val UNVERIFIED = "unverified"
         const val MISSING_DEMOGRAPHIC_INFORMATION = "missingDemographicInformation"
         const val FEATURE_DISABLED = "featureDisabled"
+        const val INVALID_DATE_OF_BIRTH = "invalidDateOfBirth"
         const val UNKNOWN_ERROR = "unknownError"
     }
 
@@ -95,5 +97,29 @@ object ErrorMapper {
         error: PoolTournament.SubmitTournamentScoreResult.Failure
     ) {
         mapTournamentFailure(promise, error.failure)
+    }
+
+    fun rejectSubmitDemographicFormError(
+        promise: Promise,
+        error: DemographicInteractions.SubmitDemographicFormResult.Failure
+    ) {
+        val (code, message) = when (val failure = error.error) {
+            is DemographicInteractions.DemographicFormError.APIError ->
+                ErrorCodes.API_ERROR to failure.message.ifNullOrBlank { "API error occurred" }
+
+            DemographicInteractions.DemographicFormError.NotInitialized ->
+                ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
+
+            DemographicInteractions.DemographicFormError.NotAllowed ->
+                ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
+
+            DemographicInteractions.DemographicFormError.InvalidDateOfBirth ->
+                ErrorCodes.INVALID_DATE_OF_BIRTH to "Date of birth is not a valid calendar date"
+
+            DemographicInteractions.DemographicFormError.Unknown ->
+                ErrorCodes.UNKNOWN_ERROR to "An unknown error occurred"
+        }
+
+        promise.reject(code, message)
     }
 }

@@ -147,6 +147,12 @@ RCT_EXPORT_METHOD(updateUsername : (NSString *)username
   [swiftClient updateUsername:username resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(submitDemographics : (NSDictionary *)params
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient submitDemographics:params resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(submitPhoneNumber : (NSString *)phoneNumber
                   resolve : (RCTPromiseResolveBlock)resolve
                   reject : (RCTPromiseRejectBlock)reject) {

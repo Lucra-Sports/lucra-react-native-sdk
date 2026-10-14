@@ -969,6 +969,56 @@ export const LucraSDK = {
     return object.user as LucraUser;
   },
   /**
+   * Submits the signed-in user's demographic information headlessly — the
+   * same data `LucraSDK.FLOW.DEMOGRAPHIC_COLLECTION` collects, without
+   * presenting Lucra's UI. Use it to clear a `missingDemographicInformation`
+   * rejection from your own form.
+   *
+   * Only the date of birth is validated before the call; the email format and
+   * the minimum-age requirement are enforced server-side and surface as
+   * `apiError`. Omit `zip`, `firstName` and `lastName`, or pass empty
+   * strings, to leave them unset — both platforms treat blank as omitted.
+   */
+  submitDemographics: async ({
+    dobDay,
+    dobMonth,
+    dobYear,
+    email,
+    zip,
+    firstName,
+    lastName,
+  }: {
+    dobDay: number;
+    dobMonth: number;
+    dobYear: number;
+    email: string;
+    zip?: string;
+    firstName?: string;
+    lastName?: string;
+  }): Promise<void> => {
+    if (
+      !Number.isInteger(dobDay) ||
+      !Number.isInteger(dobMonth) ||
+      !Number.isInteger(dobYear)
+    ) {
+      throw new Error('dobDay, dobMonth and dobYear must be integers');
+    }
+    if (!email) {
+      throw new Error('email is required');
+    }
+    // Whether the components form a real date is left to native, so the
+    // rejection carries the documented `invalidDateOfBirth` code.
+    await LucraClient.submitDemographics({
+      dobDay,
+      dobMonth,
+      dobYear,
+      email,
+      zip,
+      firstName,
+      lastName,
+    });
+  },
+  /**
    * Starts phone-based passwordless authentication by sending an SMS
    * verification code. Follow up with `submitVerificationCode`, and use
    * `resendCode` to re-send.
@@ -1548,7 +1598,9 @@ export type LucraSDKError = {
     /** `uploadUserAvatar`: the provided uri could not be decoded into an image. */
     | 'invalidImage'
     /** iOS-only `submitUserScore` backstop for a non-finite score. */
-    | 'invalidScore';
+    | 'invalidScore'
+    /** `submitDemographics`: day/month/year do not form a real calendar date. */
+    | 'invalidDateOfBirth';
 } & Error;
 
 /**
