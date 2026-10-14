@@ -1,4 +1,4 @@
-# Unreleased
+# 7.0.1
 * Added `LucraSDK.submitDemographics({ dobDay, dobMonth, dobYear, email, zip?, firstName?, lastName? }): Promise<void>` — submits the signed-in user's demographic information headlessly, the equivalent of the `DEMOGRAPHIC_COLLECTION` flow without Lucra UI. Use it to clear a `missingDemographicInformation` rejection from your own form. Bridges the native iOS `submitDemographics` and Android `submitDemographicForm` calls, which were previously unreachable from React Native. See [Headless Functionality](1.2.9_headless_interactions.md#submit-demographics).
   * `LucraSDKError` gained the `invalidDateOfBirth` code for day/month/year that do not form a real calendar date. Android's SDK returns a dedicated invalid-date result; iOS folds it into its generic submission failure, so the iOS bridge validates the date itself and both platforms reject with the same code instead of `apiError`.
   * Email format and the minimum-age requirement stay server-side on both platforms and surface as `apiError` carrying the server's message. Blank `zip`/`firstName`/`lastName` are treated as omitted on both platforms, so an untouched field does not store `""`.

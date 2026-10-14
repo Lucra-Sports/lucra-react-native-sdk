@@ -1287,6 +1287,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     Task { @MainActor in
       guard let dobDay = params["dobDay"] as? Int,
         let dobMonth = params["dobMonth"] as? Int,
