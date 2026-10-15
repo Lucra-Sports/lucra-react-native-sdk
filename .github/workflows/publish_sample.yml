@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   release-android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # .ruby-version 3.3.1 has no Ubuntu 26.04 build (DEVOPS-689)
     timeout-minutes: 60
     steps:
       - name: Checkout
