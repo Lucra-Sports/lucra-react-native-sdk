@@ -1,0 +1,49 @@
+# DEVOPS-689: throwaway check of the publish_sample Android build on Ubuntu 26.04. Builds only, no Firebase upload. Delete after.
+name: Test Ubuntu 26.04
+on:
+  push:
+    branches:
+      - DEVOPS-689
+env:
+  GPR_KEY: ${{ secrets.GPR_KEY }}
+  LUCRA_SDK_API_KEY: ${{ secrets.LUCRA_SDK_API_KEY }}
+
+jobs:
+  build-android:
+    name: Android build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Set up Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          working-directory: example
+
+      - name: Install JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Finalize Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/cmdline-tools"
+          /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
+
+      - name: Build example for Android
+        env:
+          JAVA_OPTS: '-XX:MaxHeapSize=6g'
+        working-directory: example/android
+        run: bundle exec fastlane build_example
