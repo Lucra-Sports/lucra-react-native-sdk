@@ -101,7 +101,7 @@
   "resolutions": {
     "@babel/core": "~7.29.6",
     "@types/react": "^18.2.44",
-    "@xmldom/xmldom": "^0.8.13",
+    "@xmldom/xmldom": "^0.8.15",
     "brace-expansion@^1": "1.1.16",
     "brace-expansion@^2": "2.1.2",
     "fast-xml-parser": ">=5.7.0",
