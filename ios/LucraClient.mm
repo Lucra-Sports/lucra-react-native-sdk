@@ -375,19 +375,20 @@ RCT_EXPORT_METHOD(getRecommendedTournaments : (NSDictionary *)params resolve : (
   [swiftClient getRecommendedTournaments:params resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(tournamentMatchup : (NSString *)idString resolve : (
-    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient tournamentMatchup:idString resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(retrieveTournamentDetails : (NSString *)tournamentId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [swiftClient retrieveTournamentDetails:tournamentId resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(getTournamentDetails : (NSString *)tournamentId
+RCT_EXPORT_METHOD(retrieveTournamentLeaderboard : (NSString *)tournamentId
                   params : (NSDictionary *)params
                   resolve : (RCTPromiseResolveBlock)resolve
                   reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient getTournamentDetails:tournamentId
-                             params:params
-                            resolve:resolve
-                             reject:reject];
+  [swiftClient retrieveTournamentLeaderboard:tournamentId
+                                 params:params
+                                resolve:resolve
+                                 reject:reject];
 }
 
 RCT_EXPORT_METHOD(autoJoinTournaments : (RCTPromiseResolveBlock)
