@@ -845,6 +845,8 @@ public func userAchievementToMap(_ achievement: LucraSDK.UserAchievement) -> [St
     "viewedAt": achievement.viewedAt?.ISO8601Format(),
     "claimedAt": achievement.claimedAt?.ISO8601Format(),
     "currentProgress": achievement.currentProgress,
+    "currentValue": achievement.currentValue,
+    "targetValue": achievement.targetValue,
     "achievement": achievement.achievement.map { achievementItemToMap($0) },
   ]
 }

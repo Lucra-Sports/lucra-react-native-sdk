@@ -4,6 +4,7 @@
   * Email format and the minimum-age requirement stay server-side on both platforms and surface as `apiError` carrying the server's message. Blank `zip`/`firstName`/`lastName` are treated as omitted on both platforms, so an untouched field does not store `""`.
   * The resolved promise means the server accepted the submission, not that the local user object has caught up — neither native SDK refreshes the user as part of the call, so wait for the `user` listener rather than calling `getUser()` immediately after.
   * Android: the wrapper now also pulls `com.lucrasports.sdk:core-data` (`compileOnly`) — `submitDemographicForm`'s result type lives there and the Android SDK does not expose it transitively. It is already on the runtime classpath, so this adds nothing to your app.
+* `LucraAchievement.currentValue` and `targetValue` are now populated on iOS as well, so the 7.0.0 note marking them Android-only no longer applies, and both fields are now required numbers in TypeScript rather than optional. They are the raw progress pair behind `currentProgress` for a readout like `261 / 700`; `targetValue` is `0` on both platforms when the goal could not be resolved, so guard on it before rendering. See [Achievements](5.0_achievements.md#reading-progress).
 
 # 7.0.0
 * Bumped iOS to [7.0.1](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/7.0.1)
