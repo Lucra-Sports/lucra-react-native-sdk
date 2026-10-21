@@ -1,4 +1,7 @@
 PODS:
+  - Auth0 (3.1.0):
+    - JWTDecode (= 4.0)
+    - SimpleKeychain (= 1.3.0)
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - fast_float (6.1.4)
@@ -96,11 +99,12 @@ PODS:
   - hermes-engine (0.79.2):
     - hermes-engine/Pre-built (= 0.79.2)
   - hermes-engine/Pre-built (0.79.2)
+  - JWTDecode (4.0.0)
   - lucra-react-native-sdk (7.0.0):
+    - Auth0
     - DoubleConversion
     - glog
     - hermes-engine
-    - LucraSDK (= 7.0.1)
     - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
     - RCTTypeSafety
@@ -120,14 +124,8 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - Yoga
-  - LucraSDK (7.0.1):
-    - LucraSDK/Core (= 7.0.1)
-    - LucraSDK/Telemetry (= 7.0.1)
-  - LucraSDK/Core (7.0.1)
-  - LucraSDK/Telemetry (7.0.1):
-    - LucraSDK/Core
     - Sentry (< 9.0, >= 8.58.0)
+    - Yoga
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -2141,6 +2139,7 @@ PODS:
     - Sentry/Core (= 8.58.4)
   - Sentry/Core (8.58.4)
   - Sentry/HybridSDK (8.58.0)
+  - SimpleKeychain (1.3.0)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -2236,6 +2235,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Auth0
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
@@ -2244,10 +2244,11 @@ SPEC REPOS:
     - FirebaseInstallations
     - GoogleAppMeasurement
     - GoogleUtilities
-    - LucraSDK
+    - JWTDecode
     - nanopb
     - PromisesObjC
     - Sentry
+    - SimpleKeychain
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2432,6 +2433,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ospfranco/Resolver.git
 
 SPEC CHECKSUMS:
+  Auth0: 001c664572d9b4ec2e2ba49fb105e332ad881ca1
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
@@ -2447,8 +2449,8 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleUtilities: db34c1c11c6f2eccb6fab2340cb8ceb1451299dc
   hermes-engine: 314be5250afa5692b57b4dd1705959e1973a8ebe
-  lucra-react-native-sdk: 108ebe8bf9bdce5d1fe5e640c946656de2471863
-  LucraSDK: 6c78dd09c153f9b201ca348a4b25b3a32b253884
+  JWTDecode: a420459e8c73d7840cb6a6a7a1eb89c894d58499
+  lucra-react-native-sdk: cfac4a8e0a270255528a2b81449a5f293e2faf6d
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
@@ -2529,6 +2531,7 @@ SPEC CHECKSUMS:
   RNSentry: caefeff988b163bb7fdd75414e97920c28002011
   RNVectorIcons: fe9afebb925c9ce70f441b611d679e402ecb3f6e
   Sentry: d587a8fe91ca13503ecd69a1905f3e8a0fcf61be
+  SimpleKeychain: 9c0f3ca8458fed74e01db864d181c5cbe278603e
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 50518ade05048235d91a78b803336dbb5b159d5d
 

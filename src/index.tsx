@@ -18,7 +18,8 @@ export { default as LucraContestCard } from './LucraContestCardNativeComponent';
 import {
   type LucraReward,
   type PoolTournament,
-  type TournamentDetails,
+  type LucraTournamentDetails,
+  type LucraTournamentLeaderboard,
   type LucraTournamentReward,
   type LucraAchievement,
 } from './types';
@@ -33,16 +34,19 @@ export {
   type PayoutStructure,
   type PayoutReward,
   type CatalogReward,
-  type TournamentDetails,
-  type TournamentDetailsHowToPlayStep,
-  type TournamentDetailsEarnedReward,
-  type TournamentDetailsTimer,
-  type TournamentDetailsAttemptScore,
-  type TournamentDetailsAttemptData,
-  type TournamentDetailsLeaderboardColumn,
-  type TournamentDetailsLeaderboardRow,
-  type TournamentDetailsLeaderboard,
-  type TournamentDetailsTerm,
+  type LucraTournamentDetails,
+  type LucraTournamentDetailsTimer,
+  type LucraTournamentDetailsHowToPlayStep,
+  type LucraTournamentDetailsTerm,
+  type LucraTournamentDetailsPayoutStructure,
+  type LucraTournamentDetailsPayoutReward,
+  type LucraTournamentDetailsCatalogReward,
+  type LucraTournamentDetailsLeaderboardColumn,
+  type LucraTournamentDetailsNotice,
+  type LucraTournamentDetailsGame,
+  type LucraTournamentLeaderboard,
+  type LucraTournamentLeaderboardEntry,
+  type LucraTournamentLeaderboardCurrentUserEntry,
   type LucraTournamentReward,
   type LucraCatalogReward,
   type LucraDiscountCodeConfig,
@@ -1451,35 +1455,27 @@ export const LucraSDK = {
       includePrivateViewableTournaments: includePrivateViewable,
     })) as PoolTournament[];
   },
-  tournamentMatchup: async (tournamentId: string): Promise<PoolTournament> => {
+  retrieveTournamentDetails: async (
+    tournamentId: string
+  ): Promise<LucraTournamentDetails> => {
     if (!tournamentId) {
       throw new Error('tournamentId is required');
     }
-    return (await LucraClient.tournamentMatchup(
+    return (await LucraClient.retrieveTournamentDetails(
       tournamentId
-    )) as PoolTournament;
+    )) as LucraTournamentDetails;
   },
-  /**
-   * Fetches the lightweight tournament details backed by the
-   * `ui_tournament_details` API — the same response that powers Lucra's
-   * in-app tournament details screen (leaderboard, payout structure, attempt
-   * data, how-to-play steps). Prefer this over `tournamentMatchup` for
-   * headless tournament UIs; the native SDKs deprecate the heavier call.
-   *
-   * `leaderboardLimit`/`leaderboardOffset` page the leaderboard section on
-   * both platforms; omit them for the native SDK's default first page.
-   */
-  getTournamentDetails: async (
+  retrieveTournamentLeaderboard: async (
     tournamentId: string,
-    options: { leaderboardLimit?: number; leaderboardOffset?: number } = {}
-  ): Promise<TournamentDetails> => {
+    { limit = 10, offset = 0 }: { limit?: number; offset?: number } = {}
+  ): Promise<LucraTournamentLeaderboard> => {
     if (!tournamentId) {
       throw new Error('tournamentId is required');
     }
-    return (await LucraClient.getTournamentDetails(
-      tournamentId,
-      options
-    )) as TournamentDetails;
+    return (await LucraClient.retrieveTournamentLeaderboard(tournamentId, {
+      limit,
+      offset,
+    })) as LucraTournamentLeaderboard;
   },
   joinTournament: async (tournamentId: string) => {
     return await LucraClient.joinTournament(tournamentId);
@@ -1591,7 +1587,7 @@ export type LucraSDKError = {
     | 'missingDemographicInformation'
     | 'locationError'
     | 'unknownError'
-    /** Android-only: the feature isn't enabled for this tenant (tournament calls). */
+    /** Tournament calls: the feature isn't enabled — tournaments for this tenant (Android), or auto-join for this integration (`autoJoinTournaments`, both platforms). */
     | 'featureDisabled'
     /** The function has no native implementation on this platform (e.g. `getUserKycStatus` on iOS). */
     | 'unsupported'
