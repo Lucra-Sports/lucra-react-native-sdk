@@ -216,7 +216,7 @@ export type LucraSDKParams = {
   /**
    * When `true` (default), the SDK automatically shows its "you've won a
    * reward!" bottom sheet when the user has unclaimed rewards. Set to
-   * `false` to globally suppress it. See [Reward Sheet](1.2.11_reward_sheet.md).
+   * `false` to globally suppress it. See [Reward Sheet](1.2.10_reward_sheet.md).
    */
   allowRewardSheetToDisplay?: boolean;
 };
@@ -471,28 +471,8 @@ export type GamesMoreInfoData = {
   description?: string;
 };
 
-type LucraConvertCreditResponse = {
-  id: string;
-  type: string;
-  title: string;
-  convertedAmount: number;
-  iconUrl?: string | undefined;
-  convertedAmountDisplay: string;
-  shortDescription: string;
-  longDescription: string;
-  metaData: Record<string, string>;
-  cardColor: string;
-  cardTextColor: string;
-  pillColor: string;
-  pillTextColor: string;
-};
-
 let deepLinkSubscription: NativeEventSubscription;
-let creditConversionSubscription: NativeEventSubscription;
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
-let creditConversionEmitter:
-  | ((cashAmount: number) => Promise<LucraConvertCreditResponse>)
-  | null = null;
 
 let availableRewardsSubscription: NativeEventSubscription;
 let rewardEmitter: (() => Promise<Array<LucraReward>>) | null = null;
@@ -568,7 +548,6 @@ const Flows = {
   HOME_PAGE: 'homePage',
   MINI_GAME: 'miniGame',
   MINI_GAMES_HOME: 'miniGamesHome',
-  MINI_GAMES_PROFILE: 'miniGamesProfile',
   MINI_GAMES_REWARDS: 'miniGamesRewards',
   MINI_GAMES_MATCHUP_DETAILS: 'miniGamesMatchupDetails',
   ACHIEVEMENTS: 'achievements',
@@ -576,7 +555,7 @@ const Flows = {
    * Captures Terms of Service acceptance and completes a handshake sign-in.
    * Present it **only** in response to a `tosNotAccepted` handshake failure —
    * it is not a general entry point. See
-   * [Handshake Authentication](1.2.12_handshake_authentication.md).
+   * [Handshake Authentication](1.2.11_handshake_authentication.md).
    */
   HANDSHAKE_TOS: 'handshakeTOS',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
@@ -627,9 +606,6 @@ function present(params: {
 function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
 function present(params: { name: typeof Flows.HANDSHAKE_TOS }): Promise<void>;
 function present(params: { name: typeof Flows.MINI_GAMES_HOME }): Promise<void>;
-function present(params: {
-  name: typeof Flows.MINI_GAMES_PROFILE;
-}): Promise<void>;
 function present(params: {
   name: typeof Flows.MINI_GAMES_REWARDS;
 }): Promise<void>;
@@ -782,16 +758,6 @@ export const LucraSDK = {
         if (deepLinkEmitter) {
           let newDeepLink = await deepLinkEmitter(data.link);
           LucraClient.emitDeepLink(newDeepLink);
-        }
-      }
-    );
-    creditConversionSubscription?.remove();
-    creditConversionSubscription = eventEmitter.addListener(
-      '_creditConversion',
-      async (data) => {
-        if (creditConversionEmitter) {
-          let newDeepLink = await creditConversionEmitter(data.amount);
-          LucraClient.emitCreditConversion(newDeepLink);
         }
       }
     );
@@ -1073,7 +1039,7 @@ export const LucraSDK = {
    * `bypassTosAgreement` requests that Terms of Service capture be skipped. It
    * is honored only where your tenant's configuration allows it, carries a
    * legal obligation you are taking on, and should be discussed with Lucra
-   * first. See [Handshake Authentication](1.2.12_handshake_authentication.md).
+   * first. See [Handshake Authentication](1.2.11_handshake_authentication.md).
    */
   registerHandshakeAuthTokenProvider: (
     provider: (() => Promise<string>) | null,
@@ -1320,7 +1286,7 @@ export const LucraSDK = {
    * event the SDK cannot observe, such as a game ending in a headless
    * integration. Does nothing when `allowRewardSheetToDisplay` is `false` or
    * no user is signed in. Resolves once the check is handed to the native SDK,
-   * not when the sheet is shown. See [Reward Sheet](1.2.11_reward_sheet.md).
+   * not when the sheet is shown. See [Reward Sheet](1.2.10_reward_sheet.md).
    */
   presentRewardsSheetIfAvailable: (): Promise<void> => {
     return LucraClient.presentRewardsSheetIfAvailable();
@@ -1386,12 +1352,6 @@ export const LucraSDK = {
   },
   registerDeepLinkProvider: (provider: (url: string) => Promise<string>) => {
     deepLinkEmitter = provider;
-  },
-  registerCreditConversionProvider: (
-    provider: (cashAmount: number) => Promise<LucraConvertCreditResponse>
-  ) => {
-    LucraClient.registerConvertToCreditProvider();
-    creditConversionEmitter = provider;
   },
   handleLucraLink: async (link: string): Promise<boolean> => {
     return LucraClient.handleLucraLink(link);
