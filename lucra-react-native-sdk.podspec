@@ -26,7 +26,7 @@ download_lucra_ios_sdk = lambda do
     Dir.mktmpdir("download-", destination) do |staging|
       zip = File.join(staging, "#{name}.xcframework.zip")
       Pod::UI.puts "[Lucra] Downloading #{name} #{lucra_ios_sdk_version}"
-      unless system("curl", "--fail", "--silent", "--show-error", "--location", "--retry", "3", "--output", zip, url)
+      unless system("curl", "--fail", "--silent", "--show-error", "--location", "--retry", "3", "--connect-timeout", "30", "--speed-limit", "1024", "--speed-time", "60", "--output", zip, url)
         raise Pod::Informative, "[Lucra] Could not download #{url}"
       end
       actual_checksum = Digest::SHA256.file(zip).hexdigest
