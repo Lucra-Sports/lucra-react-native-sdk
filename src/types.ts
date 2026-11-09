@@ -148,9 +148,8 @@ export type PoolTournament = {
   iconUrl?: string;
   expiresAt?: string;
   potTotal: number;
-  // Reward structure (native iOS 5.5.0 / Android 6.6.0+). Additive — present
-  // when the backend supplies it. `rewardType` is the raw API category
-  // ("POOL_CASH_REWARD" | "POOL_TENANT_REWARD").
+  // Only the removed `tournamentMatchup` populated these; never present now.
+  // Read `LucraTournamentDetails.payoutStructure` from `retrieveTournamentDetails`.
   rewardType?: string;
   payoutStructure?: PayoutStructure;
   isPrivate?: boolean;
@@ -203,120 +202,156 @@ export type CatalogReward = {
   disclaimer?: string;
 };
 
-export type TournamentDetailsHowToPlayStep = {
+export type LucraTournamentDetailsTimer = {
+  state: string;
+  caption: string;
+  targetAt: string | null;
+};
+
+export type LucraTournamentDetailsHowToPlayStep = {
   step: number;
   text: string;
 };
 
-export type TournamentDetailsEarnedReward = {
-  id: string;
-  place: number;
-  /**
-   * Tangible reward details. Intentionally excludes redemption details —
-   * use `getUserTournamentRewards` for a claimed reward's redemption payload.
-   */
-  reward?: CatalogReward;
-};
-
-export type TournamentDetailsTimer = {
-  /** Pre-formatted countdown caption, e.g. "Ends in 2h 15m". */
-  caption: string;
-  state: 'NOT_STARTED' | 'STARTED' | 'ENDED';
-};
-
-export type TournamentDetailsAttemptScore = {
-  attempt: number;
-  score?: string;
-  isBest?: boolean;
-};
-
-export type TournamentDetailsAttemptData = {
-  canJoinTournament: boolean;
-  isReplayable: boolean;
-  isUserPresent?: boolean;
-  attemptsRemaining?: number;
-  /** Rank change since the previous attempt. */
-  rankVariation?: number;
-  presentToUser?: boolean;
-  modalTitleText?: string;
-  playAgainRecommendationTitle?: string;
-  playAgainRecommendationText?: string;
-  /** iOS only. */
-  remainingAttemptsText?: string;
-  iconType?: string;
-  scores: TournamentDetailsAttemptScore[];
-};
-
-export type TournamentDetailsLeaderboardColumn = {
-  name?: string;
-  label?: string;
-};
-
-export type TournamentDetailsLeaderboardRow = {
-  userId: string;
-  name: string;
-  rank?: number;
-  /** Pre-formatted points/score label. */
-  points?: string;
-  /** Pre-formatted payout label. */
-  payout?: string;
-};
-
-export type TournamentDetailsLeaderboard = {
-  columns: TournamentDetailsLeaderboardColumn[];
-  rows: TournamentDetailsLeaderboardRow[];
-  pagination: {
-    totalCount: number;
-    offset: number;
-    limit: number;
-  };
-};
-
-export type TournamentDetailsTerm = {
+export type LucraTournamentDetailsTerm = {
   title: string;
   description: string;
 };
 
-/**
- * Lightweight tournament details payload backed by the `ui_tournament_details`
- * API — the same response that powers Lucra's in-app tournament details
- * screen. Headless counterpart of the heavier `tournamentMatchup` response.
- * Fields marked platform-only are absent on the other platform.
- */
-export type TournamentDetails = {
+export type LucraTournamentDetailsCatalogReward = {
+  id: string;
+  type: string;
+  title: string;
+  descriptor: string | null;
+  iconUrl: string | null;
+  bannerIconUrl: string | null;
+  disclaimer: string | null;
+  config: Record<string, unknown>;
+};
+
+export type LucraTournamentDetailsPayoutReward = {
+  place: number;
+  endPlace: number;
+  placeLabel: string;
+  positionLabel: string;
+  value: number | null;
+  rewardLabel: string | null;
+  amountLabel: string | null;
+  catalogReward: LucraTournamentDetailsCatalogReward | null;
+};
+
+export type LucraTournamentDetailsPayoutStructure = {
+  title: string;
+  description: string;
+  labelTitle: string | null;
+  labelDescription: string | null;
+  noPayout: boolean;
+  isPercentagePayout: boolean;
+  showAmount: boolean;
+  jackpotDescriptor: string | null;
+  jackpotAmount: string | null;
+  rewards: LucraTournamentDetailsPayoutReward[];
+};
+
+export type LucraTournamentDetailsLeaderboardColumn = {
+  name: string;
+  label: string;
+};
+
+export type LucraTournamentDetailsNotice = {
+  type: string;
+  message: string;
+  affectedFields: string[];
+};
+
+export type LucraTournamentDetailsGame = {
+  gameId: string;
+  minigameEnabled: boolean;
+  scoringUnit: string | null;
+  imageBgUrl: string | null;
+  iconUrl: string | null;
+};
+
+export type LucraTournamentDetails = {
   id: string;
   title: string;
-  description?: string;
-  imageUrl?: string;
+  description: string | null;
+  status: string;
+  type: string;
+  visibility: string;
+  gameId: string | null;
+  imageUrl: string | null;
+  buyIn: string;
+  feePercent: string;
+  maxParticipants: number | null;
+  maxAttempts: number | null;
+  startsAt: string | null;
+  expiresAt: string | null;
+  signUpStart: string | null;
+  signUpEnd: string | null;
+  createdAt: string | null;
+  participantsCount: number;
+  matchupStatus: string;
+  matchupRewardType: string | null;
+  buyInAmount: number;
+  freeBuyIn: boolean;
   isPrivate: boolean;
   isCompleted: boolean;
   isNotStarted: boolean;
   isExpired: boolean;
-  freeBuyIn: boolean;
-  buyInAmount?: number;
-  /** Android only. */
-  status?: string;
-  /** Android only: 'PUBLIC' | 'PRIVATE_VIEWABLE' | 'PRIVATE_HIDDEN'. */
-  visibilityLevel?: string;
-  maxParticipants?: number;
-  totalParticipants?: number;
-  /** Raw API reward category, e.g. "POOL_CASH_REWARD" | "POOL_TENANT_REWARD". */
-  rewardType?: string;
-  gameId?: string;
-  minigameEnabled?: boolean;
-  howToPlay: TournamentDetailsHowToPlayStep[];
-  earnedRewards: TournamentDetailsEarnedReward[];
-  timer?: TournamentDetailsTimer;
-  attemptData?: TournamentDetailsAttemptData;
-  payoutStructure?: PayoutStructure;
-  leaderboard?: TournamentDetailsLeaderboard;
-  /** The current user's row, when they participate in the tournament. */
-  userLeaderboardRow?: TournamentDetailsLeaderboardRow;
-  terms: TournamentDetailsTerm[];
-  /** ISO 8601. */
-  expiresAt?: string;
-  /** ISO 8601. */
-  startsAt?: string;
+  isJoinable: boolean;
+  displayImageUrl: string | null;
+  poolNetAmount: number;
+  poolNetAmountComplete: number;
+  timer: LucraTournamentDetailsTimer;
+  howToPlay: LucraTournamentDetailsHowToPlayStep[] | null;
+  terms: LucraTournamentDetailsTerm[];
+  payoutStructure: LucraTournamentDetailsPayoutStructure;
+  leaderboardColumns: LucraTournamentDetailsLeaderboardColumn[];
+  notices: LucraTournamentDetailsNotice[];
+  game: LucraTournamentDetailsGame | null;
+};
+
+export type LucraTournamentLeaderboardEntry = {
+  userId: string;
+  userName: string | null;
+  userMetadata: Record<string, unknown> | null;
+  userAvatarUrl: string | null;
+  position: number;
+  positionOverride: number | null;
+  score: number | null;
+  lastUpdatedAt: string | null;
+  rank: number | null;
+  name: string;
+  points: string | null;
+  payout: string | null;
+  isCurrentUser: boolean;
+  rewardTotalAmount: number;
+  rewardNetAmount: number;
+  rewardFeeAmount: number;
+  rewardNetAmountComplete: number;
+  numberOfParticipants: number;
+  bestAttempt: number | null;
+  openAttempt: number | null;
+  lastAttempt: number | null;
+  canSubmitNewScore: boolean;
+};
+
+export type LucraTournamentLeaderboardCurrentUserEntry = {
+  userId: string;
+  userName: string | null;
+  userMetadata: Record<string, unknown> | null;
+  userAvatarUrl: string | null;
+  position: number;
+  positionOverride: number | null;
+  score: number | null;
+  lastUpdatedAt: string | null;
+};
+
+export type LucraTournamentLeaderboard = {
+  entries: LucraTournamentLeaderboardEntry[];
+  totalCount: number | null;
+  currentUserEntry: LucraTournamentLeaderboardCurrentUserEntry | null;
 };
 
 export type SportsMatchupType = {

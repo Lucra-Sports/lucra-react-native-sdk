@@ -18,7 +18,8 @@ export { default as LucraContestCard } from './LucraContestCardNativeComponent';
 import {
   type LucraReward,
   type PoolTournament,
-  type TournamentDetails,
+  type LucraTournamentDetails,
+  type LucraTournamentLeaderboard,
   type LucraTournamentReward,
   type LucraAchievement,
 } from './types';
@@ -33,16 +34,19 @@ export {
   type PayoutStructure,
   type PayoutReward,
   type CatalogReward,
-  type TournamentDetails,
-  type TournamentDetailsHowToPlayStep,
-  type TournamentDetailsEarnedReward,
-  type TournamentDetailsTimer,
-  type TournamentDetailsAttemptScore,
-  type TournamentDetailsAttemptData,
-  type TournamentDetailsLeaderboardColumn,
-  type TournamentDetailsLeaderboardRow,
-  type TournamentDetailsLeaderboard,
-  type TournamentDetailsTerm,
+  type LucraTournamentDetails,
+  type LucraTournamentDetailsTimer,
+  type LucraTournamentDetailsHowToPlayStep,
+  type LucraTournamentDetailsTerm,
+  type LucraTournamentDetailsPayoutStructure,
+  type LucraTournamentDetailsPayoutReward,
+  type LucraTournamentDetailsCatalogReward,
+  type LucraTournamentDetailsLeaderboardColumn,
+  type LucraTournamentDetailsNotice,
+  type LucraTournamentDetailsGame,
+  type LucraTournamentLeaderboard,
+  type LucraTournamentLeaderboardEntry,
+  type LucraTournamentLeaderboardCurrentUserEntry,
   type LucraTournamentReward,
   type LucraCatalogReward,
   type LucraDiscountCodeConfig,
@@ -216,7 +220,8 @@ export type LucraSDKParams = {
   /**
    * When `true` (default), the SDK automatically shows its "you've won a
    * reward!" bottom sheet when the user has unclaimed rewards. Set to
-   * `false` to globally suppress it. See [Reward Sheet](1.2.11_reward_sheet.md).
+   * `false` to globally suppress it. See
+   * [Reward Sheet](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/docs/1.2.10_reward_sheet.md).
    */
   allowRewardSheetToDisplay?: boolean;
 };
@@ -471,28 +476,8 @@ export type GamesMoreInfoData = {
   description?: string;
 };
 
-type LucraConvertCreditResponse = {
-  id: string;
-  type: string;
-  title: string;
-  convertedAmount: number;
-  iconUrl?: string | undefined;
-  convertedAmountDisplay: string;
-  shortDescription: string;
-  longDescription: string;
-  metaData: Record<string, string>;
-  cardColor: string;
-  cardTextColor: string;
-  pillColor: string;
-  pillTextColor: string;
-};
-
 let deepLinkSubscription: NativeEventSubscription;
-let creditConversionSubscription: NativeEventSubscription;
 let deepLinkEmitter: ((deepLink: string) => Promise<string>) | null = null;
-let creditConversionEmitter:
-  | ((cashAmount: number) => Promise<LucraConvertCreditResponse>)
-  | null = null;
 
 let availableRewardsSubscription: NativeEventSubscription;
 let rewardEmitter: (() => Promise<Array<LucraReward>>) | null = null;
@@ -568,7 +553,6 @@ const Flows = {
   HOME_PAGE: 'homePage',
   MINI_GAME: 'miniGame',
   MINI_GAMES_HOME: 'miniGamesHome',
-  MINI_GAMES_PROFILE: 'miniGamesProfile',
   MINI_GAMES_REWARDS: 'miniGamesRewards',
   MINI_GAMES_MATCHUP_DETAILS: 'miniGamesMatchupDetails',
   ACHIEVEMENTS: 'achievements',
@@ -576,7 +560,7 @@ const Flows = {
    * Captures Terms of Service acceptance and completes a handshake sign-in.
    * Present it **only** in response to a `tosNotAccepted` handshake failure —
    * it is not a general entry point. See
-   * [Handshake Authentication](1.2.12_handshake_authentication.md).
+   * [Handshake Authentication](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/docs/1.2.11_handshake_authentication.md).
    */
   HANDSHAKE_TOS: 'handshakeTOS',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
@@ -627,9 +611,6 @@ function present(params: {
 function present(params: { name: typeof Flows.ACHIEVEMENTS }): Promise<void>;
 function present(params: { name: typeof Flows.HANDSHAKE_TOS }): Promise<void>;
 function present(params: { name: typeof Flows.MINI_GAMES_HOME }): Promise<void>;
-function present(params: {
-  name: typeof Flows.MINI_GAMES_PROFILE;
-}): Promise<void>;
 function present(params: {
   name: typeof Flows.MINI_GAMES_REWARDS;
 }): Promise<void>;
@@ -782,16 +763,6 @@ export const LucraSDK = {
         if (deepLinkEmitter) {
           let newDeepLink = await deepLinkEmitter(data.link);
           LucraClient.emitDeepLink(newDeepLink);
-        }
-      }
-    );
-    creditConversionSubscription?.remove();
-    creditConversionSubscription = eventEmitter.addListener(
-      '_creditConversion',
-      async (data) => {
-        if (creditConversionEmitter) {
-          let newDeepLink = await creditConversionEmitter(data.amount);
-          LucraClient.emitCreditConversion(newDeepLink);
         }
       }
     );
@@ -1073,7 +1044,8 @@ export const LucraSDK = {
    * `bypassTosAgreement` requests that Terms of Service capture be skipped. It
    * is honored only where your tenant's configuration allows it, carries a
    * legal obligation you are taking on, and should be discussed with Lucra
-   * first. See [Handshake Authentication](1.2.12_handshake_authentication.md).
+   * first. See
+   * [Handshake Authentication](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/docs/1.2.11_handshake_authentication.md).
    */
   registerHandshakeAuthTokenProvider: (
     provider: (() => Promise<string>) | null,
@@ -1320,7 +1292,8 @@ export const LucraSDK = {
    * event the SDK cannot observe, such as a game ending in a headless
    * integration. Does nothing when `allowRewardSheetToDisplay` is `false` or
    * no user is signed in. Resolves once the check is handed to the native SDK,
-   * not when the sheet is shown. See [Reward Sheet](1.2.11_reward_sheet.md).
+   * not when the sheet is shown. See
+   * [Reward Sheet](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/docs/1.2.10_reward_sheet.md).
    */
   presentRewardsSheetIfAvailable: (): Promise<void> => {
     return LucraClient.presentRewardsSheetIfAvailable();
@@ -1387,12 +1360,6 @@ export const LucraSDK = {
   registerDeepLinkProvider: (provider: (url: string) => Promise<string>) => {
     deepLinkEmitter = provider;
   },
-  registerCreditConversionProvider: (
-    provider: (cashAmount: number) => Promise<LucraConvertCreditResponse>
-  ) => {
-    LucraClient.registerConvertToCreditProvider();
-    creditConversionEmitter = provider;
-  },
   handleLucraLink: async (link: string): Promise<boolean> => {
     return LucraClient.handleLucraLink(link);
   },
@@ -1445,41 +1412,39 @@ export const LucraSDK = {
     limit?: number;
     includePrivateViewable?: boolean;
   }): Promise<PoolTournament[]> => {
+    if (!Number.isInteger(limit)) {
+      throw new Error('limit must be an integer');
+    }
     return (await LucraClient.getRecommendedTournaments({
       includeClosed,
       limit,
       includePrivateViewableTournaments: includePrivateViewable,
     })) as PoolTournament[];
   },
-  tournamentMatchup: async (tournamentId: string): Promise<PoolTournament> => {
+  retrieveTournamentDetails: async (
+    tournamentId: string
+  ): Promise<LucraTournamentDetails> => {
     if (!tournamentId) {
       throw new Error('tournamentId is required');
     }
-    return (await LucraClient.tournamentMatchup(
+    return (await LucraClient.retrieveTournamentDetails(
       tournamentId
-    )) as PoolTournament;
+    )) as LucraTournamentDetails;
   },
-  /**
-   * Fetches the lightweight tournament details backed by the
-   * `ui_tournament_details` API — the same response that powers Lucra's
-   * in-app tournament details screen (leaderboard, payout structure, attempt
-   * data, how-to-play steps). Prefer this over `tournamentMatchup` for
-   * headless tournament UIs; the native SDKs deprecate the heavier call.
-   *
-   * `leaderboardLimit`/`leaderboardOffset` page the leaderboard section on
-   * both platforms; omit them for the native SDK's default first page.
-   */
-  getTournamentDetails: async (
+  retrieveTournamentLeaderboard: async (
     tournamentId: string,
-    options: { leaderboardLimit?: number; leaderboardOffset?: number } = {}
-  ): Promise<TournamentDetails> => {
+    { limit = 10, offset = 0 }: { limit?: number; offset?: number } = {}
+  ): Promise<LucraTournamentLeaderboard> => {
     if (!tournamentId) {
       throw new Error('tournamentId is required');
     }
-    return (await LucraClient.getTournamentDetails(
-      tournamentId,
-      options
-    )) as TournamentDetails;
+    if (!Number.isInteger(limit) || !Number.isInteger(offset)) {
+      throw new Error('limit and offset must be integers');
+    }
+    return (await LucraClient.retrieveTournamentLeaderboard(tournamentId, {
+      limit,
+      offset,
+    })) as LucraTournamentLeaderboard;
   },
   joinTournament: async (tournamentId: string) => {
     return await LucraClient.joinTournament(tournamentId);
@@ -1591,7 +1556,7 @@ export type LucraSDKError = {
     | 'missingDemographicInformation'
     | 'locationError'
     | 'unknownError'
-    /** Android-only: the feature isn't enabled for this tenant (tournament calls). */
+    /** `autoJoinTournaments`: auto-join isn't enabled for this integration (both platforms). No other tournament call returns it. */
     | 'featureDisabled'
     /** The function has no native implementation on this platform (e.g. `getUserKycStatus` on iOS). */
     | 'unsupported'

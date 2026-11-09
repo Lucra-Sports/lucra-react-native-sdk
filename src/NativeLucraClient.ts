@@ -97,10 +97,12 @@ export interface Spec extends TurboModule {
   // Pool tournaments
   // https://docs.lucrasports.com/lucra-sdk/DPHUTeEoFi2Jw8eLoOMk/integration-documents/pool-tournaments
   getRecommendedTournaments: (params: Object) => Promise<Object[]>;
-  tournamentMatchup: (tournamentId: string) => Promise<Object>;
-  // Lightweight ui_tournament_details payload; params carries the optional
-  // leaderboard pagination options.
-  getTournamentDetails(tournamentId: string, params: Object): Promise<Object>;
+  retrieveTournamentDetails(tournamentId: string): Promise<Object>;
+  // params carries the leaderboard page: { limit, offset }
+  retrieveTournamentLeaderboard(
+    tournamentId: string,
+    params: Object
+  ): Promise<Object>;
   joinTournament: (tournamentId: string) => Promise<void>;
   autoJoinTournaments: () => Promise<string[]>;
   // Resolves null when the native SDK returns no updated tournament (iOS)
@@ -115,13 +117,11 @@ export interface Spec extends TurboModule {
   addListener: (eventType: string) => void;
   removeListeners: (count: number) => void;
   emitDeepLink: (deepLink: string) => void;
-  emitCreditConversion: (creditConversion: Object) => void;
   handleLucraLink: (link: string) => Promise<boolean>;
   // Resolves a Lucra deeplink to flow info without presenting UI; null when unrecognized
   parseLucraLink: (link: string) => Promise<Object>;
   registerDeviceTokenHex: (token: string) => Promise<void>;
   registerDeviceTokenBase64: (token: string) => Promise<void>;
-  registerConvertToCreditProvider: () => void;
   registerRewardProvider: () => void;
   emitAvailableRewards: (rewards: Object[]) => void;
 }

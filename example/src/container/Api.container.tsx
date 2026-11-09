@@ -510,20 +510,8 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
           onPress={async () => {
             try {
-              let tournament = await LucraSDK.tournamentMatchup(tournamentId);
-              showResult('Tournament', tournament);
-            } catch (e) {
-              console.error(e);
-            }
-          }}
-        >
-          <Text className="text-white">Get Current Tournament</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
-          onPress={async () => {
-            try {
-              const details = await LucraSDK.getTournamentDetails(tournamentId);
+              const details =
+                await LucraSDK.retrieveTournamentDetails(tournamentId);
               showResult('Tournament Details', details);
             } catch (e) {
               Alert.alert('Error', String(e));
@@ -531,6 +519,22 @@ export const ApiContainer: React.FC<Props> = ({ navigation }) => {
           }}
         >
           <Text className="text-white">Get Tournament Details</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"
+          onPress={async () => {
+            try {
+              const leaderboard = await LucraSDK.retrieveTournamentLeaderboard(
+                tournamentId,
+                { limit: 25 }
+              );
+              showResult('Tournament Leaderboard', leaderboard);
+            } catch (e) {
+              Alert.alert('Error', String(e));
+            }
+          }}
+        >
+          <Text className="text-white">Get Tournament Leaderboard</Text>
         </TouchableOpacity>
         <TouchableOpacity
           className="w-full border border-indigo-400 bg-indigo-700 p-4 items-center justify-center rounded-lg"

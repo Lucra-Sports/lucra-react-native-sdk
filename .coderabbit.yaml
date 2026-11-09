@@ -63,8 +63,8 @@ reviews:
         corresponding layers are:
         iOS (Swift) — ios/Libs/LucraMapper.swift (native types ->
         [String: Any]), ios/Libs/ErrorMapper.swift (errors), and supporting
-        ios/Libs/ConversionProvider.swift, ios/Libs/RewardProvider.swift,
-        ios/Libs/LucraUtils.swift, plus ios/Extensions/*.
+        ios/Libs/RewardProvider.swift, ios/Libs/LucraUtils.swift, plus
+        ios/Extensions/*.
         Android (Kotlin) — android/src/main/kotlin/com/lucrasdk/Libs/LucraMapper.kt
         (native types -> WritableMap), .../Libs/ErrorMapper.kt (errors), and
         supporting .../Libs/LucraUtils.kt.
@@ -94,8 +94,8 @@ reviews:
         stale identifiers); PROPERTY MEANING (descriptions, units, nullability,
         defaults, allowed values); and ANY OTHER DOCUMENTATION (examples,
         prose, enum lists, type references). Map the change to the relevant
-        docs file, e.g. docs/1.2.7_lucraflows.md, docs/1.2.8_lucracomponents.md,
-        docs/1.2.9_headless_interactions.md, docs/2.3_gyp_headless_functions.md,
+        docs file, e.g. docs/1.2.6_lucraflows.md, docs/1.2.7_lucracomponents.md,
+        docs/1.2.8_headless_interactions.md, docs/2.3_gyp_headless_functions.md,
         docs/3.3_tournaments_headless.md, docs/4.3_syw_headless_functions.md,
         docs/5.0_achievements.md, docs/6.1_mini_games_headless.md,
         docs/6.2_mini_game_events.md, docs/6.3_mini_games_flows.md,

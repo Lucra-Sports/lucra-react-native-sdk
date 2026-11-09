@@ -312,10 +312,6 @@ RCT_EXPORT_METHOD(emitDeepLink : (NSString *)deepLink) {
   [swiftClient emitDeepLink:deepLink];
 }
 
-RCT_EXPORT_METHOD(emitCreditConversion : (NSDictionary *)conversion) {
-  [swiftClient emitCreditConversion:conversion];
-}
-
 RCT_EXPORT_METHOD(emitAvailableRewards : (NSArray *)rewards) {
   [swiftClient emitAvailableRewards:rewards];
 }
@@ -323,10 +319,6 @@ RCT_EXPORT_METHOD(emitAvailableRewards : (NSArray *)rewards) {
 RCT_EXPORT_METHOD(closeFullScreenLucraFlows : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient closeFullScreenLucraFlowsWithResolve:resolve reject:reject];
-}
-
-RCT_EXPORT_METHOD(registerConvertToCreditProvider) {
-  [swiftClient registerConvertToCreditProvider];
 }
 
 RCT_EXPORT_METHOD(registerRewardProvider) {
@@ -372,32 +364,40 @@ RCT_EXPORT_METHOD(registerDeviceTokenBase64 : (NSString *)
 // Pool tournaments
 RCT_EXPORT_METHOD(getRecommendedTournaments : (NSDictionary *)params resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient getRecommendedTournaments:params resolve:resolve reject:reject];
+  [LucraSharedSwiftClient() getRecommendedTournaments:params
+                                              resolve:resolve
+                                               reject:reject];
 }
 
-RCT_EXPORT_METHOD(tournamentMatchup : (NSString *)idString resolve : (
-    RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient tournamentMatchup:idString resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(retrieveTournamentDetails : (NSString *)tournamentId
+                  resolve : (RCTPromiseResolveBlock)resolve
+                  reject : (RCTPromiseRejectBlock)reject) {
+  [LucraSharedSwiftClient() retrieveTournamentDetails:tournamentId
+                                              resolve:resolve
+                                               reject:reject];
 }
 
-RCT_EXPORT_METHOD(getTournamentDetails : (NSString *)tournamentId
+RCT_EXPORT_METHOD(retrieveTournamentLeaderboard : (NSString *)tournamentId
                   params : (NSDictionary *)params
                   resolve : (RCTPromiseResolveBlock)resolve
                   reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient getTournamentDetails:tournamentId
-                             params:params
-                            resolve:resolve
-                             reject:reject];
+  [LucraSharedSwiftClient() retrieveTournamentLeaderboard:tournamentId
+                                                   params:params
+                                                  resolve:resolve
+                                                   reject:reject];
 }
 
 RCT_EXPORT_METHOD(autoJoinTournaments : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient autoJoinTournamentsWithResolve:resolve reject:reject];
+  [LucraSharedSwiftClient() autoJoinTournamentsWithResolve:resolve
+                                                    reject:reject];
 }
 
 RCT_EXPORT_METHOD(joinTournament : (NSString *)idString resolve : (
     RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient joinTournament:idString resolve:resolve reject:reject];
+  [LucraSharedSwiftClient() joinTournament:idString
+                                   resolve:resolve
+                                    reject:reject];
 }
 
 RCT_EXPORT_METHOD(submitUserScore : (double)score
@@ -406,12 +406,12 @@ RCT_EXPORT_METHOD(submitUserScore : (double)score
                   isFinal : (BOOL)isFinal
                   resolve : (RCTPromiseResolveBlock)resolve
                   reject : (RCTPromiseRejectBlock)reject) {
-  [swiftClient submitUserScore:score
-                  tournamentId:tournamentId
-                      metadata:metadata
-                       isFinal:isFinal
-                       resolve:resolve
-                        reject:reject];
+  [LucraSharedSwiftClient() submitUserScore:score
+                               tournamentId:tournamentId
+                                   metadata:metadata
+                                    isFinal:isFinal
+                                    resolve:resolve
+                                     reject:reject];
 }
 
 #if RCT_NEW_ARCH_ENABLED

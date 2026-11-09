@@ -4,7 +4,7 @@ import ErrorMapper.rejectAutoJoinTournamentsError
 import ErrorMapper.rejectJoinTournamentError
 import ErrorMapper.rejectRecommendedTournamentsError
 import ErrorMapper.rejectRetrieveTournamentDetailsError
-import ErrorMapper.rejectRetrieveTournamentError
+import ErrorMapper.rejectRetrieveTournamentLeaderboardError
 import ErrorMapper.rejectSubmitDemographicFormError
 import ErrorMapper.rejectSubmitTournamentScoreError
 import android.app.Application
@@ -33,7 +33,6 @@ import com.lucrasdk.Libs.LucraMapper.readableMapToColorStyle
 import com.lucrasdk.Libs.LucraMapper.readableMapToFontFamily
 import com.lucrasdk.Libs.LucraMapper.rewardToMap
 import com.lucrasdk.Libs.LucraMapper.sdkUserToMap
-import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraConvertToCreditWithdrawMethod
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraReward
 import com.lucrasdk.Libs.LucraUtils
 import com.lucrasports.data.demographic.DemographicInteractions
@@ -56,8 +55,6 @@ import com.lucrasports.sdk.core.contest.recreational.RecreationalGameInteraction
 import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
 import com.lucrasports.sdk.core.minigames.LucraGeoTokenType
 import com.lucrasports.sdk.core.contest.tournament.PoolTournament
-import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditProvider
-import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
 import com.lucrasports.sdk.core.profile.ProfileInteractions
 import com.lucrasports.sdk.core.events.LucraEvent
 import com.lucrasports.sdk.core.events.LucraEventListener
@@ -149,12 +146,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     // need a way to emit as they come in
     private val deepLinkQueue =
         Channel<String>(
-            capacity = Channel.UNLIMITED,
-            onBufferOverflow = BufferOverflow.DROP_LATEST
-        )
-
-    private val creditConversionQueue =
-        Channel<ReadableMap>(
             capacity = Channel.UNLIMITED,
             onBufferOverflow = BufferOverflow.DROP_LATEST
         )
@@ -973,13 +964,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun emitCreditConversion(args: ReadableMap) {
-        args.takeIf { it != null }?.let {
-            creditConversionQueue.trySend(it)
-        }
-    }
-
-    @ReactMethod
     fun registerRewardProvider() {
         LucraClient()
             .setRewardProvider(
@@ -1000,27 +984,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
                     override fun viewRewards() {
                         sendEvent(context, "_viewRewards", null)
-                    }
-                }
-            )
-    }
-
-    @ReactMethod
-    fun registerConvertToCreditProvider() {
-        LucraClient()
-            .setConvertToCreditProvider(
-                object : LucraConvertToCreditProvider {
-                    override suspend fun getCreditAmount(
-                        cashAmount: Double
-                    ): LucraConvertToCreditWithdrawMethod {
-                        val linkMap = Arguments.createMap()
-                        linkMap.putDouble("amount", cashAmount)
-                        sendEvent(context, "_creditConversion", linkMap)
-                        val responseMap = creditConversionQueue.receive()
-                        return writableNativeMapToLucraConvertToCreditWithdrawMethod(
-                            responseMap,
-                            cashAmount
-                        )
                     }
                 }
             )
@@ -1678,47 +1641,38 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun tournamentMatchup(id: String, promise: Promise) {
-        LucraClient().retrieveTournament(tournamentId = id) { result ->
-            when (result) {
-                is PoolTournament.RetrieveTournamentResult.Failure -> {
-                    rejectRetrieveTournamentError(promise, result)
-                }
-
-                is PoolTournament.RetrieveTournamentResult.RetrieveTournamentOutput -> {
-                    promise.resolve(LucraMapper.tournamentsMatchupToMap(result.tournament))
-                }
-
-            }
-        }
-    }
-
-    @ReactMethod
-    fun getTournamentDetails(tournamentId: String, params: ReadableMap, promise: Promise) {
-        val leaderboardLimit =
-            if (params.hasKey("leaderboardLimit") && !params.isNull("leaderboardLimit")) {
-                params.getInt("leaderboardLimit")
-            } else {
-                null
-            }
-        val leaderboardOffset =
-            if (params.hasKey("leaderboardOffset") && !params.isNull("leaderboardOffset")) {
-                params.getInt("leaderboardOffset")
-            } else {
-                null
-            }
-        LucraClient().retrieveTournamentDetails(
-            tournamentId = tournamentId,
-            leaderboardLimit = leaderboardLimit,
-            leaderboardOffset = leaderboardOffset
-        ) { result ->
+    fun retrieveTournamentDetails(tournamentId: String, promise: Promise) {
+        LucraClient().retrieveTournamentDetails(tournamentId = tournamentId) { result ->
             when (result) {
                 is PoolTournament.RetrieveTournamentDetailsResult.Failure -> {
                     rejectRetrieveTournamentDetailsError(promise, result)
                 }
 
                 is PoolTournament.RetrieveTournamentDetailsResult.TournamentDetailsOutput -> {
-                    promise.resolve(LucraMapper.tournamentDetailsToMap(result.details))
+                    promise.resolve(LucraMapper.lucraTournamentDetailsToMap(result.details))
+                }
+            }
+        }
+    }
+
+    @ReactMethod
+    fun retrieveTournamentLeaderboard(tournamentId: String, params: ReadableMap, promise: Promise) {
+        val limit =
+            if (params.hasKey("limit") && !params.isNull("limit")) params.getInt("limit") else 10
+        val offset =
+            if (params.hasKey("offset") && !params.isNull("offset")) params.getInt("offset") else 0
+        LucraClient().retrieveTournamentLeaderboard(
+            tournamentId = tournamentId,
+            limit = limit,
+            offset = offset
+        ) { result ->
+            when (result) {
+                is PoolTournament.RetrieveTournamentLeaderboardResult.Failure -> {
+                    rejectRetrieveTournamentLeaderboardError(promise, result)
+                }
+
+                is PoolTournament.RetrieveTournamentLeaderboardResult.TournamentLeaderboardOutput -> {
+                    promise.resolve(LucraMapper.lucraTournamentLeaderboardToMap(result.leaderboard))
                 }
             }
         }

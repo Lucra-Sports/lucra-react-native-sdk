@@ -15,7 +15,7 @@ sessions, entering matchups); the SDK routes through authentication when needed.
 
 **Peer dependencies:** Mini Games additionally requires `react-native-webview` (>=13.0.0) and
 `react-native-haptic-feedback` (>=2.0.0) — install these before anything renders. →
-[Mini Games](../../5.0.0_mini_games.md)
+[Mini Games](../../6.0.0_mini_games.md)
 
 **Tenant note:** the catalog and modes are tenant-driven. If Mini Games renders empty or reports
 unavailable, the first thing to check is that Mini Games are enabled for your tenant.
@@ -43,11 +43,10 @@ You present an SDK screen; it renders and navigates itself. Via `LucraSDK.presen
 - `MINI_GAMES_HOME` — the hub (profile pill, achievement card, game carousel, featured tournament). No params.
 - `MINI_GAME` — the full Lucra-managed game session (loading → in-game WebView). Params:
   `gameId` + `gameMode` required, `amount`/`matchupId` optional. UI counterpart of headless `startMiniGame`.
-- `MINI_GAMES_PROFILE` — the user's Mini Games profile. No params.
 - `MINI_GAMES_REWARDS` — achievement rewards grouped by game. No params.
 - `MINI_GAMES_MATCHUP_DETAILS` — a mini game matchup's result screen. Requires `matchupId`.
 
-Exact signatures + all flows: [Lucra Flows](../../1.2.7_lucraflows.md). Dismiss programmatically with
+Exact signatures + all flows: [Lucra Flows](../../1.2.6_lucraflows.md). Dismiss programmatically with
 `LucraSDK.closeFullScreenLucraFlows()`.
 
 ### UI checkpoints
@@ -59,18 +58,18 @@ Exact signatures + all flows: [Lucra Flows](../../1.2.7_lucraflows.md). Dismiss 
 
 - **Catalog:** `LucraSDK.getMiniGames()` returns every game enabled for the tenant with its config
   options (mode, wager, group size) — build your own catalog/launcher from it. →
-  [Mini Games Headless](../../5.1_mini_games_headless.md)
+  [Mini Games Headless](../../6.1_mini_games_headless.md)
 - **Pre-warm geo:** call `LucraSDK.preloadGeoToken(GeoComplyContext.…)` early (e.g. when your game
-  screen mounts) so the token is cached before start. → [Mini Games](../../5.0.0_mini_games.md)
+  screen mounts) so the token is cached before start. → [Mini Games](../../6.0.0_mini_games.md)
 - **Start a session:** `LucraSDK.startMiniGame(gameId, gameMode, amount?, matchupId?)` returns
-  `{ url, sessionId, matchupId? }`. → [Mini Games Headless](../../5.1_mini_games_headless.md)
+  `{ url, sessionId, matchupId? }`. → [Mini Games Headless](../../6.1_mini_games_headless.md)
 - **Render the game:** pass `url` to the provided `MiniGameWebView` component (full-screen modal,
   haptics, close handling built in; visible while `url` is non-null). →
-  [Mini Games WebView](../../5.2_mini_games_webview.md)
+  [Mini Games WebView](../../6.4_mini_games_webview.md)
 - **Handle errors by code:** `startMiniGame` rejects with structured codes — route each to its flow
   (`insufficientFunds` → `ADD_FUNDS`, `unverified` → `VERIFY_IDENTITY`,
   `missingDemographicInformation` → `DEMOGRAPHIC_COLLECTION`, `locationError` → prompt for location).
-  The headless doc has the full switch. → [Mini Games Headless](../../5.1_mini_games_headless.md)
+  The headless doc has the full switch. → [Mini Games Headless](../../6.1_mini_games_headless.md)
 
 ### Headless checkpoints
 
@@ -91,5 +90,5 @@ in the window hierarchy"). The WebView doc shows this exact pattern.
 `close_game` message and a manual exit both land there and are not distinguishable. The
 `onMiniGameFinished` listener is emitted by the native-run session, so it fires for
 the `MINI_GAME` UI flow — not for games rendered in your own `MiniGameWebView`. →
-[Mini Games WebView](../../5.2_mini_games_webview.md),
-[Event Listener](../../1.2.10_lucra_event_listener.md)
+[Mini Games WebView](../../6.4_mini_games_webview.md),
+[Event Listener](../../1.2.9_lucra_event_listener.md)
