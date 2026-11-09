@@ -1076,6 +1076,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     _ params: [String: Any], resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     let includeClosed: Bool = params["includeClosed"] as? Bool ?? true
     let limit: Int = params["limit"] as? Int ?? 50
     let includePrivateViewable: Bool =
@@ -1100,6 +1104,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     Task { @MainActor in
       let result = await self.nativeClient.api.autoJoinTournaments()
       switch result {
@@ -1116,6 +1124,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     Task { @MainActor in
       let result = await self.nativeClient.api.joinTournament(
         matchupId: matchupId,
@@ -1136,6 +1148,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     Task { @MainActor in
       let result = await self.nativeClient.api.retrieveTournamentDetails(for: tournamentId)
 
@@ -1154,6 +1170,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     let limit = params["limit"] as? Int ?? 10
     let offset = params["offset"] as? Int ?? 0
 
@@ -1178,6 +1198,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     Task { @MainActor in
       guard score.isFinite else {
         reject("invalidScore", "score must be a finite number", nil)

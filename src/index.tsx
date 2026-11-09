@@ -1587,7 +1587,7 @@ export type LucraSDKError = {
     | 'missingDemographicInformation'
     | 'locationError'
     | 'unknownError'
-    /** Tournament calls: the feature isn't enabled — tournaments for this tenant (Android), or auto-join for this integration (`autoJoinTournaments`, both platforms). */
+    /** `autoJoinTournaments`: auto-join isn't enabled for this integration (both platforms). No other tournament call returns it. */
     | 'featureDisabled'
     /** The function has no native implementation on this platform (e.g. `getUserKycStatus` on iOS). */
     | 'unsupported'
