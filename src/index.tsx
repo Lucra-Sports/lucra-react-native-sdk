@@ -1449,6 +1449,9 @@ export const LucraSDK = {
     limit?: number;
     includePrivateViewable?: boolean;
   }): Promise<PoolTournament[]> => {
+    if (!Number.isInteger(limit)) {
+      throw new Error('limit must be an integer');
+    }
     return (await LucraClient.getRecommendedTournaments({
       includeClosed,
       limit,
@@ -1471,6 +1474,9 @@ export const LucraSDK = {
   ): Promise<LucraTournamentLeaderboard> => {
     if (!tournamentId) {
       throw new Error('tournamentId is required');
+    }
+    if (!Number.isInteger(limit) || !Number.isInteger(offset)) {
+      throw new Error('limit and offset must be integers');
     }
     return (await LucraClient.retrieveTournamentLeaderboard(tournamentId, {
       limit,
