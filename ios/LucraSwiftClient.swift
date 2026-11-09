@@ -9,6 +9,7 @@ private enum ErrorCode {
   static let notInitialized = "notInitialized"
   static let unverified = "unverified"
   static let missingDemographicInformation = "missingDemographicInformation"
+  static let featureDisabled = "featureDisabled"
   static let invalidDateOfBirth = "invalidDateOfBirth"
   static let unknownError = "unknownError"
   static let unsupported = "unsupported"
@@ -801,6 +802,9 @@ private struct TelemetryDiagnosticError: LocalizedError {
         case .unknown:
           code = ErrorCode.unknownError
           message = extractMessage(from: tournamentError)
+        case .featureDisabled:
+          code = ErrorCode.featureDisabled
+          message = "Feature is disabled"
         @unknown default:
           code = ErrorCode.unknownError
           message = extractMessage(from: tournamentError)
@@ -1059,6 +1063,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     _ params: [String: Any], resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     let includeClosed: Bool = params["includeClosed"] as? Bool ?? true
     let limit: Int = params["limit"] as? Int ?? 50
     let includePrivateViewable: Bool =
@@ -1079,25 +1087,14 @@ private struct TelemetryDiagnosticError: LocalizedError {
     }
   }
 
-  @objc public func tournamentMatchup(
-    _ id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock
-  ) {
-    Task { @MainActor in
-      let result = await self.nativeClient.api.tournamentsMatchup(for: id)
-
-      switch result {
-      case .success(let tournament):
-        resolve(tournamentsMatchupToMap(tournament: tournament))
-      case .failure(let error):
-        rejectLucraError(reject, error: error)
-      }
-    }
-  }
-
   @objc public func autoJoinTournaments(
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     Task { @MainActor in
       let result = await self.nativeClient.api.autoJoinTournaments()
       switch result {
@@ -1114,6 +1111,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     Task { @MainActor in
       let result = await self.nativeClient.api.joinTournament(
         matchupId: matchupId,
@@ -1129,24 +1130,47 @@ private struct TelemetryDiagnosticError: LocalizedError {
     }
   }
 
-  @objc public func getTournamentDetails(
+  @objc public func retrieveTournamentDetails(
+    _ tournamentId: String,
+    resolve: @escaping RCTPromiseResolveBlock,
+    reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
+    Task { @MainActor in
+      let result = await self.nativeClient.api.retrieveTournamentDetails(for: tournamentId)
+
+      switch result {
+      case .success(let details):
+        resolve(lucraTournamentDetailsToMap(details))
+      case .failure(let error):
+        rejectLucraError(reject, error: error)
+      }
+    }
+  }
+
+  @objc public func retrieveTournamentLeaderboard(
     _ tournamentId: String,
     params: [String: Any],
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
-    let leaderboardLimit = params["leaderboardLimit"] as? Int
-    let leaderboardOffset = params["leaderboardOffset"] as? Int
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
+    let limit = params["limit"] as? Int ?? 10
+    let offset = params["offset"] as? Int ?? 0
 
     Task { @MainActor in
-      let result = await self.nativeClient.api.retrieveTournamentDetails(
-        for: tournamentId,
-        leaderboardLimit: leaderboardLimit ?? 10,
-        leaderboardOffset: leaderboardOffset ?? 0)
+      let result = await self.nativeClient.api.retrieveTournamentLeaderboard(
+        for: tournamentId, limit: limit, offset: offset)
 
       switch result {
-      case .success(let details):
-        resolve(tournamentDetailsToMap(details, tournamentId: tournamentId))
+      case .success(let leaderboard):
+        resolve(lucraTournamentLeaderboardToMap(leaderboard))
       case .failure(let error):
         rejectLucraError(reject, error: error)
       }
@@ -1161,6 +1185,10 @@ private struct TelemetryDiagnosticError: LocalizedError {
     resolve: @escaping RCTPromiseResolveBlock,
     reject: @escaping RCTPromiseRejectBlock
   ) {
+    guard nativeClient != nil else {
+      reject(ErrorCode.notInitialized, "SDK has not been initialized", nil)
+      return
+    }
     Task { @MainActor in
       guard score.isFinite else {
         reject("invalidScore", "score must be a finite number", nil)

@@ -64,16 +64,16 @@ object ErrorMapper {
         mapTournamentFailure(promise, error.failure)
     }
 
-    fun rejectRetrieveTournamentError(
+    fun rejectRetrieveTournamentDetailsError(
         promise: Promise,
-        error: PoolTournament.RetrieveTournamentResult.Failure
+        error: PoolTournament.RetrieveTournamentDetailsResult.Failure
     ) {
         mapTournamentFailure(promise, error.failure)
     }
 
-    fun rejectRetrieveTournamentDetailsError(
+    fun rejectRetrieveTournamentLeaderboardError(
         promise: Promise,
-        error: PoolTournament.RetrieveTournamentDetailsResult.Failure
+        error: PoolTournament.RetrieveTournamentLeaderboardResult.Failure
     ) {
         mapTournamentFailure(promise, error.failure)
     }
