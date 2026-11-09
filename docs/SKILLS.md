@@ -38,12 +38,12 @@ publishes back.
 | Add the SDK / first run / it won't build or install | [Project Setup](1.0.0_project_setup.md) → [Setup & Troubleshooting](skills/lucra-react-native-start/SKILL.md) |
 | Expo managed workflow (config plugin, prebuild, Expo Go) | [Expo Managed Workflow](skills/lucra-react-native-expo/SKILL.md) |
 | Initialize the SDK / API keys / environment | [LucraSDK Initialization](1.2.0_initialize_client.md) |
-| Know if a user is signed in / delegate auth | [Headless Functionality → User](1.2.9_headless_interactions.md) |
-| Sign users in from your own session, with no Lucra login screen (SSO-style) | [Handshake Authentication](1.2.12_handshake_authentication.md) |
-| Present any SDK screen | [Lucra Flows](1.2.7_lucraflows.md) |
-| Mini Games (UI, headless, or your own WebView) | [Mini Games Integration](skills/lucra-react-native-minigames/SKILL.md) + [Mini Games](5.0.0_mini_games.md) |
+| Know if a user is signed in / delegate auth | [Headless Functionality → User](1.2.8_headless_interactions.md) |
+| Sign users in from your own session, with no Lucra login screen (SSO-style) | [Handshake Authentication](1.2.11_handshake_authentication.md) |
+| Present any SDK screen | [Lucra Flows](1.2.6_lucraflows.md) |
+| Mini Games (UI, headless, or your own WebView) | [Mini Games Integration](skills/lucra-react-native-minigames/SKILL.md) + [Mini Games](6.0.0_mini_games.md) |
 | Tournaments | [Tournaments Flows](3.1_tournaments_flows.md) |
-| React to game/user/tournament state | [Lucra Event Listener](1.2.10_lucra_event_listener.md) |
+| React to game/user/tournament state | [Lucra Event Listener](1.2.9_lucra_event_listener.md) |
 | Handle deep links | [Deeplinks](1.2.2_deeplinks.md) |
 | Theme the SDK UI to your brand | [Theming and Appearance](1.2.1_theming.md) |
 
@@ -58,12 +58,12 @@ publishes back.
 - **Auth is delegated.** Present `LucraSDK.FLOW.ONBOARDING`; the SDK owns the login UI. Learn the result
   via `LucraSDK.getUser()` or the `'user'` listener; sign out with `LucraSDK.logout()`.
   (`LucraSDK.configureUser(…)` is a separate path for passing your app's known user properties — it queues
-  until login completes.) → [Headless Functionality](1.2.9_headless_interactions.md)
+  until login completes.) → [Headless Functionality](1.2.8_headless_interactions.md)
 - **Flows vs Headless.** `LucraSDK.present({ name: … })` shows a full Lucra screen; headless calls return
   data you render yourself. Mix them: headless powers *your* lists and launchers, flows power the
-  *interactive* parts. → [Flows](1.2.7_lucraflows.md) / [Headless](1.2.9_headless_interactions.md)
+  *interactive* parts. → [Flows](1.2.6_lucraflows.md) / [Headless](1.2.8_headless_interactions.md)
 - **State comes back as events**, not return values from the screen you presented — register listeners
-  for user, contest, and mini game events. → [Event Listener](1.2.10_lucra_event_listener.md)
+  for user, contest, and mini game events. → [Event Listener](1.2.9_lucra_event_listener.md)
 
 ## Fastest path to a working integration
 

@@ -19,10 +19,10 @@ goal to one of these before writing integration code:
 | First-time setup / install or build failing | this skill: "Install", then "Troubleshoot" |
 | Expo managed workflow (config plugin, prebuild, Expo Go issues) | skill `lucra-react-native-expo` |
 | Show Mini Games, or run games in your own WebView | skill `lucra-react-native-minigames` |
-| Present any SDK screen (onboarding, profile, funds, matchups) | [Lucra Flows](../../1.2.7_lucraflows.md) |
-| Auth / user state / configuring user properties | [Headless Functionality](../../1.2.9_headless_interactions.md) |
+| Present any SDK screen (onboarding, profile, funds, matchups) | [Lucra Flows](../../1.2.6_lucraflows.md) |
+| Auth / user state / configuring user properties | [Headless Functionality](../../1.2.8_headless_interactions.md) |
 | Tournaments | [Tournaments Flows](../../3.1_tournaments_flows.md) |
-| React to SDK events | [Lucra Event Listener](../../1.2.10_lucra_event_listener.md) |
+| React to SDK events | [Lucra Event Listener](../../1.2.9_lucra_event_listener.md) |
 
 ## Install (start here)
 
@@ -77,8 +77,8 @@ If any of these don't hold, the Troubleshoot section below covers the common cau
 | Android manifest merger failure mentioning `auth0Domain`/`auth0Scheme` | Auth0 manifest placeholders missing from `defaultConfig` | [Project Setup](../../1.0.0_project_setup.md) |
 | Presenting a flow does nothing / rejects | Was `LucraSDK.init(…)` awaited to resolution first? Flows and headless calls only work after init resolves | [Initialization](../../1.2.0_initialize_client.md) |
 | Auth/unauthorized-style failures | Key/environment mismatch (e.g. sandbox key with `ENVIRONMENT.PRODUCTION`) | [Initialization](../../1.2.0_initialize_client.md) |
-| `getUser()` fails / `'user'` listener never fires with a user | Did the `ONBOARDING` flow actually complete? Network reachable? | [Headless Functionality](../../1.2.9_headless_interactions.md) |
-| Headless call rejects with a structured code (`unverified`, `insufficientFunds`, …) | Route the code to its matching flow (verify identity, add funds, demographics) per the error-handling pattern | [Headless Functionality](../../1.2.9_headless_interactions.md) |
+| `getUser()` fails / `'user'` listener never fires with a user | Did the `ONBOARDING` flow actually complete? Network reachable? | [Headless Functionality](../../1.2.8_headless_interactions.md) |
+| Headless call rejects with a structured code (`unverified`, `insufficientFunds`, …) | Route the code to its matching flow (verify identity, add funds, demographics) per the error-handling pattern | [Headless Functionality](../../1.2.8_headless_interactions.md) |
 | A Mini Games flow renders empty / reports unavailable | Mini Games must be enabled for your tenant on the backend | skill `lucra-react-native-minigames` |
 | App crashes or misbehaves with a network inspector attached | The SDK ships libraries that block network inspection — set `networkInspector: false` (Expo) / disable Flipper | [Project Setup](../../1.0.0_project_setup.md) |
 

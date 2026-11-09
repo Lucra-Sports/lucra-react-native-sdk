@@ -81,14 +81,6 @@ export const MainContainer: React.FC<Props> = ({ navigation }) => {
           <TouchableOpacity
             className="bg-indigo-700 p-4"
             onPress={() => {
-              LucraSDK.present({ name: LucraSDK.FLOW.MINI_GAMES_PROFILE });
-            }}
-          >
-            <Text className="text-white">Mini Games Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="bg-indigo-700 p-4"
-            onPress={() => {
               LucraSDK.present({ name: LucraSDK.FLOW.MINI_GAMES_REWARDS });
             }}
           >
