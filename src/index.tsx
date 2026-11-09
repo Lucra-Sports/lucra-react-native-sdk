@@ -216,7 +216,8 @@ export type LucraSDKParams = {
   /**
    * When `true` (default), the SDK automatically shows its "you've won a
    * reward!" bottom sheet when the user has unclaimed rewards. Set to
-   * `false` to globally suppress it. See [Reward Sheet](1.2.10_reward_sheet.md).
+   * `false` to globally suppress it. See
+   * [Reward Sheet](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/docs/1.2.10_reward_sheet.md).
    */
   allowRewardSheetToDisplay?: boolean;
 };
@@ -555,7 +556,7 @@ const Flows = {
    * Captures Terms of Service acceptance and completes a handshake sign-in.
    * Present it **only** in response to a `tosNotAccepted` handshake failure —
    * it is not a general entry point. See
-   * [Handshake Authentication](1.2.11_handshake_authentication.md).
+   * [Handshake Authentication](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/docs/1.2.11_handshake_authentication.md).
    */
   HANDSHAKE_TOS: 'handshakeTOS',
   // SPORT_CONTEST_DETAILS: 'sportContestDetails',
@@ -1039,7 +1040,8 @@ export const LucraSDK = {
    * `bypassTosAgreement` requests that Terms of Service capture be skipped. It
    * is honored only where your tenant's configuration allows it, carries a
    * legal obligation you are taking on, and should be discussed with Lucra
-   * first. See [Handshake Authentication](1.2.11_handshake_authentication.md).
+   * first. See
+   * [Handshake Authentication](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/docs/1.2.11_handshake_authentication.md).
    */
   registerHandshakeAuthTokenProvider: (
     provider: (() => Promise<string>) | null,
@@ -1286,7 +1288,8 @@ export const LucraSDK = {
    * event the SDK cannot observe, such as a game ending in a headless
    * integration. Does nothing when `allowRewardSheetToDisplay` is `false` or
    * no user is signed in. Resolves once the check is handed to the native SDK,
-   * not when the sheet is shown. See [Reward Sheet](1.2.10_reward_sheet.md).
+   * not when the sheet is shown. See
+   * [Reward Sheet](https://github.com/Lucra-Sports/lucra-react-native-sdk/blob/main/docs/1.2.10_reward_sheet.md).
    */
   presentRewardsSheetIfAvailable: (): Promise<void> => {
     return LucraClient.presentRewardsSheetIfAvailable();
