@@ -312,10 +312,6 @@ RCT_EXPORT_METHOD(emitDeepLink : (NSString *)deepLink) {
   [swiftClient emitDeepLink:deepLink];
 }
 
-RCT_EXPORT_METHOD(emitCreditConversion : (NSDictionary *)conversion) {
-  [swiftClient emitCreditConversion:conversion];
-}
-
 RCT_EXPORT_METHOD(emitAvailableRewards : (NSArray *)rewards) {
   [swiftClient emitAvailableRewards:rewards];
 }
@@ -323,10 +319,6 @@ RCT_EXPORT_METHOD(emitAvailableRewards : (NSArray *)rewards) {
 RCT_EXPORT_METHOD(closeFullScreenLucraFlows : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject) {
   [swiftClient closeFullScreenLucraFlowsWithResolve:resolve reject:reject];
-}
-
-RCT_EXPORT_METHOD(registerConvertToCreditProvider) {
-  [swiftClient registerConvertToCreditProvider];
 }
 
 RCT_EXPORT_METHOD(registerRewardProvider) {

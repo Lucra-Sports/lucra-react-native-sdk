@@ -79,8 +79,6 @@ class LucraUtils {
         handlePostNavigation: handlePostNavigation)
     case "miniGamesHome":
       return .miniGamesHome
-    case "miniGamesProfile":
-      return .miniGamesProfile
     case "miniGamesRewards":
       return .miniGamesRewards
     case "miniGamesMatchupDetails":

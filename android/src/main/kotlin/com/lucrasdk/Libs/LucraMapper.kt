@@ -24,10 +24,8 @@ import com.lucrasports.sdk.core.contest.tournament.PayoutStructure
 import com.lucrasports.sdk.core.contest.tournament.Tournament
 import com.lucrasports.tournament.LucraTournamentDetails
 import com.lucrasports.tournament.LucraTournamentLeaderboard
-import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
 import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
 import com.lucrasports.sdk.core.ui.LucraUiProvider
-import com.lucrasports.sdk.core.convert_credit.LucraWithdrawCardTheme
 import com.lucrasports.sdk.core.reward.LucraReward
 import com.lucrasports.sdk.core.reward.toLucraReward
 import com.lucrasports.sdk.core.reward.LucraTournamentReward
@@ -997,50 +995,6 @@ object LucraMapper {
             bannerIconUrl = map.getString("bannerIconUrl")!!,
             disclaimer = map.getString("disclaimer")!!,
             metadata = convertReadableMapToStringMap(map.getMap("metadata"))
-        )
-    }
-
-    fun writableNativeMapToLucraConvertToCreditWithdrawMethod(
-        map: ReadableMap,
-        cashAmount: Double
-    ): LucraConvertToCreditWithdrawMethod {
-        return LucraConvertToCreditWithdrawMethod(
-            id = map.getString("id")!!,
-            title = map.getString("title")!!,
-            conversionTerms =
-                map.getString("conversionTerms")!!,
-            amount = cashAmount,
-            convertedAmount = map.getDouble("convertedAmount"),
-            iconUrl = map.getString("iconUrl"),
-            convertedAmountDisplay =
-                map.getString("convertedAmountDisplay")!!,
-            shortDescription =
-                map.getString("shortDescription")!!,
-            longDescription =
-                map.getString("longDescription")!!,
-            metaData =
-                map.getMap("metaData")?.let {
-                    convertReadableMapToStringMap(it)
-                },
-            theme =
-                LucraWithdrawCardTheme(
-                    cardColor =
-                        map.getString(
-                            "cardColor"
-                        )!!,
-                    cardTextColor =
-                        map.getString(
-                            "cardTextColor"
-                        )!!,
-                    pillColor =
-                        map.getString(
-                            "pillColor"
-                        )!!,
-                    pillTextColor =
-                        map.getString(
-                            "pillTextColor"
-                        )!!,
-                )
         )
     }
 }

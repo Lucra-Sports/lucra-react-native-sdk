@@ -33,7 +33,6 @@ import com.lucrasdk.Libs.LucraMapper.readableMapToColorStyle
 import com.lucrasdk.Libs.LucraMapper.readableMapToFontFamily
 import com.lucrasdk.Libs.LucraMapper.rewardToMap
 import com.lucrasdk.Libs.LucraMapper.sdkUserToMap
-import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraConvertToCreditWithdrawMethod
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraReward
 import com.lucrasdk.Libs.LucraUtils
 import com.lucrasports.data.demographic.DemographicInteractions
@@ -56,8 +55,6 @@ import com.lucrasports.sdk.core.contest.recreational.RecreationalGameInteraction
 import com.lucrasports.sdk.core.minigames.LucraMiniGameMode
 import com.lucrasports.sdk.core.minigames.LucraGeoTokenType
 import com.lucrasports.sdk.core.contest.tournament.PoolTournament
-import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditProvider
-import com.lucrasports.sdk.core.convert_credit.LucraConvertToCreditWithdrawMethod
 import com.lucrasports.sdk.core.profile.ProfileInteractions
 import com.lucrasports.sdk.core.events.LucraEvent
 import com.lucrasports.sdk.core.events.LucraEventListener
@@ -149,12 +146,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     // need a way to emit as they come in
     private val deepLinkQueue =
         Channel<String>(
-            capacity = Channel.UNLIMITED,
-            onBufferOverflow = BufferOverflow.DROP_LATEST
-        )
-
-    private val creditConversionQueue =
-        Channel<ReadableMap>(
             capacity = Channel.UNLIMITED,
             onBufferOverflow = BufferOverflow.DROP_LATEST
         )
@@ -973,13 +964,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun emitCreditConversion(args: ReadableMap) {
-        args.takeIf { it != null }?.let {
-            creditConversionQueue.trySend(it)
-        }
-    }
-
-    @ReactMethod
     fun registerRewardProvider() {
         LucraClient()
             .setRewardProvider(
@@ -1000,27 +984,6 @@ class LucraClientModule(private val context: ReactApplicationContext) :
 
                     override fun viewRewards() {
                         sendEvent(context, "_viewRewards", null)
-                    }
-                }
-            )
-    }
-
-    @ReactMethod
-    fun registerConvertToCreditProvider() {
-        LucraClient()
-            .setConvertToCreditProvider(
-                object : LucraConvertToCreditProvider {
-                    override suspend fun getCreditAmount(
-                        cashAmount: Double
-                    ): LucraConvertToCreditWithdrawMethod {
-                        val linkMap = Arguments.createMap()
-                        linkMap.putDouble("amount", cashAmount)
-                        sendEvent(context, "_creditConversion", linkMap)
-                        val responseMap = creditConversionQueue.receive()
-                        return writableNativeMapToLucraConvertToCreditWithdrawMethod(
-                            responseMap,
-                            cashAmount
-                        )
                     }
                 }
             )

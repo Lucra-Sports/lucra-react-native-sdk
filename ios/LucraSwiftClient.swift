@@ -51,12 +51,8 @@ private struct TelemetryDiagnosticError: LocalizedError {
   private var userSinkCancellable: AnyCancellable?
   private var eventSinkCancellable: AnyCancellable?
   private let deepLinkEmitter = PassthroughSubject<String, Never>()
-  public let creditConversionEmitter = PassthroughSubject<
-    [String: Any], Never
-  >()
   public let rewardEmitter = PassthroughSubject<[[String: Any]], Never>()
   private var rewardProvider: RewardProvider!
-  private var conversionProvider: ConversionProvider!
   private var gamesMatchupFeeTimer: Timer?
   private var lastEmittedGamesMatchupFee: Decimal?
   private let handshakeTokenBridge = HandshakeTokenBridge()
@@ -243,23 +239,14 @@ private struct TelemetryDiagnosticError: LocalizedError {
       }
     }
   }
-    
-    @objc public func registerConvertToCreditProvider() {
-                      self.conversionProvider = ConversionProvider(outer: self)
-                      self.nativeClient.registerConvertToCreditProvider(self.conversionProvider)
-                  }
-                  
-                  @objc public func registerRewardProvider() {
-                      self.rewardProvider = RewardProvider(outer: self)
-                      self.nativeClient.registerRewardProvider(self.rewardProvider)
-                  }
+
+  @objc public func registerRewardProvider() {
+    self.rewardProvider = RewardProvider(outer: self)
+    self.nativeClient.registerRewardProvider(self.rewardProvider)
+  }
 
   @objc public func emitDeepLink(_ deepLink: String) {
     deepLinkEmitter.send(deepLink)
-  }
-
-  @objc public func emitCreditConversion(_ conversion: [String: Any]) {
-    creditConversionEmitter.send(conversion)
   }
 
   @objc public func emitAvailableRewards(_ rewards: [[String: Any]]) {
