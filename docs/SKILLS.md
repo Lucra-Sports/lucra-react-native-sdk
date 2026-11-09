@@ -19,8 +19,8 @@ Everything goes through the single `LucraSDK` object from `@lucra-sports/lucra-r
 owns auth, screens, and game logic; you don't rebuild them. You:
 
 1. **Install** the package from GitHub Packages (a Personal Access Token is required — this is the
-   most common first stumble), plus the native setup per platform: a private CocoaPods repo on iOS,
-   Maven Central on Android.
+   most common first stumble), plus the native setup per platform: iOS frameworks that `pod install`
+   downloads, Maven Central on Android.
 2. **Initialize once**: `await LucraSDK.init({ apiKey, environment })`. Initialization is asynchronous —
    the resolved promise is your readiness signal. Don't present flows or call headless APIs before it resolves.
 3. **Delegate the user session** to the SDK — present its `ONBOARDING` flow and observe the user via
@@ -50,9 +50,9 @@ publishes back.
 ## How the parts connect (the things docs cover in isolation)
 
 - **Install is registry-gated.** The npm package lives on GitHub Packages, so a PAT in `.npmrc` is
-  required before anything else works (don't commit it). iOS pods come from Lucra's private CocoaPods
-  repo; Android artifacts come from Maven Central with no auth. Expo Go is not supported — use a bare
-  workflow or `expo prebuild`. → [Project Setup](1.0.0_project_setup.md)
+  required before anything else works (don't commit it). iOS frameworks are downloaded from Lucra's
+  S3 during `pod install` and Android artifacts come from Maven Central, both with no auth. Expo Go
+  is not supported — use a bare workflow or `expo prebuild`. → [Project Setup](1.0.0_project_setup.md)
 - **Readiness is explicit.** `LucraSDK.init(…)` returns a promise; gate all SDK interaction on it
   resolving (the init doc's `isReady` pattern). → [Initialization](1.2.0_initialize_client.md)
 - **Auth is delegated.** Present `LucraSDK.FLOW.ONBOARDING`; the SDK owns the login UI. Learn the result

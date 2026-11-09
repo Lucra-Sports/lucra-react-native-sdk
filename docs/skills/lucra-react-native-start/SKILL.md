@@ -33,9 +33,9 @@ stumble:
   need private-repository access), then add a `.npmrc` with
   the token and the `@lucra-sports` registry mapping, and `npm i -s @lucra-sports/lucra-react-native-sdk`.
   Don't commit `.npmrc`.
-- **iOS:** deployment target 15.1; add Lucra's private CocoaPods repo (`pod repo add LucraSDK …`) and
-  both sources to the Podfile; `use_frameworks! linkage: :static`; disable Flipper; add the required
-  Info.plist permission strings.
+- **iOS:** deployment target 15.1; no Lucra pod repo or Podfile source (`pod install` downloads the
+  Lucra iOS SDK frameworks from `lucra-sdk.s3.amazonaws.com`); `use_frameworks! linkage: :static`;
+  disable Flipper; add the required Info.plist permission strings.
 - **Android:** artifacts come from Maven Central (no auth); minSdk 24; Auth0 manifest placeholders
   (required even if you don't use Auth0); the GeoComply manifest block; provide the Lucra image loader
   in your `Application`.
@@ -73,7 +73,7 @@ If any of these don't hold, the Troubleshoot section below covers the common cau
 | Symptom | First thing to check | Reopen |
 |---|---|---|
 | `npm install` 401/404 on `@lucra-sports/...` | `.npmrc` missing or PAT lacks the `read:packages` scope — the package is on GitHub Packages, not public npm | [Project Setup](../../1.0.0_project_setup.md) |
-| `pod install` can't find the Lucra pod | Private pod repo not added (`pod repo add LucraSDK …`) or Podfile missing the two `source` lines | [Project Setup](../../1.0.0_project_setup.md) |
+| `pod install` stops with `[Lucra] Could not download …` or a checksum mismatch | Network access to `lucra-sdk.s3.amazonaws.com` during `pod install` (proxy, firewall); never bypass a checksum mismatch | [Project Setup](../../1.0.0_project_setup.md#lucra-ios-sdk-frameworks) |
 | Android manifest merger failure mentioning `auth0Domain`/`auth0Scheme` | Auth0 manifest placeholders missing from `defaultConfig` | [Project Setup](../../1.0.0_project_setup.md) |
 | Presenting a flow does nothing / rejects | Was `LucraSDK.init(…)` awaited to resolution first? Flows and headless calls only work after init resolves | [Initialization](../../1.2.0_initialize_client.md) |
 | Auth/unauthorized-style failures | Key/environment mismatch (e.g. sandbox key with `ENVIRONMENT.PRODUCTION`) | [Initialization](../../1.2.0_initialize_client.md) |

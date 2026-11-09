@@ -99,6 +99,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         const val NOT_ALLOWED = "notAllowed"
         const val NOT_INITIALIZED = "notInitialized"
         const val UNVERIFIED = "unverified"
+        const val MISSING_DEMOGRAPHIC_INFORMATION = "missingDemographicInformation"
         const val UNKNOWN_ERROR = "unknownError"
     }
 
@@ -924,6 +925,9 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         LucraClient().cancelMatchupSubscription()
     }
 
+    // Exhaustive over the sealed LucraError hierarchy on purpose - there is no `else` branch,
+    // so a new error case added by the native SDK fails the build here instead of silently
+    // reaching JS as `unknownError`. An `else` is how DemographicInformationMissing was missed.
     private fun lucraErrorCodeMessage(error: LucraError): Pair<String, String> = when (error) {
         is APIError -> ErrorCodes.API_ERROR to (error.message.ifNullOrBlank { "API error occurred" })
         is LocationError -> ErrorCodes.LOCATION_ERROR to (error.message.ifNullOrBlank { "Location error occurred" })
@@ -931,7 +935,8 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         UserStateError.NotAllowed -> ErrorCodes.NOT_ALLOWED to "User is not allowed to perform such operation"
         UserStateError.NotInitialized -> ErrorCodes.NOT_INITIALIZED to "User has not been initialized"
         UserStateError.Unverified -> ErrorCodes.UNVERIFIED to "User has not been verified"
-        else -> ErrorCodes.UNKNOWN_ERROR to (error.toString().ifNullOrBlank { "Unknown error occurred" })
+        UserStateError.DemographicInformationMissing ->
+            ErrorCodes.MISSING_DEMOGRAPHIC_INFORMATION to "User has missing demographic information"
     }
 
     private fun rejectLucraError(promise: Promise, error: LucraError) {

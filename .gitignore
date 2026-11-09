@@ -108,6 +108,9 @@ scripts/test-native-sdks-locally.sh
 # Locally-built native SDK artifacts (never commit)
 xcframeworks/
 
+# Lucra iOS SDK frameworks the podspec downloads during pod install
+ios-frameworks/
+
 # CI build logs
 example/metro.log
 example/android/assemble*.log

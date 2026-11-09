@@ -53,7 +53,7 @@ For the Cocoapods dependencies, my recommended way is that you go into the `exam
 
 Once everything is done and said, you can run the app. Got to the `example` folder and run `npx react-native start --reset-cache` to start the Metro bundler and development server. Then on a separate terminal in the same `example` folder, start the iOS or Android apps via `yarn ios` or `yarn android`.
 
-If you see any erros that resembles `CocoaPods could not find compatible versions for pod "LucraSDK"` check the `example/ios/Podfile.lock` to see if correct SDK version is defined. If not, run `pod update` from the example folder, or if that does not work, delete the `Podfile.lock` as well as pod folder in the `example/ios` then run `npx pod-install` from the example folder.
+The Lucra iOS SDK is not a CocoaPods pod: `pod install` evaluates `lucra-react-native-sdk.podspec`, which downloads the pinned iOS SDK frameworks into `ios-frameworks/<version>/` at the repo root and checks them against the checksums in the podspec. To move to a new iOS SDK version, update `lucra_ios_sdk_version` and the three checksums in the podspec from the Lucra iOS SDK's `Package.swift` at that tag, compare `ios/LucraTelemetry/` with the tag's `LucraCore/Static/`, then run `pod install` again.
 
 ## Local Integration Mode
 
@@ -96,7 +96,7 @@ enableLocalIntegrationModeiOS=true        # Uses xcframeworks/ directory
 enableLocalIntegrationModeAndroid=true    # Uses ~/.m2/repository (mavenLocal)
 ```
 
-**iOS**: When enabled, the podspec will use the local xcframeworks in the `xcframeworks/` directory instead of fetching `LucraSDK` from remote repositories.
+**iOS**: When enabled, the podspec will use the local xcframeworks in the `xcframeworks/` directory instead of downloading the released ones into `ios-frameworks/`. The telemetry sources always come from `ios/LucraTelemetry/`, so `xcframeworks/` only needs the three `.xcframework` folders.
 
 **Android**: When enabled, Gradle will use `mavenLocal()` (typically `~/.m2/repository`) to resolve the Lucra SDK artifacts instead of GitHub Packages. This also skips the GPR_USER and GPR_KEY validation.
 
