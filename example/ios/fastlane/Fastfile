@@ -4,6 +4,7 @@ APP_STORE_CONNECT_API_KEY_ID = ENV['APP_STORE_CONNECT_API_KEY_ID']
 APP_STORE_CONNECT_API_KEY_ISSUER_ID = ENV['APP_STORE_CONNECT_API_KEY_ISSUER_ID']
 APP_STORE_CONNECT_API_KEY_CONTENT = ENV['APP_STORE_CONNECT_API_KEY_CONTENT']
 package_json_file = '../../package.json'
+podspec_file = '../../../lucra-react-native-sdk.podspec'
 
 default_platform(:ios)
 
@@ -33,6 +34,24 @@ platform :ios do
     update_version_and_build
     pilot(
       skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc 'Post the distributed build to Slack - requires SLACK_URL'
+  lane :notify_slack do
+    version_number = JSON.parse(File.read(package_json_file))['version']
+    build_number = get_build_number
+    sdk_version = File.read(podspec_file)[/lucra_ios_sdk_version\s*=\s*"([^"]+)"/, 1] || 'unknown'
+    changelog = sh('git log -1 --pretty=%B', log: false).strip
+    slack(
+      pretext: "📲 React Native Sample iOS App Release Candidate #{version_number} (#{build_number}) has been distributed!",
+      message: changelog,
+      payload: {
+        'Download' => 'Go grab it on TestFlight!',
+        'Build Number' => build_number.to_s,
+        'Version' => version_number,
+        'Embedded Lucra SDK Version' => sdk_version
+      }
     )
   end
 

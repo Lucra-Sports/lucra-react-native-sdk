@@ -3,6 +3,8 @@ require 'json'
 firebase_app_id = '1:33355554746:android:1ca6c47009c467afdec783'
 firebase_service_credentials_file = ENV['FIREBASE_SERVICE_CREDENTIALS_FILE']
 package_json_file = '../../package.json'
+app_gradle_file = '../app/build.gradle'
+sdk_gradle_file = '../../../android/build.gradle'
 default_platform(:android)
 
 platform :android do
@@ -23,6 +25,24 @@ platform :android do
       groups: "stakeholders",
       release_notes: '-',
       service_credentials_file: firebase_service_credentials_file
+    )
+  end
+
+  desc 'Post the distributed build to Slack - requires SLACK_URL'
+  lane :notify_slack do
+    version_name = JSON.parse(File.read(package_json_file))['version']
+    version_code = File.read(app_gradle_file)[/versionCode\s+(\d+)/, 1] || 'unknown'
+    sdk_version = File.read(sdk_gradle_file)[/com\.lucrasports\.sdk:sdk-core:([^"']+)/, 1] || 'unknown'
+    changelog = sh('git log -1 --pretty=%B', log: false).strip
+    slack(
+      pretext: "📲 React Native Sample Android App Release Candidate #{version_name} (#{version_code}) has been distributed!",
+      message: changelog,
+      payload: {
+        'Download' => 'Go grab it on Firebase App Distribution!',
+        'Build Number' => version_code,
+        'Version' => version_name,
+        'Embedded Lucra SDK Version' => sdk_version
+      }
     )
   end
 

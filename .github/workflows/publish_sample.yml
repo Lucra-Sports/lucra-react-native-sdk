@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - 'release/**'
   workflow_dispatch:
 env:
   GPR_KEY: ${{ secrets.GPR_KEY }}
@@ -64,6 +65,13 @@ jobs:
           JAVA_OPTS: '-XX:MaxHeapSize=6g'
         run: |
           yarn run release:android
+
+      - name: Slack Android
+        if: startsWith(github.ref_name, 'release/')
+        env:
+          SLACK_URL: ${{ secrets.SLACK_RELEASES_WEBHOOK_URL }}
+        run: |
+          yarn run notify:android
 
   release-ios:
     runs-on: [self-hosted, ios]
@@ -130,3 +138,10 @@ jobs:
         timeout-minutes: 45
         run: |
           yarn run release:ios
+
+      - name: Slack iOS
+        if: startsWith(github.ref_name, 'release/')
+        env:
+          SLACK_URL: ${{ secrets.SLACK_RELEASES_WEBHOOK_URL }}
+        run: |
+          yarn run notify:ios

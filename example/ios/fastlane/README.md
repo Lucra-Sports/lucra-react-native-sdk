@@ -31,6 +31,14 @@ Build and distribute to Testflight
 
 
 
+### ios notify_slack
+
+```sh
+[bundle exec] fastlane ios notify_slack
+```
+
+Post the distributed build to Slack - requires SLACK_URL
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

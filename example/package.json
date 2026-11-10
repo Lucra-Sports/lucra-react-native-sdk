@@ -15,6 +15,8 @@
     "build:ios": "cd ios && bundle exec fastlane build_example",
     "release:android": "cd android && bundle exec fastlane distribute --verbose",
     "release:ios": "cd ios && bundle exec fastlane distribute --verbose",
+    "notify:android": "cd android && bundle exec fastlane notify_slack",
+    "notify:ios": "cd ios && bundle exec fastlane notify_slack",
     "e2e:build-ios": "detox build --configuration ios.sim.debug",
     "e2e:run-ios": "detox test --configuration ios.sim.debug",
     "e2e:build-android": "bash -c 'DETOX_AVD_NAME=${DETOX_AVD_NAME:-$(emulator -list-avds | head -n 1)}; if [ -z \"$DETOX_AVD_NAME\" ]; then echo \"No Android AVD found. Set DETOX_AVD_NAME to override.\"; exit 1; fi; DETOX_AVD_NAME=\"$DETOX_AVD_NAME\" detox build --configuration android.emu.debug'",
