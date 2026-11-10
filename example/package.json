@@ -21,7 +21,7 @@
     "e2e:run-android": "bash -c 'DETOX_AVD_NAME=${DETOX_AVD_NAME:-$(emulator -list-avds | head -n 1)}; if [ -z \"$DETOX_AVD_NAME\" ]; then echo \"No Android AVD found. Set DETOX_AVD_NAME to override.\"; exit 1; fi; DETOX_AVD_NAME=\"$DETOX_AVD_NAME\" detox test --configuration android.emu.debug'"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^2.0.0",
+    "@react-native-async-storage/async-storage": "^3.1.1",
     "@react-native-clipboard/clipboard": "^1.14.3",
     "@react-native-firebase/analytics": "^21.2.0",
     "@react-native-firebase/app": "^21.2.0",
