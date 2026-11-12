@@ -63,7 +63,7 @@
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "detox": "^20.47.0",
     "jest": "^29",
-    "tailwindcss": "^3.4.14"
+    "tailwindcss": "^4.3.5"
   },
   "engines": {
     "node": ">=20"
