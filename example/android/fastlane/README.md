@@ -31,6 +31,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Build and distribute Android app
 
+### android notify_slack
+
+```sh
+[bundle exec] fastlane android notify_slack
+```
+
+Post the distributed build to Slack - requires SLACK_URL
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
