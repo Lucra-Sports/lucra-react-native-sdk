@@ -3373,16 +3373,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/dynamic-links@npm:^21.2.0":
-  version: 21.14.0
-  resolution: "@react-native-firebase/dynamic-links@npm:21.14.0"
+"@react-native-firebase/dynamic-links@npm:^22.4.0":
+  version: 22.4.0
+  resolution: "@react-native-firebase/dynamic-links@npm:22.4.0"
   peerDependencies:
-    "@react-native-firebase/app": 21.14.0
+    "@react-native-firebase/app": 22.4.0
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 1f58c660936303fec5b83b34516ae8f0db45d00a1afb99a0333db9449d5688bbdb8f2259a958aa307ca46b57936e95ee123d3f8afc989d55ab8eebb578ae5c05
+  checksum: 213ca510241602d8496b8d5b3c7370346c4cb2081f238a095f50e1cabdc77231e32a7f7f9f2b3932e8aaf853d620d07a8f44091b6379233702b65a235bdbc5c9
   languageName: node
   linkType: hard
 
@@ -6728,7 +6728,7 @@ __metadata:
     "@react-native-community/cli-platform-ios": 18.0.1
     "@react-native-firebase/analytics": ^21.2.0
     "@react-native-firebase/app": ^21.2.0
-    "@react-native-firebase/dynamic-links": ^21.2.0
+    "@react-native-firebase/dynamic-links": ^22.4.0
     "@react-native/babel-preset": 0.79.2
     "@react-native/eslint-config": 0.79.2
     "@react-native/metro-config": 0.79.2
