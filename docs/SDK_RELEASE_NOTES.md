@@ -1,3 +1,6 @@
+# 8.0.1
+* **Android (internal):** `submitDemographics` now bridges the Lucra Android SDK's public `submitDemographics` call and its `SubmitDemographicsResult` / `DemographicError` types (added in Android SDK 9.0.0) instead of the deprecated `submitDemographicForm`, so the wrapper no longer pulls `com.lucrasports.sdk:core-data` (`compileOnly`) to read the result. No JS-facing change: the call resolves and rejects with the same codes (`notInitialized`, `notAllowed`, `invalidDateOfBirth`, `apiError`, `unknownError`) as before, and the dependency was never on your app's classpath.
+
 # 8.0.0
 * Bumped iOS to [8.0.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/8.0.0)
 * Bumped Android to [9.0.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/9.0.0)
