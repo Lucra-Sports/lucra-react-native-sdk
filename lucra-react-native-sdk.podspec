@@ -7,11 +7,11 @@ package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
-lucra_ios_sdk_version = "8.0.0"
+lucra_ios_sdk_version = "8.0.1"
 lucra_ios_sdk_checksums = {
-  "LucraSDK" => "c82c99142a8a74b53cd40cab8dccd72b3458550e1df5ff4e5325071ccb039c19",
-  "MobileIntelligence" => "c3cbae8b71b8be12f7032906b472215afc09fc3dc1d24d1ea1a51a08d76eb86f",
-  "GeoComplySDK" => "3e8fd70a9974cfeb9164ca218c5de1127451f5e14d8ed6d680b2d00534881aec",
+  "LucraSDK" => "3454806e75fb3c2280d0a7fd10320c1b07167d451e7119afcf57c20f60976dec",
+  "MobileIntelligence" => "90a85ee56f73f568d024bf0a3d7264c95f8644d8cc3968667b11b9f852fcda37",
+  "GeoComplySDK" => "2dc6f34a2507f1625b90a99286843594b41ba709f50325c1f7ba5301fe58f3ca",
 }
 lucra_ios_sdk_dir = File.join("ios-frameworks", lucra_ios_sdk_version)
 

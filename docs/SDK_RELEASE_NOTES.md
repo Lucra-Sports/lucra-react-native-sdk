@@ -1,3 +1,6 @@
+# 8.0.1
+* Bumped iOS to [8.0.1](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/8.0.1)
+
 # 8.0.0
 * Bumped iOS to [8.0.0](https://github.com/Lucra-Sports/lucra-ios-sdk/releases/tag/8.0.0)
 * Bumped Android to [9.0.0](https://github.com/Lucra-Sports/lucra-android-sdk/releases/tag/9.0.0)
