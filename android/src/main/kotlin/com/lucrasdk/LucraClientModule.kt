@@ -5,7 +5,7 @@ import ErrorMapper.rejectJoinTournamentError
 import ErrorMapper.rejectRecommendedTournamentsError
 import ErrorMapper.rejectRetrieveTournamentDetailsError
 import ErrorMapper.rejectRetrieveTournamentLeaderboardError
-import ErrorMapper.rejectSubmitDemographicFormError
+import ErrorMapper.rejectSubmitDemographicsError
 import ErrorMapper.rejectSubmitTournamentScoreError
 import android.app.Application
 import android.graphics.Bitmap
@@ -35,7 +35,6 @@ import com.lucrasdk.Libs.LucraMapper.rewardToMap
 import com.lucrasdk.Libs.LucraMapper.sdkUserToMap
 import com.lucrasdk.Libs.LucraMapper.writableNativeMapToLucraReward
 import com.lucrasdk.Libs.LucraUtils
-import com.lucrasports.data.demographic.DemographicInteractions
 import com.lucrasports.logger.LucraLogger
 import com.lucrasports.logger.model.AnalyticEvent
 import com.lucrasports.sdk.core.LucraClient
@@ -68,6 +67,7 @@ import com.lucrasports.sdk.core.ui.LucraFlowListener
 import com.lucrasports.sdk.core.ui.LucraUiProvider
 import com.lucrasports.sdk.core.user.SDKUser
 import com.lucrasports.sdk.core.user.SDKUserResult
+import com.lucrasports.sdk.core.user.SubmitDemographicsResult
 import com.lucrasports.sdk.ui.LucraUi
 import com.lucrasdk.Libs.LucraMapper.readableMapToThemeMode
 import kotlinx.coroutines.CompletableDeferred
@@ -1243,7 +1243,7 @@ class LucraClientModule(private val context: ReactApplicationContext) :
         val dobYear = params.getInt("dobYear")
         val email = params.getString("email").orEmpty()
 
-        LucraClient().submitDemographicForm(
+        LucraClient().submitDemographics(
             dobDay = dobDay,
             dobMonth = dobMonth,
             dobYear = dobYear,
@@ -1253,11 +1253,11 @@ class LucraClientModule(private val context: ReactApplicationContext) :
             lastName = params.optionalString("lastName"),
         ) { result ->
             when (result) {
-                DemographicInteractions.SubmitDemographicFormResult.Success ->
+                SubmitDemographicsResult.Success ->
                     promise.resolve(null)
 
-                is DemographicInteractions.SubmitDemographicFormResult.Failure ->
-                    rejectSubmitDemographicFormError(promise, result)
+                is SubmitDemographicsResult.Failure ->
+                    rejectSubmitDemographicsError(promise, result)
             }
         }
     }
