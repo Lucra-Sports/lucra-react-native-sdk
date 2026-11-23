@@ -3127,14 +3127,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-async-storage/async-storage@npm:^2.0.0":
-  version: 2.1.2
-  resolution: "@react-native-async-storage/async-storage@npm:2.1.2"
+"@react-native-async-storage/async-storage@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@react-native-async-storage/async-storage@npm:3.1.1"
   dependencies:
-    merge-options: ^3.0.4
+    idb: 8.0.3
   peerDependencies:
-    react-native: ^0.0.0-0 || >=0.65 <1.0
-  checksum: a5c4d486e7e64067ab523b980b76cc2de5bf4b86ed410de09f2a95c3410e0c5b5be46c638a74cf5b7ed6dce10031ebac54350b498a2cb17f1a1c59347e671a73
+    react: "*"
+    react-native: "*"
+  checksum: 4f2227cb7d7365bed1dc418404cb986aafcaefd7908671cc0f226fb7d264511b07c7d210699a997f7acda3c25f4ec23764f28ebf5e76cedd2438d5836fef9296
   languageName: node
   linkType: hard
 
@@ -6721,7 +6722,7 @@ __metadata:
     "@babel/helpers": ^7.26.10
     "@babel/preset-env": ^7.25.3
     "@babel/runtime": ^7.26.10
-    "@react-native-async-storage/async-storage": ^2.0.0
+    "@react-native-async-storage/async-storage": ^3.1.1
     "@react-native-clipboard/clipboard": ^1.14.3
     "@react-native-community/cli": 18.0.1
     "@react-native-community/cli-platform-android": 18.0.1
@@ -7703,6 +7704,13 @@ __metadata:
   version: 7.1.1
   resolution: "idb@npm:7.1.1"
   checksum: 1973c28d53c784b177bdef9f527ec89ec239ec7cf5fcbd987dae75a16c03f5b7dfcc8c6d3285716fd0309dd57739805390bd9f98ce23b1b7d8849a3b52de8d56
+  languageName: node
+  linkType: hard
+
+"idb@npm:8.0.3":
+  version: 8.0.3
+  resolution: "idb@npm:8.0.3"
+  checksum: e0f160be2b9a3b031db25a3bd134b5187f1b51d7e2cdc85a0e5ec62b0f635a7e37847d4888c9d919e7de1e9d8646a9390ce42d249b6a0b30d538c651ab1c3852
   languageName: node
   linkType: hard
 
@@ -9388,15 +9396,6 @@ __metadata:
   version: 5.2.1
   resolution: "memoize-one@npm:5.2.1"
   checksum: a3cba7b824ebcf24cdfcd234aa7f86f3ad6394b8d9be4c96ff756dafb8b51c7f71320785fbc2304f1af48a0467cbbd2a409efc9333025700ed523f254cb52e3d
-  languageName: node
-  linkType: hard
-
-"merge-options@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "merge-options@npm:3.0.4"
-  dependencies:
-    is-plain-obj: ^2.1.0
-  checksum: d86ddb3dd6e85d558dbf25dc944f3527b6bacb944db3fdda6e84a3f59c4e4b85231095f58b835758b9a57708342dee0f8de0dffa352974a48221487fe9f4584f
   languageName: node
   linkType: hard
 
